@@ -42,9 +42,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/sling/trunk/contrib/extensions/distribution/core</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/sling/trunk/contrib/extensions/distribution/core</developerConnection>
-        <url>http://svn.apache.org/viewvc/sling/trunk/contrib/extensions/distribution/core</url>
+        <connection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-distribution-core.git</conncetion>
+        <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-distribution-core.git</developerConnection>
+        <url>https://gitbox.apache.org/repos/asf?p=sling-org-apache-sling-distribution-core.git</url>
     </scm>
 
     <!-- ======================================================================= -->
