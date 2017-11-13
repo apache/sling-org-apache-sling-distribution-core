@@ -150,7 +150,7 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
             }
 
             // now import the content
-            importer.run(archive, session.getRootNode());
+            importer.run(archive, session, "/");
             if (importer.hasErrors() && importOptions.isStrict()) {
                 throw new PackageException("Errors during import.");
             }
