@@ -43,7 +43,9 @@ import org.osgi.framework.BundleContext;
         label = "Apache Sling Distribution Trigger - Scheduled Triggers Factory",
         configurationFactory = true,
         specVersion = "1.1",
-        policy = ConfigurationPolicy.REQUIRE
+        policy = ConfigurationPolicy.REQUIRE,
+        description = "Triggers a distribution request of the given type (action) " +
+                "for the given path (path) at a periodical time interval (seconds)."
 )
 @Service(DistributionTrigger.class)
 @Property(name="webconsole.configurationFactory.nameHint", value="Trigger name: {name}")
@@ -56,7 +58,7 @@ public class ScheduledDistributionTriggerFactory implements DistributionTrigger 
     /**
      * scheduled trigger action property
      */
-    @Property(label = "Distribution Type", description = "The type of the distribution request produced by this trigger.")
+    @Property(label = "Distribution Type", description = "The type of the distribution request produced by this trigger in ('ADD', 'DELETE', 'PULL', 'TEST'). Default 'PULL'.")
     private static final String ACTION = "action";
 
     /**
@@ -68,7 +70,7 @@ public class ScheduledDistributionTriggerFactory implements DistributionTrigger 
     /**
      * scheduled trigger seconds property
      */
-    @Property(label = "Interval in Seconds", description = "The number of seconds between executions")
+    @Property(label = "Interval in Seconds", description = "The number of seconds between distribution requests. Default 30 seconds.")
     private static final String SECONDS = "seconds";
 
     @Property(label = "Service Name", description = "The name of the service used to trigger the distribution requests.")

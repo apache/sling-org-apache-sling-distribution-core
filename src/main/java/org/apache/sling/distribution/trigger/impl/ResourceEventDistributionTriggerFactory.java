@@ -40,7 +40,9 @@ import org.osgi.framework.BundleContext;
         label = "Apache Sling Distribution Trigger - Resource Event Triggers Factory",
         configurationFactory = true,
         specVersion = "1.1",
-        policy = ConfigurationPolicy.REQUIRE
+        policy = ConfigurationPolicy.REQUIRE,
+        description = "Triggers a distribution request ('ADD', 'DELETE') " +
+                "for the given path (path) whenever the resource at the given path is modified (added, resp. removed)."
 )
 @Service(DistributionTrigger.class)
 @Property(name="webconsole.configurationFactory.nameHint", value="Trigger name: {name}")

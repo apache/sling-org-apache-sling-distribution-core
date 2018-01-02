@@ -43,7 +43,9 @@ import org.apache.sling.jcr.api.SlingRepository;
         label = "Apache Sling Distribution Trigger - Jcr Event Triggers Factory",
         configurationFactory = true,
         specVersion = "1.1",
-        policy = ConfigurationPolicy.REQUIRE
+        policy = ConfigurationPolicy.REQUIRE,
+        description = "Triggers a distribution request ('ADD', 'DELETE') " +
+                "for the given path (path) whenever the JCR node at the given path is modified (added, resp. removed)."
 )
 @Service(DistributionTrigger.class)
 @Property(name="webconsole.configurationFactory.nameHint", value="Trigger name: {name} on path {path}")
@@ -74,7 +76,7 @@ public class JcrEventDistributionTriggerFactory implements DistributionTrigger {
     /**
      * use deep distribution
      */
-    @Property(label = "Use deep distribution", description = "Distribute entire subtree of the event node path", boolValue = false)
+    @Property(label = "Use deep distribution", description = "Distribute entire subtree of the event node path. Default is 'false'.", boolValue = false)
     private static final String DEEP = "deep";
 
 
