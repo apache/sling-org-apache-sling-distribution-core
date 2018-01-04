@@ -32,7 +32,7 @@
     <!-- P R O J E C T                                                           -->
     <!-- ======================================================================= -->
     <artifactId>org.apache.sling.distribution.core</artifactId>
-    <version>0.2.9-SNAPSHOT</version>
+    <version>0.2.10</version>
     <packaging>bundle</packaging>
 
     <name>Apache Sling Distribution Core</name>
@@ -45,7 +45,8 @@
         <connection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-distribution-core.git</connection>
         <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-distribution-core.git</developerConnection>
         <url>https://gitbox.apache.org/repos/asf?p=sling-org-apache-sling-distribution-core.git</url>
-    </scm>
+      <tag>org.apache.sling.distribution.core-0.2.10</tag>
+  </scm>
 
     <!-- ======================================================================= -->
     <!-- B U I L D                                                               -->
