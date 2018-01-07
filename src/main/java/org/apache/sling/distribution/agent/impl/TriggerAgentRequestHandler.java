@@ -52,7 +52,7 @@ class TriggerAgentRequestHandler implements DistributionRequestHandler {
     }
 
     public String getName() {
-        return agent.getName();
+        return agentName;
     }
 
     public DistributionComponentKind getComponentKind() {
