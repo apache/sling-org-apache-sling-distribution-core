@@ -66,7 +66,7 @@ public class FileDistributionPackageBuilder extends AbstractDistributionPackageB
                                           String tempFilesFolder,
                                           String digestAlgorithm, String[] nodeFilters,
                                           String[] propertyFilters) {
-        super(type);
+        super(type, distributionContentSerializer.getContentType());
         this.distributionContentSerializer = distributionContentSerializer;
         this.nodeFilters = VltUtils.parseFilters(nodeFilters);
         this.propertyFilters = VltUtils.parseFilters(propertyFilters);
