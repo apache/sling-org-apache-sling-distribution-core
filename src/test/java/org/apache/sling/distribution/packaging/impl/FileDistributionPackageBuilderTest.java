@@ -22,10 +22,14 @@ public class FileDistributionPackageBuilderTest {
         FileDistributionPackageBuilder builder = new FileDistributionPackageBuilder("test", new TestSerializer(), null, null, new String[0],
                 new String[0]);
         DistributionPackage createdPackage = builder.createPackageForAdd(mock(ResourceResolver.class), mock(DistributionRequest.class));
-        assertNotNull(createdPackage.createInputStream());
 
-        DistributionPackage gotPackage = builder.getPackageInternal(mock(ResourceResolver.class), createdPackage.getId());
-        assertNotNull(gotPackage.createInputStream()); // this will throw an exception when the file doesn't exist
+        try {
+            assertNotNull(createdPackage.createInputStream());
+            DistributionPackage gotPackage = builder.getPackageInternal(mock(ResourceResolver.class), createdPackage.getId());
+            assertNotNull(gotPackage.createInputStream()); // this will throw an exception when the file doesn't exist
+        } finally {
+            createdPackage.delete();
+        }
     }
 
     class TestSerializer implements DistributionContentSerializer {
