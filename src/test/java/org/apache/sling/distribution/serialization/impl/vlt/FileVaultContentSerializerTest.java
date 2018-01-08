@@ -82,7 +82,7 @@ public class FileVaultContentSerializerTest {
         boolean useReferences = false;
         int threshold = 1024;
         FileVaultContentSerializer fileVaultContentSerializer = new FileVaultContentSerializer("vlt", packaging, importMode,
-                aclHandling, packageRoots, nodeFilters, propertyFilters, useReferences, threshold, new HashMap<String, String>());
+                aclHandling, packageRoots, nodeFilters, propertyFilters, useReferences, threshold, new HashMap<String, String>(), 1);
 
         ResourceResolver sessionResolver = mock(ResourceResolver.class);
         Session session = mock(Session.class);
@@ -124,7 +124,7 @@ public class FileVaultContentSerializerTest {
         boolean useReferences = false;
         int thershold = 1024;
         FileVaultContentSerializer fileVaultContentSerializer = new FileVaultContentSerializer("vlt", packaging, importMode,
-                aclHandling, packageRoots, nodeFilters, propertyFilters, useReferences, thershold, new HashMap<String, String>());
+                aclHandling, packageRoots, nodeFilters, propertyFilters, useReferences, thershold, new HashMap<String, String>(), 1);
 
         File file = new File(getClass().getResource("/vlt/dp.vlt").getFile());
 

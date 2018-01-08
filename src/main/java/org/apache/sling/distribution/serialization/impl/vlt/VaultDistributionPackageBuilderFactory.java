@@ -204,6 +204,18 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
               "The format is {sourcePattern}={destinationPattern}, e.g. /etc/(.*)=/var/$1/some or simply /data=/bak")
     private static final String PATHS_MAPPING = "pathsMapping";
 
+    private static final int DEFAULT_COMPRESSION_LEVEL = 1;
+
+    @Property(
+            label = "The Vault zlib compression level",
+            description = "The zlib compression level used by Vault to serialize content. The compression level is " +
+                    "an integer between -1 and 9, see http://www.zlib.net/manual.html. Default is '1' (BEST_SPEED).",
+            intValue = DEFAULT_COMPRESSION_LEVEL,
+            propertyPrivate = true
+    )
+    private static final String COMPRESSION_LEVEL = "compressionLevel";
+
+
     @Reference
     private Packaging packaging;
 
@@ -238,6 +250,8 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
             digestAlgorithm = null;
         }
 
+        int compressionLevel = PropertiesUtil.toInteger(config.get(COMPRESSION_LEVEL), DEFAULT_COMPRESSION_LEVEL);
+
         ImportMode importMode = null;
         if (importModeString != null) {
             importMode = ImportMode.valueOf(importModeString.trim());
@@ -253,7 +267,7 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
         pathsMapping = SettingsUtils.removeEmptyEntries(pathsMapping);
 
         DistributionContentSerializer contentSerializer = new FileVaultContentSerializer(name, packaging, importMode, aclHandling,
-                packageRoots, packageNodeFilters, packagePropertyFilters, useBinaryReferences, autosaveThreshold, pathsMapping);
+                packageRoots, packageNodeFilters, packagePropertyFilters, useBinaryReferences, autosaveThreshold, pathsMapping, compressionLevel);
 
         DistributionPackageBuilder wrapped;
         if ("filevlt".equals(type)) {

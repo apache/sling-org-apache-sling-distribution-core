@@ -81,7 +81,8 @@ public class LocalDistributionPackageImporterTest {
                 new String[0],
                 false,
                 -1,
-                null
+                null,
+                1
         );
 
         DistributionPackageBuilder builder =

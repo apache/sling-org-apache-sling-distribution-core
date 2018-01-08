@@ -80,10 +80,11 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
     private final boolean useBinaryReferences;
     private final String name;
     private final Map<String, String> exportPathMapping;
+    private final int compressionLevel;
 
     public FileVaultContentSerializer(String name, Packaging packaging, ImportMode importMode, AccessControlHandling aclHandling, String[] packageRoots,
                                       String[] nodeFilters, String[] propertyFilters, boolean useBinaryReferences, int autosaveThreshold,
-                                      Map<String, String> exportPathMapping) {
+                                      Map<String, String> exportPathMapping, int compressionLevel) {
         this.name = name;
         this.packaging = packaging;
         this.importMode = importMode;
@@ -94,6 +95,7 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
         this.propertyFilters = VltUtils.parseFilters(propertyFilters);
         this.useBinaryReferences = useBinaryReferences;
         this.exportPathMapping = exportPathMapping;
+        this.compressionLevel = compressionLevel;
     }
 
     @Override
@@ -106,6 +108,9 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
 
             WorkspaceFilter filter = VltUtils.createFilter(exportOptions.getRequest(), nodeFilters, propertyFilters);
             ExportOptions opts = VltUtils.getExportOptions(filter, packageRoots, packageGroup, packageName, VERSION, useBinaryReferences, exportPathMapping);
+
+            // Set configured compression level (SLING-7362)
+            opts.setCompressionLevel(compressionLevel);
 
             log.debug("assembling package {} user {}", packageGroup + '/' + packageName + "-" + VERSION, resourceResolver.getUserID());
 
