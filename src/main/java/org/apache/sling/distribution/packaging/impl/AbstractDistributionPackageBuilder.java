@@ -50,9 +50,11 @@ public abstract class AbstractDistributionPackageBuilder implements Distribution
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private final String type;
+    private final boolean serializerSupportsDeletion;
 
-    AbstractDistributionPackageBuilder(String type) {
+    AbstractDistributionPackageBuilder(String type, boolean serializerSupportsDeletion) {
         this.type = type;
+        this.serializerSupportsDeletion = serializerSupportsDeletion;
     }
 
     public String getType() {
@@ -69,7 +71,11 @@ public abstract class AbstractDistributionPackageBuilder implements Distribution
         if (DistributionRequestType.ADD.equals(request.getRequestType())) {
             distributionPackage = createPackageForAdd(resourceResolver, request);
         } else if (DistributionRequestType.DELETE.equals(request.getRequestType())) {
-            distributionPackage = new SimpleDistributionPackage(request, type);
+            if (this.serializerSupportsDeletion) {
+                distributionPackage = createPackageForDelete(resourceResolver, request);
+            } else {
+                distributionPackage = new SimpleDistributionPackage(request, type);
+            }
         } else if (DistributionRequestType.PULL.equals(request.getRequestType())) {
             distributionPackage = new SimpleDistributionPackage(request, type);
         } else if (DistributionRequestType.TEST.equals(request.getRequestType())) {
@@ -239,10 +245,16 @@ public abstract class AbstractDistributionPackageBuilder implements Distribution
         }
     }
 
-
     @CheckForNull
     protected abstract DistributionPackage createPackageForAdd(@Nonnull ResourceResolver resourceResolver, @Nonnull DistributionRequest request)
             throws DistributionException;
+
+    @CheckForNull
+    protected DistributionPackage createPackageForDelete(@Nonnull ResourceResolver resourceResolver, @Nonnull DistributionRequest request)
+            throws DistributionException {
+        // normally this will work the same way as for add
+        return this.createPackageForAdd(resourceResolver, request);
+    }
 
     @CheckForNull
     protected abstract DistributionPackage readPackageInternal(@Nonnull ResourceResolver resourceResolver, @Nonnull InputStream stream)

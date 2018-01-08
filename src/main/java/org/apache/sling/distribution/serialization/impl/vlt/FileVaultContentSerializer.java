@@ -200,4 +200,8 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
     public boolean isRequestFiltering() {
         return true;
     }
+
+    @Override public boolean isDeletionSupported() {
+        return false;
+    }
 }
