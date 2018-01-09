@@ -67,4 +67,10 @@ public interface DistributionContentSerializer {
      * @return {@code true} if it can build filters from a request, {@code false} otherwise
      */
     boolean isRequestFiltering();
+
+    /**
+     * whether or not this {@link DistributionContentSerializer} can build packages for deletion
+     * @retur {@code} true if it can build packages for deletion
+     */
+    boolean isDeletionSupported();
 }

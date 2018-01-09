@@ -32,6 +32,8 @@ import org.apache.sling.testing.mock.osgi.junit.OsgiContext;
 import org.junit.Rule;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventHandler;
 
 import static org.mockito.Mockito.mock;
 import static org.junit.Assert.*;
@@ -79,6 +81,8 @@ public class DistributionEventDistributeDistributionTriggerTest {
 
     @Test
     public void testDistributionLoop() throws Exception {
+        final Thread self = Thread.currentThread();
+
         final AtomicInteger handled = new AtomicInteger(0);
         final Map<String, Object> infoData = new HashMap<String, Object>();
         infoData.put(DistributionPackageInfo.PROPERTY_REQUEST_PATHS, new String[] { "/foo/bar" });
@@ -123,7 +127,7 @@ public class DistributionEventDistributeDistributionTriggerTest {
         testExecution.setDaemon(true);
         testExecution.run();
 
-        Thread.sleep(200);
+        Thread.sleep(1000);
 
         testExecution.interrupt();
         assertEquals(1, handled.get());
