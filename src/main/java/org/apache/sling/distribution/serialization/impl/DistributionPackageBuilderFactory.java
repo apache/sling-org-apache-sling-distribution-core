@@ -237,6 +237,10 @@ public class DistributionPackageBuilderFactory implements DistributionPackageBui
         return packageBuilder.getType();
     }
 
+    public String getContentType() {
+        return contentSerializer.getContentType();
+    }
+
     @Nonnull
     public DistributionPackage createPackage(@Nonnull ResourceResolver resourceResolver, @Nonnull DistributionRequest request) throws DistributionException {
         return packageBuilder.createPackage(resourceResolver, request);

@@ -50,13 +50,19 @@ public abstract class AbstractDistributionPackageBuilder implements Distribution
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private final String type;
+    private final String contentType;
 
-    AbstractDistributionPackageBuilder(String type) {
+    AbstractDistributionPackageBuilder(String type, String contentType) {
         this.type = type;
+        this.contentType = contentType;
     }
 
     public String getType() {
         return type;
+    }
+
+    public String getContentType() {
+        return this.contentType;
     }
 
     @Nonnull

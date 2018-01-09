@@ -137,6 +137,10 @@ public class SimpleHttpDistributionTransport implements DistributionTransport {
                     }
                 }
 
+                for (Map.Entry<String, String> header : httpConfiguration.getHeaders().entrySet()) {
+                    req.addHeader(header.getKey(), header.getValue());
+                }
+
                 InputStream inputStream = null;
                 try {
                     inputStream = DistributionPackageUtils.createStreamWithHeader(distributionPackage);
