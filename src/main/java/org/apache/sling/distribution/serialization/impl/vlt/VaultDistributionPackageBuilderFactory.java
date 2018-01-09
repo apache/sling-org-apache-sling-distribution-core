@@ -288,6 +288,10 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
         return packageBuilder.getType();
     }
 
+    public String getContentType() {
+        return packageBuilder.getContentType();
+    }
+
     @Nonnull
     public DistributionPackage createPackage(@Nonnull ResourceResolver resourceResolver, @Nonnull DistributionRequest request) throws DistributionException {
         return packageBuilder.createPackage(resourceResolver, request);
