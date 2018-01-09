@@ -62,6 +62,10 @@ public class FileDistributionPackageBuilderTest {
             }
         }
 
+        @Override public String getContentType() {
+            return "text/plain";
+        }
+
         @Override public void importFromStream(ResourceResolver resourceResolver, InputStream inputStream) throws DistributionException {
             throw new DistributionException("unsupported");
         }
