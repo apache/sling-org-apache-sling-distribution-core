@@ -36,7 +36,7 @@ public class TriggerAgentRequestHandlerTest {
         DistributionAgent agent = mock(DistributionAgent.class);
         SimpleDistributionAgentAuthenticationInfo authenticationInfo = mock(SimpleDistributionAgentAuthenticationInfo.class);
         DefaultDistributionLog log = mock(DefaultDistributionLog.class);
-        TriggerAgentRequestHandler triggerAgentRequestHandler = new TriggerAgentRequestHandler(agent,
+        TriggerAgentRequestHandler triggerAgentRequestHandler = new TriggerAgentRequestHandler(agent, "agent",
                 authenticationInfo, log, true);
         ResourceResolver resourceResolver = mock(ResourceResolver.class);
         DistributionRequest request = mock(DistributionRequest.class);
@@ -48,7 +48,7 @@ public class TriggerAgentRequestHandlerTest {
         DistributionAgent agent = mock(DistributionAgent.class);
         SimpleDistributionAgentAuthenticationInfo authenticationInfo = mock(SimpleDistributionAgentAuthenticationInfo.class);
         DefaultDistributionLog log = mock(DefaultDistributionLog.class);
-        TriggerAgentRequestHandler triggerAgentRequestHandler = new TriggerAgentRequestHandler(agent,
+        TriggerAgentRequestHandler triggerAgentRequestHandler = new TriggerAgentRequestHandler(agent, "name",
                 authenticationInfo, log, false);
         ResourceResolver resourceResolver = mock(ResourceResolver.class);
         DistributionRequest request = mock(DistributionRequest.class);

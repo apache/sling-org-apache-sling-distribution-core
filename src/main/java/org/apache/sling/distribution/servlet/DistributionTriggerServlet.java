@@ -32,6 +32,7 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.common.DistributionException;
+import org.apache.sling.distribution.component.impl.DistributionComponentKind;
 import org.apache.sling.distribution.resources.DistributionResourceTypes;
 import org.apache.sling.distribution.trigger.DistributionRequestHandler;
 import org.apache.sling.distribution.trigger.DistributionTrigger;
@@ -80,6 +81,14 @@ public class DistributionTriggerServlet extends SlingAllMethodsServlet {
         final PrintWriter writer = response.getWriter();
 
         DistributionRequestHandler distributionRequestHandler = new DistributionRequestHandler() {
+            public String getName() {
+                return DistributionTriggerServlet.this.getClass().getSimpleName();
+            }
+
+            public DistributionComponentKind getComponentKind() {
+                return null; // unknown
+            }
+
             public void handle(@Nullable ResourceResolver resourceResolver, @Nonnull DistributionRequest request) {
                 writeEvent(writer, request);
             }

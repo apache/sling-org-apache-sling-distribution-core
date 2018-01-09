@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.sling.distribution.DistributionRequestType;
 import org.apache.sling.distribution.SimpleDistributionRequest;
+import org.apache.sling.distribution.component.impl.DistributionComponentKind;
 import org.apache.sling.distribution.event.DistributionEventProperties;
 import org.apache.sling.distribution.event.DistributionEventTopics;
 import org.apache.sling.distribution.common.DistributionException;
@@ -105,6 +106,22 @@ public class DistributionEventDistributeDistributionTrigger implements Distribut
         }
 
         public void handleEvent(Event event) {
+            String originKindName = String.valueOf(event.getProperty(DistributionEventProperties.DISTRIBUTION_COMPONENT_KIND));
+            String originName = String.valueOf(event.getProperty(DistributionEventProperties.DISTRIBUTION_COMPONENT_NAME));
+
+            DistributionComponentKind originKind;
+            try {
+                originKind = DistributionComponentKind.valueOf(originKindName);
+            } catch (IllegalArgumentException ex) {
+                log.debug("Unknown component kind {} of event {}.", originKindName, event);
+                originKind = null;
+            }
+
+            if (requestHandler.getName().equals(originName) && requestHandler.getComponentKind() == originKind) {
+                log.info("skip chain distribution from event {} to {}", event, requestHandler);
+                return;
+            }
+
             Object actionProperty = event.getProperty(DistributionEventProperties.DISTRIBUTION_TYPE);
             Object pathProperty = event.getProperty(DistributionEventProperties.DISTRIBUTION_PATHS);
             if (actionProperty != null && pathProperty != null) {

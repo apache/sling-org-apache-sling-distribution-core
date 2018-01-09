@@ -18,12 +18,14 @@
  */
 package org.apache.sling.distribution.trigger;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import aQute.bnd.annotation.ConsumerType;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
+import org.apache.sling.distribution.component.impl.DistributionComponentKind;
 
 /**
  * An handler for {@link org.apache.sling.distribution.DistributionRequest}s passed to a
@@ -31,6 +33,20 @@ import org.apache.sling.distribution.DistributionRequest;
  */
 @ConsumerType
 public interface DistributionRequestHandler {
+
+    /**
+     * returns the name of the owner of this request handler.
+     * @return
+     */
+    @Nonnull
+    String getName();
+
+    /**
+     * returns the kind of component that owns this request handler. Might be null, for unknown kinds of components.
+     * @return
+     */
+    @CheckForNull
+    DistributionComponentKind getComponentKind();
 
     /**
      * handle the request according to the trigger implementation.
