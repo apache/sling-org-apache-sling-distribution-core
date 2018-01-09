@@ -59,6 +59,11 @@ public final class MonitoringDistributionPackageBuilder implements DistributionP
         return wrapped.getType();
     }
 
+    @Override
+    public String getContentType() {
+        return wrapped.getContentType();
+    }
+
     @Nonnull
     @Override
     public DistributionPackage createPackage(@Nonnull ResourceResolver resourceResolver, @Nonnull DistributionRequest request) throws DistributionException {

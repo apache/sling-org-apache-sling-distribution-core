@@ -297,7 +297,7 @@ public class SimpleDistributionAgent implements DistributionAgent {
         active = true;
 
         // register triggers if any
-        agentBasedRequestHandler = new TriggerAgentRequestHandler(this, agentAuthenticationInfo, log, active);
+        agentBasedRequestHandler = new TriggerAgentRequestHandler(this, name, agentAuthenticationInfo, log, active);
 
         if (!isPassive()) {
             try {

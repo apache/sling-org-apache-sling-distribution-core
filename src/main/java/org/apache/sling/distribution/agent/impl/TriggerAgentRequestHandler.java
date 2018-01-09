@@ -24,6 +24,7 @@ import javax.annotation.Nullable;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.agent.DistributionAgent;
+import org.apache.sling.distribution.component.impl.DistributionComponentKind;
 import org.apache.sling.distribution.log.impl.DefaultDistributionLog;
 import org.apache.sling.distribution.trigger.DistributionRequestHandler;
 import org.apache.sling.distribution.util.impl.DistributionUtils;
@@ -36,8 +37,10 @@ class TriggerAgentRequestHandler implements DistributionRequestHandler {
     private final DefaultDistributionLog log;
     private final boolean active;
     private final DistributionAgent agent;
+    private final String agentName;
 
     public TriggerAgentRequestHandler(@Nonnull DistributionAgent agent,
+                                      @Nonnull String agentName,
                                       @Nonnull SimpleDistributionAgentAuthenticationInfo authenticationInfo,
                                       @Nonnull DefaultDistributionLog log,
                                       boolean active) {
@@ -45,6 +48,15 @@ class TriggerAgentRequestHandler implements DistributionRequestHandler {
         this.log = log;
         this.active = active;
         this.agent = agent;
+        this.agentName = agentName;
+    }
+
+    public String getName() {
+        return agentName;
+    }
+
+    public DistributionComponentKind getComponentKind() {
+        return DistributionComponentKind.AGENT;
     }
 
     public void handle(@Nullable ResourceResolver resourceResolver, @Nonnull DistributionRequest request) {
@@ -76,5 +88,12 @@ class TriggerAgentRequestHandler implements DistributionRequestHandler {
             }
         }
 
+    }
+
+    @Override
+    public String toString() {
+        return "TriggerAgentRequestHandler{" +
+                "agentName='" + agentName+ '\'' +
+                '}';
     }
 }

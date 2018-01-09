@@ -18,6 +18,9 @@
  */
 package org.apache.sling.distribution.transport.impl;
 
+import java.util.Collections;
+import java.util.Map;
+
 /**
  * HTTP related configuration for {@link SimpleHttpDistributionTransport}
  */
@@ -25,15 +28,24 @@ public class HttpConfiguration {
 
     private final Integer connectTimeout;
     private final Integer socketTimeout;
+    private final Map<String, String> headers;
 
     public HttpConfiguration(Integer timeout) {
-        this.socketTimeout = timeout;
-        this.connectTimeout = timeout;
+        this(timeout, timeout);
     }
 
     public HttpConfiguration(Integer connectTimeout, Integer socketTimeout) {
+        this(connectTimeout, socketTimeout, Collections.<String, String>emptyMap());
+    }
+
+    public HttpConfiguration(Integer timeout, Map<String, String> headers) {
+        this(timeout, timeout, headers);
+    }
+
+    public HttpConfiguration(Integer connectTimeout, Integer socketTimeout, Map<String, String> headers) {
         this.connectTimeout = connectTimeout;
         this.socketTimeout = socketTimeout;
+        this.headers = headers;
     }
 
     public Integer getConnectTimeout() {
@@ -42,5 +54,9 @@ public class HttpConfiguration {
 
     public Integer getSocketTimeout() {
         return socketTimeout;
+    }
+
+    public Map<String, String> getHeaders() {
+        return headers;
     }
 }

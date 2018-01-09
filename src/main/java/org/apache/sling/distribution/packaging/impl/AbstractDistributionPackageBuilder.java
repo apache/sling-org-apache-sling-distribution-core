@@ -50,15 +50,21 @@ public abstract class AbstractDistributionPackageBuilder implements Distribution
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private final String type;
+    private final String contentType;
     private final boolean serializerSupportsDeletion;
 
-    AbstractDistributionPackageBuilder(String type, boolean serializerSupportsDeletion) {
+    AbstractDistributionPackageBuilder(String type, String contentType, boolean serializerSupportsDeletion) {
         this.type = type;
+        this.contentType = contentType;
         this.serializerSupportsDeletion = serializerSupportsDeletion;
     }
 
     public String getType() {
         return type;
+    }
+
+    public String getContentType() {
+        return this.contentType;
     }
 
     @Nonnull
