@@ -39,6 +39,7 @@ import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
+import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.apache.sling.distribution.serialization.DistributionContentSerializer;
 import org.apache.sling.distribution.serialization.DistributionExportFilter;
 import org.apache.sling.distribution.serialization.DistributionExportOptions;
@@ -126,7 +127,7 @@ public class FileDistributionPackageBuilder extends AbstractDistributionPackageB
             // stable id
             Map<String, Object> info = new HashMap<String, Object>();
             DistributionPackageUtils.readInfo(stream, info);
-            Object remoteId = info.get(DistributionPackageUtils.PROPERTY_REMOTE_PACKAGE_ID);
+            Object remoteId = info.get(DistributionPackageInfo.PROPERTY_REMOTE_PACKAGE_ID);
             if (remoteId != null) {
                 name = remoteId.toString();
                 log.debug("preserving remote id {}", name);

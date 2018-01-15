@@ -93,7 +93,7 @@ public class LocalDistributionPackageImporter implements DistributionPackageImpo
         DistributionPackageUtils.readInfo(stream, headerInfo);
         log.debug("header info: {}", headerInfo);
 
-        Object o = headerInfo.get(DistributionPackageUtils.PROPERTY_REMOTE_PACKAGE_ID);
+        Object o = headerInfo.get(DistributionPackageInfo.PROPERTY_REMOTE_PACKAGE_ID);
         String reference = o != null ? String.valueOf(o) : null;
 
         if (reference != null) {
@@ -124,7 +124,7 @@ public class LocalDistributionPackageImporter implements DistributionPackageImpo
                     // do nothing
                 }
                 DistributionPackageInfo packageInfo;
-                Object rr = headerInfo.get("reference-required");
+                Object rr = headerInfo.get(DistributionPackageInfo.PROPERTY_REFERENCE_REQUIRED);
                 boolean store = rr != null && Boolean.valueOf(rr.toString());
                 if (store) {
                     log.debug("storing actual package");

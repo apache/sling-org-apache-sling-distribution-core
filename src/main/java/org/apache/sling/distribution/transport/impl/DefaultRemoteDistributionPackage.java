@@ -20,7 +20,7 @@
 package org.apache.sling.distribution.transport.impl;
 
 import org.apache.http.client.fluent.Executor;
-import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
+import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +43,7 @@ public class DefaultRemoteDistributionPackage implements RemoteDistributionPacka
         this.wrappedPackage = wrappedPackage;
         this.executor = executor;
         this.distributionURI = distributionURI;
-        this.remoteId = (String) wrappedPackage.getInfo().get(DistributionPackageUtils.PROPERTY_REMOTE_PACKAGE_ID);
+        this.remoteId = (String) wrappedPackage.getInfo().get(DistributionPackageInfo.PROPERTY_REMOTE_PACKAGE_ID);
     }
 
 

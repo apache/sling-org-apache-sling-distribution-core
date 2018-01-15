@@ -72,8 +72,6 @@ public class DistributionPackageUtils {
     private static final Object repolock = new Object();
     private static final Object filelock = new Object();
 
-    public final static String PROPERTY_REMOTE_PACKAGE_ID = "remote.package.id";
-
     /**
      * distribution package origin queue
      */
@@ -213,10 +211,11 @@ public class DistributionPackageUtils {
         Map<String, Object> headerInfo = new HashMap<String, Object>();
         headerInfo.put(DistributionPackageInfo.PROPERTY_REQUEST_TYPE, packageInfo.getRequestType());
         headerInfo.put(DistributionPackageInfo.PROPERTY_REQUEST_PATHS, packageInfo.getPaths());
-        headerInfo.put(PROPERTY_REMOTE_PACKAGE_ID, distributionPackage.getId());
-        if (packageInfo.containsKey("reference-required")) {
-            headerInfo.put("reference-required", packageInfo.get("reference-required"));
-            log.info("setting reference-required to {}", packageInfo.get("reference-required"));
+        headerInfo.put(DistributionPackageInfo.PROPERTY_REMOTE_PACKAGE_ID, distributionPackage.getId());
+        if (packageInfo.containsKey(DistributionPackageInfo.PROPERTY_REFERENCE_REQUIRED)) {
+            Object refRequired = packageInfo.get(DistributionPackageInfo.PROPERTY_REFERENCE_REQUIRED);
+            headerInfo.put(DistributionPackageInfo.PROPERTY_REFERENCE_REQUIRED, refRequired);
+            log.info("setting reference-required to {}", refRequired);
         }
         writeInfo(outputStream, headerInfo);
 

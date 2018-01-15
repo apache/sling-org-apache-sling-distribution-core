@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.packaging.DistributionPackage;
+import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
 import org.apache.sling.distribution.packaging.impl.ReferencePackage;
 import org.apache.sling.distribution.packaging.impl.SharedDistributionPackage;
@@ -75,7 +76,7 @@ public class AsyncDeliveryDispatchingStrategy implements DistributionQueueDispat
             if (queue.getStatus().getItemsCount() > MAX_QUEUE_ITEMS_THRESHOLD) {
                 // too many items in the queue, let's send actual packages and references separately
 
-                distributionPackage.getInfo().put("reference-required", true);
+                distributionPackage.getInfo().put(DistributionPackageInfo.PROPERTY_REFERENCE_REQUIRED, true);
                 DistributionQueueItem item = getItem(distributionPackage);
 
                 // create and acquire reference package
