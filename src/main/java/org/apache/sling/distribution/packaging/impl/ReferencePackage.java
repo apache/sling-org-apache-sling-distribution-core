@@ -38,7 +38,7 @@ public class ReferencePackage extends AbstractDistributionPackage {
     private final String reference;
 
     public ReferencePackage(DistributionPackage distributionPackage) {
-        super(REFERENCE_PREFIX + distributionPackage.getId(), distributionPackage.getType(), distributionPackage.getContentType(),null, null);
+        super(REFERENCE_PREFIX + distributionPackage.getId(), "text/plain; charset=UTF-8", distributionPackage.getContentType(),null, null);
         this.distributionPackage = distributionPackage;
         this.reference = REFERENCE_PREFIX + distributionPackage.getId();
         getInfo().putAll(distributionPackage.getInfo());
@@ -62,7 +62,7 @@ public class ReferencePackage extends AbstractDistributionPackage {
     @Nonnull
     @Override
     public InputStream createInputStream() throws IOException {
-        return new ByteArrayInputStream(reference.getBytes());
+        return new ByteArrayInputStream(reference.getBytes("UTF-8"));
     }
 
     @Override
