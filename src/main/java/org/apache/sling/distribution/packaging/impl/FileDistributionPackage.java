@@ -43,9 +43,10 @@ public class FileDistributionPackage extends AbstractDistributionPackage {
 
     public FileDistributionPackage(@Nonnull File file,
                                    @Nonnull String type,
+                                   @Nonnull String contentType,
                                    @Nullable String digestAlgorithm,
                                    @Nullable String digestMessage) {
-        super(file.getName(), type, digestAlgorithm, digestMessage);
+        super(file.getName(), type, contentType, digestAlgorithm, digestMessage);
         this.file = file;
 
         this.getInfo().put(DistributionPackageInfo.PROPERTY_REQUEST_TYPE, DistributionRequestType.ADD);

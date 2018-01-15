@@ -36,11 +36,13 @@ public abstract class AbstractDistributionPackage implements SharedDistributionP
     private final String digestAlgorithm;
     private final String digestMessage;
 
-    AbstractDistributionPackage(String id, String type, String digestAlgorithm, String digestMessage) {
+    AbstractDistributionPackage(String id, String type, String contentType, String digestAlgorithm, String digestMessage) {
         this.id = id;
         this.info = new DistributionPackageInfo(type);
         this.digestAlgorithm = digestAlgorithm;
         this.digestMessage = digestMessage;
+
+        this.info.put(DistributionPackageInfo.PROPERTY_CONTENT_TYPE, contentType);
     }
 
     @Nonnull
@@ -56,6 +58,11 @@ public abstract class AbstractDistributionPackage implements SharedDistributionP
     @Nonnull
     public String getType() {
         return info.getType();
+    }
+
+    @Override
+    public String getContentType() {
+        return info.getContentType();
     }
 
     @Nullable

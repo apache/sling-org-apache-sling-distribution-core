@@ -73,7 +73,9 @@ public class SimpleHttpDistributionTransportTest {
                 endpoint, packageBuilder, secretProvider, new HttpConfiguration(1000, 1000));
         ResourceResolver resourceResolver = mock(ResourceResolver.class);
         DistributionPackage distributionPackage = mock(DistributionPackage.class);
-        when(distributionPackage.getInfo()).thenReturn(new DistributionPackageInfo("type"));
+        DistributionPackageInfo info = new DistributionPackageInfo("type");
+        when(distributionPackage.getInfo()).thenReturn(info);
+        when(distributionPackage.getContentType()).thenReturn(info.getContentType());
         InputStream stream = mock(InputStream.class);
         when(distributionPackage.createInputStream()).thenReturn(stream);
         DistributionTransportContext distributionContext = mock(DistributionTransportContext.class);

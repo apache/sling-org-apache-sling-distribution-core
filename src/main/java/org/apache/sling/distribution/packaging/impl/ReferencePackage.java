@@ -38,7 +38,7 @@ public class ReferencePackage extends AbstractDistributionPackage {
     private final String reference;
 
     public ReferencePackage(DistributionPackage distributionPackage) {
-        super(REFERENCE_PREFIX + distributionPackage.getId(), distributionPackage.getType(), null, null);
+        super(REFERENCE_PREFIX + distributionPackage.getId(), distributionPackage.getType(), distributionPackage.getContentType(),null, null);
         this.distributionPackage = distributionPackage;
         this.reference = REFERENCE_PREFIX + distributionPackage.getId();
         getInfo().putAll(distributionPackage.getInfo());

@@ -50,6 +50,11 @@ public class DistributionPackageWrapper implements DistributionPackage {
         return wrappedPackage.getType();
     }
 
+    @Override
+    public String getContentType() {
+        return wrappedPackage.getContentType();
+    }
+
     @Nonnull
     public InputStream createInputStream() throws IOException {
         return wrappedPackage.createInputStream();

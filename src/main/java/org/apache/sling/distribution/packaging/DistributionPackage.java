@@ -47,6 +47,15 @@ public interface DistributionPackage {
     String getType();
 
     /**
+     * get the content type of the package. This is the mime-type of the content returned by {@link DistributionPackage#createInputStream()}
+     * including optional parameters like the charset.
+     *
+     * @return the content type as mime-type
+     */
+    @Nonnull
+    String getContentType();
+
+    /**
      * creates a package stream.
      * a new stream is created for each call and it is the caller's obligation to close the stream.
      *

@@ -23,6 +23,7 @@ import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -145,7 +146,7 @@ public class SimpleHttpDistributionTransport implements DistributionTransport {
                 try {
                     inputStream = DistributionPackageUtils.createStreamWithHeader(distributionPackage);
 
-                    req = req.bodyStream(inputStream, ContentType.APPLICATION_OCTET_STREAM);
+                    req = req.bodyStream(inputStream, ContentType.parse(distributionPackage.getContentType()));
 
                     Response response = executor.execute(req);
                     response.returnContent(); // throws an error if HTTP status is >= 300
@@ -178,9 +179,9 @@ public class SimpleHttpDistributionTransport implements DistributionTransport {
             URI distributionURI = RequestUtils.appendDistributionRequest(distributionEndpoint.getUri(), distributionRequest);
 
             Executor executor = getExecutor(distributionContext);
-
+            Map<String, Object> info = new HashMap<String, Object>();
             // TODO : add queue parameter
-            InputStream inputStream = HttpTransportUtils.fetchNextPackage(executor, distributionURI, httpConfiguration);
+            InputStream inputStream = HttpTransportUtils.fetchNextPackage(executor, distributionURI, httpConfiguration, info);
 
             if (inputStream == null) {
                 return null;
@@ -188,6 +189,7 @@ public class SimpleHttpDistributionTransport implements DistributionTransport {
 
             try {
                 final DistributionPackage responsePackage = packageBuilder.readPackage(resourceResolver, inputStream);
+                responsePackage.getInfo().putAll(info);
                 responsePackage.getInfo().put(PACKAGE_INFO_PROPERTY_ORIGIN_URI, distributionURI);
                 log.debug("pulled package with info {}", responsePackage.getInfo());
 

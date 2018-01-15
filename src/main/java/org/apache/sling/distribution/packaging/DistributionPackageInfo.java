@@ -42,6 +42,11 @@ public final class DistributionPackageInfo extends ValueMapDecorator implements 
     public static final String PROPERTY_PACKAGE_TYPE = "package.type";
 
     /**
+     * distribution package type
+     */
+    public static final String PROPERTY_CONTENT_TYPE = "content.type";
+
+    /**
      * distribution request paths
      */
     public static final String PROPERTY_REQUEST_PATHS = "request.paths";
@@ -85,6 +90,11 @@ public final class DistributionPackageInfo extends ValueMapDecorator implements 
     @Nonnull
     public String getType() {
         return get(PROPERTY_PACKAGE_TYPE, String.class);
+    }
+
+    @Nonnull
+    public String getContentType() {
+        return get(PROPERTY_CONTENT_TYPE, "application/octet-stream");
     }
 
     /**

@@ -19,21 +19,25 @@
 
 package org.apache.sling.distribution.transport.impl;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.ContentType;
 import org.apache.http.protocol.HTTP;
+import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
 
 class HttpTransportUtils {
 
-    public static InputStream fetchNextPackage(Executor executor, URI distributionURI, HttpConfiguration httpConfiguration)
+    public static InputStream fetchNextPackage(Executor executor, URI distributionURI, HttpConfiguration httpConfiguration, Map<String, Object> info)
             throws URISyntaxException, IOException {
         URI fetchUri = getFetchUri(distributionURI);
         Request fetchReq = Request.Post(fetchUri)
@@ -48,6 +52,11 @@ class HttpTransportUtils {
         }
 
         HttpEntity entity = httpResponse.getEntity();
+
+        ContentType contentType = ContentType.get(entity);
+        if (contentType != null) {
+            info.put(DistributionPackageInfo.PROPERTY_CONTENT_TYPE, contentType.toString());
+        }
 
         return entity.getContent();
     }

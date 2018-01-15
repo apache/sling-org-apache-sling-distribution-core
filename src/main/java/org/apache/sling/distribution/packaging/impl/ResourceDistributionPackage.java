@@ -48,10 +48,11 @@ public class ResourceDistributionPackage extends AbstractDistributionPackage {
 
     ResourceDistributionPackage(Resource resource,
                                 String type,
+                                String contentType,
                                 ResourceResolver resourceResolver,
                                 @Nullable String digestAlgorithm,
                                 @Nullable String digestMessage) {
-        super(resource.getName(), type, digestAlgorithm, digestMessage);
+        super(resource.getName(), type, contentType, digestAlgorithm, digestMessage);
         this.resourceResolver = resourceResolver;
         ValueMap valueMap = resource.getValueMap();
         assert type.equals(valueMap.get("type")) : "wrong resource type";

@@ -130,7 +130,7 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
                 outputStream.clean();
             }
 
-            distributionPackage = new ResourceDistributionPackage(packageResource, getType(), resourceResolver, digestAlgorithm, digestMessage);
+            distributionPackage = new ResourceDistributionPackage(packageResource, getType(), distributionContentSerializer.getContentType(), resourceResolver, digestAlgorithm, digestMessage);
         } catch (IOException e) {
             throw new DistributionException(e);
         }
@@ -151,7 +151,7 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
             Resource packagesRoot = DistributionPackageUtils.getPackagesRoot(resourceResolver, packagesPath);
 
             Resource packageResource = uploadStream(resourceResolver, packagesRoot, inputStream, -1);
-            return new ResourceDistributionPackage(packageResource, getType(), resourceResolver, null, null);
+            return new ResourceDistributionPackage(packageResource, getType(), distributionContentSerializer.getContentType(), resourceResolver, null, null);
         } catch (PersistenceException e) {
             throw new DistributionException(e);
         }
@@ -176,7 +176,7 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
             if (packageResource == null) {
                 return null;
             } else {
-                return new ResourceDistributionPackage(packageResource, getType(), resourceResolver, null, null);
+                return new ResourceDistributionPackage(packageResource, getType(), distributionContentSerializer.getContentType(), resourceResolver, null, null);
             }
         } catch (PersistenceException e) {
             return null;
@@ -243,7 +243,7 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
             throws DistributionException {
         try {
             Resource packagesRoot = DistributionPackageUtils.getPackagesRoot(resourceResolver, packagesPath);
-            return new ResourceDistributionPackageIterator(packagesRoot, resourceResolver, getType());
+            return new ResourceDistributionPackageIterator(packagesRoot, resourceResolver, getType(), distributionContentSerializer.getContentType());
         } catch (PersistenceException e) {
             throw new DistributionException("Failed to get the package list", e);
         }
@@ -256,12 +256,14 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
         final ResourceResolver resourceResolver;
 
         final String type;
+        final String contentType;
 
         private ResourceDistributionPackageIterator(@Nonnull Resource packagesRoot, @Nonnull ResourceResolver resourceResolver,
-                                            @Nonnull String type) {
+                                            @Nonnull String type, @Nonnull String contentType) {
             this.packages = packagesRoot.listChildren();
             this.resourceResolver = resourceResolver;
             this.type = type;
+            this.contentType = contentType;
         }
 
         @Override
@@ -272,7 +274,7 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
         @Override
         public ResourceDistributionPackage next() {
             Resource packageResource = packages.next();
-            return new ResourceDistributionPackage(packageResource, type, resourceResolver, null, null);
+            return new ResourceDistributionPackage(packageResource, type, contentType, resourceResolver, null, null);
         }
 
         @Override
