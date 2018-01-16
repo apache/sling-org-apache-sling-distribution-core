@@ -27,6 +27,7 @@ import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.DistributionRequestType;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.log.impl.DefaultDistributionLog;
+import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.apache.sling.distribution.packaging.DistributionPackageProcessor;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
 import org.apache.sling.distribution.packaging.DistributionPackage;
@@ -67,6 +68,8 @@ public class RemoteDistributionPackageExporter implements DistributionPackageExp
                         packageBuilder, secretProvider, httpConfiguration));
             }
         }
+
+        this.distributionContext.put(DistributionPackageInfo.PROPERTY_CONTENT_TYPE, packageBuilder.getContentType());
     }
 
     public void exportPackages(@Nonnull ResourceResolver resourceResolver, @Nonnull DistributionRequest distributionRequest, @Nonnull DistributionPackageProcessor packageProcessor) throws DistributionException {
