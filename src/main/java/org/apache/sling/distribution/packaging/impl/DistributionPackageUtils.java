@@ -187,10 +187,11 @@ public class DistributionPackageUtils {
     }
 
 
-    public static void fillInfo(DistributionPackageInfo info, DistributionRequest request) {
+    public static void fillInfo(DistributionPackageInfo info, DistributionRequest request, boolean includeHeader) {
         info.put(DistributionPackageInfo.PROPERTY_REQUEST_TYPE, request.getRequestType());
         info.put(DistributionPackageInfo.PROPERTY_REQUEST_PATHS, request.getPaths());
         info.put(DistributionPackageInfo.PROPERTY_REQUEST_DEEP_PATHS, getDeepPaths(request));
+        info.put(DistributionPackageInfo.PROPERTY_HEADER_REQUIRED, includeHeader);
     }
 
     private static String[] getDeepPaths(DistributionRequest request) {
@@ -205,23 +206,28 @@ public class DistributionPackageUtils {
     }
 
     public static InputStream createStreamWithHeader(DistributionPackage distributionPackage) throws IOException {
-
         DistributionPackageInfo packageInfo = distributionPackage.getInfo();
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        Map<String, Object> headerInfo = new HashMap<String, Object>();
-        headerInfo.put(DistributionPackageInfo.PROPERTY_REQUEST_TYPE, packageInfo.getRequestType());
-        headerInfo.put(DistributionPackageInfo.PROPERTY_REQUEST_PATHS, packageInfo.getPaths());
-        headerInfo.put(DistributionPackageInfo.PROPERTY_REMOTE_PACKAGE_ID, distributionPackage.getId());
-        if (packageInfo.containsKey(DistributionPackageInfo.PROPERTY_REFERENCE_REQUIRED)) {
-            Object refRequired = packageInfo.get(DistributionPackageInfo.PROPERTY_REFERENCE_REQUIRED);
-            headerInfo.put(DistributionPackageInfo.PROPERTY_REFERENCE_REQUIRED, refRequired);
-            log.info("setting reference-required to {}", refRequired);
-        }
-        writeInfo(outputStream, headerInfo);
+        if (packageInfo.get(DistributionPackageInfo.PROPERTY_HEADER_REQUIRED, Boolean.TRUE)) {
+            log.debug("creating input stream of {} with header", distributionPackage);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            Map<String, Object> headerInfo = new HashMap<String, Object>();
+            headerInfo.put(DistributionPackageInfo.PROPERTY_REQUEST_TYPE, packageInfo.getRequestType());
+            headerInfo.put(DistributionPackageInfo.PROPERTY_REQUEST_PATHS, packageInfo.getPaths());
+            headerInfo.put(DistributionPackageInfo.PROPERTY_REMOTE_PACKAGE_ID, distributionPackage.getId());
+            if (packageInfo.containsKey(DistributionPackageInfo.PROPERTY_REFERENCE_REQUIRED)) {
+                Object refRequired = packageInfo.get(DistributionPackageInfo.PROPERTY_REFERENCE_REQUIRED);
+                headerInfo.put(DistributionPackageInfo.PROPERTY_REFERENCE_REQUIRED, refRequired);
+                log.info("setting reference-required to {}", refRequired);
+            }
+            writeInfo(outputStream, headerInfo);
 
-        InputStream headerStream = new ByteArrayInputStream(outputStream.toByteArray());
-        InputStream bodyStream = distributionPackage.createInputStream();
-        return new SequenceInputStream(headerStream, bodyStream);
+            InputStream headerStream = new ByteArrayInputStream(outputStream.toByteArray());
+            InputStream bodyStream = distributionPackage.createInputStream();
+            return new SequenceInputStream(headerStream, bodyStream);
+        } else {
+            log.debug("creating input stream of {} without header", distributionPackage);
+            return distributionPackage.createInputStream();
+        }
     }
 
     public static void readInfo(InputStream inputStream, Map<String, Object> info) {

@@ -52,11 +52,13 @@ public abstract class AbstractDistributionPackageBuilder implements Distribution
     private final String type;
     private final String contentType;
     private final boolean serializerSupportsDeletion;
+    private final boolean includeHeader;
 
-    AbstractDistributionPackageBuilder(String type, String contentType, boolean serializerSupportsDeletion) {
+    AbstractDistributionPackageBuilder(String type, String contentType, boolean serializerSupportsDeletion, boolean includeHeader) {
         this.type = type;
         this.contentType = contentType;
         this.serializerSupportsDeletion = serializerSupportsDeletion;
+        this.includeHeader = includeHeader;
     }
 
     public String getType() {
@@ -90,7 +92,7 @@ public abstract class AbstractDistributionPackageBuilder implements Distribution
             throw new DistributionException("unknown action type " + request.getRequestType());
         }
 
-        DistributionPackageUtils.fillInfo(distributionPackage.getInfo(), request);
+        DistributionPackageUtils.fillInfo(distributionPackage.getInfo(), request, includeHeader);
 
         return distributionPackage;
     }

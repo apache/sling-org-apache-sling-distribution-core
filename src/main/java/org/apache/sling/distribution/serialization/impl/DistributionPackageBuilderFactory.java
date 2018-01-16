@@ -88,6 +88,14 @@ public class DistributionPackageBuilderFactory implements DistributionPackageBui
             value = "resource", label = "type", description = "The persistence type used by this package builder")
     private static final String PERSISTENCE = DistributionComponentConstants.PN_TYPE;
 
+    /**
+     * include header
+     */
+    public static final boolean INCLUDE_HEADER_DEFAULT = true;
+    @Property(boolValue = INCLUDE_HEADER_DEFAULT, label="Include package header", description = "Whether or not to prepend the package's info as header to the package.")
+    public static final String INCLUDE_HEADER = "include-header";
+
+
     @Property(name = "format.target", label = "Content Serializer", description = "The target reference for the DistributionSerializationFormat used to (de)serialize packages, " +
             "e.g. use target=(name=...) to bind to services by name.", value = SettingsUtils.COMPONENT_NAME_DEFAULT)
     @Reference(name = "format")
@@ -203,16 +211,17 @@ public class DistributionPackageBuilderFactory implements DistributionPackageBui
         if (DEFAULT_DIGEST_ALGORITHM.equals(digestAlgorithm)) {
             digestAlgorithm = null;
         }
+        boolean includeHeader = PropertiesUtil.toBoolean(config.get(INCLUDE_HEADER), INCLUDE_HEADER_DEFAULT);
 
         DistributionPackageBuilder wrapped;
         if ("file".equals(persistenceType)) {
-            wrapped = new FileDistributionPackageBuilder(contentSerializer.getName(), contentSerializer, tempFsFolder, digestAlgorithm, nodeFilters, propertyFilters);
+            wrapped = new FileDistributionPackageBuilder(contentSerializer.getName(), contentSerializer, tempFsFolder, digestAlgorithm, nodeFilters, propertyFilters, includeHeader);
         } else {
             final int fileThreshold = PropertiesUtil.toInteger(config.get(FILE_THRESHOLD), DEFAULT_FILE_THRESHOLD_VALUE);
             String memoryUnitName = PropertiesUtil.toString(config.get(MEMORY_UNIT), DEFAULT_MEMORY_UNIT);
             final MemoryUnit memoryUnit = MemoryUnit.valueOf(memoryUnitName);
             final boolean useOffHeapMemory = PropertiesUtil.toBoolean(config.get(USE_OFF_HEAP_MEMORY), DEFAULT_USE_OFF_HEAP_MEMORY);
-            ResourceDistributionPackageBuilder resourceDistributionPackageBuilder = new ResourceDistributionPackageBuilder(contentSerializer.getName(), contentSerializer, tempFsFolder, fileThreshold, memoryUnit, useOffHeapMemory, digestAlgorithm, nodeFilters, propertyFilters);
+            ResourceDistributionPackageBuilder resourceDistributionPackageBuilder = new ResourceDistributionPackageBuilder(contentSerializer.getName(), contentSerializer, tempFsFolder, fileThreshold, memoryUnit, useOffHeapMemory, digestAlgorithm, nodeFilters, propertyFilters, includeHeader);
             Runnable cleanup = new ResourceDistributionPackageCleanup(resolverFactory, resourceDistributionPackageBuilder);
             Dictionary<String, Object> props = new Hashtable<String, Object>();
             props.put(Scheduler.PROPERTY_SCHEDULER_CONCURRENT, false);

@@ -85,7 +85,7 @@ public class LocalDistributionPackageImporterTest {
         );
 
         DistributionPackageBuilder builder =
-                new FileDistributionPackageBuilder(DistributionRequestType.ADD.name(), vaultSerializer, null, null, null, null);
+                new FileDistributionPackageBuilder(DistributionRequestType.ADD.name(), vaultSerializer, null, null, null, null, true);
 
         ResourceResolver resourceResolver = slingContext.resourceResolver();
 

@@ -257,13 +257,13 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
 
         DistributionPackageBuilder wrapped;
         if ("filevlt".equals(type)) {
-            wrapped = new FileDistributionPackageBuilder(name, contentSerializer, tempFsFolder, digestAlgorithm, packageNodeFilters, packagePropertyFilters);
+            wrapped = new FileDistributionPackageBuilder(name, contentSerializer, tempFsFolder, digestAlgorithm, packageNodeFilters, packagePropertyFilters, true);
         } else {
             final int fileThreshold = PropertiesUtil.toInteger(config.get(FILE_THRESHOLD), DEFAULT_FILE_THRESHOLD_VALUE);
             String memoryUnitName = PropertiesUtil.toString(config.get(MEMORY_UNIT), DEFAULT_MEMORY_UNIT);
             final MemoryUnit memoryUnit = MemoryUnit.valueOf(memoryUnitName);
             final boolean useOffHeapMemory = PropertiesUtil.toBoolean(config.get(USE_OFF_HEAP_MEMORY), DEFAULT_USE_OFF_HEAP_MEMORY);
-            ResourceDistributionPackageBuilder resourceDistributionPackageBuilder = new ResourceDistributionPackageBuilder(contentSerializer.getName(), contentSerializer, tempFsFolder, fileThreshold, memoryUnit, useOffHeapMemory, digestAlgorithm, packageNodeFilters, packagePropertyFilters);
+            ResourceDistributionPackageBuilder resourceDistributionPackageBuilder = new ResourceDistributionPackageBuilder(contentSerializer.getName(), contentSerializer, tempFsFolder, fileThreshold, memoryUnit, useOffHeapMemory, digestAlgorithm, packageNodeFilters, packagePropertyFilters, true);
             Runnable cleanup = new ResourceDistributionPackageCleanup(resolverFactory, resourceDistributionPackageBuilder);
             Dictionary<String, Object> props = new Hashtable<String, Object>();
             props.put(Scheduler.PROPERTY_SCHEDULER_CONCURRENT, false);

@@ -39,7 +39,7 @@ public class FileDistributionPackageBuilderTest {
     @Test
     public void testDefaultTempDirectory() throws DistributionException, IOException {
         FileDistributionPackageBuilder builder = new FileDistributionPackageBuilder("test", new TestSerializer(), null, null, new String[0],
-                new String[0]);
+                new String[0], true);
         DistributionPackage createdPackage = builder.createPackageForAdd(mock(ResourceResolver.class), mock(DistributionRequest.class));
 
         try {
