@@ -19,11 +19,14 @@
 package org.apache.sling.distribution.monitor;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.sling.distribution.agent.DistributionAgent;
-import org.apache.sling.distribution.queue.DistributionQueue;
+import org.apache.sling.distribution.queue.DistributionQueueItemState;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
@@ -78,9 +81,8 @@ public class DistributionQueueHealthCheckTest {
 
         distributionQueueHealthCheck.activate(Collections.<String, Object>emptyMap());
         DistributionQueue queue = mock(DistributionQueue.class);
-        DistributionQueueItem item = mock(DistributionQueueItem.class);
-        DistributionQueueItemStatus status = mock(DistributionQueueItemStatus.class);
-        when(status.getAttempts()).thenReturn(1);
+        DistributionQueueItem item = new DistributionQueueItem("packageId", new HashMap<String, Object>());
+        DistributionQueueItemStatus status = new DistributionQueueItemStatus(Calendar.getInstance(), DistributionQueueItemState.QUEUED, 1, "queueName");
         when(queue.getItem(any(String.class))).thenReturn(new DistributionQueueEntry(null, item, status));
         when(queue.getHead()).thenReturn(new DistributionQueueEntry(null, item, status));
         DistributionAgent distributionAgent = mock(DistributionAgent.class);
@@ -103,9 +105,8 @@ public class DistributionQueueHealthCheckTest {
 
         distributionQueueHealthCheck.activate(Collections.<String, Object>emptyMap());
         DistributionQueue queue = mock(DistributionQueue.class);
-        DistributionQueueItem item = mock(DistributionQueueItem.class);
-        DistributionQueueItemStatus status = mock(DistributionQueueItemStatus.class);
-        when(status.getAttempts()).thenReturn(10);
+        DistributionQueueItem item = new DistributionQueueItem("packageId", new HashMap<String, Object>());
+        DistributionQueueItemStatus status = new DistributionQueueItemStatus(Calendar.getInstance(), DistributionQueueItemState.QUEUED, 10, "queueName");
         when(queue.getItem(any(String.class))).thenReturn(new DistributionQueueEntry(null, item, status));
         when(queue.getHead()).thenReturn(new DistributionQueueEntry(null, item, status));
         DistributionAgent distributionAgent = mock(DistributionAgent.class);

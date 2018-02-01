@@ -19,6 +19,10 @@
 
 package org.apache.sling.distribution.queue;
 
+import javax.annotation.Nonnull;
+
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
+
 /**
  * The status of a certain {@link DistributionQueue}
  */
@@ -27,7 +31,7 @@ public final class DistributionQueueStatus {
 
     private final DistributionQueueState queueState;
 
-    public DistributionQueueStatus(int itemsCount, DistributionQueueState queueState) {
+    public DistributionQueueStatus(int itemsCount, @Nonnull DistributionQueueState queueState) {
         this.itemsCount = itemsCount;
         this.queueState = queueState;
     }

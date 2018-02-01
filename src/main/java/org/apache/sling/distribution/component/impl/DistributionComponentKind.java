@@ -50,7 +50,7 @@ import org.apache.sling.distribution.packaging.impl.exporter.LocalDistributionPa
 import org.apache.sling.distribution.packaging.impl.exporter.RemoteDistributionPackageExporterFactory;
 import org.apache.sling.distribution.packaging.impl.importer.LocalDistributionPackageImporterFactory;
 import org.apache.sling.distribution.packaging.impl.importer.RemoteDistributionPackageImporterFactory;
-import org.apache.sling.distribution.queue.DistributionQueueProvider;
+import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
 import org.apache.sling.distribution.queue.impl.DistributionQueueDispatchingStrategy;
 import org.apache.sling.distribution.serialization.impl.vlt.VaultDistributionPackageBuilderFactory;
 import org.apache.sling.distribution.transport.DistributionTransportSecretProvider;

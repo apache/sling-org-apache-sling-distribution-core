@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.sling.distribution.queue.DistributionQueue;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
@@ -39,7 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * a {@link org.apache.sling.distribution.queue.DistributionQueue} based on Sling Job Handling facilities
+ * a {@link DistributionQueue} based on Sling Job Handling facilities
  */
 public class JobHandlingDistributionQueue implements DistributionQueue {
 

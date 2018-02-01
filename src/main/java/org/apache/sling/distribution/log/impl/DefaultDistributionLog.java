@@ -27,7 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.sling.distribution.component.impl.DistributionComponentKind;
-import org.apache.sling.distribution.log.DistributionLog;
+import org.apache.sling.distribution.log.spi.DistributionLog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.FormattingTuple;

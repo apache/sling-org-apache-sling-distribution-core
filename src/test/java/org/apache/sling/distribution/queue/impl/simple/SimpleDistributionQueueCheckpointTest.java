@@ -28,7 +28,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.sling.distribution.queue.DistributionQueue;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueItemState;

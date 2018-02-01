@@ -20,6 +20,8 @@ package org.apache.sling.distribution.queue;
 
 import javax.annotation.Nonnull;
 
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
+
 /**
  * an entry in a {@link DistributionQueue}
  */

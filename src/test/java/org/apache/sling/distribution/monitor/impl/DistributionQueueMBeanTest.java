@@ -33,7 +33,7 @@ import static org.mockito.Mockito.when;
 import java.util.Calendar;
 import java.util.HashMap;
 
-import org.apache.sling.distribution.queue.DistributionQueue;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueItemStatus;

@@ -18,6 +18,8 @@
  */
 package org.apache.sling.distribution.queue;
 
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
+
 /**
  * the type of {@link DistributionQueue}
  */

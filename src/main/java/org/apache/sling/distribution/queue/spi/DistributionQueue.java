@@ -16,13 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.sling.distribution.queue;
+package org.apache.sling.distribution.queue.spi;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
-import aQute.bnd.annotation.ProviderType;
+import aQute.bnd.annotation.ConsumerType;
 import org.apache.sling.distribution.packaging.DistributionPackage;
+import org.apache.sling.distribution.queue.DistributionQueueEntry;
+import org.apache.sling.distribution.queue.DistributionQueueItem;
+import org.apache.sling.distribution.queue.DistributionQueueStatus;
+import org.apache.sling.distribution.queue.DistributionQueueType;
+import org.apache.sling.distribution.queue.impl.DistributionQueueProcessor;
 
 /**
  * A queue is responsible for collecting the {@link DistributionPackage}s
@@ -32,9 +37,9 @@ import org.apache.sling.distribution.packaging.DistributionPackage;
  * on that same agent.
  * <p/>
  * The items (packages) in the queue can then get processed according to a FIFO
- * strategy or in parallel, or some other way, via {@link org.apache.sling.distribution.queue.DistributionQueueProcessor}s.
+ * strategy or in parallel, or some other way, via {@link DistributionQueueProcessor}s.
  */
-@ProviderType
+@ConsumerType
 public interface DistributionQueue {
 
     /**
@@ -52,6 +57,7 @@ public interface DistributionQueue {
      *             to distribute
      * @return the queue entry created for this item or {@code noll} if none is created
      */
+    @CheckForNull
     DistributionQueueEntry add(@Nonnull DistributionQueueItem item);
 
     /**
@@ -103,5 +109,6 @@ public interface DistributionQueue {
      * get the type of this queue
      * @return the type
      */
+    @Nonnull
     DistributionQueueType getType();
 }

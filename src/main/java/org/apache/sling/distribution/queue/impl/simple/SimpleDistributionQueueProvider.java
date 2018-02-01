@@ -33,17 +33,17 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.sling.commons.scheduler.ScheduleOptions;
 import org.apache.sling.commons.scheduler.Scheduler;
-import org.apache.sling.distribution.queue.DistributionQueue;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
-import org.apache.sling.distribution.queue.DistributionQueueProcessor;
-import org.apache.sling.distribution.queue.DistributionQueueProvider;
+import org.apache.sling.distribution.queue.impl.DistributionQueueProcessor;
+import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
 import org.apache.sling.distribution.queue.DistributionQueueType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * a queue provider {@link org.apache.sling.distribution.queue.DistributionQueueProvider} for simple in memory
- * {@link org.apache.sling.distribution.queue.DistributionQueue}s
+ * a queue provider {@link DistributionQueueProvider} for simple in memory
+ * {@link DistributionQueue}s
  */
 public class SimpleDistributionQueueProvider implements DistributionQueueProvider {
 

@@ -16,12 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.sling.distribution.queue;
+package org.apache.sling.distribution.queue.impl;
 
 import javax.annotation.Nonnull;
 
 import aQute.bnd.annotation.ProviderType;
 import org.apache.sling.distribution.common.DistributionException;
+import org.apache.sling.distribution.queue.DistributionQueueType;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 
 /**
  * A provider for {@link DistributionQueue}s
@@ -44,6 +46,7 @@ public interface DistributionQueueProvider {
      * @param type the type of the queue
      * @return a {@link DistributionQueue}
      */
+    @Nonnull
     DistributionQueue getQueue(@Nonnull String queueName, @Nonnull DistributionQueueType type);
 
     /**

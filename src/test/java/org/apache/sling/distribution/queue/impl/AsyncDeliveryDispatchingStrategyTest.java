@@ -25,6 +25,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,11 +34,11 @@ import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.apache.sling.distribution.packaging.impl.SharedDistributionPackage;
-import org.apache.sling.distribution.queue.DistributionQueue;
+import org.apache.sling.distribution.queue.DistributionQueueItemState;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
-import org.apache.sling.distribution.queue.DistributionQueueProvider;
 import org.apache.sling.distribution.queue.DistributionQueueState;
 import org.apache.sling.distribution.queue.DistributionQueueStatus;
 import org.junit.Test;
@@ -76,7 +77,7 @@ public class AsyncDeliveryDispatchingStrategyTest {
         // setup queues
         DistributionQueueProvider queueProvider = mock(DistributionQueueProvider.class);
         DistributionQueue dq1 = mock(DistributionQueue.class);
-        DistributionQueueItemStatus status = mock(DistributionQueueItemStatus.class);
+        DistributionQueueItemStatus status = new DistributionQueueItemStatus(Calendar.getInstance(), DistributionQueueItemState.QUEUED, 0, "queueName");
         DistributionQueueEntry entry = new DistributionQueueEntry("1242112", new DistributionQueueItem(distributionPackage.getId(),
                 new HashMap<String, Object>()), status);
         when(dq1.add(any(DistributionQueueItem.class))).thenReturn(entry);

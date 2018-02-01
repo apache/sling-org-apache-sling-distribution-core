@@ -29,9 +29,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.sling.distribution.common.DistributionException;
-import org.apache.sling.distribution.queue.DistributionQueue;
-import org.apache.sling.distribution.queue.DistributionQueueProcessor;
-import org.apache.sling.distribution.queue.DistributionQueueProvider;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
+import org.apache.sling.distribution.queue.impl.DistributionQueueProcessor;
+import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
 import org.apache.sling.distribution.queue.DistributionQueueType;
 import org.apache.sling.distribution.queue.impl.CachingDistributionQueue;
 import org.apache.sling.event.impl.jobs.config.ConfigurationConstants;
@@ -46,8 +46,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * a queue provider {@link org.apache.sling.distribution.queue.DistributionQueueProvider} for sling jobs based
- * {@link org.apache.sling.distribution.queue.DistributionQueue}s
+ * a queue provider {@link DistributionQueueProvider} for sling jobs based
+ * {@link DistributionQueue}s
  */
 public class JobHandlingDistributionQueueProvider implements DistributionQueueProvider {
 

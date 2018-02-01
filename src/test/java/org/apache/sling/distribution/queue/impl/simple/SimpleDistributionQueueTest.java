@@ -18,7 +18,9 @@
  */
 package org.apache.sling.distribution.queue.impl.simple;
 
-import org.apache.sling.distribution.queue.DistributionQueue;
+import java.util.HashMap;
+
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
@@ -40,7 +42,7 @@ public class SimpleDistributionQueueTest {
     @Test
     public void testPackageAddition() throws Exception {
         DistributionQueue queue = new SimpleDistributionQueue("agentName", "default");
-        DistributionQueueItem pkg = mock(DistributionQueueItem.class);
+        DistributionQueueItem pkg = new DistributionQueueItem("packageId", new HashMap<String, Object>());
         assertNotNull(queue.add(pkg));
         assertFalse(queue.getStatus().isEmpty());
     }
@@ -48,8 +50,7 @@ public class SimpleDistributionQueueTest {
     @Test
     public void testPackageAdditionAndRemoval() throws Exception {
         DistributionQueue queue = new SimpleDistributionQueue("agentName", "default");
-        DistributionQueueItem pkg = mock(DistributionQueueItem.class);
-        when(pkg.getPackageId()).thenReturn("id");
+        DistributionQueueItem pkg = new DistributionQueueItem("id", new HashMap<String, Object>());
         assertNotNull(queue.add(pkg));
         assertFalse(queue.getStatus().isEmpty());
         assertNotNull(queue.remove(pkg.getPackageId()));
@@ -61,8 +62,7 @@ public class SimpleDistributionQueueTest {
     @Test
     public void testPackageAdditionRetrievalAndRemoval() throws Exception {
         DistributionQueue queue = new SimpleDistributionQueue("agentName", "default");
-        DistributionQueueItem pkg = mock(DistributionQueueItem.class);
-        when(pkg.getPackageId()).thenReturn("id");
+        DistributionQueueItem pkg = new DistributionQueueItem("id", new HashMap<String, Object>());
         assertNotNull(queue.add(pkg));
         assertFalse(queue.getStatus().isEmpty());
         assertEquals(pkg, queue.getHead().getItem());

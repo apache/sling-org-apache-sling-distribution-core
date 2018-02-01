@@ -18,7 +18,7 @@
  */
 package org.apache.sling.distribution.queue.impl;
 
-import org.apache.sling.distribution.queue.DistributionQueue;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueStatus;

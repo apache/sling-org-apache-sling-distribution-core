@@ -18,7 +18,7 @@
  */
 
 @Version("0.0.0")
-package org.apache.sling.distribution.queue;
+package org.apache.sling.distribution.queue.spi;
 
 import aQute.bnd.annotation.Version;
 

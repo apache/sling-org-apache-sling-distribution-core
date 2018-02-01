@@ -19,12 +19,13 @@
 package org.apache.sling.distribution.queue.impl.simple;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 
-import org.apache.sling.distribution.queue.DistributionQueue;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
-import org.apache.sling.distribution.queue.DistributionQueueProcessor;
+import org.apache.sling.distribution.queue.impl.DistributionQueueProcessor;
 import org.junit.Test;
 
 import static org.mockito.Mockito.mock;
@@ -63,7 +64,7 @@ public class SimpleDistributionQueueProcessorTest {
         SimpleDistributionQueueProvider queueProvider = mock(SimpleDistributionQueueProvider.class);
         Collection<SimpleDistributionQueue> queues = new LinkedList<SimpleDistributionQueue>();
         SimpleDistributionQueue queue = mock(SimpleDistributionQueue.class);
-        DistributionQueueItem item = mock(DistributionQueueItem.class);
+        DistributionQueueItem item = new DistributionQueueItem("packageId", new HashMap<String, Object>());
         when(queue.getHead()).thenReturn(new DistributionQueueEntry(null, item, null)).thenReturn(null);
 
         queues.add(queue);

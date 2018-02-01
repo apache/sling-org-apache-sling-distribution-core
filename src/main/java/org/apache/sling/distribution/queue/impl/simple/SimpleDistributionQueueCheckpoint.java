@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.sling.distribution.queue.DistributionQueue;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.slf4j.Logger;

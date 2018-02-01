@@ -25,13 +25,13 @@ import aQute.bnd.annotation.ConsumerType;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
-import org.apache.sling.distribution.queue.DistributionQueueProvider;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 
 /**
  * a {@link DistributionQueueDispatchingStrategy} implements an algorithm for dispatching
  * {@link DistributionPackage}s among the available queues.
  * <p/>
- * Usually a {@link DistributionPackage} will be dispatched to a single {@link org.apache.sling.distribution.queue.DistributionQueue}
+ * Usually a {@link DistributionPackage} will be dispatched to a single {@link DistributionQueue}
  * but it would also be possible to dispatch the same package to multiple queues, resulting in obtaining multiple states
  * (one for each queue) for a certain package.
  */
@@ -41,12 +41,12 @@ public interface DistributionQueueDispatchingStrategy {
 
     /**
      * synchronously distribute a {@link DistributionPackage}
-     * to one or more {@link org.apache.sling.distribution.queue.DistributionQueue}s provided by the given {@link org.apache.sling.distribution.queue.DistributionQueueProvider}
+     * to one or more {@link DistributionQueue}s provided by the given {@link DistributionQueueProvider}
      *
      * @param distributionPackage a {@link DistributionPackage} to distribute
-     * @param queueProvider       the {@link org.apache.sling.distribution.queue.DistributionQueueProvider} used to provide the queues to be used for the given package
+     * @param queueProvider       the {@link DistributionQueueProvider} used to provide the queues to be used for the given package
      * @return an {@link java.lang.Iterable} of {@link org.apache.sling.distribution.queue.DistributionQueueItemStatus}s representing
-     * the states of the {@link org.apache.sling.distribution.queue.DistributionQueueItem}s added to one or more {@link org.apache.sling.distribution.queue.DistributionQueue}s
+     * the states of the {@link org.apache.sling.distribution.queue.DistributionQueueItem}s added to one or more {@link DistributionQueue}s
      * @throws DistributionException if any internal error happens during distribution
      */
     Iterable<DistributionQueueItemStatus> add(@Nonnull DistributionPackage distributionPackage, @Nonnull DistributionQueueProvider queueProvider) throws DistributionException;

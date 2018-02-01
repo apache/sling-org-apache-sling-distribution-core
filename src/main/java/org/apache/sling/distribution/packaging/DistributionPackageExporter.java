@@ -25,12 +25,13 @@ import aQute.bnd.annotation.ConsumerType;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.common.DistributionException;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 
 /**
  * A {@link DistributionPackageExporter) is responsible of exporting {@link DistributionPackage}s from a local or remote
  * Sling instance.
  * Such packages are usually imported by a {@link DistributionPackageImporter} or put inside
- * {@link org.apache.sling.distribution.queue.DistributionQueue}s for others to consume them.
+ * {@link DistributionQueue }s for others to consume them.
  * Exporting a {@link DistributionPackage} means obtaining that package by e.g. directly creating it by bundling local
  * Sling resources, retrieving it from a remote endpoint (by executing an HTTP POST request on another Sling
  * instance exposing packages ina queue).

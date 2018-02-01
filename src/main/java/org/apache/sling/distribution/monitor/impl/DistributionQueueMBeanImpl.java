@@ -20,7 +20,7 @@ package org.apache.sling.distribution.monitor.impl;
 
 import java.util.Calendar;
 
-import org.apache.sling.distribution.queue.DistributionQueue;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 
 /**
  * Default implementation of {@link DistributionQueueMBean}

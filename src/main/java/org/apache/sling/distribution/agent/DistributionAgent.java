@@ -26,8 +26,8 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.DistributionResponse;
 import org.apache.sling.distribution.common.DistributionException;
-import org.apache.sling.distribution.log.DistributionLog;
-import org.apache.sling.distribution.queue.DistributionQueue;
+import org.apache.sling.distribution.log.spi.DistributionLog;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 
 /**
  * A distribution agent is responsible for handling {@link org.apache.sling.distribution.DistributionRequest}s.
@@ -51,7 +51,7 @@ public interface DistributionAgent {
      * Get the agent queue with the given name
      *
      * @param name a queue name
-     * @return a {@link org.apache.sling.distribution.queue.DistributionQueue} with the given name bound to this agent, if it exists,
+     * @return a {@link DistributionQueue} with the given name bound to this agent, if it exists,
      * {@code null} otherwise
      */
     @CheckForNull

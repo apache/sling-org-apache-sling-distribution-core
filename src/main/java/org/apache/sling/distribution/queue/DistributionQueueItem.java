@@ -24,6 +24,7 @@ import java.util.Map;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.wrappers.ValueMapDecorator;
 import org.apache.sling.distribution.packaging.DistributionPackage;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 
 /**
  * An item in a {@link DistributionQueue}
@@ -31,7 +32,7 @@ import org.apache.sling.distribution.packaging.DistributionPackage;
  * to keep the package {@link DistributionPackage#createInputStream() stream} into
  * the queues.
  */
-public class DistributionQueueItem extends ValueMapDecorator implements ValueMap {
+public final class DistributionQueueItem extends ValueMapDecorator implements ValueMap {
 
     private final String packageId;
     private final long size;

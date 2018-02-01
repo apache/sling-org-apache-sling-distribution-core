@@ -20,10 +20,12 @@ package org.apache.sling.distribution.queue;
 
 import java.util.Calendar;
 
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
+
 /**
  * the current status of a certain item in a {@link DistributionQueue}
  */
-public class DistributionQueueItemStatus {
+public final class DistributionQueueItemStatus {
 
     private final int attempts;
 

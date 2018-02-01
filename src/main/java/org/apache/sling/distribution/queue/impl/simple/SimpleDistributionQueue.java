@@ -28,7 +28,7 @@ import java.util.Queue;
 import java.util.WeakHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.apache.sling.distribution.queue.DistributionQueue;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueItemState;
@@ -41,7 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A simple implementation of a {@link org.apache.sling.distribution.queue.DistributionQueue}.
+ * A simple implementation of a {@link DistributionQueue}.
  * <p/>
  * Note that, at the moment, this is a transient in memory queue not persisted on the repository and
  * therefore not usable for production.
