@@ -16,11 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.sling.distribution.packaging;
+package org.apache.sling.distribution.packaging.impl;
 
 import javax.annotation.CheckForNull;
 
 import aQute.bnd.annotation.ProviderType;
+import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
 
 /**
  * A helper interface to allow finding registered {@link DistributionPackageBuilder}s

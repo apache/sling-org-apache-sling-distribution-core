@@ -22,7 +22,7 @@ import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.distribution.DistributionRequestType;
 import org.apache.sling.distribution.log.impl.DefaultDistributionLog;
 import org.apache.sling.distribution.packaging.DistributionPackage;
-import org.apache.sling.distribution.packaging.DistributionPackageImporter;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.apache.sling.jcr.api.SlingRepository;
 import org.junit.Test;

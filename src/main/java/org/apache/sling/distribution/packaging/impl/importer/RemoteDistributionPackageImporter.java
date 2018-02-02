@@ -28,13 +28,13 @@ import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.log.impl.DefaultDistributionLog;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
 import org.apache.sling.distribution.packaging.DistributionPackage;
-import org.apache.sling.distribution.packaging.DistributionPackageImporter;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.apache.sling.distribution.transport.DistributionTransportSecretProvider;
 import org.apache.sling.distribution.transport.impl.*;
 
 /**
- * Remote implementation of {@link org.apache.sling.distribution.packaging.DistributionPackageImporter}
+ * Remote implementation of {@link DistributionPackageImporter}
  */
 public class RemoteDistributionPackageImporter implements DistributionPackageImporter {
 

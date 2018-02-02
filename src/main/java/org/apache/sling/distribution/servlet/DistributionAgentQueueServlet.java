@@ -38,7 +38,7 @@ import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.resources.DistributionResourceTypes;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
-import org.apache.sling.distribution.packaging.DistributionPackageBuilderProvider;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageBuilderProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

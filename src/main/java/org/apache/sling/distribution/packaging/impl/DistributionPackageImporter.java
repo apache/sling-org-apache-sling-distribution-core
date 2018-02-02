@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.sling.distribution.packaging;
+package org.apache.sling.distribution.packaging.impl;
 
 import javax.annotation.Nonnull;
 import java.io.InputStream;
@@ -24,6 +24,8 @@ import java.io.InputStream;
 import aQute.bnd.annotation.ConsumerType;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.common.DistributionException;
+import org.apache.sling.distribution.packaging.DistributionPackage;
+import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 
 /**
  * A {@link DistributionPackageImporter} is responsible for importing {@link DistributionPackage}s into either a local

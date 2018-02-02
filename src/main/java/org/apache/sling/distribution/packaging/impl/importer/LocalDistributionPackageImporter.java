@@ -32,7 +32,7 @@ import org.apache.sling.distribution.event.DistributionEventTopics;
 import org.apache.sling.distribution.event.impl.DistributionEventFactory;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
-import org.apache.sling.distribution.packaging.DistributionPackageImporter;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
 import org.apache.sling.distribution.packaging.impl.ReferencePackage;
@@ -40,7 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link org.apache.sling.distribution.packaging.DistributionPackageImporter} implementation which imports a
+ * {@link DistributionPackageImporter} implementation which imports a
  * {@link DistributionPackage} locally.
  */
 public class LocalDistributionPackageImporter implements DistributionPackageImporter {

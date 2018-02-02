@@ -17,26 +17,8 @@
  * under the License.
  */
 
+@Version("0.0.0")
 package org.apache.sling.distribution.packaging;
 
-import org.apache.sling.distribution.DistributionResponse;
+import aQute.bnd.annotation.Version;
 
-import java.util.List;
-
-/**
- * A callback function used to process packages
- */
-public interface DistributionPackageProcessor {
-
-    /**
-     * process a distribution package
-     * @param distributionPackage the distribution package
-     */
-    void process(DistributionPackage distributionPackage);
-
-    List<DistributionResponse> getAllResponses();
-
-    int getPackagesCount();
-
-    long getPackagesSize();
-}

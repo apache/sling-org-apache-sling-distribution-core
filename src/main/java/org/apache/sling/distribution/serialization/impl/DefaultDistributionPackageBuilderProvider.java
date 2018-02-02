@@ -27,7 +27,7 @@ import org.apache.sling.distribution.component.impl.DistributionComponent;
 import org.apache.sling.distribution.component.impl.DistributionComponentKind;
 import org.apache.sling.distribution.component.impl.DistributionComponentProvider;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
-import org.apache.sling.distribution.packaging.DistributionPackageBuilderProvider;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageBuilderProvider;
 
 @Component
 @Service(DistributionPackageBuilderProvider.class)

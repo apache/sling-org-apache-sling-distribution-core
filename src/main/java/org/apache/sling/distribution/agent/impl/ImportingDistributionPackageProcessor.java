@@ -25,8 +25,8 @@ import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.impl.SimpleDistributionResponse;
 import org.apache.sling.distribution.log.impl.DefaultDistributionLog;
 import org.apache.sling.distribution.packaging.DistributionPackage;
-import org.apache.sling.distribution.packaging.DistributionPackageImporter;
-import org.apache.sling.distribution.packaging.DistributionPackageProcessor;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageProcessor;
 import org.apache.sling.distribution.util.impl.DistributionUtils;
 
 import java.util.LinkedList;

@@ -32,8 +32,8 @@ import org.apache.sling.distribution.monitor.impl.MonitoringDistributionQueuePro
 import org.apache.sling.distribution.monitor.impl.SyncDistributionAgentMBean;
 import org.apache.sling.distribution.monitor.impl.SyncDistributionAgentMBeanImpl;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
-import org.apache.sling.distribution.packaging.DistributionPackageExporter;
-import org.apache.sling.distribution.packaging.DistributionPackageImporter;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageExporter;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
 import org.apache.sling.distribution.packaging.impl.exporter.RemoteDistributionPackageExporter;
 import org.apache.sling.distribution.packaging.impl.importer.RemoteDistributionPackageImporter;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
