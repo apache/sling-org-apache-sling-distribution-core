@@ -16,15 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.sling.distribution.agent;
+package org.apache.sling.distribution.agent.spi;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
-import aQute.bnd.annotation.ProviderType;
+import aQute.bnd.annotation.ConsumerType;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.DistributionResponse;
+import org.apache.sling.distribution.agent.DistributionAgentState;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.log.spi.DistributionLog;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
@@ -36,7 +37,7 @@ import org.apache.sling.distribution.queue.spi.DistributionQueue;
  * specific path(s) which will resume pulling resources from a certain Sling instance and / or pushing resources to
  * other instances.
  */
-@ProviderType
+@ConsumerType
 public interface DistributionAgent {
 
     /**
@@ -77,7 +78,7 @@ public interface DistributionAgent {
      * The content to be sent will be assembled according to the information contained in the request.
      * A {@link org.apache.sling.distribution.DistributionResponse} holding the {@link org.apache.sling.distribution.DistributionRequestState}
      * of the provided request will be returned.
-     * Synchronous {@link org.apache.sling.distribution.agent.DistributionAgent}s will usually block until the execution has finished
+     * Synchronous {@link DistributionAgent}s will usually block until the execution has finished
      * while asynchronous agents will usually return the response as soon as the content to be distributed has been assembled
      * and scheduled for distribution.
      *

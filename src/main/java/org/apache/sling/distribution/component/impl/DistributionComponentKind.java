@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.sling.distribution.agent.DistributionAgent;
+import org.apache.sling.distribution.agent.spi.DistributionAgent;
 import org.apache.sling.distribution.agent.impl.DistributionRequestAuthorizationStrategy;
 import org.apache.sling.distribution.agent.impl.ForwardDistributionAgentFactory;
 import org.apache.sling.distribution.agent.impl.PrivilegeDistributionRequestAuthorizationStrategy;

@@ -74,7 +74,9 @@
                             org.apache.sling.distribution.serialization,
                             org.apache.sling.distribution.queue.spi,
                             org.apache.sling.distribution.queue,
-                            org.apache.sling.distribution.log.spi
+                            org.apache.sling.distribution.log.spi,
+                            org.apache.sling.distribution.agent,
+                            org.apache.sling.distribution.agent.spi
                         </Export-Package>
                         <Import-Package>
                             org.apache.http.nio.*;resolution:=optional,

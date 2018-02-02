@@ -24,7 +24,7 @@ import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.DistributionRequestState;
 import org.apache.sling.distribution.DistributionRequestType;
 import org.apache.sling.distribution.DistributionResponse;
-import org.apache.sling.distribution.agent.DistributionAgent;
+import org.apache.sling.distribution.agent.spi.DistributionAgent;
 import org.apache.sling.distribution.agent.DistributionAgentState;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.component.impl.DistributionComponentKind;
@@ -57,7 +57,7 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Basic implementation of a {@link org.apache.sling.distribution.agent.DistributionAgent}
+ * Basic implementation of a {@link DistributionAgent}
  */
 public class SimpleDistributionAgent implements DistributionAgent {
     private final static String DEFAULT_AGENT_SERVICE = "defaultAgentService";

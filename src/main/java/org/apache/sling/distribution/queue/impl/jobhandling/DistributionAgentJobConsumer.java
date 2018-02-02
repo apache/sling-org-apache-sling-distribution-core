@@ -18,6 +18,7 @@
  */
 package org.apache.sling.distribution.queue.impl.jobhandling;
 
+import org.apache.sling.distribution.agent.spi.DistributionAgent;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProcessor;
 import org.apache.sling.event.jobs.Job;
@@ -26,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link JobConsumer} for {@link org.apache.sling.distribution.agent.DistributionAgent}s using {@link JobHandlingDistributionQueue}
+ * {@link JobConsumer} for {@link DistributionAgent}s using {@link JobHandlingDistributionQueue}
  */
 class DistributionAgentJobConsumer implements JobConsumer {
 

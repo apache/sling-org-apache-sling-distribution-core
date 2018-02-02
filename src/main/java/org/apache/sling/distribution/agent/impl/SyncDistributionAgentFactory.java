@@ -23,7 +23,7 @@ import org.apache.jackrabbit.vault.packaging.Packaging;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.apache.sling.distribution.DistributionRequestType;
-import org.apache.sling.distribution.agent.DistributionAgent;
+import org.apache.sling.distribution.agent.spi.DistributionAgent;
 import org.apache.sling.distribution.component.impl.DistributionComponentConstants;
 import org.apache.sling.distribution.component.impl.SettingsUtils;
 import org.apache.sling.distribution.event.impl.DistributionEventFactory;
@@ -54,7 +54,7 @@ import java.util.*;
 /**
  * An OSGi service factory for "synchronizing agents" that synchronize (pull and push) resources between remote instances.
  *
- * @see {@link org.apache.sling.distribution.agent.DistributionAgent}
+ * @see {@link DistributionAgent}
  */
 @Component(metatype = true,
         label = "Apache Sling Distribution Agent - Sync Agents Factory",

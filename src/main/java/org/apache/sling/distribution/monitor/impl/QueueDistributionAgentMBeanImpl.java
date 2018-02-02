@@ -21,7 +21,7 @@ package org.apache.sling.distribution.monitor.impl;
 import java.util.Map;
 
 import org.apache.sling.commons.osgi.PropertiesUtil;
-import org.apache.sling.distribution.agent.DistributionAgent;
+import org.apache.sling.distribution.agent.spi.DistributionAgent;
 
 /**
  * The QueueDistributionAgent MBean implementation, based on the OSGi configuration.

@@ -33,7 +33,7 @@ import org.apache.jackrabbit.vault.packaging.Packaging;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.apache.sling.distribution.DistributionRequestType;
-import org.apache.sling.distribution.agent.DistributionAgent;
+import org.apache.sling.distribution.agent.spi.DistributionAgent;
 import org.apache.sling.distribution.component.impl.DistributionComponentConstants;
 import org.apache.sling.distribution.component.impl.SettingsUtils;
 import org.apache.sling.distribution.event.impl.DistributionEventFactory;
@@ -59,7 +59,7 @@ import org.osgi.framework.BundleContext;
  * An OSGi service factory for "queuing agents" that queue resources from the local instance (and can be eventually
  * pulled from another remote "reverse agent").
  *
- * @see {@link org.apache.sling.distribution.agent.DistributionAgent}
+ * @see {@link DistributionAgent}
  */
 @Component(metatype = true,
         label = "Apache Sling Distribution Agent - Queue Agents Factory",

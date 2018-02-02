@@ -17,23 +17,8 @@
  * under the License.
  */
 
-package org.apache.sling.distribution.log.spi;
+@Version("0.0.0")
+package org.apache.sling.distribution.agent;
 
-import java.util.Collection;
-import java.util.List;
+import aQute.bnd.annotation.Version;
 
-import aQute.bnd.annotation.ConsumerType;
-
-/**
- * The log of a distribution component activity (e.g. a DistributionAgent)
- */
-@ConsumerType
-public interface DistributionLog {
-
-    /**
-     * get the text log lines
-     *
-     * @return a {@link Collection} of the log lines
-     */
-    List<String> getLines();
-}

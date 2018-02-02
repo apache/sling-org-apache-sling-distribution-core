@@ -22,6 +22,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 import aQute.bnd.annotation.ConsumerType;
+import org.apache.sling.distribution.agent.spi.DistributionAgent;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
@@ -31,7 +32,7 @@ import org.apache.sling.distribution.queue.impl.DistributionQueueProcessor;
 
 /**
  * A queue is responsible for collecting the {@link DistributionPackage}s
- * exported by a {@link org.apache.sling.distribution.agent.DistributionAgent} in
+ * exported by a {@link DistributionAgent} in
  * order to be able to process them also when there are multiple (concurrent)
  * {@link org.apache.sling.distribution.DistributionRequest}s executed
  * on that same agent.
