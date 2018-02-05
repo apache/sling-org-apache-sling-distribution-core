@@ -46,9 +46,12 @@ public class OsgiConfigurationManager implements DistributionConfigurationManage
     private final ConfigurationAdmin configurationAdmin;
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    public OsgiConfigurationManager(ConfigurationAdmin configurationAdmin) {
+    private final DistributionComponentFactoryMap componentFactoryMap;
+
+    public OsgiConfigurationManager(ConfigurationAdmin configurationAdmin, DistributionComponentFactoryMap componentFactoryMap) {
 
         this.configurationAdmin = configurationAdmin;
+        this.componentFactoryMap = componentFactoryMap;
     }
 
 
@@ -95,7 +98,7 @@ public class OsgiConfigurationManager implements DistributionConfigurationManage
             Map<String, Object> result = OsgiUtils.fromDictionary(properties);
 
             String factoryPid = PropertiesUtil.toString(result.get(ConfigurationAdmin.SERVICE_FACTORYPID), null);
-            String type = kind.getType(factoryPid);
+            String type = componentFactoryMap.getType(kind, factoryPid);
 
             result.put(DistributionComponentConstants.PN_TYPE, type);
             result = filterBeforeRead(result);
@@ -115,7 +118,7 @@ public class OsgiConfigurationManager implements DistributionConfigurationManage
             throw new IllegalArgumentException("kind and type are required " + componentKind + componentType);
         }
 
-        String factoryPid = componentKind.getFactory(componentType);
+        String factoryPid = componentFactoryMap.getFactoryPid(componentKind, componentType);
         if (factoryPid != null) {
 
             // SLING-5872 - Management of agent configurations must identify configurations by name
@@ -159,7 +162,7 @@ public class OsgiConfigurationManager implements DistributionConfigurationManage
     }
 
     private List<Configuration> getOsgiConfigurations(DistributionComponentKind kind, String componentName) {
-        List<String> factoryPids = kind.getFactories();
+        List<String> factoryPids = componentFactoryMap.getFactoryPids(kind);
 
         List<Configuration> allConfigurations = new ArrayList<Configuration>();
         for (String factoryPid : factoryPids) {

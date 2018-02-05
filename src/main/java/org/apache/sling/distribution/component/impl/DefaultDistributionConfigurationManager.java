@@ -63,6 +63,9 @@ public class DefaultDistributionConfigurationManager implements DistributionConf
     @Reference
     ConfigurationAdmin configurationAdmin;
 
+    @Reference
+    private DistributionComponentFactoryMap componentFactoryMap;
+
     private DistributionConfigurationManager osgiManager;
     private DistributionConfigurationManager resourceManager;
 
@@ -86,7 +89,7 @@ public class DefaultDistributionConfigurationManager implements DistributionConf
             resourceManager = new ResourceConfigurationManager(configRoot, configProperties, configDefaults);
         }
 
-        osgiManager = new OsgiConfigurationManager(configurationAdmin);
+        osgiManager = new OsgiConfigurationManager(configurationAdmin, componentFactoryMap);
     }
 
     @Deactivate
