@@ -35,6 +35,7 @@ import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.apache.sling.distribution.packaging.impl.FileDistributionPackageBuilder;
+import org.apache.sling.distribution.packaging.impl.InMemoryDistributionPackageBuilder;
 import org.apache.sling.distribution.packaging.impl.ResourceDistributionPackageBuilder;
 import org.apache.sling.distribution.packaging.impl.ResourceDistributionPackageCleanup;
 import org.apache.sling.distribution.serialization.DistributionContentSerializer;
@@ -79,6 +80,9 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
             ),
             @PropertyOption(name = "filevlt",
                     value = "file packages"
+            ),
+            @PropertyOption(name = "inmemory",
+                    value = "in memory packages"
             )},
             value = "jcrvlt", label = "type", description = "The type of this package builder")
     private static final String TYPE = DistributionComponentConstants.PN_TYPE;
@@ -258,6 +262,8 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
         DistributionPackageBuilder wrapped;
         if ("filevlt".equals(type)) {
             wrapped = new FileDistributionPackageBuilder(name, contentSerializer, tempFsFolder, digestAlgorithm, packageNodeFilters, packagePropertyFilters);
+        } else if ("inmemory".equals(type)) {
+            wrapped = new InMemoryDistributionPackageBuilder(name, contentSerializer, packageNodeFilters, packagePropertyFilters);
         } else {
             final int fileThreshold = PropertiesUtil.toInteger(config.get(FILE_THRESHOLD), DEFAULT_FILE_THRESHOLD_VALUE);
             String memoryUnitName = PropertiesUtil.toString(config.get(MEMORY_UNIT), DEFAULT_MEMORY_UNIT);
