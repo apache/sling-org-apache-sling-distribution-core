@@ -92,14 +92,17 @@ public class AgentDistributionPackageExporter implements DistributionPackageExpo
 
                 if (packageBuilder != null) {
                     distributionPackage = packageBuilder.getPackage(resourceResolver, queueItem.getPackageId());
+                    AgentDistributionPackage agentDistributionPackage = new AgentDistributionPackage(distributionPackage, queue, entry.getId());
                     if (distributionPackage != null) {
                         distributionPackage.getInfo().putAll(info);
 
                         log.debug("item {} fetched from the queue", info);
 
-                        packageProcessor.process(new AgentDistributionPackage(distributionPackage, queue, entry.getId()));
+                        packageProcessor.process(agentDistributionPackage);
                     } else {
                         log.warn("cannot get package {}", info);
+                        log.warn("{} seems to be a ghost package, deleting it", entry.getId());
+                        agentDistributionPackage.delete();
                     }
                 } else {
                     log.warn("cannot find package builder with type {}", info.getType());
