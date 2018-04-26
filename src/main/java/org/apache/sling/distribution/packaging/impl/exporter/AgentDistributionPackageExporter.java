@@ -168,8 +168,10 @@ public class AgentDistributionPackageExporter implements DistributionPackageExpo
         @Override
         public void delete() {
             queue.remove(itemId);
-            DistributionPackageUtils.releaseOrDelete(distributionPackage, queue.getName());
-            agentLog("exported package {} with info {} from queue {} by exporter {}", new Object[] {itemId, distributionPackage.getInfo(), queue.getName(), name});
+            if (distributionPackage != null) {
+                DistributionPackageUtils.releaseOrDelete(distributionPackage, queue.getName());
+                agentLog("exported package {} with info {} from queue {} by exporter {}", new Object[] {itemId, distributionPackage.getInfo(), queue.getName(), name});
+            }
         }
 
         @Nonnull
