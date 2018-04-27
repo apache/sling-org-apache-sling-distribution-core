@@ -42,7 +42,7 @@ public class AgentDistributionPackageExporterTest {
     @Test
     public void testTestExport() throws Exception {
         AgentDistributionPackageExporter distributionPackageExporter = new AgentDistributionPackageExporter(null,
-                mock(DistributionAgent.class), mock(DistributionPackageBuilderProvider.class), null);
+                mock(DistributionAgent.class), mock(DistributionPackageBuilderProvider.class), null, true);
         ResourceResolver resourceResolver = mock(ResourceResolver.class);
         String[] args = new String[0]; // vargarg doesn't match and causes compiler warning
         DistributionRequest distributionRequest = new SimpleDistributionRequest(DistributionRequestType.TEST, args);
