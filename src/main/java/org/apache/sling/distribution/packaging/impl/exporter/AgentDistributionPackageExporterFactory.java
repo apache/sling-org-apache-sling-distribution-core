@@ -34,6 +34,7 @@ import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.agent.spi.DistributionAgent;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.component.impl.DistributionComponentConstants;
+import org.apache.sling.distribution.component.impl.SettingsUtils;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageBuilderProvider;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageExporter;
@@ -61,9 +62,13 @@ public class AgentDistributionPackageExporterFactory implements DistributionPack
     @Property(label = "Queue", description = "The name of the queue from which the packages should be exported.")
     private static final String QUEUE_NAME = "queue";
 
+    @Property(label = "Drop invalid queue items", description = "Remove invalid items from the queue.", boolValue = false)
+    private static final String DROP_INVALID_QUEUE_ITEMS = "drop.invalid.items";
+
     @Property(name = "agent.target", label = "The target reference for the DistributionAgent that will be used to export packages.")
     @Reference(name = "agent")
     private DistributionAgent agent;
+
 
     @Reference
     private DistributionPackageBuilderProvider packageBuilderProvider;
@@ -75,10 +80,14 @@ public class AgentDistributionPackageExporterFactory implements DistributionPack
     public void activate(Map<String, Object> config) throws Exception {
 
         String queueName = PropertiesUtil.toString(config.get(QUEUE_NAME), DistributionQueueDispatchingStrategy.DEFAULT_QUEUE_NAME);
+        queueName = SettingsUtils.removeEmptyEntry(queueName);
+        queueName = queueName == null ? DistributionQueueDispatchingStrategy.DEFAULT_QUEUE_NAME : queueName;
+
         String name = PropertiesUtil.toString(config.get(NAME), "");
+        boolean dropInvalidItems = PropertiesUtil.toBoolean(config.get(DROP_INVALID_QUEUE_ITEMS), false);
 
 
-        packageExporter = new AgentDistributionPackageExporter(queueName, agent, packageBuilderProvider, name);
+        packageExporter = new AgentDistributionPackageExporter(queueName, agent, packageBuilderProvider, name, dropInvalidItems);
     }
 
     public void exportPackages(@Nonnull ResourceResolver resourceResolver, @Nonnull DistributionRequest distributionRequest, @Nonnull DistributionPackageProcessor packageProcessor) throws DistributionException {

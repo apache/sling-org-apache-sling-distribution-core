@@ -50,15 +50,17 @@ public class AgentDistributionPackageExporter implements DistributionPackageExpo
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final DistributionPackageBuilderProvider packageBuilderProvider;
     private final String name;
+    private boolean dropInvalidItems;
 
     private final static String PACKAGE_TYPE = "agentexporter";
 
     private DistributionAgent agent;
     private String queueName;
 
-    public AgentDistributionPackageExporter(String queueName, DistributionAgent agent, DistributionPackageBuilderProvider packageBuilderProvider, String name) {
+    public AgentDistributionPackageExporter(String queueName, DistributionAgent agent, DistributionPackageBuilderProvider packageBuilderProvider, String name, boolean dropInvalidItems) {
         this.packageBuilderProvider = packageBuilderProvider;
         this.name = name;
+        this.dropInvalidItems = dropInvalidItems;
 
         if (agent == null || packageBuilderProvider == null) {
             throw new IllegalArgumentException("Agent and package builder are required");
@@ -99,7 +101,12 @@ public class AgentDistributionPackageExporter implements DistributionPackageExpo
 
                         packageProcessor.process(new AgentDistributionPackage(distributionPackage, queue, entry.getId()));
                     } else {
-                        log.warn("cannot get package {}", info);
+                        if (dropInvalidItems) {
+                            queue.remove(entry.getId());
+                            log.warn("ghost package: cannot get package {} dropping from queue", info);
+                        } else {
+                            log.warn("ghost package: cannot get package {} keeping in queue", info);
+                        }
                     }
                 } else {
                     log.warn("cannot find package builder with type {}", info.getType());
