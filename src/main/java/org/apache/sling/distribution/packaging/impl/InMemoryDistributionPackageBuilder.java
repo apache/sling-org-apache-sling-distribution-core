@@ -60,7 +60,7 @@ public class InMemoryDistributionPackageBuilder extends AbstractDistributionPack
                                               @Nonnull DistributionContentSerializer serializer,
                                               @Nullable String[] nodeFilters,
                                               @Nullable String[] propertyFilters) {
-        super(type, serializer.getContentType(), serializer.isDeletionSupported());
+        super(type);
         this.serializer = serializer;
         this.nodeFilters = VltUtils.parseFilters(nodeFilters);
         this.propertyFilters = VltUtils.parseFilters(propertyFilters);

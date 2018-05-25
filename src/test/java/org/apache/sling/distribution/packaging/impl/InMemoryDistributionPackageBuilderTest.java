@@ -71,17 +71,7 @@ public class InMemoryDistributionPackageBuilderTest {
         }
 
         @Override
-        public String getContentType() {
-            return "text/plain";
-        }
-
-        @Override
         public boolean isRequestFiltering() {
-            return false;
-        }
-
-        @Override
-        public boolean isDeletionSupported() {
             return false;
         }
     }
