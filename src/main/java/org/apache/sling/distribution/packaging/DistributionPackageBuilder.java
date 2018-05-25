@@ -40,12 +40,6 @@ public interface DistributionPackageBuilder {
     String getType();
 
     /**
-     * returns the content type of packages created and consumed by the package builder.
-     * @return the content type of the package
-     */
-    String getContentType();
-
-    /**
      * creates a {@link DistributionPackage} for a specific {@link org.apache.sling.distribution.DistributionRequest}
      *
      * @param resourceResolver the resource resolver used to access the resources to be packaged

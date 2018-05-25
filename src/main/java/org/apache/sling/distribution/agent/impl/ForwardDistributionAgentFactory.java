@@ -34,7 +34,6 @@ import org.apache.felix.scr.annotations.PropertyOption;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.ReferenceCardinality;
 import org.apache.felix.scr.annotations.ReferencePolicy;
-import org.apache.http.HttpHeaders;
 import org.apache.jackrabbit.vault.packaging.Packaging;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.commons.osgi.PropertiesUtil;
@@ -247,10 +246,8 @@ public class ForwardDistributionAgentFactory extends AbstractDistributionAgentFa
         Map<String, String> priorityQueues = PropertiesUtil.toMap(config.get(PRIORITY_QUEUES), new String[0]);
         priorityQueues = SettingsUtils.removeEmptyEntries(priorityQueues);
 
-        Map<String, String> headers = new HashMap<String, String>(1);
-        headers.put(HttpHeaders.CONTENT_TYPE, packageBuilder.getContentType());
         Integer timeout = PropertiesUtil.toInteger(HTTP, 10) * 1000;
-        HttpConfiguration httpConfiguration = new HttpConfiguration(timeout, headers);
+        HttpConfiguration httpConfiguration = new HttpConfiguration(timeout);
 
         DistributionPackageExporter packageExporter = new LocalDistributionPackageExporter(packageBuilder);
 

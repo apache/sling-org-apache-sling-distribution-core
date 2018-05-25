@@ -197,11 +197,6 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
     }
 
     @Override
-    public String getContentType() {
-        return "application/octet-stream";
-    }
-
-    @Override
     public boolean isRequestFiltering() {
         return true;
     }

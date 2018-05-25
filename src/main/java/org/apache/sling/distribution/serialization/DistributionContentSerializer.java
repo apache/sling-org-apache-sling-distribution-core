@@ -56,12 +56,6 @@ public interface DistributionContentSerializer {
     String getName();
 
     /**
-     * retrieve the mime type of the exported content of this content serializer
-     * @implNote the default implementation returns application/octet-stream.
-     */
-    String getContentType();
-
-    /**
      * whether or not this {@link DistributionContentSerializer} can build package filters for including / excluding
      * certain resources / attributes directly from a {@link org.apache.sling.distribution.DistributionRequest}
      * @return {@code true} if it can build filters from a request, {@code false} otherwise

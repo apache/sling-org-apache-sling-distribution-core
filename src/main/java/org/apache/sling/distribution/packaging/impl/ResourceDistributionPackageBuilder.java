@@ -77,7 +77,7 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
                                               boolean useOffHeapMemory,
                                               String digestAlgorithm, String[] nodeFilters,
                                               String[] propertyFilters) {
-        super(type, distributionContentSerializer.getContentType());
+        super(type);
         this.distributionContentSerializer = distributionContentSerializer;
         this.nodeFilters = VltUtils.parseFilters(nodeFilters);
         this.propertyFilters = VltUtils.parseFilters(propertyFilters);
