@@ -247,6 +247,8 @@ public class VltUtils {
             opts.setAutoSaveThreshold(autosaveThreshold);
         }
 
+        opts.setStrict(true);
+
         return opts;
     }
 
