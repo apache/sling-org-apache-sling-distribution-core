@@ -33,11 +33,14 @@ import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
 import org.apache.sling.distribution.queue.DistributionQueueType;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A {@link DistributionQueueProvider} that supports monitoring via JMX.
  */
 public class MonitoringDistributionQueueProvider implements DistributionQueueProvider {
+    Logger log = LoggerFactory.getLogger(MonitoringDistributionQueueProvider.class);
 
     private final Set<String> monitoredQueues = new HashSet<String>();
 
@@ -86,16 +89,21 @@ public class MonitoringDistributionQueueProvider implements DistributionQueuePro
     }
 
     private void monitorQueue(DistributionQueue distributionQueue) {
-        if (monitoredQueues.add(distributionQueue.getName())) {
-            DistributionQueueMBean mBean = new DistributionQueueMBeanImpl(distributionQueue);
+        try {
+            if (monitoredQueues.add(distributionQueue.getName())) {
+                DistributionQueueMBean mBean = new DistributionQueueMBeanImpl(distributionQueue);
 
-            Dictionary<String, String> mBeanProps = new Hashtable<String, String>();
-            mBeanProps.put("jmx.objectname", "org.apache.sling.distribution:type=queue,id="
-                    + ObjectName.quote(distributionQueue.getName()));
+                Dictionary<String, String> mBeanProps = new Hashtable<String, String>();
+                mBeanProps.put("jmx.objectname", "org.apache.sling.distribution:type=queue,id="
+                        + ObjectName.quote(distributionQueue.getName()));
 
-            ServiceRegistration mBeanRegistration = context.registerService(DistributionQueueMBean.class.getName(), mBean, mBeanProps);
-            mBeans.add(mBeanRegistration);
+                ServiceRegistration mBeanRegistration = context.registerService(DistributionQueueMBean.class.getName(), mBean, mBeanProps);
+                mBeans.add(mBeanRegistration);
+            }
+        } catch (Throwable e) {
+            log.error("cannot register queue mbean", e);
         }
+
     }
 
 }
