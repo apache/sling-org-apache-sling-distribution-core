@@ -94,7 +94,7 @@ public class VltUtils {
             initFilterSet(nodeFilterSet, nodeFilters, patterns);
 
             // Set property path filters
-            PathFilterSet propertyFilterSet = new PathFilterSet("/");
+            PathFilterSet propertyFilterSet = new PathFilterSet(path);
             initFilterSet(propertyFilterSet, propertyFilters, new ArrayList<String>());
 
             filter.add(nodeFilterSet, propertyFilterSet);

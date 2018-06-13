@@ -52,7 +52,7 @@ public class VltUtilsTest {
         assertEquals(1, propFilterSet.size());
         PathFilterSet propFilter = propFilterSet.get(0);
         assertTrue(propFilter.getEntries().isEmpty());
-        assertEquals("/", propFilter.getRoot());
+        assertEquals("/foo", propFilter.getRoot());
 
         assertNotNull(filter.getFilterSets());
         List<PathFilterSet> nodeFilterSet = filter.getFilterSets();
