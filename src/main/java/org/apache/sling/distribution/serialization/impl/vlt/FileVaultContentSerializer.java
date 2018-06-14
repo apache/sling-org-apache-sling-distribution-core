@@ -43,6 +43,7 @@ import org.apache.jackrabbit.vault.packaging.ExportOptions;
 import org.apache.jackrabbit.vault.packaging.PackageException;
 import org.apache.jackrabbit.vault.packaging.Packaging;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.serialization.DistributionContentSerializer;
 import org.apache.sling.distribution.serialization.DistributionExportOptions;
@@ -100,11 +101,13 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
     public void exportToStream(ResourceResolver resourceResolver, DistributionExportOptions exportOptions, OutputStream outputStream) throws DistributionException {
         Session session = null;
         try {
+            DistributionRequest request = VltUtils.sanitizeRequest(exportOptions.getRequest());
+
             session = getSession(resourceResolver);
             String packageGroup = PACKAGE_GROUP;
             String packageName = TYPE + "_" + System.currentTimeMillis() + "_" + UUID.randomUUID();
 
-            WorkspaceFilter filter = VltUtils.createFilter(exportOptions.getRequest(), nodeFilters, propertyFilters);
+            WorkspaceFilter filter = VltUtils.createFilter(request, nodeFilters, propertyFilters);
             ExportOptions opts = VltUtils.getExportOptions(filter, packageRoots, packageGroup, packageName, VERSION, useBinaryReferences, exportPathMapping);
 
             log.debug("assembling package {} user {}", packageGroup + '/' + packageName + "-" + VERSION, resourceResolver.getUserID());

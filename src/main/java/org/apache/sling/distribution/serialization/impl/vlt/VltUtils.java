@@ -378,6 +378,20 @@ public class VltUtils {
         return result;
     }
 
+    public static boolean isSupported(DistributionRequest request) {
+        DistributionRequestType requestType = request.getRequestType();
+
+        if (DistributionRequestType.DELETE.equals(requestType)) {
+            for (String path : request.getPaths()) {
+                // vlt cannot properly install delete of rep:policy subnodes
+                if (VltUtils.findParent(path, "rep:policy") != null) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public static DistributionRequest sanitizeRequest(DistributionRequest request) {
 
         DistributionRequestType requestType = request.getRequestType();

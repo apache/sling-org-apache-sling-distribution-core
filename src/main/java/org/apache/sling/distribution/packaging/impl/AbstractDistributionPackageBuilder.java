@@ -64,7 +64,9 @@ public abstract class AbstractDistributionPackageBuilder implements Distribution
             throws DistributionException {
         DistributionPackage distributionPackage;
 
-        request = VltUtils.sanitizeRequest(request);
+        if (!VltUtils.isSupported(request)) {
+            throw new DistributionException("unsupported request " + request);
+        }
 
         if (DistributionRequestType.ADD.equals(request.getRequestType())) {
             distributionPackage = createPackageForAdd(resourceResolver, request);
