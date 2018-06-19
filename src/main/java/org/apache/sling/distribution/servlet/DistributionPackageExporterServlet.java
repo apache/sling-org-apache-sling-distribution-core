@@ -107,7 +107,7 @@ public class DistributionPackageExporterServlet extends SlingAllMethodsServlet {
 
                         bytesCopied = IOUtils.copy(inputStream, response.getOutputStream());
                     } catch (IOException e) {
-                        log.error("cannot process package", e);
+                        throw new RuntimeException("cannot process package", e);
                     } finally {
                         IOUtils.closeQuietly(inputStream);
                     }

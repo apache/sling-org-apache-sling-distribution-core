@@ -113,8 +113,6 @@ public class AgentDistributionPackageExporter implements DistributionPackageExpo
                 }
             }
 
-        } catch (Exception ex) {
-            log.error("Error exporting package", ex);
         } finally {
             DistributionPackageUtils.closeSafely(distributionPackage);
         }

@@ -164,6 +164,10 @@ public class FileDistributionPackageBuilder extends AbstractDistributionPackageB
 
     @Override
     protected DistributionPackage getPackageInternal(@Nonnull ResourceResolver resourceResolver, @Nonnull String id) {
-        return new FileDistributionPackage(new File(tempDirectory, id), getType(), null, null);
+        File file = new File(tempDirectory, id);
+        if (!file.exists()) {
+            return null;
+        }
+        return new FileDistributionPackage(file, getType(), null, null);
     }
 }
