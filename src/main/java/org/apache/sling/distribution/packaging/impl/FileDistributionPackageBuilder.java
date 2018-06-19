@@ -166,6 +166,7 @@ public class FileDistributionPackageBuilder extends AbstractDistributionPackageB
     protected DistributionPackage getPackageInternal(@Nonnull ResourceResolver resourceResolver, @Nonnull String id) {
         File file = new File(tempDirectory, id);
         if (!file.exists()) {
+            log.warn("file package does not exist", file.getAbsolutePath());
             return null;
         }
         return new FileDistributionPackage(file, getType(), null, null);
