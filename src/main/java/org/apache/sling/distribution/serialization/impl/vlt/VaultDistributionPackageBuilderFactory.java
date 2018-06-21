@@ -208,6 +208,15 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
               "The format is {sourcePattern}={destinationPattern}, e.g. /etc/(.*)=/var/$1/some or simply /data=/bak")
     private static final String PATHS_MAPPING = "pathsMapping";
 
+    private static final boolean DEFAULT_STRICT_IMPORT_SETTINGS = true;
+
+    @Property(
+        label = "Install a content package in a strict mode",
+        description = "Flag to mark an error response will be thrown, if a content package will incorrectly installed",
+        boolValue = DEFAULT_STRICT_IMPORT_SETTINGS
+    )
+    public static final String STRICT_IMPORT_SETTINGS = "strictImport";
+
     @Reference
     private Packaging packaging;
 
@@ -256,8 +265,10 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
         Map<String, String> pathsMapping = PropertiesUtil.toMap(config.get(PATHS_MAPPING), new String[0]);
         pathsMapping = SettingsUtils.removeEmptyEntries(pathsMapping);
 
+        boolean strictImport = PropertiesUtil.toBoolean(config.get(STRICT_IMPORT_SETTINGS), DEFAULT_STRICT_IMPORT_SETTINGS);
+
         DistributionContentSerializer contentSerializer = new FileVaultContentSerializer(name, packaging, importMode, aclHandling,
-                packageRoots, packageNodeFilters, packagePropertyFilters, useBinaryReferences, autosaveThreshold, pathsMapping);
+                packageRoots, packageNodeFilters, packagePropertyFilters, useBinaryReferences, autosaveThreshold, pathsMapping, strictImport);
 
         DistributionPackageBuilder wrapped;
         if ("filevlt".equals(type)) {

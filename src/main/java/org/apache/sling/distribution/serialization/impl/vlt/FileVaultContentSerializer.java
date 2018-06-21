@@ -81,10 +81,12 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
     private final boolean useBinaryReferences;
     private final String name;
     private final Map<String, String> exportPathMapping;
+    private final boolean strict;
 
     public FileVaultContentSerializer(String name, Packaging packaging, ImportMode importMode, AccessControlHandling aclHandling, String[] packageRoots,
                                       String[] nodeFilters, String[] propertyFilters, boolean useBinaryReferences, int autosaveThreshold,
-                                      Map<String, String> exportPathMapping) {
+                                      Map<String, String> exportPathMapping,
+                                      boolean strict) {
         this.name = name;
         this.packaging = packaging;
         this.importMode = importMode;
@@ -95,6 +97,7 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
         this.propertyFilters = VltUtils.parseFilters(propertyFilters);
         this.useBinaryReferences = useBinaryReferences;
         this.exportPathMapping = exportPathMapping;
+        this.strict = strict;
     }
 
     @Override
@@ -127,7 +130,7 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
         Archive archive = null;
         try {
             session = getSession(resourceResolver);
-            ImportOptions importOptions = VltUtils.getImportOptions(aclHandling, importMode, autosaveThreshold);
+            ImportOptions importOptions = VltUtils.getImportOptions(aclHandling, importMode, autosaveThreshold, strict);
             Importer importer = new Importer(importOptions);
             archive = new ZipStreamArchive(inputStream);
             archive.open(false);

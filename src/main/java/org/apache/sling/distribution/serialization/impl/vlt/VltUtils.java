@@ -226,7 +226,7 @@ public class VltUtils {
         return packageRoot;
     }
 
-    public static ImportOptions getImportOptions(AccessControlHandling aclHandling, ImportMode importMode, int autosaveThreshold) {
+    public static ImportOptions getImportOptions(AccessControlHandling aclHandling, ImportMode importMode, int autosaveThreshold, boolean strict) {
         ImportOptions opts = new ImportOptions();
         if (aclHandling != null) {
             opts.setAccessControlHandling(aclHandling);
@@ -247,7 +247,7 @@ public class VltUtils {
             opts.setAutoSaveThreshold(autosaveThreshold);
         }
 
-        opts.setStrict(true);
+        opts.setStrict(strict);
 
         return opts;
     }
