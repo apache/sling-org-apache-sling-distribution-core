@@ -48,6 +48,7 @@ import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.apache.sling.distribution.packaging.impl.FileDistributionPackageBuilder;
+import org.apache.sling.distribution.packaging.impl.InMemoryDistributionPackageBuilder;
 import org.apache.sling.distribution.packaging.impl.ResourceDistributionPackageBuilder;
 import org.apache.sling.distribution.packaging.impl.ResourceDistributionPackageCleanup;
 import org.apache.sling.distribution.serialization.DistributionContentSerializer;
@@ -84,6 +85,9 @@ public class DistributionPackageBuilderFactory implements DistributionPackageBui
             ),
             @PropertyOption(name = "file",
                     value = "file packages"
+            ),
+            @PropertyOption(name = "inmemory",
+                    value = "in memory packages"
             )},
             value = "resource", label = "type", description = "The persistence type used by this package builder")
     private static final String PERSISTENCE = DistributionComponentConstants.PN_TYPE;
@@ -207,6 +211,8 @@ public class DistributionPackageBuilderFactory implements DistributionPackageBui
         DistributionPackageBuilder wrapped;
         if ("file".equals(persistenceType)) {
             wrapped = new FileDistributionPackageBuilder(contentSerializer.getName(), contentSerializer, tempFsFolder, digestAlgorithm, nodeFilters, propertyFilters);
+        } else if ("inmemory".equals(persistenceType)) {
+            wrapped = new InMemoryDistributionPackageBuilder(contentSerializer.getName(), contentSerializer, nodeFilters, propertyFilters);
         } else {
             final int fileThreshold = PropertiesUtil.toInteger(config.get(FILE_THRESHOLD), DEFAULT_FILE_THRESHOLD_VALUE);
             String memoryUnitName = PropertiesUtil.toString(config.get(MEMORY_UNIT), DEFAULT_MEMORY_UNIT);
