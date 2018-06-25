@@ -46,9 +46,10 @@ import org.apache.sling.distribution.packaging.impl.DistributionPackageExporter;
 import org.apache.sling.distribution.packaging.impl.exporter.LocalDistributionPackageExporter;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
 import org.apache.sling.distribution.queue.impl.DistributionQueueDispatchingStrategy;
+import org.apache.sling.distribution.queue.impl.DistributionQueueProviderFactory;
 import org.apache.sling.distribution.queue.impl.PriorityQueueDispatchingStrategy;
 import org.apache.sling.distribution.queue.impl.SingleQueueDispatchingStrategy;
-import org.apache.sling.distribution.queue.impl.jobhandling.JobHandlingDistributionQueueProvider;
+import org.apache.sling.distribution.queue.impl.resource.ResourceQueueProvider;
 import org.apache.sling.distribution.trigger.DistributionTrigger;
 import org.apache.sling.event.jobs.JobManager;
 import org.apache.sling.jcr.api.SlingRepository;
@@ -111,6 +112,12 @@ public class QueueDistributionAgentFactory extends AbstractDistributionAgentFact
     private DistributionRequestAuthorizationStrategy requestAuthorizationStrategy;
 
 
+    @Property(name = "queueProviderFactory.target", label = "Queue Provider Factory", description = "The target reference for the DistributionQueueProviderFactory used to build queues," +
+            "e.g. use target=(name=...) to bind to services by name.", value = "(name=jobQueue)")
+    @Reference(name = "queueProviderFactory")
+    private DistributionQueueProviderFactory queueProviderFactory;
+
+
     @Property(name = "packageBuilder.target", label = "Package Builder", description = "The target reference for the DistributionPackageBuilder used to create distribution packages, " +
             "e.g. use target=(name=...) to bind to services by name.", value = SettingsUtils.COMPONENT_NAME_DEFAULT)
     @Reference(name = "packageBuilder")
@@ -135,13 +142,12 @@ public class QueueDistributionAgentFactory extends AbstractDistributionAgentFact
     private SlingSettingsService settingsService;
 
     @Reference
-    private JobManager jobManager;
-
-    @Reference
     private ResourceResolverFactory resourceResolverFactory;
 
     @Reference
     private SlingRepository slingRepository;
+
+    DistributionQueueProvider queueProvider;
 
     public QueueDistributionAgentFactory() {
         super(QueueDistributionAgentMBean.class);
@@ -164,6 +170,8 @@ public class QueueDistributionAgentFactory extends AbstractDistributionAgentFact
     @Deactivate
     protected void deactivate(BundleContext context) {
         super.deactivate(context);
+
+        queueProviderFactory.releaseProvider(queueProvider);
     }
 
     @Override
@@ -177,8 +185,9 @@ public class QueueDistributionAgentFactory extends AbstractDistributionAgentFact
         Map<String, String> priorityQueues = PropertiesUtil.toMap(config.get(PRIORITY_QUEUES), new String[0]);
         priorityQueues = SettingsUtils.removeEmptyEntries(priorityQueues);
 
+        queueProvider = queueProviderFactory.getProvider(agentName, serviceName);
 
-        DistributionQueueProvider queueProvider = new MonitoringDistributionQueueProvider(new JobHandlingDistributionQueueProvider(agentName, jobManager, context), context);
+        MonitoringDistributionQueueProvider monitoringQueueProvider = new MonitoringDistributionQueueProvider(queueProvider, context);
 
         DistributionQueueDispatchingStrategy exportQueueStrategy = null;
 
@@ -194,7 +203,7 @@ public class QueueDistributionAgentFactory extends AbstractDistributionAgentFact
 
         return new SimpleDistributionAgent(agentName, false, null,
                 serviceName, null, packageExporter, requestAuthorizationStrategy,
-                queueProvider, exportQueueStrategy, null, distributionEventFactory, resourceResolverFactory, slingRepository,
+                monitoringQueueProvider, exportQueueStrategy, null, distributionEventFactory, resourceResolverFactory, slingRepository,
                 distributionLog, allowedRequests, allowedRoots, 0);
     }
 
