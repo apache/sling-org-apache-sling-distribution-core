@@ -48,14 +48,13 @@ import org.apache.sling.distribution.queue.impl.SimpleAgentDistributionQueue;
 import org.apache.sling.distribution.trigger.DistributionTrigger;
 import org.apache.sling.distribution.util.impl.DistributionUtils;
 import org.apache.sling.jcr.api.SlingRepository;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
-
 /**
  * Basic implementation of a {@link DistributionAgent}
  */
@@ -145,8 +144,8 @@ public class SimpleDistributionAgent implements DistributionAgent {
         }
     }
 
-    @Nonnull
-    public DistributionResponse execute(@Nonnull ResourceResolver resourceResolver, @Nonnull DistributionRequest distributionRequest)
+    @NotNull
+    public DistributionResponse execute(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest)
             throws DistributionException {
 
         ResourceResolver agentResourceResolver = null;
@@ -230,7 +229,7 @@ public class SimpleDistributionAgent implements DistributionAgent {
         return new CompositeDistributionResponse(distributionResponses, packagesCount, packagesSize, endTime - startTime);
     }
 
-    @Nonnull
+    @NotNull
     public Set<String> getQueueNames() {
         Set<String> queueNames = new TreeSet<String>();
         queueNames.addAll(scheduleQueueStrategy.getQueueNames());
@@ -240,7 +239,7 @@ public class SimpleDistributionAgent implements DistributionAgent {
         return queueNames;
     }
 
-    public DistributionQueue getQueue(@Nonnull final String queueName) {
+    public DistributionQueue getQueue(@NotNull final String queueName) {
         Set<String> queues = getQueueNames();
         if (!queues.contains(queueName)) {
             return null;
@@ -262,12 +261,12 @@ public class SimpleDistributionAgent implements DistributionAgent {
         return queue;
     }
 
-    @Nonnull
+    @NotNull
     public DistributionLog getLog() {
         return log;
     }
 
-    @Nonnull
+    @NotNull
     public DistributionAgentState getState() {
         DistributionAgentState agentState = DistributionAgentState.IDLE;
 

@@ -18,11 +18,10 @@
  */
 package org.apache.sling.distribution.packaging.impl;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * abstract implementation of a {@link DistributionPackage}
@@ -43,17 +42,17 @@ public abstract class AbstractDistributionPackage implements SharedDistributionP
         this.digestMessage = digestMessage;
     }
 
-    @Nonnull
+    @NotNull
     public DistributionPackageInfo getInfo() {
         return info;
     }
 
-    @Nonnull
+    @NotNull
     public String getId() {
         return id;
     }
 
-    @Nonnull
+    @NotNull
     public String getType() {
         return info.getType();
     }

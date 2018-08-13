@@ -18,7 +18,6 @@
  */
 package org.apache.sling.distribution.servlet;
 
-import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import java.io.IOException;
 
@@ -39,6 +38,7 @@ import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.resources.DistributionResourceTypes;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageBuilderProvider;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -156,8 +156,8 @@ public class DistributionAgentQueueServlet extends SlingAllMethodsServlet {
         return null;
     }
 
-    @Nonnull
-    private static DistributionQueue getQueueOrThrow(@Nonnull DistributionAgent agent, @Nonnull String queueName) {
+    @NotNull
+    private static DistributionQueue getQueueOrThrow(@NotNull DistributionAgent agent, @NotNull String queueName) {
         DistributionQueue queue = agent.getQueue(queueName);
         if (queue == null) {
             throw new IllegalArgumentException(String.format("Could not find queue %s", queueName));

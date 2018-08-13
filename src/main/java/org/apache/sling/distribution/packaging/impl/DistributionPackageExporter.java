@@ -18,15 +18,14 @@
  */
 package org.apache.sling.distribution.packaging.impl;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-
 import aQute.bnd.annotation.ConsumerType;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A {@link DistributionPackageExporter) is responsible of exporting {@link DistributionPackage }s from a local or remote
@@ -51,8 +50,8 @@ public interface DistributionPackageExporter {
      * @param distributionRequest the request containing the needed information for content to be exported
      * @param packageProcessor    a callback to process the exported package
      */
-    void exportPackages(@Nonnull ResourceResolver resourceResolver, @Nonnull DistributionRequest distributionRequest,
-                        @Nonnull DistributionPackageProcessor packageProcessor) throws DistributionException;
+    void exportPackages(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest,
+                        @NotNull DistributionPackageProcessor packageProcessor) throws DistributionException;
 
     /**
      * Retrieves a {@link DistributionPackage} given its identifier, if it already exists.
@@ -63,6 +62,6 @@ public interface DistributionPackageExporter {
      * @param distributionPackageId - the {@link DistributionPackage#getId() id of the package} to be retrieved
      * @return a {@link DistributionPackage} if available, {@code null} otherwise
      */
-    @CheckForNull
-    DistributionPackage getPackage(@Nonnull ResourceResolver resourceResolver, @Nonnull String distributionPackageId) throws DistributionException;
+    @Nullable
+    DistributionPackage getPackage(@NotNull ResourceResolver resourceResolver, @NotNull String distributionPackageId) throws DistributionException;
 }

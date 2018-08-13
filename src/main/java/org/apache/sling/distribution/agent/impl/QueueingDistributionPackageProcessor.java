@@ -18,14 +18,11 @@
  */
 package org.apache.sling.distribution.agent.impl;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-
 import org.apache.sling.distribution.DistributionRequestState;
 import org.apache.sling.distribution.DistributionResponse;
 import org.apache.sling.distribution.common.DistributionException;
@@ -41,6 +38,8 @@ import org.apache.sling.distribution.queue.DistributionQueueItemState;
 import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
 import org.apache.sling.distribution.queue.impl.DistributionQueueDispatchingStrategy;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * The package exporter callback function is responsible to process the exported packages.
@@ -77,11 +76,11 @@ class QueueingDistributionPackageProcessor implements DistributionPackageProcess
         return packagesSize.get();
     }
 
-    QueueingDistributionPackageProcessor(@Nullable String callingUser, @Nonnull String requestId, long requestStartTime,
-                                         @Nonnull DistributionEventFactory distributionEventFactory,
-                                         @Nonnull DistributionQueueDispatchingStrategy scheduleQueueStrategy,
-                                         @Nonnull DistributionQueueProvider queueProvider, @Nonnull DefaultDistributionLog log,
-                                         @Nonnull String agentName) {
+    QueueingDistributionPackageProcessor(@Nullable String callingUser, @NotNull String requestId, long requestStartTime,
+                                         @NotNull DistributionEventFactory distributionEventFactory,
+                                         @NotNull DistributionQueueDispatchingStrategy scheduleQueueStrategy,
+                                         @NotNull DistributionQueueProvider queueProvider, @NotNull DefaultDistributionLog log,
+                                         @NotNull String agentName) {
         this.callingUser = callingUser;
         this.requestId = requestId;
         this.requestStartTime = requestStartTime;

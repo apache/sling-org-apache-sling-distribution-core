@@ -24,9 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Property;
@@ -50,6 +47,8 @@ import org.apache.sling.distribution.trigger.impl.JcrEventDistributionTriggerFac
 import org.apache.sling.distribution.trigger.impl.PersistedJcrEventDistributionTriggerFactory;
 import org.apache.sling.distribution.trigger.impl.ResourceEventDistributionTriggerFactory;
 import org.apache.sling.distribution.trigger.impl.ScheduledDistributionTriggerFactory;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -154,7 +153,7 @@ public class DistributionComponentFactoryMap {
         mapping.put(TRIGGER, parse(toStringArray(config.get(MAPPING_TRIGGER)), MAPPING_TRIGGER_DEFAULT));
     }
 
-    String getType(DistributionComponentKind kind, @Nonnull String factoryPid) {
+    String getType(DistributionComponentKind kind, @NotNull String factoryPid) {
         Map<String,String> entries = getEntries(kind);
         for (Map.Entry<String, String> entry : entries.entrySet()) {
             if (factoryPid.equals(entry.getValue())) {
@@ -174,7 +173,7 @@ public class DistributionComponentFactoryMap {
 
     //
 
-    private Map<String,String> parse(@Nullable String[] mappings, @Nonnull String[] defaultMappings) {
+    private Map<String,String> parse(@Nullable String[] mappings, @NotNull String[] defaultMappings) {
         Map<String,String> parsed = new HashMap<String, String>();
         parsed.putAll(parse(defaultMappings));
         if (mappings != null) {
@@ -183,7 +182,7 @@ public class DistributionComponentFactoryMap {
         return parsed;
     }
 
-    private Map<String,String> parse(@Nonnull String[] mappings) {
+    private Map<String,String> parse(@NotNull String[] mappings) {
         Map<String, String> map = new HashMap<String, String>();
         for (String mapping : mappings) {
             String[] chunks = mapping.split(":");

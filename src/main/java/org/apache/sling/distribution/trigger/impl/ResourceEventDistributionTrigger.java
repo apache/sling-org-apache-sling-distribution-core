@@ -18,12 +18,10 @@
  */
 package org.apache.sling.distribution.trigger.impl;
 
-import javax.annotation.Nonnull;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.sling.api.SlingConstants;
 import org.apache.sling.distribution.DistributionRequestType;
 import org.apache.sling.distribution.SimpleDistributionRequest;
@@ -31,6 +29,7 @@ import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.trigger.DistributionRequestHandler;
 import org.apache.sling.distribution.trigger.DistributionTrigger;
 import org.apache.sling.event.dea.DEAConstants;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.event.Event;
@@ -78,7 +77,7 @@ public class ResourceEventDistributionTrigger implements DistributionTrigger {
         registrations.clear();
     }
 
-    public void register(@Nonnull DistributionRequestHandler requestHandler) throws DistributionException {
+    public void register(@NotNull DistributionRequestHandler requestHandler) throws DistributionException {
         // register an event handler on path which triggers the agent on node / property changes / addition / removals
         Dictionary<String, Object> properties = new Hashtable<String, Object>();
         properties.put(EventConstants.EVENT_TOPIC, new String[]{SlingConstants.TOPIC_RESOURCE_ADDED,
@@ -96,7 +95,7 @@ public class ResourceEventDistributionTrigger implements DistributionTrigger {
         }
     }
 
-    public void unregister(@Nonnull DistributionRequestHandler requestHandler) throws DistributionException {
+    public void unregister(@NotNull DistributionRequestHandler requestHandler) throws DistributionException {
         ServiceRegistration serviceRegistration = registrations.get(requestHandler.toString());
         if (serviceRegistration != null) {
             serviceRegistration.unregister();

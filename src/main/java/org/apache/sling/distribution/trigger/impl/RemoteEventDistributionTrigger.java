@@ -18,13 +18,11 @@
  */
 package org.apache.sling.distribution.trigger.impl;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
-
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
@@ -50,6 +48,7 @@ import org.apache.sling.distribution.transport.DistributionTransportSecretProvid
 import org.apache.sling.distribution.transport.impl.DistributionEndpoint;
 import org.apache.sling.distribution.trigger.DistributionRequestHandler;
 import org.apache.sling.distribution.trigger.DistributionTrigger;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,7 +82,7 @@ public class RemoteEventDistributionTrigger implements DistributionTrigger {
         this.scheduler = scheduler;
     }
 
-    public void register(@Nonnull DistributionRequestHandler requestHandler) throws DistributionException {
+    public void register(@NotNull DistributionRequestHandler requestHandler) throws DistributionException {
         try {
             log.info("applying remote event distribution trigger");
 
@@ -97,7 +96,7 @@ public class RemoteEventDistributionTrigger implements DistributionTrigger {
         }
     }
 
-    public void unregister(@Nonnull DistributionRequestHandler requestHandler) throws DistributionException {
+    public void unregister(@NotNull DistributionRequestHandler requestHandler) throws DistributionException {
         Future<HttpResponse> httpResponseFuture = requests.remove(requestHandler);
         if (httpResponseFuture != null) {
             httpResponseFuture.cancel(true);

@@ -18,14 +18,12 @@
  */
 package org.apache.sling.distribution.trigger;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import aQute.bnd.annotation.ConsumerType;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.component.impl.DistributionComponentKind;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * An handler for {@link org.apache.sling.distribution.DistributionRequest}s passed to a
@@ -38,14 +36,14 @@ public interface DistributionRequestHandler {
      * returns the name of the owner of this request handler.
      * @return
      */
-    @Nonnull
+    @NotNull
     String getName();
 
     /**
      * returns the kind of component that owns this request handler. Might be null, for unknown kinds of components.
      * @return
      */
-    @CheckForNull
+    @Nullable
     DistributionComponentKind getComponentKind();
 
     /**
@@ -53,6 +51,6 @@ public interface DistributionRequestHandler {
      *
      * @param request a distribution request
      */
-    void handle(@Nullable ResourceResolver resourceResolver, @Nonnull DistributionRequest request);
+    void handle(@Nullable ResourceResolver resourceResolver, @NotNull DistributionRequest request);
 
 }

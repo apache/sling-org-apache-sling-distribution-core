@@ -18,11 +18,11 @@
  */
 package org.apache.sling.distribution.packaging;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
-
 import aQute.bnd.annotation.ProviderType;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A distribution package
@@ -35,7 +35,7 @@ public interface DistributionPackage {
      *
      * @return the package id
      */
-    @Nonnull
+    @NotNull
     String getId();
 
     /**
@@ -43,7 +43,7 @@ public interface DistributionPackage {
      *
      * @return the package type
      */
-    @Nonnull
+    @NotNull
     String getType();
 
     /**
@@ -53,7 +53,7 @@ public interface DistributionPackage {
      * @return an {@link InputStream}
      * @throws IOException
      */
-    @Nonnull
+    @NotNull
     InputStream createInputStream() throws IOException;
 
     /**
@@ -79,7 +79,7 @@ public interface DistributionPackage {
      *
      * @return the associated metadata to this package
      */
-    @Nonnull
+    @NotNull
     DistributionPackageInfo getInfo();
 
 }

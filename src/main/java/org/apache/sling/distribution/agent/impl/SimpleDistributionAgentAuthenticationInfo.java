@@ -18,11 +18,10 @@
  */
 package org.apache.sling.distribution.agent.impl;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.jcr.api.SlingRepository;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Authentication information required by a {@link SimpleDistributionAgent} to perform its tasks.
@@ -35,8 +34,8 @@ class SimpleDistributionAgentAuthenticationInfo {
     private final ResourceResolverFactory resourceResolverFactory;
     private final String subServiceName;
 
-    public SimpleDistributionAgentAuthenticationInfo(@Nonnull SlingRepository slingRepository, @Nonnull String agentService,
-                                                     @Nonnull ResourceResolverFactory resourceResolverFactory,
+    public SimpleDistributionAgentAuthenticationInfo(@NotNull SlingRepository slingRepository, @NotNull String agentService,
+                                                     @NotNull ResourceResolverFactory resourceResolverFactory,
                                                      @Nullable String subServiceName) {
         this.slingRepository = slingRepository;
         this.agentService = agentService;

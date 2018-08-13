@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-import javax.annotation.Nonnull;
-
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.distribution.DistributionRequest;
@@ -48,6 +46,7 @@ import org.apache.sling.distribution.queue.impl.simple.SimpleDistributionQueue;
 import org.apache.sling.distribution.trigger.DistributionRequestHandler;
 import org.apache.sling.distribution.trigger.DistributionTrigger;
 import org.apache.sling.jcr.api.SlingRepository;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -357,13 +356,13 @@ public class SimpleDistributionAgentTest {
         volatile boolean registered;
 
         @Override
-        public void register(@Nonnull DistributionRequestHandler requestHandler)
+        public void register(@NotNull DistributionRequestHandler requestHandler)
                 throws DistributionException {
             registered = true;
         }
 
         @Override
-        public void unregister(@Nonnull DistributionRequestHandler requestHandler)
+        public void unregister(@NotNull DistributionRequestHandler requestHandler)
                 throws DistributionException {
             registered = false;
         }

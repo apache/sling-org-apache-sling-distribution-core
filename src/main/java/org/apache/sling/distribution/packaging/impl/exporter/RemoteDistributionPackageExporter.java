@@ -18,10 +18,8 @@
  */
 package org.apache.sling.distribution.packaging.impl.exporter;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.DistributionRequestType;
@@ -34,6 +32,7 @@ import org.apache.sling.distribution.packaging.impl.DistributionPackageExporter;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
 import org.apache.sling.distribution.transport.DistributionTransportSecretProvider;
 import org.apache.sling.distribution.transport.impl.*;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Remote implementation of {@link DistributionPackageExporter}
@@ -69,7 +68,7 @@ public class RemoteDistributionPackageExporter implements DistributionPackageExp
         }
     }
 
-    public void exportPackages(@Nonnull ResourceResolver resourceResolver, @Nonnull DistributionRequest distributionRequest, @Nonnull DistributionPackageProcessor packageProcessor) throws DistributionException {
+    public void exportPackages(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest, @NotNull DistributionPackageProcessor packageProcessor) throws DistributionException {
         int maxNumberOfPackages = DistributionRequestType.PULL.equals(distributionRequest.getRequestType()) ? maxPullItems : 1;
         for (DistributionTransport distributionTransport : transportHandlers) {
             int noPackages = 0;
@@ -93,7 +92,7 @@ public class RemoteDistributionPackageExporter implements DistributionPackageExp
         }
     }
 
-    public DistributionPackage getPackage(@Nonnull ResourceResolver resourceResolver, @Nonnull String distributionPackageId) throws DistributionException {
+    public DistributionPackage getPackage(@NotNull ResourceResolver resourceResolver, @NotNull String distributionPackageId) throws DistributionException {
         return packageBuilder.getPackage(resourceResolver, distributionPackageId);
     }
 }

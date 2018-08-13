@@ -18,13 +18,12 @@
  */
 package org.apache.sling.distribution.agent.impl;
 
-import javax.annotation.Nonnull;
-
 import aQute.bnd.annotation.ConsumerType;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.packaging.DistributionPackage;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Strategy for authorizing requests
@@ -39,6 +38,6 @@ public interface DistributionRequestAuthorizationStrategy {
      * @throws DistributionException if the {@link org.apache.sling.api.resource.ResourceResolver} is
      *                                                  not authorized to execute the given {@link org.apache.sling.distribution.DistributionRequest}
      */
-    void checkPermission(@Nonnull ResourceResolver resourceResolver, @Nonnull DistributionRequest distributionRequest) throws DistributionException;
+    void checkPermission(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest) throws DistributionException;
 
 }

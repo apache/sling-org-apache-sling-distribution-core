@@ -24,7 +24,6 @@ import java.util.Hashtable;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingDeque;
 
-import javax.annotation.Nonnull;
 import javax.management.ObjectName;
 
 import org.apache.sling.api.resource.ResourceResolver;
@@ -33,6 +32,7 @@ import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
@@ -59,9 +59,9 @@ public final class MonitoringDistributionPackageBuilder implements DistributionP
         return wrapped.getType();
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public DistributionPackage createPackage(@Nonnull ResourceResolver resourceResolver, @Nonnull DistributionRequest request) throws DistributionException {
+    public DistributionPackage createPackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest request) throws DistributionException {
         long start = System.currentTimeMillis();
         DistributionPackage distributionPackage = wrapped.createPackage(resourceResolver, request);
         if (queueCapacity > 0) {
@@ -70,25 +70,25 @@ public final class MonitoringDistributionPackageBuilder implements DistributionP
         return distributionPackage;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public DistributionPackage readPackage(@Nonnull ResourceResolver resourceResolver, @Nonnull InputStream stream) throws DistributionException {
+    public DistributionPackage readPackage(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream) throws DistributionException {
         return wrapped.readPackage(resourceResolver, stream);
     }
 
     @Override
-    public DistributionPackage getPackage(@Nonnull ResourceResolver resourceResolver, @Nonnull String id) throws DistributionException {
+    public DistributionPackage getPackage(@NotNull ResourceResolver resourceResolver, @NotNull String id) throws DistributionException {
         return wrapped.getPackage(resourceResolver, id);
     }
 
     @Override
-    public boolean installPackage(@Nonnull ResourceResolver resourceResolver, @Nonnull DistributionPackage distributionPackage) throws DistributionException {
+    public boolean installPackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionPackage distributionPackage) throws DistributionException {
         return wrapped.installPackage(resourceResolver, distributionPackage);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public DistributionPackageInfo installPackage(@Nonnull ResourceResolver resourceResolver, @Nonnull InputStream stream) throws DistributionException {
+    public DistributionPackageInfo installPackage(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream) throws DistributionException {
         return wrapped.installPackage(resourceResolver, stream);
     }
 

@@ -34,7 +34,6 @@ import java.util.Map;
 import java.util.NavigableMap;
 import java.util.UUID;
 
-import javax.annotation.Nonnull;
 import javax.jcr.RepositoryException;
 
 import org.apache.commons.io.IOUtils;
@@ -51,6 +50,7 @@ import org.apache.sling.distribution.serialization.DistributionExportOptions;
 import org.apache.sling.distribution.serialization.impl.vlt.VltUtils;
 import org.apache.sling.distribution.util.impl.FileBackedMemoryOutputStream;
 import org.apache.sling.distribution.util.impl.FileBackedMemoryOutputStream.MemoryUnit;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,7 +90,7 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
     }
 
     @Override
-    protected DistributionPackage createPackageForAdd(@Nonnull ResourceResolver resourceResolver, @Nonnull DistributionRequest request) throws DistributionException {
+    protected DistributionPackage createPackageForAdd(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest request) throws DistributionException {
         DistributionPackage distributionPackage;
 
         try {
@@ -138,14 +138,14 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
         return distributionPackage;
     }
 
-    private void export(@Nonnull ResourceResolver resourceResolver, @Nonnull final DistributionRequest request, OutputStream outputStream) throws DistributionException {
+    private void export(@NotNull ResourceResolver resourceResolver, @NotNull final DistributionRequest request, OutputStream outputStream) throws DistributionException {
         final DistributionExportFilter filter = distributionContentSerializer.isRequestFiltering() ? null : DistributionExportFilter.createFilter(request, nodeFilters, propertyFilters);
         DistributionExportOptions distributionExportOptions = new DistributionExportOptions(request, filter);
         distributionContentSerializer.exportToStream(resourceResolver, distributionExportOptions, outputStream);
     }
 
     @Override
-    protected DistributionPackage readPackageInternal(@Nonnull ResourceResolver resourceResolver, @Nonnull InputStream inputStream)
+    protected DistributionPackage readPackageInternal(@NotNull ResourceResolver resourceResolver, @NotNull InputStream inputStream)
             throws DistributionException {
         try {
             Resource packagesRoot = DistributionPackageUtils.getPackagesRoot(resourceResolver, packagesPath);
@@ -158,7 +158,7 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
     }
 
     @Override
-    protected boolean installPackageInternal(@Nonnull ResourceResolver resourceResolver, @Nonnull InputStream inputStream)
+    protected boolean installPackageInternal(@NotNull ResourceResolver resourceResolver, @NotNull InputStream inputStream)
             throws DistributionException {
         try {
             distributionContentSerializer.importFromStream(resourceResolver, inputStream);
@@ -169,7 +169,7 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
     }
 
     @Override
-    protected DistributionPackage getPackageInternal(@Nonnull ResourceResolver resourceResolver, @Nonnull String id) {
+    protected DistributionPackage getPackageInternal(@NotNull ResourceResolver resourceResolver, @NotNull String id) {
         try {
             Resource packagesRoot = DistributionPackageUtils.getPackagesRoot(resourceResolver, packagesPath);
             Resource packageResource = packagesRoot.getChild(id);
@@ -238,8 +238,8 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
         return resource;
     }
 
-    @Nonnull
-    public Iterator<ResourceDistributionPackage> getPackages(@Nonnull ResourceResolver resourceResolver)
+    @NotNull
+    public Iterator<ResourceDistributionPackage> getPackages(@NotNull ResourceResolver resourceResolver)
             throws DistributionException {
         try {
             Resource packagesRoot = DistributionPackageUtils.getPackagesRoot(resourceResolver, packagesPath);
@@ -257,8 +257,8 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
 
         final String type;
 
-        private ResourceDistributionPackageIterator(@Nonnull Resource packagesRoot, @Nonnull ResourceResolver resourceResolver,
-                                            @Nonnull String type) {
+        private ResourceDistributionPackageIterator(@NotNull Resource packagesRoot, @NotNull ResourceResolver resourceResolver,
+                                            @NotNull String type) {
             this.packages = packagesRoot.listChildren();
             this.resourceResolver = resourceResolver;
             this.type = type;

@@ -23,11 +23,10 @@ import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueStatus;
 import org.apache.sling.distribution.queue.DistributionQueueType;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 /**
  * {@link DistributionQueueWrapper} that caches entries for 30s.
  */
@@ -44,7 +43,7 @@ public class CachingDistributionQueue extends DistributionQueueWrapper {
         this.cacheKey = cacheKey;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public DistributionQueueStatus getStatus() {
 
@@ -77,14 +76,14 @@ public class CachingDistributionQueue extends DistributionQueueWrapper {
     }
 
     @Override
-    public DistributionQueueEntry add(@Nonnull DistributionQueueItem item) {
+    public DistributionQueueEntry add(@NotNull DistributionQueueItem item) {
         queueCache.remove(cacheKey);
         queueCacheExpiry.remove(cacheKey);
         return super.add(item);
     }
 
     @Override
-    public DistributionQueueEntry remove(@Nonnull String itemId) {
+    public DistributionQueueEntry remove(@NotNull String itemId) {
         queueCache.remove(cacheKey);
         queueCacheExpiry.remove(cacheKey);
         return super.remove(itemId);

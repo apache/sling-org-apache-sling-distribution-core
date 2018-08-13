@@ -19,8 +19,6 @@
 
 package org.apache.sling.distribution.impl;
 
-import javax.annotation.Nonnull;
-
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
@@ -32,6 +30,7 @@ import org.apache.sling.distribution.Distributor;
 import org.apache.sling.distribution.agent.spi.DistributionAgent;
 import org.apache.sling.distribution.component.impl.DistributionComponentProvider;
 import org.apache.sling.distribution.common.DistributionException;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,8 +48,8 @@ public class DefaultDistributor implements Distributor {
     private
     DistributionComponentProvider componentProvider;
 
-    @Nonnull
-    public DistributionResponse distribute(@Nonnull String agentName, @Nonnull ResourceResolver resourceResolver, @Nonnull DistributionRequest distributionRequest) {
+    @NotNull
+    public DistributionResponse distribute(@NotNull String agentName, @NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest) {
         DistributionAgent agent = componentProvider.getService(DistributionAgent.class, agentName);
 
         if (agent == null) {

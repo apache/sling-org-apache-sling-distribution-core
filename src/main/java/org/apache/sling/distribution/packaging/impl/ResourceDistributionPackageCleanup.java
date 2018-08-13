@@ -21,13 +21,12 @@ package org.apache.sling.distribution.packaging.impl;
 
 import java.util.Iterator;
 
-import javax.annotation.Nonnull;
-
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.distribution.common.DistributionException;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,8 +45,8 @@ public class ResourceDistributionPackageCleanup implements Runnable {
 
     private final ResourceResolverFactory resolverFactory;
 
-    public ResourceDistributionPackageCleanup(@Nonnull ResourceResolverFactory resolverFactory,
-                                              @Nonnull ResourceDistributionPackageBuilder packageBuilder) {
+    public ResourceDistributionPackageCleanup(@NotNull ResourceResolverFactory resolverFactory,
+                                              @NotNull ResourceDistributionPackageBuilder packageBuilder) {
         this.resolverFactory = resolverFactory;
         this.packageBuilder = packageBuilder;
     }

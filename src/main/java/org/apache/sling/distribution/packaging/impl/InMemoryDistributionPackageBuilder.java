@@ -28,9 +28,6 @@ import java.util.Map;
 import java.util.NavigableMap;
 import java.util.UUID;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
@@ -40,6 +37,8 @@ import org.apache.sling.distribution.serialization.DistributionContentSerializer
 import org.apache.sling.distribution.serialization.DistributionExportFilter;
 import org.apache.sling.distribution.serialization.DistributionExportOptions;
 import org.apache.sling.distribution.serialization.impl.vlt.VltUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,8 +55,8 @@ public class InMemoryDistributionPackageBuilder extends AbstractDistributionPack
 
     private final NavigableMap<String, List<String>> propertyFilters;
 
-    public InMemoryDistributionPackageBuilder(@Nonnull String type,
-                                              @Nonnull DistributionContentSerializer serializer,
+    public InMemoryDistributionPackageBuilder(@NotNull String type,
+                                              @NotNull DistributionContentSerializer serializer,
                                               @Nullable String[] nodeFilters,
                                               @Nullable String[] propertyFilters) {
         super(type);
@@ -67,8 +66,8 @@ public class InMemoryDistributionPackageBuilder extends AbstractDistributionPack
     }
 
     @Override
-    protected DistributionPackage createPackageForAdd(@Nonnull ResourceResolver resourceResolver,
-                                                      @Nonnull DistributionRequest request)
+    protected DistributionPackage createPackageForAdd(@NotNull ResourceResolver resourceResolver,
+                                                      @NotNull DistributionRequest request)
             throws DistributionException {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -80,8 +79,8 @@ public class InMemoryDistributionPackageBuilder extends AbstractDistributionPack
     }
 
     @Override
-    protected DistributionPackage readPackageInternal(@Nonnull ResourceResolver resourceResolver,
-                                                      @Nonnull InputStream stream)
+    protected DistributionPackage readPackageInternal(@NotNull ResourceResolver resourceResolver,
+                                                      @NotNull InputStream stream)
             throws DistributionException {
 
         Map<String, Object> info = new HashMap<String, Object>();
@@ -110,8 +109,8 @@ public class InMemoryDistributionPackageBuilder extends AbstractDistributionPack
     }
 
     @Override
-    protected boolean installPackageInternal(@Nonnull ResourceResolver resourceResolver,
-                                             @Nonnull InputStream inputStream)
+    protected boolean installPackageInternal(@NotNull ResourceResolver resourceResolver,
+                                             @NotNull InputStream inputStream)
             throws DistributionException {
         try {
             serializer.importFromStream(resourceResolver, inputStream);
@@ -122,14 +121,14 @@ public class InMemoryDistributionPackageBuilder extends AbstractDistributionPack
     }
 
     @Override
-    protected DistributionPackage getPackageInternal(@Nonnull ResourceResolver resourceResolver,
-                                                     @Nonnull String id) {
+    protected DistributionPackage getPackageInternal(@NotNull ResourceResolver resourceResolver,
+                                                     @NotNull String id) {
         return null;
     }
 
-    private void export(@Nonnull ResourceResolver resourceResolver,
-                        @Nonnull final DistributionRequest request,
-                        @Nonnull OutputStream outputStream)
+    private void export(@NotNull ResourceResolver resourceResolver,
+                        @NotNull final DistributionRequest request,
+                        @NotNull OutputStream outputStream)
             throws DistributionException {
         final DistributionExportFilter filter = serializer.isRequestFiltering() ? null : DistributionExportFilter.createFilter(request, nodeFilters, propertyFilters);
         DistributionExportOptions distributionExportOptions = new DistributionExportOptions(request, filter);

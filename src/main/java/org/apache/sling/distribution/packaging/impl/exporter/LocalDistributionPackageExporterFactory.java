@@ -20,8 +20,6 @@ package org.apache.sling.distribution.packaging.impl.exporter;
 
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.ConfigurationPolicy;
@@ -36,6 +34,7 @@ import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageExporter;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageProcessor;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * OSGi configuration factory for {@link LocalDistributionPackageExporter}s.
@@ -67,11 +66,11 @@ public class LocalDistributionPackageExporterFactory implements DistributionPack
         exporter = new LocalDistributionPackageExporter(packageBuilder);
     }
 
-    public void exportPackages(@Nonnull ResourceResolver resourceResolver, @Nonnull DistributionRequest distributionRequest, @Nonnull DistributionPackageProcessor packageProcessor) throws DistributionException {
+    public void exportPackages(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest, @NotNull DistributionPackageProcessor packageProcessor) throws DistributionException {
         exporter.exportPackages(resourceResolver, distributionRequest, packageProcessor);
     }
 
-    public DistributionPackage getPackage(@Nonnull ResourceResolver resourceResolver, @Nonnull String distributionPackageId) throws DistributionException {
+    public DistributionPackage getPackage(@NotNull ResourceResolver resourceResolver, @NotNull String distributionPackageId) throws DistributionException {
         return exporter.getPackage(resourceResolver, distributionPackageId);
     }
 }

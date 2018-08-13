@@ -18,15 +18,13 @@
  */
 package org.apache.sling.distribution.packaging.impl;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.sling.distribution.packaging.DistributionPackage;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A reference package wraps an actual {@link DistributionPackage} providing a reference to it
@@ -46,20 +44,20 @@ public class ReferencePackage extends AbstractDistributionPackage {
     }
 
     @Override
-    public void acquire(@Nonnull String... holderNames) {
+    public void acquire(@NotNull String... holderNames) {
         if (distributionPackage instanceof AbstractDistributionPackage) {
             ((AbstractDistributionPackage) distributionPackage).acquire(holderNames);
         }
     }
 
     @Override
-    public void release(@Nonnull String... holderNames) {
+    public void release(@NotNull String... holderNames) {
         if (distributionPackage instanceof AbstractDistributionPackage) {
             ((AbstractDistributionPackage) distributionPackage).release(holderNames);
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public InputStream createInputStream() throws IOException {
         return new ByteArrayInputStream(reference.getBytes());
@@ -80,13 +78,13 @@ public class ReferencePackage extends AbstractDistributionPackage {
         distributionPackage.delete();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getType() {
         return getInfo().getType();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getId() {
         return reference;
@@ -113,7 +111,7 @@ public class ReferencePackage extends AbstractDistributionPackage {
         return string.startsWith(REFERENCE_PREFIX);
     }
 
-    @CheckForNull
+    @Nullable
     public static String idFromReference(String reference) {
         return isReference(reference) ? reference.substring(REFERENCE_PREFIX.length()) : null;
     }

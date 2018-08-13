@@ -20,11 +20,10 @@
 package org.apache.sling.distribution.impl;
 
 
-import javax.annotation.Nonnull;
 import java.util.List;
-
 import org.apache.sling.distribution.DistributionRequestState;
 import org.apache.sling.distribution.DistributionResponse;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A composite {@link SimpleDistributionResponse}.
@@ -66,7 +65,7 @@ public class CompositeDistributionResponse extends SimpleDistributionResponse {
         return DistributionRequestState.ACCEPTED.equals(state) || DistributionRequestState.DISTRIBUTED.equals(state);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public DistributionRequestState getState() {
         return state;

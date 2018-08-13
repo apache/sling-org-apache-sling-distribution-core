@@ -18,7 +18,6 @@
  */
 package org.apache.sling.distribution.queue.impl.jobhandling;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +26,6 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProcessor;
@@ -38,6 +36,7 @@ import org.apache.sling.event.impl.jobs.config.ConfigurationConstants;
 import org.apache.sling.event.jobs.JobManager;
 import org.apache.sling.event.jobs.QueueConfiguration;
 import org.apache.sling.event.jobs.consumer.JobConsumer;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.Configuration;
@@ -80,8 +79,8 @@ public class JobHandlingDistributionQueueProvider implements DistributionQueuePr
         this.context = context;
     }
 
-    @Nonnull
-    public DistributionQueue getQueue(@Nonnull String queueName) {
+    @NotNull
+    public DistributionQueue getQueue(@NotNull String queueName) {
         String topic = JobHandlingDistributionQueue.DISTRIBUTION_QUEUE_TOPIC + '/' + prefix + "/" + queueName;
         boolean isActive = jobConsumer != null && (processingQueueNames == null || processingQueueNames.contains(queueName));
 
@@ -91,7 +90,7 @@ public class JobHandlingDistributionQueueProvider implements DistributionQueuePr
     }
 
     @Override
-    public DistributionQueue getQueue(@Nonnull String queueName, @Nonnull DistributionQueueType type) {
+    public DistributionQueue getQueue(@NotNull String queueName, @NotNull DistributionQueueType type) {
         String topic = JobHandlingDistributionQueue.DISTRIBUTION_QUEUE_TOPIC + '/' + type.name().toLowerCase() + '/' + prefix + "/" + queueName;
         boolean isActive = jobConsumer != null && (processingQueueNames == null || processingQueueNames.contains(queueName));
 
@@ -121,7 +120,7 @@ public class JobHandlingDistributionQueueProvider implements DistributionQueuePr
     }
 
 
-    public void enableQueueProcessing(@Nonnull DistributionQueueProcessor queueProcessor, String... queueNames) throws DistributionException {
+    public void enableQueueProcessing(@NotNull DistributionQueueProcessor queueProcessor, String... queueNames) throws DistributionException {
         if (jobConsumer != null) {
             throw new DistributionException("job already registered");
         }

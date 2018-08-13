@@ -18,14 +18,13 @@
  */
 package org.apache.sling.distribution.packaging.impl;
 
-import javax.annotation.Nonnull;
 import java.io.InputStream;
-
 import aQute.bnd.annotation.ConsumerType;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A {@link DistributionPackageImporter} is responsible for importing {@link DistributionPackage}s into either a local
@@ -42,7 +41,7 @@ public interface DistributionPackageImporter {
      * @param distributionPackage - the package to be imported
      * @throws DistributionException if any error occurs during import
      */
-    void importPackage(@Nonnull ResourceResolver resourceResolver, @Nonnull DistributionPackage distributionPackage) throws DistributionException;
+    void importPackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionPackage distributionPackage) throws DistributionException;
 
     /**
      * Tries to convert an {@link java.io.InputStream} to a {@link DistributionPackage} and then imports it into the underlying system
@@ -52,7 +51,7 @@ public interface DistributionPackageImporter {
      * @return a {@link DistributionPackageInfo} if the stream has been successfully converted and imported
      * @throws DistributionException when the stream cannot be read as a {@link DistributionPackage} and imported
      */
-    @Nonnull
-    DistributionPackageInfo importStream(@Nonnull ResourceResolver resourceResolver, @Nonnull InputStream stream) throws DistributionException;
+    @NotNull
+    DistributionPackageInfo importStream(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream) throws DistributionException;
 
 }

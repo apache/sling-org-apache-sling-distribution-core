@@ -18,10 +18,9 @@
  */
 package org.apache.sling.distribution.event.impl;
 
-import javax.annotation.Nonnull;
-
 import org.apache.sling.distribution.component.impl.DistributionComponentKind;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * generate distribution related events
@@ -33,7 +32,7 @@ public interface DistributionEventFactory {
      *
      * @param distributionEventType the type of event to be generated
      */
-    void generatePackageEvent(@Nonnull String distributionEventType, @Nonnull DistributionComponentKind kind,
-                              @Nonnull String name, @Nonnull DistributionPackageInfo info);
+    void generatePackageEvent(@NotNull String distributionEventType, @NotNull DistributionComponentKind kind,
+                              @NotNull String name, @NotNull DistributionPackageInfo info);
 
 }

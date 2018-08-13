@@ -18,11 +18,9 @@
  */
 package org.apache.sling.distribution.queue.impl;
 
-import javax.annotation.Nonnull;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
@@ -30,6 +28,7 @@ import org.apache.sling.distribution.packaging.impl.ReferencePackage;
 import org.apache.sling.distribution.packaging.impl.SharedDistributionPackage;
 import org.apache.sling.distribution.queue.*;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,8 +57,8 @@ public class AsyncDeliveryDispatchingStrategy implements DistributionQueueDispat
     }
 
     @Override
-    public Iterable<DistributionQueueItemStatus> add(@Nonnull DistributionPackage distributionPackage,
-                                                     @Nonnull DistributionQueueProvider queueProvider) throws DistributionException {
+    public Iterable<DistributionQueueItemStatus> add(@NotNull DistributionPackage distributionPackage,
+                                                     @NotNull DistributionQueueProvider queueProvider) throws DistributionException {
 
         if (!(distributionPackage instanceof SharedDistributionPackage) && deliveryMappings.size() > 1) {
             throw new DistributionException("distribution package must be a shared package to be added in multiple queues");
@@ -139,7 +138,7 @@ public class AsyncDeliveryDispatchingStrategy implements DistributionQueueDispat
 
     }
 
-    @Nonnull
+    @NotNull
     public List<String> getQueueNames() {
         return queues;
     }

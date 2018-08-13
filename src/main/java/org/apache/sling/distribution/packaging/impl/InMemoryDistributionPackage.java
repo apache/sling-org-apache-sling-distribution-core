@@ -22,10 +22,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.annotation.Nonnull;
-
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
+import org.jetbrains.annotations.NotNull;
 
 public class InMemoryDistributionPackage implements DistributionPackage {
 
@@ -47,19 +46,19 @@ public class InMemoryDistributionPackage implements DistributionPackage {
         this.info = new DistributionPackageInfo(type);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getId() {
         return id;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getType() {
         return type;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public InputStream createInputStream() throws IOException {
         return new ByteArrayInputStream(data);
@@ -79,7 +78,7 @@ public class InMemoryDistributionPackage implements DistributionPackage {
         // nothing to do
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public DistributionPackageInfo getInfo() {
         return info;

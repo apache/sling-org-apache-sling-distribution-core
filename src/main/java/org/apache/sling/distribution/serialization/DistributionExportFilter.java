@@ -18,7 +18,6 @@
  */
 package org.apache.sling.distribution.serialization;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,8 +27,8 @@ import java.util.List;
 import java.util.NavigableMap;
 import java.util.Set;
 import java.util.TreeSet;
-
 import org.apache.sling.distribution.DistributionRequest;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A filter is responsible for storing information about which resources / attributes should be serialized.
@@ -43,12 +42,12 @@ public class DistributionExportFilter {
         // can only be constructed by #createFilter
     }
 
-    @Nonnull
+    @NotNull
     public Set<TreeFilter> getNodeFilters() {
         return nodeFilters;
     }
 
-    @Nonnull
+    @NotNull
     public TreeFilter getPropertyFilter() {
         return propertyFilter;
     }
@@ -160,7 +159,7 @@ public class DistributionExportFilter {
             excludes.add(path);
         }
 
-        @Nonnull
+        @NotNull
         public String getPath() {
             return path;
         }

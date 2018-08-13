@@ -18,8 +18,6 @@
  */
 package org.apache.sling.distribution.queue.impl.simple;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -27,7 +25,6 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.WeakHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
-
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
@@ -37,6 +34,8 @@ import org.apache.sling.distribution.queue.DistributionQueueState;
 import org.apache.sling.distribution.queue.DistributionQueueStatus;
 import org.apache.sling.distribution.queue.DistributionQueueType;
 import org.apache.sling.distribution.queue.impl.DistributionQueueUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,12 +65,12 @@ public class SimpleDistributionQueue implements DistributionQueue {
         this.statusMap = new WeakHashMap<DistributionQueueItem, DistributionQueueItemStatus>(10);
     }
 
-    @Nonnull
+    @NotNull
     public String getName() {
         return name;
     }
 
-    public DistributionQueueEntry add(@Nonnull DistributionQueueItem item) {
+    public DistributionQueueEntry add(@NotNull DistributionQueueItem item) {
         DistributionQueueItemState itemState = DistributionQueueItemState.ERROR;
         boolean result = false;
         try {
@@ -91,7 +90,7 @@ public class SimpleDistributionQueue implements DistributionQueue {
     }
 
 
-    @CheckForNull
+    @Nullable
     public DistributionQueueEntry getHead() {
         DistributionQueueItem element = queue.peek();
         if (element != null) {
@@ -105,14 +104,14 @@ public class SimpleDistributionQueue implements DistributionQueue {
         return null;
     }
 
-    @Nonnull
+    @NotNull
     private DistributionQueueState getState() {
         DistributionQueueItem firstItem = queue.peek();
         DistributionQueueItemStatus firstItemStatus = firstItem != null ? statusMap.get(firstItem) : null;
         return DistributionQueueUtils.calculateState(firstItem, firstItemStatus);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public DistributionQueueStatus getStatus() {
         return new DistributionQueueStatus(queue.size(), getState());
@@ -124,7 +123,7 @@ public class SimpleDistributionQueue implements DistributionQueue {
     }
 
 
-    @Nonnull
+    @NotNull
     public Iterable<DistributionQueueEntry> getItems(int skip, int limit) {
         List<DistributionQueueEntry> result = new ArrayList<DistributionQueueEntry>();
 
@@ -134,8 +133,8 @@ public class SimpleDistributionQueue implements DistributionQueue {
         return result;
     }
 
-    @CheckForNull
-    public DistributionQueueEntry getItem(@Nonnull String id) {
+    @Nullable
+    public DistributionQueueEntry getItem(@NotNull String id) {
         for (DistributionQueueItem item : queue) {
             if (id.equals(item.getPackageId())) {
                 return new DistributionQueueEntry(id, item, statusMap.get(item));
@@ -146,8 +145,8 @@ public class SimpleDistributionQueue implements DistributionQueue {
     }
 
 
-    @CheckForNull
-    public DistributionQueueEntry remove(@Nonnull String id) {
+    @Nullable
+    public DistributionQueueEntry remove(@NotNull String id) {
         DistributionQueueEntry toRemove = getItem(id);
 
         boolean removed = false;

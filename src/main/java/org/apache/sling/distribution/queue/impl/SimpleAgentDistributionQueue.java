@@ -23,8 +23,7 @@ import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueState;
 import org.apache.sling.distribution.queue.DistributionQueueStatus;
 import org.apache.sling.distribution.queue.DistributionQueueType;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class SimpleAgentDistributionQueue extends DistributionQueueWrapper {
 
@@ -37,7 +36,7 @@ public class SimpleAgentDistributionQueue extends DistributionQueueWrapper {
         this.agentName = agentName;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public DistributionQueueStatus getStatus() {
         return calculateStatus();

@@ -18,12 +18,11 @@
  */
 package org.apache.sling.distribution.queue.impl;
 
-import javax.annotation.Nonnull;
-
 import aQute.bnd.annotation.ProviderType;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.queue.DistributionQueueType;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A provider for {@link DistributionQueue}s
@@ -37,8 +36,8 @@ public interface DistributionQueueProvider {
      * @param queueName the name of the queue to retrieve
      * @return a {@link DistributionQueue}
      */
-    @Nonnull
-    DistributionQueue getQueue(@Nonnull String queueName) throws DistributionException;
+    @NotNull
+    DistributionQueue getQueue(@NotNull String queueName) throws DistributionException;
 
     /**
      * provde a queue of the given type with the given name
@@ -46,15 +45,15 @@ public interface DistributionQueueProvider {
      * @param type the type of the queue
      * @return a {@link DistributionQueue}
      */
-    @Nonnull
-    DistributionQueue getQueue(@Nonnull String queueName, @Nonnull DistributionQueueType type);
+    @NotNull
+    DistributionQueue getQueue(@NotNull String queueName, @NotNull DistributionQueueType type);
 
     /**
      * enables queue processing
      *
      * @param queueProcessor the queue processor to be used
      */
-    void enableQueueProcessing(@Nonnull DistributionQueueProcessor queueProcessor, String... queueNames) throws DistributionException;
+    void enableQueueProcessing(@NotNull DistributionQueueProcessor queueProcessor, String... queueNames) throws DistributionException;
 
     /**
      * disables queue processing

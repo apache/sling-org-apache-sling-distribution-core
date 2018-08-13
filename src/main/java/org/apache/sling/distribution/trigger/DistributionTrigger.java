@@ -18,10 +18,9 @@
  */
 package org.apache.sling.distribution.trigger;
 
-import javax.annotation.Nonnull;
-
 import aQute.bnd.annotation.ConsumerType;
 import org.apache.sling.distribution.common.DistributionException;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A {@link DistributionTrigger} is responsible to trigger
@@ -39,7 +38,7 @@ public interface DistributionTrigger {
      * @param requestHandler handler
      * @throws DistributionException if registration fails
      */
-    void register(@Nonnull DistributionRequestHandler requestHandler) throws DistributionException;
+    void register(@NotNull DistributionRequestHandler requestHandler) throws DistributionException;
 
     /**
      * unregister the given handler, if existing
@@ -47,5 +46,5 @@ public interface DistributionTrigger {
      * @param requestHandler handler to unregister
      * @throws DistributionException if any error happen
      */
-    void unregister(@Nonnull DistributionRequestHandler requestHandler) throws DistributionException;
+    void unregister(@NotNull DistributionRequestHandler requestHandler) throws DistributionException;
 }

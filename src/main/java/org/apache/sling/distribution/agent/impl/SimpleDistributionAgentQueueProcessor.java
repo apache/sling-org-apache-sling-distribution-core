@@ -18,8 +18,6 @@
  */
 package org.apache.sling.distribution.agent.impl;
 
-import javax.annotation.Nonnull;
-
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequestType;
 import org.apache.sling.distribution.common.DistributionException;
@@ -39,6 +37,7 @@ import org.apache.sling.distribution.queue.impl.DistributionQueueProcessor;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
 import org.apache.sling.distribution.queue.impl.DistributionQueueDispatchingStrategy;
 import org.apache.sling.distribution.util.impl.DistributionUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,7 +80,7 @@ class SimpleDistributionAgentQueueProcessor implements DistributionQueueProcesso
     }
 
     @Override
-    public boolean process(@Nonnull String queueName, @Nonnull DistributionQueueEntry queueEntry) {
+    public boolean process(@NotNull String queueName, @NotNull DistributionQueueEntry queueEntry) {
         DistributionQueueItem queueItem = queueEntry.getItem();
 
         try {

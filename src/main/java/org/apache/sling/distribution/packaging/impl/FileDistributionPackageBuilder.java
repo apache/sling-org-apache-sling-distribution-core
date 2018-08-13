@@ -21,7 +21,6 @@ package org.apache.sling.distribution.packaging.impl;
 
 import static java.util.UUID.randomUUID;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -32,7 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
@@ -43,6 +41,7 @@ import org.apache.sling.distribution.serialization.DistributionContentSerializer
 import org.apache.sling.distribution.serialization.DistributionExportFilter;
 import org.apache.sling.distribution.serialization.DistributionExportOptions;
 import org.apache.sling.distribution.serialization.impl.vlt.VltUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +81,7 @@ public class FileDistributionPackageBuilder extends AbstractDistributionPackageB
     }
 
     @Override
-    protected DistributionPackage createPackageForAdd(@Nonnull ResourceResolver resourceResolver, @Nonnull final DistributionRequest request) throws DistributionException {
+    protected DistributionPackage createPackageForAdd(@NotNull ResourceResolver resourceResolver, @NotNull final DistributionRequest request) throws DistributionException {
         DistributionPackage distributionPackage;
         OutputStream outputStream = null;
         String digestMessage = null;
@@ -116,7 +115,7 @@ public class FileDistributionPackageBuilder extends AbstractDistributionPackageB
     }
 
     @Override
-    protected DistributionPackage readPackageInternal(@Nonnull ResourceResolver resourceResolver, @Nonnull InputStream stream)
+    protected DistributionPackage readPackageInternal(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream)
             throws DistributionException {
         DistributionPackage distributionPackage;
         final File file;
@@ -152,7 +151,7 @@ public class FileDistributionPackageBuilder extends AbstractDistributionPackageB
     }
 
     @Override
-    protected boolean installPackageInternal(@Nonnull ResourceResolver resourceResolver, @Nonnull InputStream inputStream)
+    protected boolean installPackageInternal(@NotNull ResourceResolver resourceResolver, @NotNull InputStream inputStream)
             throws DistributionException {
         try {
             distributionContentSerializer.importFromStream(resourceResolver, inputStream);
@@ -163,7 +162,7 @@ public class FileDistributionPackageBuilder extends AbstractDistributionPackageB
     }
 
     @Override
-    protected DistributionPackage getPackageInternal(@Nonnull ResourceResolver resourceResolver, @Nonnull String id) {
+    protected DistributionPackage getPackageInternal(@NotNull ResourceResolver resourceResolver, @NotNull String id) {
         File file = new File(tempDirectory, id);
         if (!file.exists()) {
             log.warn("file package does not exist", file.getAbsolutePath());

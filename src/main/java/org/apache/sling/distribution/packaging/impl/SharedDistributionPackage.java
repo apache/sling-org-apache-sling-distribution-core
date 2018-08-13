@@ -18,10 +18,9 @@
  */
 package org.apache.sling.distribution.packaging.impl;
 
-import javax.annotation.Nonnull;
-
 import aQute.bnd.annotation.ProviderType;
 import org.apache.sling.distribution.packaging.DistributionPackage;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A {@link DistributionPackage} that offers basic reference counting.
@@ -33,12 +32,12 @@ public interface SharedDistributionPackage extends DistributionPackage {
     /**
      * acquire a reference to this package and increase the reference count.
      */
-    void acquire(@Nonnull String... holderNames);
+    void acquire(@NotNull String... holderNames);
 
     /**
      * release a reference to this package and decrease the reference count.
      * when no more references are hold the package {@code DistributionPackage#delete} method will be invoked.
      */
-    void release(@Nonnull String... holderNames);
+    void release(@NotNull String... holderNames);
 
 }

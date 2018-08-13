@@ -19,13 +19,11 @@
 
 package org.apache.sling.distribution.queue.impl;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
@@ -34,6 +32,7 @@ import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueItemState;
 import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +53,7 @@ public class ErrorQueueDispatchingStrategy implements DistributionQueueDispatchi
     }
 
     @Override
-    public Iterable<DistributionQueueItemStatus> add(@Nonnull DistributionPackage distributionPackage, @Nonnull DistributionQueueProvider queueProvider) throws DistributionException {
+    public Iterable<DistributionQueueItemStatus> add(@NotNull DistributionPackage distributionPackage, @NotNull DistributionQueueProvider queueProvider) throws DistributionException {
 
         List<DistributionQueueItemStatus> result = new ArrayList<DistributionQueueItemStatus>();
         String originQueue = DistributionPackageUtils.getQueueName(distributionPackage.getInfo());
@@ -85,7 +84,7 @@ public class ErrorQueueDispatchingStrategy implements DistributionQueueDispatchi
         return result;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<String> getQueueNames() {
         List<String> errorQueueNames = new ArrayList<String>();

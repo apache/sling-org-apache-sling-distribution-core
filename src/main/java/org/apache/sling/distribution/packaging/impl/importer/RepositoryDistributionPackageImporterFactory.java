@@ -21,8 +21,6 @@ package org.apache.sling.distribution.packaging.impl.importer;
 import java.io.InputStream;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.ConfigurationPolicy;
@@ -37,6 +35,7 @@ import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.apache.sling.jcr.api.SlingRepository;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * OSGi configuration factory for {@link RepositoryDistributionPackageImporter}s.
@@ -79,13 +78,13 @@ public class RepositoryDistributionPackageImporterFactory implements Distributio
                 PropertiesUtil.toString(config.get(PRIVILEGE_NAME), "jcr:read"));
     }
 
-    public void importPackage(@Nonnull ResourceResolver resourceResolver, @Nonnull DistributionPackage distributionPackage) throws DistributionException {
+    public void importPackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionPackage distributionPackage) throws DistributionException {
         importer.importPackage(resourceResolver, distributionPackage);
 
     }
 
-    @Nonnull
-    public DistributionPackageInfo importStream(@Nonnull ResourceResolver resourceResolver, @Nonnull InputStream stream) throws DistributionException {
+    @NotNull
+    public DistributionPackageInfo importStream(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream) throws DistributionException {
         return importer.importStream(resourceResolver, stream);
     }
 }

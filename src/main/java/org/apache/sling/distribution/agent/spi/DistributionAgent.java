@@ -18,9 +18,6 @@
  */
 package org.apache.sling.distribution.agent.spi;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-
 import aQute.bnd.annotation.ConsumerType;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
@@ -29,6 +26,8 @@ import org.apache.sling.distribution.agent.DistributionAgentState;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.log.spi.DistributionLog;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A distribution agent is responsible for handling {@link org.apache.sling.distribution.DistributionRequest}s.
@@ -45,7 +44,7 @@ public interface DistributionAgent {
      *
      * @return the list of queue names
      */
-    @Nonnull
+    @NotNull
     Iterable<String> getQueueNames();
 
     /**
@@ -55,21 +54,21 @@ public interface DistributionAgent {
      * @return a {@link DistributionQueue} with the given name bound to this agent, if it exists,
      * {@code null} otherwise
      */
-    @CheckForNull
-    DistributionQueue getQueue(@Nonnull String name);
+    @Nullable
+    DistributionQueue getQueue(@NotNull String name);
 
     /**
      * Get the agent log
      * @return the log for this agent
      */
-    @Nonnull
+    @NotNull
     DistributionLog getLog();
 
     /**
      * returns the state of the agent
      * @return the agent state
      */
-    @Nonnull
+    @NotNull
     DistributionAgentState getState();
 
     /**
@@ -87,7 +86,7 @@ public interface DistributionAgent {
      * @return a {@link org.apache.sling.distribution.DistributionResponse}
      * @throws DistributionException if any error happens during the execution of the request or if the authentication fails
      */
-    @Nonnull
-    DistributionResponse execute(@Nonnull ResourceResolver resourceResolver, @Nonnull DistributionRequest distributionRequest) throws DistributionException;
+    @NotNull
+    DistributionResponse execute(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest) throws DistributionException;
 
 }

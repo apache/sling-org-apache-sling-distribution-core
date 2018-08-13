@@ -18,12 +18,10 @@
  */
 package org.apache.sling.distribution.queue.impl.jobhandling;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
@@ -35,6 +33,7 @@ import org.apache.sling.distribution.queue.impl.DistributionQueueUtils;
 import org.apache.sling.event.jobs.Job;
 import org.apache.sling.event.jobs.JobManager;
 import org.apache.sling.event.jobs.JobManager.QueryType;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,12 +63,12 @@ public class JobHandlingDistributionQueue implements DistributionQueue {
         this.type = type;
     }
 
-    @Nonnull
+    @NotNull
     public String getName() {
         return name;
     }
 
-    public DistributionQueueEntry add(@Nonnull DistributionQueueItem item) {
+    public DistributionQueueEntry add(@NotNull DistributionQueueItem item) {
         try {
             Map<String, Object> properties = JobHandlingUtils.createFullProperties(item);
 
@@ -141,7 +140,7 @@ public class JobHandlingDistributionQueue implements DistributionQueue {
     }
 
 
-    @Nonnull
+    @NotNull
     public List<DistributionQueueEntry> getItems(int skip, int limit) {
 
         List<DistributionQueueEntry> items = new ArrayList<DistributionQueueEntry>();
@@ -153,7 +152,7 @@ public class JobHandlingDistributionQueue implements DistributionQueue {
         return items;
     }
 
-    public DistributionQueueEntry getItem(@Nonnull String id) {
+    public DistributionQueueEntry getItem(@NotNull String id) {
         Job job = getJob(id);
 
         if (job != null) {
@@ -163,7 +162,7 @@ public class JobHandlingDistributionQueue implements DistributionQueue {
         return null;
     }
 
-    public DistributionQueueEntry remove(@Nonnull String id) {
+    public DistributionQueueEntry remove(@NotNull String id) {
         boolean removed = false;
         Job job = getJob(id);
 
@@ -180,7 +179,7 @@ public class JobHandlingDistributionQueue implements DistributionQueue {
 
 
     @Override
-    @Nonnull
+    @NotNull
     public DistributionQueueStatus getStatus() {
         List<Job> jobs = getJobs(0, -1);
         Job firstJob = jobs.size() > 0 ? jobs.get(0) : null;

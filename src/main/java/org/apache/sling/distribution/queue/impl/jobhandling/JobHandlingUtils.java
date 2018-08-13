@@ -18,16 +18,15 @@
  */
 package org.apache.sling.distribution.queue.impl.jobhandling;
 
-import javax.annotation.CheckForNull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueItemState;
 import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
 import org.apache.sling.event.jobs.Job;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +83,7 @@ class JobHandlingUtils {
         return properties;
     }
 
-    @CheckForNull
+    @Nullable
     private static String getQueueName(Job job) {
 
         String topic = job.getTopic();
@@ -109,7 +108,7 @@ class JobHandlingUtils {
                 attempts, queueName);
     }
 
-    @CheckForNull
+    @Nullable
     public static DistributionQueueEntry getEntry(final Job job) {
         DistributionQueueItem item = getItem(job);
         DistributionQueueItemStatus itemStatus = getStatus(job);

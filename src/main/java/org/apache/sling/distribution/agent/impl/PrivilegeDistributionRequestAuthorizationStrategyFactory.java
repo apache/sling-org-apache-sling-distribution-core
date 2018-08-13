@@ -18,9 +18,7 @@
  */
 package org.apache.sling.distribution.agent.impl;
 
-import javax.annotation.Nonnull;
 import java.util.Map;
-
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.ConfigurationPolicy;
@@ -31,6 +29,7 @@ import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.component.impl.DistributionComponentConstants;
 import org.apache.sling.distribution.common.DistributionException;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -69,7 +68,7 @@ public class PrivilegeDistributionRequestAuthorizationStrategyFactory implements
         authorizationStrategy = new PrivilegeDistributionRequestAuthorizationStrategy(jcrPrivilege);
     }
 
-    public void checkPermission(@Nonnull ResourceResolver resourceResolver, @Nonnull DistributionRequest distributionRequest) throws DistributionException {
+    public void checkPermission(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest) throws DistributionException {
         authorizationStrategy.checkPermission(resourceResolver, distributionRequest);
     }
 }

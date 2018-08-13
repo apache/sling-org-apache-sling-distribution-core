@@ -18,10 +18,9 @@
  */
 package org.apache.sling.distribution.packaging.impl;
 
-import javax.annotation.CheckForNull;
-
 import aQute.bnd.annotation.ProviderType;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A helper interface to allow finding registered {@link DistributionPackageBuilder}s
@@ -34,6 +33,6 @@ public interface DistributionPackageBuilderProvider {
      * @param type the package type
      * @return a {@link DistributionPackageBuilder} if one is already registered for that type or null otherwise
      */
-    @CheckForNull
+    @Nullable
     DistributionPackageBuilder getPackageBuilder(String type);
 }

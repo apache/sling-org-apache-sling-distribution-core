@@ -18,9 +18,6 @@
  */
 package org.apache.sling.distribution.agent.impl;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.agent.spi.DistributionAgent;
@@ -28,6 +25,8 @@ import org.apache.sling.distribution.component.impl.DistributionComponentKind;
 import org.apache.sling.distribution.log.impl.DefaultDistributionLog;
 import org.apache.sling.distribution.trigger.DistributionRequestHandler;
 import org.apache.sling.distribution.util.impl.DistributionUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A {@link DistributionRequestHandler} to trigger an agent.
@@ -39,10 +38,10 @@ class TriggerAgentRequestHandler implements DistributionRequestHandler {
     private final DistributionAgent agent;
     private final String agentName;
 
-    public TriggerAgentRequestHandler(@Nonnull DistributionAgent agent,
-                                      @Nonnull String agentName,
-                                      @Nonnull SimpleDistributionAgentAuthenticationInfo authenticationInfo,
-                                      @Nonnull DefaultDistributionLog log,
+    public TriggerAgentRequestHandler(@NotNull DistributionAgent agent,
+                                      @NotNull String agentName,
+                                      @NotNull SimpleDistributionAgentAuthenticationInfo authenticationInfo,
+                                      @NotNull DefaultDistributionLog log,
                                       boolean active) {
         this.authenticationInfo = authenticationInfo;
         this.log = log;
@@ -59,7 +58,7 @@ class TriggerAgentRequestHandler implements DistributionRequestHandler {
         return DistributionComponentKind.AGENT;
     }
 
-    public void handle(@Nullable ResourceResolver resourceResolver, @Nonnull DistributionRequest request) {
+    public void handle(@Nullable ResourceResolver resourceResolver, @NotNull DistributionRequest request) {
 
         if (!active) {
             log.warn("skipping agent handler as agent is disabled");

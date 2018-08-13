@@ -18,13 +18,12 @@
  */
 package org.apache.sling.distribution.transport.impl;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.packaging.DistributionPackage;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A transport layer implementation to transport data between two (or eventually more) Sling instances.
@@ -43,8 +42,8 @@ public interface DistributionTransport {
      * @throws DistributionException if the {@link DistributionPackage}
      *                                        fails to be delivered to the target instance (e.g. because of network, I/O issues)
      */
-    void deliverPackage(@Nonnull ResourceResolver resourceResolver, @Nonnull DistributionPackage distributionPackage,
-                        @Nonnull DistributionTransportContext context) throws DistributionException;
+    void deliverPackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionPackage distributionPackage,
+                        @NotNull DistributionTransportContext context) throws DistributionException;
 
     /**
      * Retrieve {@link DistributionPackage}s from a target Sling instance, which
@@ -59,7 +58,7 @@ public interface DistributionTransport {
      *                                        fail to be retrieved from the target instance
      */
     @Nullable
-    RemoteDistributionPackage retrievePackage(@Nonnull ResourceResolver resourceResolver, @Nonnull DistributionRequest request,
-                                              @Nonnull DistributionTransportContext context) throws DistributionException;
+    RemoteDistributionPackage retrievePackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest request,
+                                              @NotNull DistributionTransportContext context) throws DistributionException;
 
 }

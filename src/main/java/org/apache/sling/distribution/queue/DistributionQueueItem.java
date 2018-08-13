@@ -18,13 +18,12 @@
  */
 package org.apache.sling.distribution.queue;
 
-import javax.annotation.Nonnull;
 import java.util.Map;
-
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.wrappers.ValueMapDecorator;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * An item in a {@link DistributionQueue}
@@ -37,7 +36,7 @@ public final class DistributionQueueItem extends ValueMapDecorator implements Va
     private final String packageId;
     private final long size;
 
-    public DistributionQueueItem(@Nonnull String packageId, Map<String, Object> base) {
+    public DistributionQueueItem(@NotNull String packageId, Map<String, Object> base) {
         this(packageId, -1, base);
     }
 
@@ -48,7 +47,7 @@ public final class DistributionQueueItem extends ValueMapDecorator implements Va
 
     }
 
-    @Nonnull
+    @NotNull
     public String getPackageId() {
         return packageId;
     }

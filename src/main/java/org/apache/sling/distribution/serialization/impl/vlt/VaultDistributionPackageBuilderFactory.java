@@ -40,16 +40,15 @@ import org.apache.sling.distribution.packaging.impl.ResourceDistributionPackageB
 import org.apache.sling.distribution.packaging.impl.ResourceDistributionPackageCleanup;
 import org.apache.sling.distribution.serialization.DistributionContentSerializer;
 import org.apache.sling.distribution.util.impl.FileBackedMemoryOutputStream.MemoryUnit;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 import java.io.InputStream;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Map;
-
 /**
  * A package builder for Apache Jackrabbit FileVault based implementations.
  */
@@ -305,28 +304,28 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
         return packageBuilder.getType();
     }
 
-    @Nonnull
-    public DistributionPackage createPackage(@Nonnull ResourceResolver resourceResolver, @Nonnull DistributionRequest request) throws DistributionException {
+    @NotNull
+    public DistributionPackage createPackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest request) throws DistributionException {
         return packageBuilder.createPackage(resourceResolver, request);
     }
 
-    @Nonnull
-    public DistributionPackage readPackage(@Nonnull ResourceResolver resourceResolver, @Nonnull InputStream stream) throws DistributionException {
+    @NotNull
+    public DistributionPackage readPackage(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream) throws DistributionException {
         return packageBuilder.readPackage(resourceResolver, stream);
     }
 
-    @CheckForNull
-    public DistributionPackage getPackage(@Nonnull ResourceResolver resourceResolver, @Nonnull String id) throws DistributionException {
+    @Nullable
+    public DistributionPackage getPackage(@NotNull ResourceResolver resourceResolver, @NotNull String id) throws DistributionException {
         return packageBuilder.getPackage(resourceResolver, id);
     }
 
-    public boolean installPackage(@Nonnull ResourceResolver resourceResolver, @Nonnull DistributionPackage distributionPackage) throws DistributionException {
+    public boolean installPackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionPackage distributionPackage) throws DistributionException {
         return packageBuilder.installPackage(resourceResolver, distributionPackage);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public DistributionPackageInfo installPackage(@Nonnull ResourceResolver resourceResolver, @Nonnull InputStream stream) throws DistributionException {
+    public DistributionPackageInfo installPackage(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream) throws DistributionException {
         return packageBuilder.installPackage(resourceResolver, stream);
     }
 }

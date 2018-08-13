@@ -18,9 +18,7 @@
  */
 package org.apache.sling.distribution.trigger.impl;
 
-import javax.annotation.Nonnull;
 import java.util.Map;
-
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.ConfigurationPolicy;
@@ -35,6 +33,7 @@ import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.transport.DistributionTransportSecretProvider;
 import org.apache.sling.distribution.trigger.DistributionRequestHandler;
 import org.apache.sling.distribution.trigger.DistributionTrigger;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.BundleContext;
 
 @Component(metatype = true,
@@ -82,11 +81,11 @@ public class RemoteEventDistributionTriggerFactory implements DistributionTrigge
 
     }
 
-    public void register(@Nonnull DistributionRequestHandler requestHandler) throws DistributionException {
+    public void register(@NotNull DistributionRequestHandler requestHandler) throws DistributionException {
         trigger.register(requestHandler);
     }
 
-    public void unregister(@Nonnull DistributionRequestHandler requestHandler) throws DistributionException {
+    public void unregister(@NotNull DistributionRequestHandler requestHandler) throws DistributionException {
         trigger.unregister(requestHandler);
     }
 }

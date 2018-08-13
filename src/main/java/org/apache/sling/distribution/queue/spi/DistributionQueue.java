@@ -18,9 +18,6 @@
  */
 package org.apache.sling.distribution.queue.spi;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-
 import aQute.bnd.annotation.ConsumerType;
 import org.apache.sling.distribution.agent.spi.DistributionAgent;
 import org.apache.sling.distribution.packaging.DistributionPackage;
@@ -29,6 +26,8 @@ import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueStatus;
 import org.apache.sling.distribution.queue.DistributionQueueType;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProcessor;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A queue is responsible for collecting the {@link DistributionPackage}s
@@ -48,7 +47,7 @@ public interface DistributionQueue {
      *
      * @return the queue name
      */
-    @Nonnull
+    @NotNull
     String getName();
 
     /**
@@ -58,15 +57,15 @@ public interface DistributionQueue {
      *             to distribute
      * @return the queue entry created for this item or {@code noll} if none is created
      */
-    @CheckForNull
-    DistributionQueueEntry add(@Nonnull DistributionQueueItem item);
+    @Nullable
+    DistributionQueueEntry add(@NotNull DistributionQueueItem item);
 
     /**
      * get the first item (in a FIFO strategy, the next to be processed) from the queue
      *
      * @return the first item into the queue or {@code null} if the queue is empty
      */
-    @CheckForNull
+    @Nullable
     DistributionQueueEntry getHead();
 
     /**
@@ -76,7 +75,7 @@ public interface DistributionQueue {
      * @param limit the maximum number of items to return. use -1 to return all items.
      * @return a {@link java.lang.Iterable} of {@link DistributionQueueItem}s
      */
-    @Nonnull
+    @NotNull
     Iterable<DistributionQueueEntry> getItems(int skip, int limit);
 
     /**
@@ -86,8 +85,8 @@ public interface DistributionQueue {
      * @return the item, or {@code null} if the item with the given id
      * doesn't exist
      */
-    @CheckForNull
-    DistributionQueueEntry getItem(@Nonnull String itemId);
+    @Nullable
+    DistributionQueueEntry getItem(@NotNull String itemId);
 
     /**
      * remove an item from the queue by specifying its id
@@ -96,20 +95,20 @@ public interface DistributionQueue {
      * @return the removed item, or {@code null} if the item with the given id
      * doesn't exist
      */
-    @CheckForNull
-    DistributionQueueEntry remove(@Nonnull String itemId);
+    @Nullable
+    DistributionQueueEntry remove(@NotNull String itemId);
 
     /**
      * get the status of the queue
      * @return the queue status
      */
-    @Nonnull
+    @NotNull
     DistributionQueueStatus getStatus();
 
     /**
      * get the type of this queue
      * @return the type
      */
-    @Nonnull
+    @NotNull
     DistributionQueueType getType();
 }

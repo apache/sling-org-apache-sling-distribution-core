@@ -20,12 +20,11 @@
 package org.apache.sling.distribution.packaging.impl;
 
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Package wrapper meant to be extended and provide just simple overridden methods.
@@ -40,17 +39,17 @@ public class DistributionPackageWrapper implements DistributionPackage {
         this.wrappedPackage = wrappedPackage;
     }
 
-    @Nonnull
+    @NotNull
     public String getId() {
         return wrappedPackage.getId();
     }
 
-    @Nonnull
+    @NotNull
     public String getType() {
         return wrappedPackage.getType();
     }
 
-    @Nonnull
+    @NotNull
     public InputStream createInputStream() throws IOException {
         return wrappedPackage.createInputStream();
     }
@@ -68,7 +67,7 @@ public class DistributionPackageWrapper implements DistributionPackage {
         wrappedPackage.delete();
     }
 
-    @Nonnull
+    @NotNull
     public DistributionPackageInfo getInfo() {
         return wrappedPackage.getInfo();
     }

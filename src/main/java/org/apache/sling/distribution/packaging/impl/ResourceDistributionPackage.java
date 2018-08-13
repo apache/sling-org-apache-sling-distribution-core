@@ -18,8 +18,6 @@
  */
 package org.apache.sling.distribution.packaging.impl;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -32,6 +30,8 @@ import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.distribution.DistributionRequestType;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +62,7 @@ public class ResourceDistributionPackage extends AbstractDistributionPackage {
         this.getInfo().put(DistributionPackageInfo.PROPERTY_REQUEST_TYPE, DistributionRequestType.ADD);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public InputStream createInputStream() throws IOException {
         try {
@@ -88,7 +88,7 @@ public class ResourceDistributionPackage extends AbstractDistributionPackage {
     }
 
     @Override
-    public void acquire(@Nonnull String... holderNames) {
+    public void acquire(@NotNull String... holderNames) {
         try {
             DistributionPackageUtils.acquire(resource, holderNames);
             if (resourceResolver.hasChanges()) {
@@ -103,7 +103,7 @@ public class ResourceDistributionPackage extends AbstractDistributionPackage {
     }
 
     @Override
-    public void release(@Nonnull String... holderNames) {
+    public void release(@NotNull String... holderNames) {
         try {
             DistributionPackageUtils.release(resource, holderNames);
             if (resourceResolver.hasChanges()) {

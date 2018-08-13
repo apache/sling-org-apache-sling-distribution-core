@@ -22,8 +22,7 @@ import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueStatus;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class DistributionQueueWrapper implements DistributionQueue {
     final DistributionQueue wrappedQueue;
@@ -33,14 +32,14 @@ public abstract class DistributionQueueWrapper implements DistributionQueue {
         this.wrappedQueue = wrappedQueue;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName() {
         return wrappedQueue.getName();
     }
 
     @Override
-    public DistributionQueueEntry add(@Nonnull DistributionQueueItem item) {
+    public DistributionQueueEntry add(@NotNull DistributionQueueItem item) {
         return wrappedQueue.add(item);
     }
 
@@ -49,23 +48,23 @@ public abstract class DistributionQueueWrapper implements DistributionQueue {
         return wrappedQueue.getHead();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Iterable<DistributionQueueEntry> getItems(int skip, int limit) {
         return wrappedQueue.getItems(skip, limit);
     }
 
     @Override
-    public DistributionQueueEntry getItem(@Nonnull String itemId) {
+    public DistributionQueueEntry getItem(@NotNull String itemId) {
         return wrappedQueue.getItem(itemId);
     }
 
     @Override
-    public DistributionQueueEntry remove(@Nonnull String itemId) {
+    public DistributionQueueEntry remove(@NotNull String itemId) {
         return wrappedQueue.remove(itemId);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public DistributionQueueStatus getStatus() {
         return wrappedQueue.getStatus();

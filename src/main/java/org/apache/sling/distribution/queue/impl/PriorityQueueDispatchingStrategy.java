@@ -21,15 +21,14 @@ package org.apache.sling.distribution.queue.impl;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
 
 public class PriorityQueueDispatchingStrategy implements DistributionQueueDispatchingStrategy {
 
@@ -47,7 +46,7 @@ public class PriorityQueueDispatchingStrategy implements DistributionQueueDispat
     }
 
     @Override
-    public Iterable<DistributionQueueItemStatus> add(@Nonnull DistributionPackage distributionPackage, @Nonnull DistributionQueueProvider queueProvider) throws DistributionException {
+    public Iterable<DistributionQueueItemStatus> add(@NotNull DistributionPackage distributionPackage, @NotNull DistributionQueueProvider queueProvider) throws DistributionException {
         String[] paths = distributionPackage.getInfo().getPaths();
         Map<String, String> matchingQueues = paths != null ?  getMatchingQueues(paths) : new HashMap<String, String>();
 
@@ -62,7 +61,7 @@ public class PriorityQueueDispatchingStrategy implements DistributionQueueDispat
         return dispatchingStrategy.add(distributionPackage, queueProvider);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<String> getQueueNames() {
         return allQueues;

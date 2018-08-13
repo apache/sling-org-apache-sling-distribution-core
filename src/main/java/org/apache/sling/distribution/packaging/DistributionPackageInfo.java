@@ -18,16 +18,15 @@
  */
 package org.apache.sling.distribution.packaging;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
 import aQute.bnd.annotation.ProviderType;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.wrappers.ValueMapDecorator;
 import org.apache.sling.distribution.DistributionRequestType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Additional information about a package.
@@ -82,7 +81,7 @@ public final class DistributionPackageInfo extends ValueMapDecorator implements 
     }
 
 
-    @Nonnull
+    @NotNull
     public String getType() {
         return get(PROPERTY_PACKAGE_TYPE, String.class);
     }
@@ -92,7 +91,7 @@ public final class DistributionPackageInfo extends ValueMapDecorator implements 
      *
      * @return an array of paths
      */
-    @CheckForNull
+    @Nullable
     public String[] getPaths() {
         return get(PROPERTY_REQUEST_PATHS, String[].class);
     }
@@ -102,7 +101,7 @@ public final class DistributionPackageInfo extends ValueMapDecorator implements 
      *
      * @return the request type
      */
-    @CheckForNull
+    @Nullable
     public DistributionRequestType getRequestType() {
         return get(PROPERTY_REQUEST_TYPE, DistributionRequestType.class);
     }

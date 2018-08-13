@@ -18,11 +18,9 @@
  */
 package org.apache.sling.distribution.trigger.impl;
 
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
@@ -35,6 +33,7 @@ import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.trigger.DistributionRequestHandler;
 import org.apache.sling.distribution.trigger.DistributionTrigger;
 import org.apache.sling.distribution.util.impl.DistributionUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,7 +78,7 @@ public class ScheduledDistributionTrigger implements DistributionTrigger {
         }
     }
 
-    public void register(@Nonnull DistributionRequestHandler requestHandler) throws DistributionException {
+    public void register(@NotNull DistributionRequestHandler requestHandler) throws DistributionException {
         try {
             ScheduleOptions options = scheduler.NOW(-1, secondsInterval);
             String jobName = getJobName(requestHandler);
@@ -100,7 +99,7 @@ public class ScheduledDistributionTrigger implements DistributionTrigger {
         }
     }
 
-    public void unregister(@Nonnull DistributionRequestHandler requestHandler) throws DistributionException {
+    public void unregister(@NotNull DistributionRequestHandler requestHandler) throws DistributionException {
         String jobName = getJobName(requestHandler);
 
         boolean success = scheduler.unschedule(jobName);

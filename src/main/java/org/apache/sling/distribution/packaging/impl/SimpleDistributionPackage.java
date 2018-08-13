@@ -18,17 +18,16 @@
  */
 package org.apache.sling.distribution.packaging.impl;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.regex.Pattern;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.DistributionRequestType;
 import org.apache.sling.distribution.SimpleDistributionRequest;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,7 +108,7 @@ public class SimpleDistributionPackage extends AbstractDistributionPackage imple
     }
 
 
-    @Nonnull
+    @NotNull
     public InputStream createInputStream() throws IOException {
         return IOUtils.toInputStream(getId(), "UTF-8");
     }
@@ -156,12 +155,12 @@ public class SimpleDistributionPackage extends AbstractDistributionPackage imple
     }
 
     @Override
-    public void acquire(@Nonnull String... holderNames) {
+    public void acquire(@NotNull String... holderNames) {
 
     }
 
     @Override
-    public void release(@Nonnull String... holderNames) {
+    public void release(@NotNull String... holderNames) {
 
     }
 }

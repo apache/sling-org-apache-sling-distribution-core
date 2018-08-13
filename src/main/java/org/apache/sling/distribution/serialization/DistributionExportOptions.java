@@ -18,12 +18,10 @@
  */
 package org.apache.sling.distribution.serialization;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
 import java.io.OutputStream;
-
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Export options used to identify and process the resources to be extracted by {@link
@@ -43,7 +41,7 @@ public final class DistributionExportOptions {
      * get the distribution request
      * @return the distribution request
      */
-    @CheckForNull
+    @Nullable
     public DistributionRequest getRequest() {
         return request;
     }
@@ -52,7 +50,7 @@ public final class DistributionExportOptions {
      * get the export filter
      * @return the export filter
      */
-    @CheckForNull
+    @Nullable
     public DistributionExportFilter getFilter() {
         return filter;
     }

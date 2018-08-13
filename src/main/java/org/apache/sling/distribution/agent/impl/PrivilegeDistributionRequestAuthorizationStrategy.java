@@ -18,7 +18,6 @@
  */
 package org.apache.sling.distribution.agent.impl;
 
-import javax.annotation.Nonnull;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.security.AccessControlManager;
@@ -29,6 +28,7 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.DistributionRequestType;
 import org.apache.sling.distribution.common.DistributionException;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * {@link DistributionRequestAuthorizationStrategy} based on JCR privileges over a certain {@link Session}
@@ -45,7 +45,7 @@ public class PrivilegeDistributionRequestAuthorizationStrategy implements Distri
         this.jcrPrivilege = jcrPrivilege;
     }
 
-    public void checkPermission(@Nonnull ResourceResolver resourceResolver, @Nonnull DistributionRequest distributionRequest) throws DistributionException {
+    public void checkPermission(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest) throws DistributionException {
         Session session = resourceResolver.adaptTo(Session.class);
 
         if (session == null) {

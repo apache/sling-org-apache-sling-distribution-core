@@ -18,9 +18,8 @@
  */
 package org.apache.sling.distribution.queue;
 
-import javax.annotation.Nonnull;
-
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * an entry in a {@link DistributionQueue}
@@ -31,7 +30,7 @@ public final class DistributionQueueEntry {
     private final DistributionQueueItem item;
     private final DistributionQueueItemStatus status;
 
-    public DistributionQueueEntry(String id, @Nonnull DistributionQueueItem item, @Nonnull DistributionQueueItemStatus status) {
+    public DistributionQueueEntry(String id, @NotNull DistributionQueueItem item, @NotNull DistributionQueueItemStatus status) {
         this.id = id;
         this.item = item;
         this.status = status;
@@ -42,7 +41,7 @@ public final class DistributionQueueEntry {
      *
      * @return a {@link DistributionQueueStatus}
      */
-    @Nonnull
+    @NotNull
     public DistributionQueueItemStatus getStatus() {
         return status;
     }
@@ -52,7 +51,7 @@ public final class DistributionQueueEntry {
      *
      * @return a {@link DistributionQueueItem}
      */
-    @Nonnull
+    @NotNull
     public DistributionQueueItem getItem() {
         return item;
     }

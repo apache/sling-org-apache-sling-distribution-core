@@ -18,16 +18,15 @@
  */
 package org.apache.sling.distribution.event.impl;
 
-import javax.annotation.Nonnull;
 import java.util.Dictionary;
 import java.util.Hashtable;
-
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.distribution.component.impl.DistributionComponentKind;
 import org.apache.sling.distribution.event.DistributionEventProperties;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.slf4j.Logger;
@@ -45,13 +44,13 @@ public class DefaultDistributionEventFactory implements DistributionEventFactory
     @Reference
     private EventAdmin eventAdmin;
 
-    private void generateEvent(@Nonnull String distributionEventTopic, @Nonnull Dictionary<?, ?> properties) {
+    private void generateEvent(@NotNull String distributionEventTopic, @NotNull Dictionary<?, ?> properties) {
         eventAdmin.postEvent(new Event(distributionEventTopic, properties));
         log.debug("distribution event {} posted", distributionEventTopic);
     }
 
-    public void generatePackageEvent(@Nonnull String distributionEventTopic, @Nonnull DistributionComponentKind kind,
-                                     @Nonnull String name, @Nonnull DistributionPackageInfo info) {
+    public void generatePackageEvent(@NotNull String distributionEventTopic, @NotNull DistributionComponentKind kind,
+                                     @NotNull String name, @NotNull DistributionPackageInfo info) {
         try {
             Dictionary<String, Object> dictionary = new Hashtable<String, Object>();
             dictionary.put(DistributionEventProperties.DISTRIBUTION_COMPONENT_NAME, name);

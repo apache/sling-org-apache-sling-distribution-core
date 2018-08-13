@@ -18,7 +18,6 @@
  */
 package org.apache.sling.distribution.trigger.impl;
 
-import javax.annotation.Nonnull;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.observation.Event;
@@ -47,6 +46,7 @@ import org.apache.sling.distribution.trigger.DistributionTrigger;
 import org.apache.sling.distribution.util.DistributionJcrUtils;
 import org.apache.sling.distribution.util.impl.DistributionUtils;
 import org.apache.sling.jcr.api.SlingRepository;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,7 +83,7 @@ public abstract class AbstractJcrEventTrigger implements DistributionTrigger {
         this.scheduler = scheduler;
     }
 
-    public void register(@Nonnull DistributionRequestHandler requestHandler) throws DistributionException {
+    public void register(@NotNull DistributionRequestHandler requestHandler) throws DistributionException {
         Session session;
         try {
             session = getSession();
@@ -96,7 +96,7 @@ public abstract class AbstractJcrEventTrigger implements DistributionTrigger {
         }
     }
 
-    public void unregister(@Nonnull DistributionRequestHandler requestHandler) throws DistributionException {
+    public void unregister(@NotNull DistributionRequestHandler requestHandler) throws DistributionException {
         JcrEventDistributionTriggerListener listener = registeredListeners.get(requestHandler.toString());
         if (listener != null) {
             Session session;

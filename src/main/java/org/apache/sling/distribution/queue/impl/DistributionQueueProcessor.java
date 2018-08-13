@@ -18,12 +18,11 @@
  */
 package org.apache.sling.distribution.queue.impl;
 
-import javax.annotation.Nonnull;
-
 import aQute.bnd.annotation.ProviderType;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Processor of {@link DistributionQueueItem}s
@@ -38,5 +37,5 @@ public interface DistributionQueueProcessor {
      * @param queueEntry the {@link org.apache.sling.distribution.queue.DistributionQueueEntry} to be processed
      * @return {@code true} if the item was successfully processed, {@code false} otherwise
      */
-    boolean process(@Nonnull String queueName, @Nonnull DistributionQueueEntry queueEntry);
+    boolean process(@NotNull String queueName, @NotNull DistributionQueueEntry queueEntry);
 }

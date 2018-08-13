@@ -19,7 +19,6 @@
 
 package org.apache.sling.distribution.servlet;
 
-import javax.annotation.Nullable;
 import javax.json.Json;
 import javax.json.JsonException;
 import javax.json.JsonObject;
@@ -32,6 +31,7 @@ import java.util.Map;
 
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.distribution.DistributionResponse;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

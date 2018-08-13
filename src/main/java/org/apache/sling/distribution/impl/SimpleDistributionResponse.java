@@ -19,10 +19,9 @@
 
 package org.apache.sling.distribution.impl;
 
-import javax.annotation.Nonnull;
-
 import org.apache.sling.distribution.DistributionRequestState;
 import org.apache.sling.distribution.DistributionResponse;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Simple implementation of {@link DistributionResponse} where success is given by not being in FAILED state.
@@ -43,7 +42,7 @@ public class SimpleDistributionResponse implements DistributionResponse {
         return DistributionRequestState.ACCEPTED.equals(state) || DistributionRequestState.DISTRIBUTED.equals(state);
     }
 
-    @Nonnull
+    @NotNull
     public DistributionRequestState getState() {
         return state;
     }

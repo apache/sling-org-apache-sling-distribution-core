@@ -18,14 +18,13 @@
  */
 package org.apache.sling.distribution.queue.impl;
 
-import javax.annotation.Nonnull;
 import java.util.List;
-
 import aQute.bnd.annotation.ConsumerType;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * a {@link DistributionQueueDispatchingStrategy} implements an algorithm for dispatching
@@ -49,14 +48,14 @@ public interface DistributionQueueDispatchingStrategy {
      * the states of the {@link org.apache.sling.distribution.queue.DistributionQueueItem}s added to one or more {@link DistributionQueue}s
      * @throws DistributionException if any internal error happens during distribution
      */
-    Iterable<DistributionQueueItemStatus> add(@Nonnull DistributionPackage distributionPackage, @Nonnull DistributionQueueProvider queueProvider) throws DistributionException;
+    Iterable<DistributionQueueItemStatus> add(@NotNull DistributionPackage distributionPackage, @NotNull DistributionQueueProvider queueProvider) throws DistributionException;
 
     /**
      * Returns the queue names available for this strategy.
      *
      * @return a list of queue names
      */
-    @Nonnull
+    @NotNull
     List<String> getQueueNames();
 
 }

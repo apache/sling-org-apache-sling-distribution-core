@@ -18,8 +18,6 @@
  */
 package org.apache.sling.distribution.packaging.impl.exporter;
 
-import javax.annotation.Nonnull;
-
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.DistributionRequestType;
@@ -39,6 +37,7 @@ import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageBuilderProvider;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageWrapper;
 import org.apache.sling.distribution.packaging.impl.SimpleDistributionPackage;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +68,7 @@ public class AgentDistributionPackageExporter implements DistributionPackageExpo
         this.agent = agent;
     }
 
-    public void exportPackages(@Nonnull ResourceResolver resourceResolver, @Nonnull DistributionRequest distributionRequest, @Nonnull DistributionPackageProcessor packageProcessor) throws DistributionException {
+    public void exportPackages(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest, @NotNull DistributionPackageProcessor packageProcessor) throws DistributionException {
 
         if (DistributionRequestType.TEST.equals(distributionRequest.getRequestType())) {
             packageProcessor.process(new SimpleDistributionPackage(distributionRequest, PACKAGE_TYPE));
@@ -118,7 +117,7 @@ public class AgentDistributionPackageExporter implements DistributionPackageExpo
         }
     }
 
-    public DistributionPackage getPackage(@Nonnull ResourceResolver resourceResolver, @Nonnull String distributionPackageId) {
+    public DistributionPackage getPackage(@NotNull ResourceResolver resourceResolver, @NotNull String distributionPackageId) {
 
         try {
             log.debug("getting package from queue {}", queueName);
@@ -174,7 +173,7 @@ public class AgentDistributionPackageExporter implements DistributionPackageExpo
             agentLog("exported package {} with info {} from queue {} by exporter {}", new Object[] {itemId, distributionPackage.getInfo(), queue.getName(), name});
         }
 
-        @Nonnull
+        @NotNull
         @Override
         public String getId() {
             return itemId;
@@ -189,8 +188,8 @@ public class AgentDistributionPackageExporter implements DistributionPackageExpo
         }
     }
 
-    @Nonnull
-    private DistributionQueue getQueueOrThrow(@Nonnull String queueName)
+    @NotNull
+    private DistributionQueue getQueueOrThrow(@NotNull String queueName)
             throws DistributionException {
         DistributionQueue queue = agent.getQueue(queueName);
         if (queue == null) {

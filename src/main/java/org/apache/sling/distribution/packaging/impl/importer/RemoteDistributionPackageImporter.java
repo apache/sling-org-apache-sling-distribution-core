@@ -18,11 +18,9 @@
  */
 package org.apache.sling.distribution.packaging.impl.importer;
 
-import javax.annotation.Nonnull;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.log.impl.DefaultDistributionLog;
@@ -32,6 +30,7 @@ import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.apache.sling.distribution.transport.DistributionTransportSecretProvider;
 import org.apache.sling.distribution.transport.impl.*;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Remote implementation of {@link DistributionPackageImporter}
@@ -57,7 +56,7 @@ public class RemoteDistributionPackageImporter implements DistributionPackageImp
         }
     }
 
-    public void importPackage(@Nonnull ResourceResolver resourceResolver, @Nonnull DistributionPackage distributionPackage) throws DistributionException {
+    public void importPackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionPackage distributionPackage) throws DistributionException {
         DistributionPackageInfo info = distributionPackage.getInfo();
         String queueName = DistributionPackageUtils.getQueueName(info);
 
@@ -72,8 +71,8 @@ public class RemoteDistributionPackageImporter implements DistributionPackageImp
         }
     }
 
-    @Nonnull
-    public DistributionPackageInfo importStream(@Nonnull ResourceResolver resourceResolver, @Nonnull InputStream stream) throws DistributionException {
+    @NotNull
+    public DistributionPackageInfo importStream(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream) throws DistributionException {
         throw new DistributionException("not supported");
     }
 

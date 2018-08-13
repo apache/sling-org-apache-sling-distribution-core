@@ -18,7 +18,6 @@
  */
 package org.apache.sling.distribution.queue.impl.simple;
 
-import javax.annotation.Nonnull;
 import javax.json.JsonException;
 
 import java.io.File;
@@ -38,6 +37,7 @@ import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProcessor;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
 import org.apache.sling.distribution.queue.DistributionQueueType;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,8 +82,8 @@ public class SimpleDistributionQueueProvider implements DistributionQueueProvide
         this.name = name;
     }
 
-    @Nonnull
-    public DistributionQueue getQueue(@Nonnull String queueName) {
+    @NotNull
+    public DistributionQueue getQueue(@NotNull String queueName) {
         String key = name + queueName;
 
         SimpleDistributionQueue queue = queueMap.get(key);
@@ -97,7 +97,7 @@ public class SimpleDistributionQueueProvider implements DistributionQueueProvide
     }
 
     @Override
-    public DistributionQueue getQueue(@Nonnull String queueName, @Nonnull DistributionQueueType type) {
+    public DistributionQueue getQueue(@NotNull String queueName, @NotNull DistributionQueueType type) {
         return getQueue(queueName);
     }
 
@@ -105,7 +105,7 @@ public class SimpleDistributionQueueProvider implements DistributionQueueProvide
         return queueMap.values();
     }
 
-    public void enableQueueProcessing(@Nonnull DistributionQueueProcessor queueProcessor, String... queueNames) {
+    public void enableQueueProcessing(@NotNull DistributionQueueProcessor queueProcessor, String... queueNames) {
 
         if (checkpoint) {
             // recover from checkpoints

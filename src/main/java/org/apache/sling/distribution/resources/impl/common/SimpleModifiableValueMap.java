@@ -18,13 +18,12 @@
  */
 package org.apache.sling.distribution.resources.impl.common;
 
-import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.wrappers.ModifiableValueMapDecorator;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * ValueMap that signals to the underlying resource provider the its values are changed.
@@ -60,7 +59,7 @@ class SimpleModifiableValueMap extends ModifiableValueMapDecorator
     }
 
     @Override
-    public void putAll(@Nonnull Map<? extends String, ?> t) {
+    public void putAll(@NotNull Map<? extends String, ?> t) {
         super.putAll(t);
         changed();
     }

@@ -18,14 +18,11 @@
  */
 package org.apache.sling.distribution.transport.impl;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpHost;
@@ -52,6 +49,8 @@ import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
 import org.apache.sling.distribution.transport.DistributionTransportSecret;
 import org.apache.sling.distribution.transport.DistributionTransportSecretProvider;
 import org.apache.sling.distribution.util.RequestUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * default HTTP implementation of {@link DistributionTransport}
@@ -109,8 +108,8 @@ public class SimpleHttpDistributionTransport implements DistributionTransport {
         this.contextKeyExecutor = EXECUTOR_CONTEXT_KEY_PREFIX + "_" + getHostAndPort(distributionEndpoint.getUri()) + "_" + UUID.randomUUID();
     }
 
-    public void deliverPackage(@Nonnull ResourceResolver resourceResolver, @Nonnull DistributionPackage distributionPackage,
-                               @Nonnull DistributionTransportContext distributionContext) throws DistributionException {
+    public void deliverPackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionPackage distributionPackage,
+                               @NotNull DistributionTransportContext distributionContext) throws DistributionException {
         String hostAndPort = getHostAndPort(distributionEndpoint.getUri());
 
         DistributionPackageInfo info = distributionPackage.getInfo();
@@ -167,7 +166,7 @@ public class SimpleHttpDistributionTransport implements DistributionTransport {
     }
 
     @Nullable
-    public RemoteDistributionPackage retrievePackage(@Nonnull ResourceResolver resourceResolver, @Nonnull DistributionRequest distributionRequest, @Nonnull DistributionTransportContext distributionContext) throws DistributionException {
+    public RemoteDistributionPackage retrievePackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest, @NotNull DistributionTransportContext distributionContext) throws DistributionException {
         log.debug("pulling from {}", distributionEndpoint.getUri());
 
         try {
@@ -231,7 +230,7 @@ public class SimpleHttpDistributionTransport implements DistributionTransport {
         return executor;
     }
 
-    private Executor buildAuthExecutor(@Nonnull Map<String, String> credentialsMap) {
+    private Executor buildAuthExecutor(@NotNull Map<String, String> credentialsMap) {
         return (credentialsMap.containsKey(AUTHORIZATION))
                 ? buildAuthExecutor(credentialsMap.get(AUTHORIZATION))
                 : buildAuthExecutor(credentialsMap.get(USERNAME), credentialsMap.get(PASSWORD));

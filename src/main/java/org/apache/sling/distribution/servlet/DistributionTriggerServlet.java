@@ -18,8 +18,6 @@
  */
 package org.apache.sling.distribution.servlet;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -36,6 +34,8 @@ import org.apache.sling.distribution.component.impl.DistributionComponentKind;
 import org.apache.sling.distribution.resources.DistributionResourceTypes;
 import org.apache.sling.distribution.trigger.DistributionRequestHandler;
 import org.apache.sling.distribution.trigger.DistributionTrigger;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,7 +89,7 @@ public class DistributionTriggerServlet extends SlingAllMethodsServlet {
                 return null; // unknown
             }
 
-            public void handle(@Nullable ResourceResolver resourceResolver, @Nonnull DistributionRequest request) {
+            public void handle(@Nullable ResourceResolver resourceResolver, @NotNull DistributionRequest request) {
                 writeEvent(writer, request);
             }
         };

@@ -31,10 +31,10 @@ import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
 import javax.jcr.Binary;
 import javax.jcr.Node;
 import javax.jcr.Property;
@@ -300,7 +300,7 @@ public class DistributionPackageUtils {
     }
 
 
-    public static void acquire(Resource resource, @Nonnull String[] holderNames) throws RepositoryException {
+    public static void acquire(Resource resource, @NotNull String[] holderNames) throws RepositoryException {
         if (holderNames.length == 0) {
             throw new IllegalArgumentException("holder name cannot be null or empty");
         }
@@ -316,7 +316,7 @@ public class DistributionPackageUtils {
         }
     }
 
-    public static boolean disposable(@Nonnull Resource resource) throws RepositoryException {
+    public static boolean disposable(@NotNull Resource resource) throws RepositoryException {
         Node parent = resource.adaptTo(Node.class);
         if (parent.hasNode("refs")) {
             Node refs = parent.getNode("refs");
@@ -330,7 +330,7 @@ public class DistributionPackageUtils {
 
     }
 
-    public static void release(Resource resource, @Nonnull String[] holderNames) throws RepositoryException {
+    public static void release(Resource resource, @NotNull String[] holderNames) throws RepositoryException {
         if (holderNames.length == 0) {
             throw new IllegalArgumentException("holder name cannot be null or empty");
         }
@@ -351,7 +351,7 @@ public class DistributionPackageUtils {
         }
     }
 
-    public static void acquire(File file, @Nonnull String[] holderNames) throws IOException {
+    public static void acquire(File file, @NotNull String[] holderNames) throws IOException {
 
         if (holderNames.length == 0) {
             throw new IllegalArgumentException("holder name cannot be null or empty");
@@ -388,7 +388,7 @@ public class DistributionPackageUtils {
 
     }
 
-    public static boolean release(File file, @Nonnull String[] holderNames) throws IOException {
+    public static boolean release(File file, @NotNull String[] holderNames) throws IOException {
         if (holderNames.length == 0) {
             throw new IllegalArgumentException("holder name cannot be null or empty");
         }
