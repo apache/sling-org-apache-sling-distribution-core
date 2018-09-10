@@ -237,7 +237,6 @@ public class ForwardDistributionAgentFactory extends AbstractDistributionAgentFa
         String serviceName = SettingsUtils.removeEmptyEntry(PropertiesUtil.toString(config.get(SERVICE_NAME), null));
         String[] allowedRoots = PropertiesUtil.toStringArray(config.get(ALLOWED_ROOTS), null);
         allowedRoots = SettingsUtils.removeEmptyEntries(allowedRoots);
-
         boolean queueProcessingEnabled = PropertiesUtil.toBoolean(config.get(QUEUE_PROCESSING_ENABLED), true);
 
         String[] passiveQueues = PropertiesUtil.toStringArray(config.get(PASSIVE_QUEUES), new String[0]);
@@ -247,12 +246,27 @@ public class ForwardDistributionAgentFactory extends AbstractDistributionAgentFa
         priorityQueues = SettingsUtils.removeEmptyEntries(priorityQueues);
 
         Integer timeout = PropertiesUtil.toInteger(config.get(HTTP), 10) * 1000;
+
+        String queueProviderName = PropertiesUtil.toString(config.get(QUEUE_PROVIDER), JobHandlingDistributionQueueProvider.TYPE);
+        boolean asyncDelivery = PropertiesUtil.toBoolean(config.get(ASYNC_DELIVERY), false);
+        String retryStrategy = SettingsUtils.removeEmptyEntry(PropertiesUtil.toString(config.get(RETRY_STRATEGY), null));
+        int retryAttempts = PropertiesUtil.toInteger(config.get(RETRY_ATTEMPTS), 100);
+        Map<String, String> importerEndpointsMap = SettingsUtils.toUriMap(config.get(IMPORTER_ENDPOINTS));
+
+
+        return createAgent(agentName, context, distributionLog, serviceName, allowedRoots, queueProcessingEnabled, passiveQueues, priorityQueues, timeout,
+                queueProviderName, asyncDelivery, retryStrategy, retryAttempts, importerEndpointsMap);
+    }
+
+    protected SimpleDistributionAgent createAgent(String agentName, BundleContext context, DefaultDistributionLog distributionLog,
+                                                  String serviceName, String[] allowedRoots, boolean queueProcessingEnabled, String[] passiveQueues, Map<String, String> priorityQueues, Integer timeout,
+                                                  String queueProviderName, boolean asyncDelivery, String retryStrategy, int retryAttempts, Map<String, String> importerEndpointsMap) {
+
         HttpConfiguration httpConfiguration = new HttpConfiguration(timeout);
 
         DistributionPackageExporter packageExporter = new LocalDistributionPackageExporter(packageBuilder);
 
         DistributionQueueProvider queueProvider;
-        String queueProviderName = PropertiesUtil.toString(config.get(QUEUE_PROVIDER), JobHandlingDistributionQueueProvider.TYPE);
         if (JobHandlingDistributionQueueProvider.TYPE.equals(queueProviderName)) {
             queueProvider = new JobHandlingDistributionQueueProvider(agentName, jobManager, context, configAdmin);
         } else if (SimpleDistributionQueueProvider.TYPE.equals(queueProviderName)) {
@@ -266,7 +280,6 @@ public class ForwardDistributionAgentFactory extends AbstractDistributionAgentFa
         DistributionQueueDispatchingStrategy errorQueueStrategy = null;
 
         DistributionPackageImporter packageImporter;
-        Map<String, String> importerEndpointsMap = SettingsUtils.toUriMap(config.get(IMPORTER_ENDPOINTS));
         Set<String> processingQueues = new HashSet<String>();
 
         Set<String> endpointNames = importerEndpointsMap.keySet();
@@ -285,7 +298,6 @@ public class ForwardDistributionAgentFactory extends AbstractDistributionAgentFa
             exportQueueStrategy = dispatchingStrategy;
             endpointNames = importerEndpointsMap.keySet();
         } else {
-            boolean asyncDelivery = PropertiesUtil.toBoolean(config.get(ASYNC_DELIVERY), false);
             if (asyncDelivery) {
                 // delivery queues' names
                 Map<String, String> deliveryQueues = new HashMap<String, String>();
@@ -308,9 +320,6 @@ public class ForwardDistributionAgentFactory extends AbstractDistributionAgentFa
 
         DistributionRequestType[] allowedRequests = new DistributionRequestType[]{DistributionRequestType.ADD, DistributionRequestType.DELETE};
 
-        String retryStrategy = SettingsUtils.removeEmptyEntry(PropertiesUtil.toString(config.get(RETRY_STRATEGY), null));
-        int retryAttepts = PropertiesUtil.toInteger(config.get(RETRY_ATTEMPTS), 100);
-
         if ("errorQueue".equals(retryStrategy)) {
             errorQueueStrategy = new ErrorQueueDispatchingStrategy(processingQueues.toArray(new String[processingQueues.size()]));
         }
@@ -318,9 +327,7 @@ public class ForwardDistributionAgentFactory extends AbstractDistributionAgentFa
         return new SimpleDistributionAgent(agentName, queueProcessingEnabled, processingQueues,
                 serviceName, packageImporter, packageExporter, requestAuthorizationStrategy,
                 queueProvider, exportQueueStrategy, errorQueueStrategy, distributionEventFactory, resourceResolverFactory, slingRepository,
-                distributionLog, allowedRequests, allowedRoots, retryAttepts);
-
-
+                distributionLog, allowedRequests, allowedRoots, retryAttempts);
     }
 
     @Override
