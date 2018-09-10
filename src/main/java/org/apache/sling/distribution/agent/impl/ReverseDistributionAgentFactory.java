@@ -194,7 +194,7 @@ public class ReverseDistributionAgentFactory extends AbstractDistributionAgentFa
 
         int pullItems = PropertiesUtil.toInteger(config.get(PULL_ITEMS), Integer.MAX_VALUE);
 
-        Integer timeout = PropertiesUtil.toInteger(HTTP, 10) * 1000;
+        Integer timeout = PropertiesUtil.toInteger(config.get(HTTP), 10) * 1000;
         HttpConfiguration httpConfiguration = new HttpConfiguration(timeout);
 
         DistributionPackageExporter packageExporter = new RemoteDistributionPackageExporter(distributionLog, packageBuilder,
