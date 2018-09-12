@@ -246,7 +246,7 @@ public class ForwardDistributionAgentFactory extends AbstractDistributionAgentFa
         Map<String, String> priorityQueues = PropertiesUtil.toMap(config.get(PRIORITY_QUEUES), new String[0]);
         priorityQueues = SettingsUtils.removeEmptyEntries(priorityQueues);
 
-        Integer timeout = PropertiesUtil.toInteger(HTTP, 10) * 1000;
+        Integer timeout = PropertiesUtil.toInteger(config.get(HTTP), 10) * 1000;
         HttpConfiguration httpConfiguration = new HttpConfiguration(timeout);
 
         DistributionPackageExporter packageExporter = new LocalDistributionPackageExporter(packageBuilder);
