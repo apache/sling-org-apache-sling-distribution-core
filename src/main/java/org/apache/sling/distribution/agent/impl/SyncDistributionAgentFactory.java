@@ -231,7 +231,7 @@ public class SyncDistributionAgentFactory extends AbstractDistributionAgentFacto
         String[] queueNames = queuesMap.toArray(new String[queuesMap.size()]);
         exportQueueStrategy = new MultipleQueueDispatchingStrategy(queueNames);
 
-        Integer timeout = PropertiesUtil.toInteger(HTTP, 10) * 1000;
+        Integer timeout = PropertiesUtil.toInteger(config.get(HTTP), 10) * 1000;
         HttpConfiguration httpConfiguration = new HttpConfiguration(timeout);
 
         packageImporter = new RemoteDistributionPackageImporter(distributionLog, transportSecretProvider,
