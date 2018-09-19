@@ -18,6 +18,8 @@
  */
 package org.apache.sling.distribution.transport.impl;
 
+import org.apache.http.osgi.services.ProxyConfiguration;
+
 /**
  * HTTP related configuration for {@link SimpleHttpDistributionTransport}
  */
@@ -25,6 +27,7 @@ public class HttpConfiguration {
 
     private final Integer connectTimeout;
     private final Integer socketTimeout;
+    private ProxyConfiguration proxyConfiguration;
 
     public HttpConfiguration(Integer timeout) {
         this.socketTimeout = timeout;
@@ -36,11 +39,21 @@ public class HttpConfiguration {
         this.socketTimeout = socketTimeout;
     }
 
+    public HttpConfiguration(Integer connectTimeout, Integer socketTimeout, ProxyConfiguration proxyConfiguration) {
+        this.connectTimeout = connectTimeout;
+        this.socketTimeout = socketTimeout;
+        this.proxyConfiguration = proxyConfiguration;
+    }
+
     public Integer getConnectTimeout() {
         return connectTimeout;
     }
 
     public Integer getSocketTimeout() {
         return socketTimeout;
+    }
+
+    public ProxyConfiguration getProxyConfiguration() {
+        return proxyConfiguration;
     }
 }

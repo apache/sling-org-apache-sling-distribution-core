@@ -31,6 +31,7 @@ import org.apache.felix.scr.annotations.PropertyOption;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.ReferenceCardinality;
 import org.apache.felix.scr.annotations.ReferencePolicy;
+import org.apache.http.osgi.services.ProxyConfiguration;
 import org.apache.jackrabbit.vault.packaging.Packaging;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.commons.osgi.PropertiesUtil;
@@ -161,6 +162,9 @@ public class ReverseDistributionAgentFactory extends AbstractDistributionAgentFa
     @Reference
     private SlingRepository slingRepository;
 
+    @Reference
+    private ProxyConfiguration proxyConfiguration;
+
     public ReverseDistributionAgentFactory() {
         super(ReverseDistributionAgentMBean.class);
     }
@@ -195,7 +199,7 @@ public class ReverseDistributionAgentFactory extends AbstractDistributionAgentFa
         int pullItems = PropertiesUtil.toInteger(config.get(PULL_ITEMS), Integer.MAX_VALUE);
 
         Integer timeout = PropertiesUtil.toInteger(config.get(HTTP), 10) * 1000;
-        HttpConfiguration httpConfiguration = new HttpConfiguration(timeout);
+        HttpConfiguration httpConfiguration = new HttpConfiguration(timeout, timeout, proxyConfiguration);
 
         DistributionPackageExporter packageExporter = new RemoteDistributionPackageExporter(distributionLog, packageBuilder,
                 transportSecretProvider, exporterEndpoints, pullItems, httpConfiguration);

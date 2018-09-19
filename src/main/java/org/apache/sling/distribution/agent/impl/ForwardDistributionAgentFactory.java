@@ -34,6 +34,7 @@ import org.apache.felix.scr.annotations.PropertyOption;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.ReferenceCardinality;
 import org.apache.felix.scr.annotations.ReferencePolicy;
+import org.apache.http.osgi.services.ProxyConfiguration;
 import org.apache.jackrabbit.vault.packaging.Packaging;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.commons.osgi.PropertiesUtil;
@@ -210,6 +211,9 @@ public class ForwardDistributionAgentFactory extends AbstractDistributionAgentFa
     @Reference
     private ConfigurationAdmin configAdmin;
 
+    @Reference
+    private ProxyConfiguration proxyConfiguration;
+
     public ForwardDistributionAgentFactory() {
         super(ForwardDistributionAgentMBean.class);
     }
@@ -247,7 +251,7 @@ public class ForwardDistributionAgentFactory extends AbstractDistributionAgentFa
         priorityQueues = SettingsUtils.removeEmptyEntries(priorityQueues);
 
         Integer timeout = PropertiesUtil.toInteger(config.get(HTTP), 10) * 1000;
-        HttpConfiguration httpConfiguration = new HttpConfiguration(timeout);
+        HttpConfiguration httpConfiguration = new HttpConfiguration(timeout, timeout, proxyConfiguration);
 
         DistributionPackageExporter packageExporter = new LocalDistributionPackageExporter(packageBuilder);
 

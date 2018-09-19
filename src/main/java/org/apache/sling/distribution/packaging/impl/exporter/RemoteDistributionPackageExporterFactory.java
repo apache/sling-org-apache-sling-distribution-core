@@ -26,6 +26,7 @@ import org.apache.felix.scr.annotations.Deactivate;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
+import org.apache.http.osgi.services.ProxyConfiguration;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.apache.sling.distribution.DistributionRequest;
@@ -90,6 +91,9 @@ public class RemoteDistributionPackageExporterFactory implements DistributionPac
     private
     DistributionTransportSecretProvider transportSecretProvider;
 
+    @Reference
+    ProxyConfiguration proxyConfiguration;
+
     private DistributionPackageExporter exporter;
 
     @Activate
@@ -108,7 +112,7 @@ public class RemoteDistributionPackageExporterFactory implements DistributionPac
         DefaultDistributionLog distributionLog = new DefaultDistributionLog(DistributionComponentKind.EXPORTER, exporterName, RemoteDistributionPackageExporter.class, DefaultDistributionLog.LogLevel.ERROR);
 
         // default to 10s, we can expose it if needed
-        HttpConfiguration httpConfiguration = new HttpConfiguration(10000);
+        HttpConfiguration httpConfiguration = new HttpConfiguration(10000, 10000, proxyConfiguration);
         exporter = new RemoteDistributionPackageExporter(distributionLog, packageBuilder, transportSecretProvider,
                 endpoints, pollItems, httpConfiguration);
     }

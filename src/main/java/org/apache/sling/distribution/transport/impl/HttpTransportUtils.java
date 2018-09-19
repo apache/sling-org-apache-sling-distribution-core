@@ -20,10 +20,12 @@
 package org.apache.sling.distribution.transport.impl;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.osgi.services.ProxyConfiguration;
 import org.apache.http.protocol.HTTP;
 
 import java.io.IOException;
@@ -41,6 +43,12 @@ class HttpTransportUtils {
                 .socketTimeout(httpConfiguration.getSocketTimeout())
                 .addHeader(HTTP.CONN_DIRECTIVE, HTTP.CONN_CLOSE)
                 .useExpectContinue();
+
+        if(httpConfiguration.getProxyConfiguration() != null && httpConfiguration.getProxyConfiguration().isEnabled()) {
+            ProxyConfiguration proxyConfiguration = httpConfiguration.getProxyConfiguration();
+            fetchReq = fetchReq.viaProxy(new HttpHost(proxyConfiguration.getHostname(), proxyConfiguration.getPort()));
+        }
+
         HttpResponse httpResponse = executor.execute(fetchReq).returnResponse();
 
         if (httpResponse.getStatusLine().getStatusCode() != 200) {
