@@ -71,9 +71,7 @@ public class ResourceQueue implements DistributionQueue {
 
             Resource queueRoot = ResourceQueueUtils.getRootResource(resourceResolver, queueRootPath);
 
-            String entryId = ResourceQueueUtils.getUniqueEntryId();
-
-            Resource resource = ResourceQueueUtils.createResource(queueRoot, entryId, item);
+            Resource resource = ResourceQueueUtils.createResource(queueRoot, item);
 
             DistributionQueueEntry entry = ResourceQueueUtils.readEntry(queueRoot, resource);
 

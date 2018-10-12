@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.sling.distribution.queue.impl.resource.it;
+package org.apache.sling.distribution;
 
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.distribution.agent.impl.PrivilegeDistributionRequestAuthorizationStrategyFactory;
@@ -38,6 +38,7 @@ import javax.inject.Inject;
 
 import java.io.File;
 
+import static org.apache.sling.testing.paxexam.SlingOptions.logback;
 import static org.apache.sling.testing.paxexam.SlingOptions.slingDistribution;
 import static org.apache.sling.testing.paxexam.SlingOptions.slingQuickstartOakTar;
 import static org.ops4j.pax.exam.CoreOptions.composite;
@@ -45,7 +46,7 @@ import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.cm.ConfigurationAdminOptions.factoryConfiguration;
 import static org.ops4j.pax.exam.cm.ConfigurationAdminOptions.newConfiguration;
 
-public class DistributionPaxTestBase extends TestSupport {
+public class DistributionBaseIT extends TestSupport {
 
     protected static final String AGENT_RESOURCE_QUEUE = "agentResourceQueue";
     protected static final String AGENT_JOB_QUEUE = "agentJobQueue";
@@ -60,16 +61,14 @@ public class DistributionPaxTestBase extends TestSupport {
 
     @Configuration
     public Option[] configuration() {
-        SlingOptions.versionResolver.setVersionFromProject("org.apache.sling", "org.apache.sling.distribution.core");
-
         return new Option[]{
-                baseConfiguration(), // from TestSupport
+                baseConfiguration(),
                 slingQuickstart(),
+                logback(),
                 // build artifact
                 slingDistribution(),
                 // testing
                 testBundle(    "bundle.filename"),
-                //CoreOptions.bundle(new File("/Users/mpetria/work/sling/distribution/core/target/org.apache.sling.distribution.core-0.3.5-SNAPSHOT.jar").toURI().toString()),
                 defaultOsgiConfigs(),
                 junitBundles()
         };

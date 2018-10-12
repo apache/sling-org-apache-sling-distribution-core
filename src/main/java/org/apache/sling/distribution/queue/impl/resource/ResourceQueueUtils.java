@@ -31,6 +31,8 @@ import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueItemState;
 import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 import javax.jcr.NodeIterator;
@@ -42,6 +44,7 @@ import javax.jcr.query.QueryResult;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -69,6 +72,7 @@ public class ResourceQueueUtils {
 
 
     private static final AtomicLong itemCounter = new AtomicLong(0);
+    private static final Logger log = LoggerFactory.getLogger(ResourceQueueUtils.class);
 
 
     private static Map<String, Object> serializeItem(DistributionQueueItem queueItem) {
@@ -194,10 +198,13 @@ public class ResourceQueueUtils {
 
 
 
-    public static Resource createResource(Resource root, String entryId, DistributionQueueItem queueItem) throws PersistenceException {
+    public static Resource createResource(Resource root, DistributionQueueItem queueItem) throws PersistenceException {
+
+        Resource minuteResource = getOrCreateMinuteResource(root);
+
+        String entryPath = getUniqueEntryPath(minuteResource);
 
         ResourceResolver resourceResolver = root.getResourceResolver();
-        String entryPath = getPathFromId(root.getPath(), entryId);
 
         Map<String, Object> properties = serializeItem(queueItem);
 
@@ -208,6 +215,76 @@ public class ResourceQueueUtils {
         resourceResolver.commit();
 
         return resourceItem;
+    }
+
+
+    /**
+     * Creates a minute resource by retrying several times. If it fails even the last time it will throw an exception.
+     */
+    private static Resource getOrCreateMinuteResource(Resource root) throws PersistenceException {
+
+        for (int i=0; i<2; i++) {
+            try {
+                return tryGetOrCreateMinutes(root);
+            } catch (PersistenceException e) {
+                log.warn("creating minute resource failed. retrying {} more times.", 5-i);
+            }
+
+            root.getResourceResolver().revert();
+            root.getResourceResolver().refresh();
+        }
+
+        return tryGetOrCreateMinutes(root);
+    }
+
+    /**
+     * Creates a set of resources for consecutive minutes.
+     * This ensures that consecutive minutes are created by a single thread, and that are created in order.
+     * This might fail due to concurrency issues and needs to be retried a couple of times.
+     */
+    private static Resource tryGetOrCreateMinutes(Resource root) throws PersistenceException {
+
+        ResourceResolver resourceResolver = root.getResourceResolver();
+        Calendar now = Calendar.getInstance();
+
+        String firstMinutePath = getTimePath(now);
+        Resource firstMinuteResource = resourceResolver.getResource(root, firstMinutePath);
+
+        if (firstMinuteResource != null) {
+            return firstMinuteResource;
+        }
+
+        for (int i=0; i < 3; i++) {
+            now.add(Calendar.MINUTE, i);
+            String newMinutePath = getTimePath(now);
+            Resource resource = createResource(root, newMinutePath);
+        }
+
+        resourceResolver.commit();
+
+        firstMinuteResource = resourceResolver.getResource(root, firstMinutePath);
+
+        return firstMinuteResource;
+    }
+
+    /*
+     * Creates a new resource at the specified path
+     * This is different than ResourceUtil.getOrCreateResource as it only creates the resource, it does not retrieve it.
+     * This ensures that consecutive minutes are always created atomically.
+     */
+    private static Resource createResource(Resource root, String relPath) throws PersistenceException {
+        ResourceResolver resourceResolver = root.getResourceResolver();
+
+        String path = root.getPath() + "/" + relPath;
+        final String parentPath = ResourceUtil.getParent(path);
+        final String name = ResourceUtil.getName(path);
+
+        Resource parent =  ResourceUtil.getOrCreateResource(resourceResolver, parentPath, RESOURCE_FOLDER,
+                RESOURCE_FOLDER, false);
+
+        Map<String, Object> props = Collections.singletonMap(ResourceResolver.PROPERTY_RESOURCE_TYPE, (Object) RESOURCE_FOLDER);
+
+        return resourceResolver.create(parent, name, props);
     }
 
     public static void deleteResource(Resource resource) throws PersistenceException {
@@ -254,15 +331,9 @@ public class ResourceQueueUtils {
     }
 
 
-    public static String getUniqueEntryId() {
-        String entryPath = getUniqueEntryPath();
-        return escapeId(entryPath);
-    }
-
-    private static String getUniqueEntryPath() {
-        final Calendar now = Calendar.getInstance();
+    private static String getUniqueEntryPath(Resource parent) {
         final StringBuilder sb = new StringBuilder();
-        sb.append(getTimePath(now));
+        sb.append(parent.getPath());
         sb.append('/');
         sb.append(UUID.randomUUID().toString().replace("-", ""));
         sb.append('_');

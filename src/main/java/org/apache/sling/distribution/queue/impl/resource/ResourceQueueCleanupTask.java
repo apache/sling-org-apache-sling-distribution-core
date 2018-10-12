@@ -19,7 +19,6 @@
 
 package org.apache.sling.distribution.queue.impl.resource;
 
-import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;

@@ -99,7 +99,7 @@
                 <configuration>
                     <redirectTestOutputToFile>true</redirectTestOutputToFile>
                     <excludes>
-                        <exclude>**/it/**</exclude>
+                        <exclude>**/*IT.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
@@ -152,7 +152,7 @@
                         </property>
                     </systemProperties>
                     <includes>
-                        <include>**/it/*</include>
+                        <include>**/*IT.java</include>
                     </includes>
                 </configuration>
             </plugin>

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.sling.distribution.queue.impl.resource.it;
+package org.apache.sling.distribution.queue.impl.resource;
 
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -29,6 +29,7 @@ import org.apache.sling.distribution.agent.spi.DistributionAgent;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
+import org.apache.sling.distribution.DistributionBaseIT;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,7 +49,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(PaxExam.class)
-public class ResourceQueueTest extends DistributionPaxTestBase {
+public class ResourceQueueIT extends DistributionBaseIT {
 
     static final int ITERATIONS = 1000;
     static final String QUEUE_NAME = "default";
