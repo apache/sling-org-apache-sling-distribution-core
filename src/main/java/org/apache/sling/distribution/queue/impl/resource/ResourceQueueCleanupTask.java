@@ -19,16 +19,18 @@
 
 package org.apache.sling.distribution.queue.impl.resource;
 
+import java.util.Calendar;
+import java.util.Iterator;
+
+import org.apache.sling.api.SlingException;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.distribution.util.impl.DistributionUtils;
+import org.apache.sling.resource.filter.ResourceFilterStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Calendar;
-import java.util.Iterator;
 
 
 public class ResourceQueueCleanupTask implements Runnable {
@@ -79,34 +81,25 @@ public class ResourceQueueCleanupTask implements Runnable {
         now.add(Calendar.MINUTE, -5);
 
         ResourceResolver resolver = root.getResourceResolver();
-        ResourceIterator it = new ResourceIterator(root, ResourceQueueUtils.RESOURCE_FOLDER, true, false);
+        
+        ResourceFilterStream rfs = root.adaptTo(ResourceFilterStream.class);
+        rfs.setChildSelector("[sling:resourceType] == 'sling:OrderedFolder'");
 
         String nowPath =  ResourceQueueUtils.getTimePath(now);
 
-        while (it.hasNext()) {
-            Resource res = it.next();
-
-            String resPath = res.getPath().substring(root.getPath().length()+1);
-
-            if (!res.isResourceType(ResourceQueueUtils.RESOURCE_FOLDER)) {
-                continue;
-            }
-
-            // now 2018/03/15/03/48
-            // res 2018/02/15
-            if (!ResourceQueueUtils.isSafeToDelete(nowPath, resPath)) {
-                continue;
-            }
-
-            if (res.hasChildren()) {
-                continue;
-            }
-
-            log.debug("removing empty folder {}", res.getPath());
-
-            resolver.delete(res);
-            resolver.commit();
-        }
+        rfs.stream().filter(resource ->{
+            String resPath = resource.getPath().substring(root.getPath().length()+1);
+            return ResourceQueueUtils.isSafeToDelete(nowPath, resPath);
+        }).filter(resource -> !resource.hasChildren()).forEach(resource -> delete(resolver,resource));
+        
+        resolver.commit();
 
     }
-}
+    
+    private static void delete(ResourceResolver resolver,Resource resource) {
+        try { 
+            resolver.delete(resource);
+        } catch (PersistenceException e) {
+            throw new SlingException("unable to delete resoure", e);
+        }
+      }}

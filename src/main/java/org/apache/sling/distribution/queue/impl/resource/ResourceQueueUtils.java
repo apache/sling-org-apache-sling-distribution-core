@@ -20,6 +20,24 @@
 package org.apache.sling.distribution.queue.impl.resource;
 
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
+
+import javax.jcr.NodeIterator;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
+
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -31,26 +49,9 @@ import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueItemState;
 import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
+import org.apache.sling.resource.filter.ResourceFilterStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
-import javax.jcr.NodeIterator;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class ResourceQueueUtils {
 
@@ -150,28 +151,11 @@ public class ResourceQueueUtils {
     }
 
     static List<DistributionQueueEntry> getEntries(Resource queueRoot, int skip, int limit) {
-        Iterator<Resource> it = new ResourceIterator(queueRoot, RESOURCE_FOLDER, false, true);
+        ResourceFilterStream rfs = queueRoot.adaptTo(ResourceFilterStream.class);
+        rfs.setChildSelector("[sling:resourceType] != 'sling:OrderedFolder'");
 
-        List<DistributionQueueEntry> entries = new ArrayList<DistributionQueueEntry>();
-
-        int i = 0;
-        while (it.hasNext()) {
-            Resource resource = it.next();
-
-            if (i++ < skip) {
-                continue;
-            }
-
-            DistributionQueueEntry entry = readEntry(queueRoot, resource);
-            entries.add(entry);
-
-            if (entries.size() >= limit) {
-                break;
-            }
-        }
-
-        return entries;
-
+        return rfs.stream().skip(skip).limit(limit).map(resource -> readEntry(queueRoot, resource))
+                .collect(Collectors.toList());
     }
 
 

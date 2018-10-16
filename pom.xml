@@ -50,6 +50,7 @@
 
     <properties>
         <exam.version>4.11.0</exam.version>
+        <sling.java.version>8</sling.java.version>
     </properties>
 
     <!-- ======================================================================= -->
@@ -385,6 +386,13 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.resource.filter</artifactId>
+            <version>1.0.0</version>
+            <type>bundle</type>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
     <reporting>
         <plugins>
