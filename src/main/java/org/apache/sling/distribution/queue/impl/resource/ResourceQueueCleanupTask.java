@@ -102,7 +102,7 @@ public class ResourceQueueCleanupTask implements Runnable {
                 continue;
             }
 
-            log.debug("removing empty folder {}", res.getPath());
+            log.debug("removing minute resource folder {}", res.getPath());
 
             resolver.delete(res);
             resolver.commit();

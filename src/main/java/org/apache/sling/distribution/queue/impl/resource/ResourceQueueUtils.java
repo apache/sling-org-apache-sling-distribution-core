@@ -228,11 +228,12 @@ public class ResourceQueueUtils {
      */
     private static Resource getOrCreateMinuteResource(Resource root) throws PersistenceException {
 
-        for (int i=0; i<2; i++) {
+        final int retries = 2;
+        for (int i=0; i < retries; i++) {
             try {
                 return tryGetOrCreateMinutes(root);
             } catch (PersistenceException e) {
-                log.warn("creating minute resource failed. retrying {} more times.", 5-i);
+                log.warn("creating minute resource failed. retrying {} more times.", retries-i);
             }
 
             root.getResourceResolver().revert();
@@ -260,9 +261,10 @@ public class ResourceQueueUtils {
         }
 
         for (int i=0; i < 3; i++) {
-            now.add(Calendar.MINUTE, i);
             String newMinutePath = getTimePath(now);
             Resource resource = createResource(root, newMinutePath);
+            log.debug("minute resource created {}", resource.getPath());
+            now.add(Calendar.MINUTE, 1);
         }
 
         resourceResolver.commit();
