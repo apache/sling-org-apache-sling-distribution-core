@@ -69,6 +69,7 @@ public class ResourceQueueUtils {
     private static final String DISTRIBUTION_PACKAGE_PREFIX = "distribution.";
     private static final String DISTRIBUTION_PACKAGE_ID = DISTRIBUTION_PACKAGE_PREFIX + "item.id";
     private static final String DISTRIBUTION_PACKAGE_SIZE = DISTRIBUTION_PACKAGE_PREFIX + "package.size";
+    private static final String ENTERED_DATE = "entered.date";
 
 
     private static final AtomicLong itemCounter = new AtomicLong(0);
@@ -141,8 +142,11 @@ public class ResourceQueueUtils {
         }
 
         String queueName = queueRoot.getName();
-        DistributionQueueItem queueItem = deserializeItem(resource.getValueMap());
-        DistributionQueueItemStatus queueItemStatus = new DistributionQueueItemStatus(DistributionQueueItemState.QUEUED, queueName);
+        ValueMap valueMap = resource.getValueMap();
+        DistributionQueueItem queueItem = deserializeItem(valueMap);
+        Calendar entered = valueMap.get(ENTERED_DATE, Calendar.getInstance());
+        DistributionQueueItemStatus queueItemStatus = new DistributionQueueItemStatus(entered,
+                DistributionQueueItemState.QUEUED, 0, queueName);
 
         String entryId = getIdFromPath(queueRoot.getPath(), resource.getPath());
 
@@ -209,6 +213,7 @@ public class ResourceQueueUtils {
         Map<String, Object> properties = serializeItem(queueItem);
 
         properties.put("sling:resourceType", RESOURCE_ITEM);
+        properties.put(ENTERED_DATE, Calendar.getInstance());
         Resource resourceItem =  ResourceUtil.getOrCreateResource(resourceResolver, entryPath, properties,
                 RESOURCE_FOLDER, true);
 
