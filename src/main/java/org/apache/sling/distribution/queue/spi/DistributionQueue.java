@@ -30,6 +30,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
+ * An editable distribution queue holding {@link DistributionQueueEntry} distribution queue entries.
+ * <p/>
  * A queue is responsible for collecting the {@link DistributionPackage}s
  * exported by a {@link DistributionAgent} in
  * order to be able to process them also when there are multiple (concurrent)
@@ -40,15 +42,7 @@ import org.jetbrains.annotations.Nullable;
  * strategy or in parallel, or some other way, via {@link DistributionQueueProcessor}s.
  */
 @ConsumerType
-public interface DistributionQueue {
-
-    /**
-     * get this queue name
-     *
-     * @return the queue name
-     */
-    @NotNull
-    String getName();
+public interface DistributionQueue extends ReadOnlyDistributionQueue {
 
     /**
      * add a distribution item to this queue
@@ -61,34 +55,6 @@ public interface DistributionQueue {
     DistributionQueueEntry add(@NotNull DistributionQueueItem item);
 
     /**
-     * get the first item (in a FIFO strategy, the next to be processed) from the queue
-     *
-     * @return the first item into the queue or {@code null} if the queue is empty
-     */
-    @Nullable
-    DistributionQueueEntry getHead();
-
-    /**
-     * get all the items in the queue
-     *
-     * @param skip the number of items to skip
-     * @param limit the maximum number of items to return. use -1 to return all items.
-     * @return a {@link java.lang.Iterable} of {@link DistributionQueueItem}s
-     */
-    @NotNull
-    Iterable<DistributionQueueEntry> getItems(int skip, int limit);
-
-    /**
-     * gets an item from the queue by specifying its id
-     *
-     * @param itemId the id of the item as returned by {@link DistributionQueueItem#getPackageId()}
-     * @return the item, or {@code null} if the item with the given id
-     * doesn't exist
-     */
-    @Nullable
-    DistributionQueueEntry getItem(@NotNull String itemId);
-
-    /**
      * remove an item from the queue by specifying its id
      *
      * @param itemId the id the item as returned by {@link DistributionQueueItem#getPackageId()}
@@ -98,17 +64,4 @@ public interface DistributionQueue {
     @Nullable
     DistributionQueueEntry remove(@NotNull String itemId);
 
-    /**
-     * get the status of the queue
-     * @return the queue status
-     */
-    @NotNull
-    DistributionQueueStatus getStatus();
-
-    /**
-     * get the type of this queue
-     * @return the type
-     */
-    @NotNull
-    DistributionQueueType getType();
 }
