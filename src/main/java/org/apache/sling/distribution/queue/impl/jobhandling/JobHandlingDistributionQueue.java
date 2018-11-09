@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.sling.distribution.queue.spi.Clearable;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
@@ -40,7 +42,7 @@ import org.slf4j.LoggerFactory;
 /**
  * a {@link DistributionQueue} based on Sling Job Handling facilities
  */
-public class JobHandlingDistributionQueue implements DistributionQueue {
+public class JobHandlingDistributionQueue implements DistributionQueue, Clearable {
 
     public final static String DISTRIBUTION_QUEUE_TOPIC = "org/apache/sling/distribution/queue";
 
@@ -202,4 +204,16 @@ public class JobHandlingDistributionQueue implements DistributionQueue {
         return type;
     }
 
+    @NotNull
+    @Override
+    public Iterable<DistributionQueueEntry> clear(int limit) {
+        final List<DistributionQueueEntry> removedEntries = new ArrayList<DistributionQueueEntry>();
+        for (DistributionQueueEntry entry : getItems(0, limit)) {
+            DistributionQueueEntry removed = remove(entry.getId());
+            if (removed != null) {
+                removedEntries.add(removed);
+            }
+        }
+        return removedEntries;
+    }
 }

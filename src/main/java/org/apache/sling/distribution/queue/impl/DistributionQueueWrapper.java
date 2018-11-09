@@ -18,13 +18,17 @@
  */
 package org.apache.sling.distribution.queue.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.sling.distribution.queue.spi.Clearable;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueStatus;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class DistributionQueueWrapper implements DistributionQueue {
+public abstract class DistributionQueueWrapper implements DistributionQueue, Clearable {
     final DistributionQueue wrappedQueue;
 
     DistributionQueueWrapper(DistributionQueue wrappedQueue) {
@@ -68,5 +72,18 @@ public abstract class DistributionQueueWrapper implements DistributionQueue {
     @Override
     public DistributionQueueStatus getStatus() {
         return wrappedQueue.getStatus();
+    }
+
+    @NotNull
+    @Override
+    public Iterable<DistributionQueueEntry> clear(int limit) {
+        final List<DistributionQueueEntry> removedEntries = new ArrayList<DistributionQueueEntry>();
+        for (DistributionQueueEntry entry : getItems(0, limit)) {
+            DistributionQueueEntry removed = remove(entry.getId());
+            if (removed != null) {
+                removedEntries.add(removed);
+            }
+        }
+        return removedEntries;
     }
 }

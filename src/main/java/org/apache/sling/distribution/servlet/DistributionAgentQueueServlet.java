@@ -32,6 +32,7 @@ import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
+import org.apache.sling.distribution.queue.spi.Clearable;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
@@ -79,7 +80,11 @@ public class DistributionAgentQueueServlet extends SlingAllMethodsServlet {
                 } catch (NumberFormatException ex) {
                     log.warn("limit param malformed : "+limitParam, ex);
                 }
-                deleteItems(resourceResolver, queue, limit);
+                if (queue instanceof Clearable) {
+                    clearItems(resourceResolver, queue, limit);
+                } else {
+                    deleteItems(resourceResolver, queue, limit);
+                }
             }
         } else if ("copy".equals(operation)) {
             String from = request.getParameter("from");
@@ -136,6 +141,13 @@ public class DistributionAgentQueueServlet extends SlingAllMethodsServlet {
 
         DistributionPackage distributionPackage = getPackage(resourceResolver, item);
         DistributionPackageUtils.releaseOrDelete(distributionPackage, queue.getName());
+    }
+
+    private void clearItems(ResourceResolver resourceResolver, DistributionQueue queue, int limit) {
+        for (DistributionQueueEntry removed : ((Clearable)queue).clear(limit)) {
+            DistributionPackage distributionPackage = getPackage(resourceResolver, removed.getItem());
+            DistributionPackageUtils.releaseOrDelete(distributionPackage, queue.getName());
+        }
     }
 
     private DistributionPackage getPackage(ResourceResolver resourceResolver, DistributionQueueItem item) {

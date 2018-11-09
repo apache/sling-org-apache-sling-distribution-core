@@ -16,9 +16,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-@Version("0.1.0")
 package org.apache.sling.distribution.queue.spi;
 
-import aQute.bnd.annotation.Version;
+import aQute.bnd.annotation.ConsumerType;
+import org.apache.sling.distribution.queue.DistributionQueueEntry;
+import org.jetbrains.annotations.NotNull;
 
+/**
+ * Trait to be added to a {@link DistributionQueue} distribution
+ * queue that supports clearing all or a range of entries via the
+ * {@link Clearable#clear} clearing methods.
+ *
+ * @since 0.1.0
+ */
+@ConsumerType
+public interface Clearable {
+
+    /**
+     * Clear a range of entries from the queue. The range starts from
+     * the head entry, includes the specified #limit number of entries.
+     *
+     * @param limit The maximum number of entries to remove. All entries
+     *              are removed when the limit is {@code -1}.
+     * @return an iterable over the removed entries
+     */
+    @NotNull
+    Iterable<DistributionQueueEntry> clear(int limit);
+
+}
