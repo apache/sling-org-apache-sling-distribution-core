@@ -26,6 +26,7 @@ import org.apache.sling.distribution.queue.DistributionQueueType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 /**
  * {@link DistributionQueueWrapper} that caches entries for 30s.
@@ -87,5 +88,19 @@ public class CachingDistributionQueue extends DistributionQueueWrapper {
         queueCache.remove(cacheKey);
         queueCacheExpiry.remove(cacheKey);
         return super.remove(itemId);
+    }
+
+    @Override
+    public @NotNull Iterable<DistributionQueueEntry> clear(@NotNull Set<String> itemIds) {
+        queueCache.remove(cacheKey);
+        queueCacheExpiry.remove(cacheKey);
+        return super.clear(itemIds);
+    }
+
+    @Override
+    public void clear() {
+        queueCache.remove(cacheKey);
+        queueCacheExpiry.remove(cacheKey);
+        super.clear();
     }
 }

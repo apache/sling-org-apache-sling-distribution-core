@@ -23,8 +23,11 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import org.apache.sling.distribution.queue.spi.Clearable;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
@@ -48,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * Note: potentially the Queue could contain the ordered package ids, with a sidecar map id->item;
  * that way removal could be faster.
  */
-public class SimpleDistributionQueue implements DistributionQueue {
+public class SimpleDistributionQueue implements DistributionQueue, Clearable {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -162,10 +165,27 @@ public class SimpleDistributionQueue implements DistributionQueue {
     }
 
     @Override
+    @NotNull
+    public Iterable<DistributionQueueEntry> clear(@NotNull Set<String> itemIds) {
+        List<DistributionQueueEntry> removed = new ArrayList<DistributionQueueEntry>();
+        for (String itemId : itemIds) {
+            DistributionQueueEntry entry = remove(itemId);
+            if (entry!= null) {
+                removed.add(entry);
+            }
+        }
+        return removed;
+    }
+
+    @Override
     public String toString() {
         return "SimpleDistributionQueue{" +
                 "name='" + name + '\'' +
                 '}';
     }
 
+    @Override
+    public void clear() {
+        queue.clear();
+    }
 }

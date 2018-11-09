@@ -29,6 +29,7 @@ import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueState;
 import org.apache.sling.distribution.queue.DistributionQueueStatus;
 import org.apache.sling.distribution.queue.DistributionQueueType;
+import org.apache.sling.distribution.queue.spi.Clearable;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.util.impl.DistributionUtils;
 import org.jetbrains.annotations.NotNull;
@@ -36,10 +37,12 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 
-public class ResourceQueue implements DistributionQueue {
+public class ResourceQueue implements DistributionQueue, Clearable {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
 
@@ -187,6 +190,18 @@ public class ResourceQueue implements DistributionQueue {
         }
     }
 
+    @Override
+    public @NotNull Iterable<DistributionQueueEntry> clear(@NotNull Set<String> itemIds) {
+        List<DistributionQueueEntry> removed = new ArrayList<DistributionQueueEntry>();
+        for (String itemId : itemIds) {
+            DistributionQueueEntry entry = remove(itemId);
+            if (entry!= null) {
+                removed.add(entry);
+            }
+        }
+        return removed;
+    }
+
     @Nullable
     @Override
     public DistributionQueueStatus getStatus() {
@@ -227,5 +242,22 @@ public class ResourceQueue implements DistributionQueue {
         String entryId = entry.getId();
         DistributionQueueItem item = entry.getItem();
         log.debug("queue[{}] {} entryId={} packageId={}", new Object[] { queueName, scope, entryId, item.getPackageId() });
+    }
+
+    @Override
+    public void clear() {
+        ResourceResolver resourceResolver = null;
+        try {
+            resourceResolver = DistributionUtils.loginService(resolverFactory, serviceName);
+            Resource queueRoot = ResourceQueueUtils.getRootResource(resourceResolver, queueRootPath);
+            resourceResolver.delete(queueRoot);
+            resourceResolver.commit();
+        } catch (LoginException e) {
+            throw new RuntimeException(e);
+        } catch (PersistenceException e) {
+            throw new RuntimeException(e);
+        } finally {
+            DistributionUtils.safelyLogout(resourceResolver);
+        }
     }
 }
