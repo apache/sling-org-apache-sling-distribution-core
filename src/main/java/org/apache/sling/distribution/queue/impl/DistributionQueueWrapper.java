@@ -18,13 +18,29 @@
  */
 package org.apache.sling.distribution.queue.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueStatus;
 import org.jetbrains.annotations.NotNull;
 
+import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.APPENDABLE;
+import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.REMOVABLE;
+import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.CLEARABLE;
+
 public abstract class DistributionQueueWrapper implements DistributionQueue {
+
+    private static final Set<String> CAPABILITIES = Collections.unmodifiableSet(
+            new HashSet<String>(Arrays.asList(APPENDABLE, REMOVABLE, CLEARABLE)));
+
+
     final DistributionQueue wrappedQueue;
 
     DistributionQueueWrapper(DistributionQueue wrappedQueue) {
@@ -68,5 +84,22 @@ public abstract class DistributionQueueWrapper implements DistributionQueue {
     @Override
     public DistributionQueueStatus getStatus() {
         return wrappedQueue.getStatus();
+    }
+
+    @NotNull
+    @Override
+    public Iterable<DistributionQueueEntry> remove(@NotNull Set<String> entryIds) {
+        return wrappedQueue.remove(entryIds);
+    }
+
+    @NotNull
+    @Override
+    public Iterable<DistributionQueueEntry> clear(int limit) {
+        return wrappedQueue.clear(limit);
+    }
+
+    @Override
+    public boolean hasCapability(@NotNull String capability) {
+        return CAPABILITIES.contains(capability);
     }
 }

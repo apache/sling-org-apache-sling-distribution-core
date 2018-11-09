@@ -36,10 +36,23 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.APPENDABLE;
+import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.REMOVABLE;
+import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.CLEARABLE;
 
 
 public class ResourceQueue implements DistributionQueue {
+
+    private static final Set<String> CAPABILITIES = Collections.unmodifiableSet(
+            new HashSet<String>(Arrays.asList(APPENDABLE, REMOVABLE, CLEARABLE)));
+
     private final Logger log = LoggerFactory.getLogger(getClass());
 
 
@@ -160,6 +173,19 @@ public class ResourceQueue implements DistributionQueue {
         }
     }
 
+    @NotNull
+    @Override
+    public Iterable<DistributionQueueEntry> remove(@NotNull Set<String> entryIds) {
+        List<DistributionQueueEntry> removed = new ArrayList<DistributionQueueEntry>();
+        for (String entryId : entryIds) {
+            DistributionQueueEntry entry = remove(entryId);
+            if (entry != null) {
+                removed.add(entry);
+            }
+        }
+        return removed;
+    }
+
     @Nullable
     @Override
     public DistributionQueueEntry remove(@NotNull String itemId) {
@@ -228,4 +254,23 @@ public class ResourceQueue implements DistributionQueue {
         DistributionQueueItem item = entry.getItem();
         log.debug("queue[{}] {} entryId={} packageId={}", new Object[] { queueName, scope, entryId, item.getPackageId() });
     }
+
+    @NotNull
+    @Override
+    public Iterable<DistributionQueueEntry> clear(int limit) {
+        final List<DistributionQueueEntry> removedEntries = new ArrayList<DistributionQueueEntry>();
+        for (DistributionQueueEntry entry : getItems(0, limit)) {
+            DistributionQueueEntry removed = remove(entry.getId());
+            if (removed != null) {
+                removedEntries.add(removed);
+            }
+        }
+        return removedEntries;
+    }
+
+    @Override
+    public boolean hasCapability(@NotNull String capability) {
+        return CAPABILITIES.contains(capability);
+    }
+
 }

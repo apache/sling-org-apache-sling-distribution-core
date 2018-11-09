@@ -19,9 +19,14 @@
 package org.apache.sling.distribution.queue.impl.jobhandling;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
@@ -37,12 +42,19 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.APPENDABLE;
+import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.REMOVABLE;
+import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.CLEARABLE;
+
 /**
  * a {@link DistributionQueue} based on Sling Job Handling facilities
  */
 public class JobHandlingDistributionQueue implements DistributionQueue {
 
     public final static String DISTRIBUTION_QUEUE_TOPIC = "org/apache/sling/distribution/queue";
+
+    private static final Set<String> CAPABILITIES = Collections.unmodifiableSet(
+            new HashSet<String>(Arrays.asList(APPENDABLE, REMOVABLE, CLEARABLE)));
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -162,6 +174,19 @@ public class JobHandlingDistributionQueue implements DistributionQueue {
         return null;
     }
 
+    @NotNull
+    @Override
+    public Iterable<DistributionQueueEntry> remove(@NotNull Set<String> entryIds) {
+        List<DistributionQueueEntry> removed = new ArrayList<DistributionQueueEntry>();
+        for (String entryId : entryIds) {
+            DistributionQueueEntry entry = remove(entryId);
+            if (entry != null) {
+                removed.add(entry);
+            }
+        }
+        return removed;
+    }
+
     public DistributionQueueEntry remove(@NotNull String id) {
         boolean removed = false;
         Job job = getJob(id);
@@ -202,4 +227,21 @@ public class JobHandlingDistributionQueue implements DistributionQueue {
         return type;
     }
 
+    @NotNull
+    @Override
+    public Iterable<DistributionQueueEntry> clear(int limit) {
+        final List<DistributionQueueEntry> removedEntries = new ArrayList<DistributionQueueEntry>();
+        for (DistributionQueueEntry entry : getItems(0, limit)) {
+            DistributionQueueEntry removed = remove(entry.getId());
+            if (removed != null) {
+                removedEntries.add(removed);
+            }
+        }
+        return removedEntries;
+    }
+
+    @Override
+    public boolean hasCapability(@NotNull String capability) {
+        return CAPABILITIES.contains(capability);
+    }
 }

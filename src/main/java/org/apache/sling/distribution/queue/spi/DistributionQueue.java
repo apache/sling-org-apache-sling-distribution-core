@@ -18,6 +18,8 @@
  */
 package org.apache.sling.distribution.queue.spi;
 
+import java.util.Set;
+
 import aQute.bnd.annotation.ConsumerType;
 import org.apache.sling.distribution.agent.spi.DistributionAgent;
 import org.apache.sling.distribution.packaging.DistributionPackage;
@@ -99,6 +101,26 @@ public interface DistributionQueue {
     DistributionQueueEntry remove(@NotNull String itemId);
 
     /**
+     * Remove a set entries from the queue by specifying their identifiers.
+     *
+     * @param entryIds The identifiers of the entries to be removed
+     * @return an iterable over the removed entries
+     */
+    @NotNull
+    Iterable<DistributionQueueEntry> remove(@NotNull Set<String> entryIds);
+
+    /**
+     * Clear a range of entries from the queue. The range starts from
+     * the head entry, includes the specified #limit number of entries.
+     *
+     * @param limit The maximum number of entries to remove. All entries
+     *              are removed when the limit is {@code -1}.
+     * @return an iterable over the removed entries
+     */
+    @NotNull
+    Iterable<DistributionQueueEntry> clear(int limit);
+
+    /**
      * get the status of the queue
      * @return the queue status
      */
@@ -111,4 +133,10 @@ public interface DistributionQueue {
      */
     @NotNull
     DistributionQueueType getType();
+
+    /**
+     * @return {@code true} if the queue supports the capability ;
+     *         {@code false} otherwise
+     */
+    boolean hasCapability(@NotNull String capability);
 }

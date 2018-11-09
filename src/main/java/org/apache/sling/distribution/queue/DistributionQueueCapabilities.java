@@ -16,9 +16,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-@Version("0.1.0")
 package org.apache.sling.distribution.queue;
 
-import aQute.bnd.annotation.Version;
+import aQute.bnd.annotation.ProviderType;
 
+@ProviderType
+public final class DistributionQueueCapabilities {
+
+    /**
+     * Indicates that the queue supports removing random entries.
+     */
+    public static final String REMOVABLE = "removable";
+
+    /**
+     * Indicates that the queue supports clearing entries.
+     */
+    public static final String CLEARABLE = "clearable";
+
+    /**
+     * Indicates that the queue supports adding entries.
+     */
+    public static final String APPENDABLE = "appendable";
+
+
+}

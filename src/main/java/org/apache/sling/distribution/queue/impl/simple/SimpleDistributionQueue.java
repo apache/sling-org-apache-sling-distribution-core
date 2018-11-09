@@ -19,12 +19,17 @@
 package org.apache.sling.distribution.queue.impl.simple;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
+
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
@@ -39,6 +44,10 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.APPENDABLE;
+import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.REMOVABLE;
+import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.CLEARABLE;
+
 /**
  * A simple implementation of a {@link DistributionQueue}.
  * <p/>
@@ -51,6 +60,9 @@ import org.slf4j.LoggerFactory;
 public class SimpleDistributionQueue implements DistributionQueue {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
+
+    private static final Set<String> CAPABILITIES = Collections.unmodifiableSet(
+            new HashSet<String>(Arrays.asList(APPENDABLE, REMOVABLE, CLEARABLE)));
 
     private final String name;
 
@@ -122,6 +134,11 @@ public class SimpleDistributionQueue implements DistributionQueue {
         return DistributionQueueType.ORDERED;
     }
 
+    @Override
+    public boolean hasCapability(@NotNull String capability) {
+        return CAPABILITIES.contains(capability);
+    }
+
 
     @NotNull
     public Iterable<DistributionQueueEntry> getItems(int skip, int limit) {
@@ -144,6 +161,18 @@ public class SimpleDistributionQueue implements DistributionQueue {
         return null;
     }
 
+    @NotNull
+    @Override
+    public Iterable<DistributionQueueEntry> remove(@NotNull Set<String> entryIds) {
+        List<DistributionQueueEntry> removed = new ArrayList<DistributionQueueEntry>();
+        for (String entryId : entryIds) {
+            DistributionQueueEntry entry = remove(entryId);
+            if (entry != null) {
+                removed.add(entry);
+            }
+        }
+        return removed;
+    }
 
     @Nullable
     public DistributionQueueEntry remove(@NotNull String id) {
@@ -166,6 +195,19 @@ public class SimpleDistributionQueue implements DistributionQueue {
         return "SimpleDistributionQueue{" +
                 "name='" + name + '\'' +
                 '}';
+    }
+
+    @NotNull
+    @Override
+    public Iterable<DistributionQueueEntry> clear(int limit) {
+        final List<DistributionQueueEntry> removedEntries = new ArrayList<DistributionQueueEntry>();
+        for (DistributionQueueEntry entry : getItems(0, limit)) {
+            DistributionQueueEntry removed = remove(entry.getId());
+            if (removed != null) {
+                removedEntries.add(removed);
+            }
+        }
+        return removedEntries;
     }
 
 }
