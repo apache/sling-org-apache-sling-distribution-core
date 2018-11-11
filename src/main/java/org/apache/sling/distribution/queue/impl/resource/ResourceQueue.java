@@ -31,6 +31,7 @@ import org.apache.sling.distribution.queue.DistributionQueueStatus;
 import org.apache.sling.distribution.queue.DistributionQueueType;
 import org.apache.sling.distribution.queue.spi.Clearable;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
+import org.apache.sling.distribution.queue.spi.Removable;
 import org.apache.sling.distribution.util.impl.DistributionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,9 +40,10 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 
-public class ResourceQueue implements DistributionQueue, Clearable {
+public class ResourceQueue implements DistributionQueue, Clearable, Removable {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
 
@@ -160,6 +162,19 @@ public class ResourceQueue implements DistributionQueue, Clearable {
         } finally {
             DistributionUtils.safelyLogout(resourceResolver);
         }
+    }
+
+    @NotNull
+    @Override
+    public Iterable<DistributionQueueEntry> remove(@NotNull Set<String> entryIds) {
+        List<DistributionQueueEntry> removed = new ArrayList<DistributionQueueEntry>();
+        for (String entryId : entryIds) {
+            DistributionQueueEntry entry = remove(entryId);
+            if (entry != null) {
+                removed.add(entry);
+            }
+        }
+        return removed;
     }
 
     @Nullable

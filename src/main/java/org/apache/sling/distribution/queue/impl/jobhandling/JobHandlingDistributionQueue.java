@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.sling.distribution.queue.spi.Clearable;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
@@ -32,6 +33,7 @@ import org.apache.sling.distribution.queue.DistributionQueueState;
 import org.apache.sling.distribution.queue.DistributionQueueStatus;
 import org.apache.sling.distribution.queue.DistributionQueueType;
 import org.apache.sling.distribution.queue.impl.DistributionQueueUtils;
+import org.apache.sling.distribution.queue.spi.Removable;
 import org.apache.sling.event.jobs.Job;
 import org.apache.sling.event.jobs.JobManager;
 import org.apache.sling.event.jobs.JobManager.QueryType;
@@ -42,7 +44,7 @@ import org.slf4j.LoggerFactory;
 /**
  * a {@link DistributionQueue} based on Sling Job Handling facilities
  */
-public class JobHandlingDistributionQueue implements DistributionQueue, Clearable {
+public class JobHandlingDistributionQueue implements DistributionQueue, Clearable, Removable {
 
     public final static String DISTRIBUTION_QUEUE_TOPIC = "org/apache/sling/distribution/queue";
 
@@ -162,6 +164,19 @@ public class JobHandlingDistributionQueue implements DistributionQueue, Clearabl
         }
 
         return null;
+    }
+
+    @NotNull
+    @Override
+    public Iterable<DistributionQueueEntry> remove(@NotNull Set<String> entryIds) {
+        List<DistributionQueueEntry> removed = new ArrayList<DistributionQueueEntry>();
+        for (String entryId : entryIds) {
+            DistributionQueueEntry entry = remove(entryId);
+            if (entry != null) {
+                removed.add(entry);
+            }
+        }
+        return removed;
     }
 
     public DistributionQueueEntry remove(@NotNull String id) {

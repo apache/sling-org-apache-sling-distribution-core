@@ -20,6 +20,9 @@ package org.apache.sling.distribution.servlet;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.sling.SlingServlet;
@@ -36,6 +39,7 @@ import org.apache.sling.distribution.queue.spi.Clearable;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
+import org.apache.sling.distribution.queue.spi.Removable;
 import org.apache.sling.distribution.resources.DistributionResourceTypes;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageBuilderProvider;
@@ -72,7 +76,11 @@ public class DistributionAgentQueueServlet extends SlingAllMethodsServlet {
             String[] idParam = request.getParameterValues("id");
 
             if (idParam != null) {
-                deleteItems(resourceResolver, queue, idParam);
+                if (queue instanceof Removable) {
+                    deleteItemsInBatch(resourceResolver, (Removable)queue, new HashSet<String>(Arrays.asList(idParam)), queue.getName());
+                } else {
+                    deleteItems(resourceResolver, queue, idParam);
+                }
             } else {
                 int limit = 1;
                 try {
@@ -81,7 +89,7 @@ public class DistributionAgentQueueServlet extends SlingAllMethodsServlet {
                     log.warn("limit param malformed : "+limitParam, ex);
                 }
                 if (queue instanceof Clearable) {
-                    clearItems(resourceResolver, queue, limit);
+                    clearItems(resourceResolver, (Clearable)queue, limit, queue.getName());
                 } else {
                     deleteItems(resourceResolver, queue, limit);
                 }
@@ -138,16 +146,24 @@ public class DistributionAgentQueueServlet extends SlingAllMethodsServlet {
         DistributionQueueItem item = entry.getItem();
         String id = entry.getId();
         queue.remove(id);
-
-        DistributionPackage distributionPackage = getPackage(resourceResolver, item);
-        DistributionPackageUtils.releaseOrDelete(distributionPackage, queue.getName());
+        releaseOrDeletePackage(resourceResolver, item, queue.getName());
     }
 
-    private void clearItems(ResourceResolver resourceResolver, DistributionQueue queue, int limit) {
-        for (DistributionQueueEntry removed : ((Clearable)queue).clear(limit)) {
-            DistributionPackage distributionPackage = getPackage(resourceResolver, removed.getItem());
-            DistributionPackageUtils.releaseOrDelete(distributionPackage, queue.getName());
+    private void deleteItemsInBatch(ResourceResolver resourceResolver, Removable queue, Set<String> entryIds, String queueName) {
+        for (DistributionQueueEntry removed : queue.remove(entryIds)) {
+            releaseOrDeletePackage(resourceResolver, removed.getItem(), queueName);
         }
+    }
+
+    private void clearItems(ResourceResolver resourceResolver, Clearable queue, int limit, String queueName) {
+        for (DistributionQueueEntry removed : queue.clear(limit)) {
+            releaseOrDeletePackage(resourceResolver, removed.getItem(), queueName);
+        }
+    }
+
+    private void releaseOrDeletePackage(ResourceResolver resourceResolver, DistributionQueueItem queueItem, String queueName) {
+        DistributionPackage distributionPackage = getPackage(resourceResolver, queueItem);
+        DistributionPackageUtils.releaseOrDelete(distributionPackage, queueName);
     }
 
     private DistributionPackage getPackage(ResourceResolver resourceResolver, DistributionQueueItem item) {
