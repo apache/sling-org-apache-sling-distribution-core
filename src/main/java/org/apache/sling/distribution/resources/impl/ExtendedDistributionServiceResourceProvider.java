@@ -43,6 +43,10 @@ import org.apache.sling.distribution.queue.DistributionQueueStatus;
 import org.apache.sling.distribution.resources.DistributionResourceTypes;
 import org.apache.sling.distribution.resources.impl.common.SimplePathInfo;
 
+import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.APPENDABLE;
+import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.REMOVABLE;
+import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.CLEARABLE;
+
 /**
  * Extended service resource provider exposes children resources like .../agents/agentName/queues/queueName/queueItem
  */
@@ -142,6 +146,7 @@ public class ExtendedDistributionServiceResourceProvider extends DistributionSer
                 result.put("state", queueStatus.getState().name());
                 result.put("empty", queueStatus.isEmpty());
                 result.put("itemsCount", queueStatus.getItemsCount());
+                result.put("capabilities", queueCapabilities(queue));
 
                 if (queueName.startsWith(ErrorQueueDispatchingStrategy.ERROR_PREFIX)) {
                     String retryQueue = queueName.replace(ErrorQueueDispatchingStrategy.ERROR_PREFIX, "");
@@ -209,6 +214,20 @@ public class ExtendedDistributionServiceResourceProvider extends DistributionSer
 
         return result;
 
+    }
+
+    private String[] queueCapabilities(DistributionQueue queue) {
+        List<String> capabilities = new ArrayList<String>();
+        if (queue.hasCapability(REMOVABLE)) {
+            capabilities.add("removable");
+        }
+        if (queue.hasCapability(APPENDABLE)) {
+            capabilities.add("appendable");
+        }
+        if (queue.hasCapability(CLEARABLE)) {
+            capabilities.add("clearable");
+        }
+        return capabilities.toArray(new String[capabilities.size()]);
     }
 
 
