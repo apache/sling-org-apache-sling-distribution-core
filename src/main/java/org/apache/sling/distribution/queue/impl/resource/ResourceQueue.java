@@ -127,7 +127,7 @@ public class ResourceQueue implements DistributionQueue {
 
     @NotNull
     @Override
-    public Iterable<DistributionQueueEntry> getItems(int skip, int limit) {
+    public Iterable<DistributionQueueEntry> getEntries(int skip, int limit) {
         ResourceResolver resourceResolver = null;
         try {
             resourceResolver = DistributionUtils.loginService(resolverFactory, serviceName);
@@ -135,7 +135,7 @@ public class ResourceQueue implements DistributionQueue {
 
             List<DistributionQueueEntry> entries =  ResourceQueueUtils.getEntries(queueRoot, skip, limit);
 
-            log.debug("queue[{}] getItems entries={}", new Object[] { queueName, entries.size() });
+            log.debug("queue[{}] getEntries entries={}", new Object[] { queueName, entries.size() });
 
             return entries;
         } catch (LoginException e) {
@@ -150,7 +150,7 @@ public class ResourceQueue implements DistributionQueue {
 
     @Nullable
     @Override
-    public DistributionQueueEntry getItem(@NotNull String itemId) {
+    public DistributionQueueEntry getEntry(@NotNull String itemId) {
         ResourceResolver resourceResolver = null;
         try {
             resourceResolver = DistributionUtils.loginService(resolverFactory, serviceName);
@@ -160,7 +160,7 @@ public class ResourceQueue implements DistributionQueue {
 
             DistributionQueueEntry entry = ResourceQueueUtils.readEntry(queueRoot, itemResource);
 
-            logEntry(entry, "getItem");
+            logEntry(entry, "getEntry");
 
             return entry;
 
@@ -213,7 +213,7 @@ public class ResourceQueue implements DistributionQueue {
         }
     }
 
-    @Nullable
+    @NotNull
     @Override
     public DistributionQueueStatus getStatus() {
         ResourceResolver resourceResolver = null;
@@ -259,7 +259,7 @@ public class ResourceQueue implements DistributionQueue {
     @Override
     public Iterable<DistributionQueueEntry> clear(int limit) {
         final List<DistributionQueueEntry> removedEntries = new ArrayList<DistributionQueueEntry>();
-        for (DistributionQueueEntry entry : getItems(0, limit)) {
+        for (DistributionQueueEntry entry : getEntries(0, limit)) {
             DistributionQueueEntry removed = remove(entry.getId());
             if (removed != null) {
                 removedEntries.add(removed);

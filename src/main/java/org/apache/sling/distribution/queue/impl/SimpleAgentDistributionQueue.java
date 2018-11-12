@@ -42,6 +42,7 @@ public class SimpleAgentDistributionQueue extends DistributionQueueWrapper {
         return calculateStatus();
     }
 
+    @NotNull
     @Override
     public DistributionQueueType getType() {
         return wrappedQueue.getType();

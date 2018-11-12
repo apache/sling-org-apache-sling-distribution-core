@@ -40,9 +40,9 @@ public final class DistributionQueueItem extends ValueMapDecorator implements Va
         this(packageId, -1, base);
     }
 
-    public DistributionQueueItem(String id, long size, Map<String, Object> base) {
+    public DistributionQueueItem(String packageId, long size, Map<String, Object> base) {
         super(base);
-        this.packageId = id;
+        this.packageId = packageId;
         this.size = size;
 
     }

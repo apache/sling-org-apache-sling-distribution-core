@@ -153,7 +153,7 @@ public class JobHandlingDistributionQueue implements DistributionQueue {
 
 
     @NotNull
-    public List<DistributionQueueEntry> getItems(int skip, int limit) {
+    public List<DistributionQueueEntry> getEntries(int skip, int limit) {
 
         List<DistributionQueueEntry> items = new ArrayList<DistributionQueueEntry>();
         Collection<Job> jobs = getJobs(skip, limit);
@@ -164,7 +164,7 @@ public class JobHandlingDistributionQueue implements DistributionQueue {
         return items;
     }
 
-    public DistributionQueueEntry getItem(@NotNull String id) {
+    public DistributionQueueEntry getEntry(@NotNull String id) {
         Job job = getJob(id);
 
         if (job != null) {
@@ -222,6 +222,7 @@ public class JobHandlingDistributionQueue implements DistributionQueue {
         return new DistributionQueueStatus(itemsCount, state);
     }
 
+    @NotNull
     @Override
     public DistributionQueueType getType() {
         return type;
@@ -231,7 +232,7 @@ public class JobHandlingDistributionQueue implements DistributionQueue {
     @Override
     public Iterable<DistributionQueueEntry> clear(int limit) {
         final List<DistributionQueueEntry> removedEntries = new ArrayList<DistributionQueueEntry>();
-        for (DistributionQueueEntry entry : getItems(0, limit)) {
+        for (DistributionQueueEntry entry : getEntries(0, limit)) {
             DistributionQueueEntry removed = remove(entry.getId());
             if (removed != null) {
                 removedEntries.add(removed);

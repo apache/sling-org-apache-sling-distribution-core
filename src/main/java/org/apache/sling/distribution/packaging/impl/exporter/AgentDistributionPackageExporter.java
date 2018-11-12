@@ -123,7 +123,7 @@ public class AgentDistributionPackageExporter implements DistributionPackageExpo
             log.debug("getting package from queue {}", queueName);
 
             DistributionQueue queue = getQueueOrThrow(queueName);
-            DistributionQueueEntry entry = queue.getItem(distributionPackageId);
+            DistributionQueueEntry entry = queue.getEntry(distributionPackageId);
             DistributionPackage distributionPackage;
 
             if (entry != null) {

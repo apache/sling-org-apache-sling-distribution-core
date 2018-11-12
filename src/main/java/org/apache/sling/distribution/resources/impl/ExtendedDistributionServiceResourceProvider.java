@@ -172,7 +172,7 @@ public class ExtendedDistributionServiceResourceProvider extends DistributionSer
             if (queue != null) {
                 String itemId = queueInfo.getChildResourceName();
 
-                DistributionQueueEntry entry = queue.getItem(itemId);
+                DistributionQueueEntry entry = queue.getEntry(itemId);
                 result = getItemProperties(entry);
             }
 
@@ -232,7 +232,7 @@ public class ExtendedDistributionServiceResourceProvider extends DistributionSer
             boolean shouldFetch = items == null || !items.hasNext();
 
             if (shouldFetch) {
-                items = queue.getItems(fetched, MAX_QUEUE_CHUNK).iterator();
+                items = queue.getEntries(fetched, MAX_QUEUE_CHUNK).iterator();
             }
 
             return items.hasNext();

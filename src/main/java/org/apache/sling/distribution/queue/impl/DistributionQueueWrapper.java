@@ -18,11 +18,9 @@
  */
 package org.apache.sling.distribution.queue.impl;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
@@ -66,13 +64,13 @@ public abstract class DistributionQueueWrapper implements DistributionQueue {
 
     @NotNull
     @Override
-    public Iterable<DistributionQueueEntry> getItems(int skip, int limit) {
-        return wrappedQueue.getItems(skip, limit);
+    public Iterable<DistributionQueueEntry> getEntries(int skip, int limit) {
+        return wrappedQueue.getEntries(skip, limit);
     }
 
     @Override
-    public DistributionQueueEntry getItem(@NotNull String itemId) {
-        return wrappedQueue.getItem(itemId);
+    public DistributionQueueEntry getEntry(@NotNull String itemId) {
+        return wrappedQueue.getEntry(itemId);
     }
 
     @Override

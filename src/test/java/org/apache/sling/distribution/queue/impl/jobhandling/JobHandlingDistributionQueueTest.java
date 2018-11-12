@@ -87,7 +87,7 @@ public class JobHandlingDistributionQueueTest {
         packageInfo.put(DistributionPackageInfo.PROPERTY_REQUEST_TYPE, DistributionRequestType.ADD);
         DistributionQueueItem distributionQueueItem = new DistributionQueueItem("an-id", packageInfo);
         assertNotNull(queue.add(distributionQueueItem));
-        DistributionQueueItemStatus status = queue.getItem(job.getId()).getStatus();
+        DistributionQueueItemStatus status = queue.getEntry(job.getId()).getStatus();
         assertNotNull(status);
         assertEquals(DistributionQueueItemState.QUEUED, status.getItemState());
     }

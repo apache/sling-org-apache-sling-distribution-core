@@ -26,12 +26,12 @@ import org.jetbrains.annotations.NotNull;
  */
 public final class DistributionQueueEntry {
 
-    private final String id;
+    private final String entryId;
     private final DistributionQueueItem item;
     private final DistributionQueueItemStatus status;
 
-    public DistributionQueueEntry(String id, @NotNull DistributionQueueItem item, @NotNull DistributionQueueItemStatus status) {
-        this.id = id;
+    public DistributionQueueEntry(String entryId, @NotNull DistributionQueueItem item, @NotNull DistributionQueueItemStatus status) {
+        this.entryId = entryId;
         this.item = item;
         this.status = status;
     }
@@ -57,6 +57,6 @@ public final class DistributionQueueEntry {
     }
 
     public String getId() {
-        return id;
+        return entryId;
     }
 }

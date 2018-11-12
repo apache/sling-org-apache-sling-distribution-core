@@ -60,7 +60,7 @@ class SimpleDistributionQueueCheckpoint implements Runnable {
             assert checkpointFile.createNewFile();
             Collection<String> lines = new LinkedList<String>();
             FileOutputStream fileOutputStream = new FileOutputStream(checkpointFile);
-            for (DistributionQueueEntry queueEntry : queue.getItems(0, -1)) {
+            for (DistributionQueueEntry queueEntry : queue.getEntries(0, -1)) {
                 DistributionQueueItem item = queueEntry.getItem();
                 String line = mapper.writeQueueItem(item);
                 lines.add(line);

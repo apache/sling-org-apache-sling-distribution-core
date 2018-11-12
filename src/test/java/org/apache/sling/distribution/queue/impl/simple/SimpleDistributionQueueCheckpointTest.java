@@ -44,7 +44,7 @@ public class SimpleDistributionQueueCheckpointTest {
     public void testRunWithNothingInQueue() throws Exception {
         DistributionQueue queue = mock(DistributionQueue.class);
         Iterable<DistributionQueueEntry> items = new LinkedList<DistributionQueueEntry>();
-        when(queue.getItems(0, -1)).thenReturn(items);
+        when(queue.getEntries(0, -1)).thenReturn(items);
         File checkpointDirectory = FileUtils.getTempDirectory();
         SimpleDistributionQueueCheckpoint simpleDistributionQueueCheckpoint = new SimpleDistributionQueueCheckpoint(queue,
                 checkpointDirectory);
@@ -63,7 +63,7 @@ public class SimpleDistributionQueueCheckpointTest {
         base.put("multi", new String[]{"1", "2"});
         entries.add(new DistributionQueueEntry("123", new DistributionQueueItem("pid123", base),
                 new DistributionQueueItemStatus(DistributionQueueItemState.QUEUED, queueName)));
-        when(queue.getItems(0, -1)).thenReturn(entries);
+        when(queue.getEntries(0, -1)).thenReturn(entries);
         File checkpointDirectory = FileUtils.getTempDirectory();
         SimpleDistributionQueueCheckpoint simpleDistributionQueueCheckpoint = new SimpleDistributionQueueCheckpoint(queue,
                 checkpointDirectory);

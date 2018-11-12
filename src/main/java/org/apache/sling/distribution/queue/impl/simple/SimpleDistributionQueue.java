@@ -129,6 +129,7 @@ public class SimpleDistributionQueue implements DistributionQueue {
         return new DistributionQueueStatus(queue.size(), getState());
     }
 
+    @NotNull
     @Override
     public DistributionQueueType getType() {
         return DistributionQueueType.ORDERED;
@@ -141,7 +142,7 @@ public class SimpleDistributionQueue implements DistributionQueue {
 
 
     @NotNull
-    public Iterable<DistributionQueueEntry> getItems(int skip, int limit) {
+    public Iterable<DistributionQueueEntry> getEntries(int skip, int limit) {
         List<DistributionQueueEntry> result = new ArrayList<DistributionQueueEntry>();
 
         for (DistributionQueueItem item : queue) {
@@ -151,7 +152,7 @@ public class SimpleDistributionQueue implements DistributionQueue {
     }
 
     @Nullable
-    public DistributionQueueEntry getItem(@NotNull String id) {
+    public DistributionQueueEntry getEntry(@NotNull String id) {
         for (DistributionQueueItem item : queue) {
             if (id.equals(item.getPackageId())) {
                 return new DistributionQueueEntry(id, item, statusMap.get(item));
@@ -176,7 +177,7 @@ public class SimpleDistributionQueue implements DistributionQueue {
 
     @Nullable
     public DistributionQueueEntry remove(@NotNull String id) {
-        DistributionQueueEntry toRemove = getItem(id);
+        DistributionQueueEntry toRemove = getEntry(id);
 
         boolean removed = false;
         if (toRemove != null) {
@@ -201,7 +202,7 @@ public class SimpleDistributionQueue implements DistributionQueue {
     @Override
     public Iterable<DistributionQueueEntry> clear(int limit) {
         final List<DistributionQueueEntry> removedEntries = new ArrayList<DistributionQueueEntry>();
-        for (DistributionQueueEntry entry : getItems(0, limit)) {
+        for (DistributionQueueEntry entry : getEntries(0, limit)) {
             DistributionQueueEntry removed = remove(entry.getId());
             if (removed != null) {
                 removedEntries.add(removed);

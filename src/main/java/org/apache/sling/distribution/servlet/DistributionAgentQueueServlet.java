@@ -118,7 +118,7 @@ public class DistributionAgentQueueServlet extends SlingAllMethodsServlet {
 
     private void addItems(ResourceResolver resourceResolver, DistributionQueue targetQueue, DistributionQueue sourceQueue, String[] ids) {
         for (String id: ids) {
-            DistributionQueueEntry entry = sourceQueue.getItem(id);
+            DistributionQueueEntry entry = sourceQueue.getEntry(id);
             if (entry != null) {
                 targetQueue.add(entry.getItem());
                 DistributionPackage distributionPackage = getPackage(resourceResolver, entry.getItem());

@@ -32,7 +32,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Testcase for {@link SimpleDistributionQueue}
@@ -55,7 +54,7 @@ public class SimpleDistributionQueueTest {
         assertFalse(queue.getStatus().isEmpty());
         assertNotNull(queue.remove(pkg.getPackageId()));
         assertTrue(queue.getStatus().isEmpty());
-        DistributionQueueEntry entry = queue.getItem(pkg.getPackageId());
+        DistributionQueueEntry entry = queue.getEntry(pkg.getPackageId());
         assertNull(entry);
     }
 
@@ -67,7 +66,7 @@ public class SimpleDistributionQueueTest {
         assertFalse(queue.getStatus().isEmpty());
         assertEquals(pkg, queue.getHead().getItem());
         assertFalse(queue.getStatus().isEmpty());
-        DistributionQueueItemStatus status = queue.getItem(pkg.getPackageId()).getStatus();
+        DistributionQueueItemStatus status = queue.getEntry(pkg.getPackageId()).getStatus();
         assertNotNull(queue.remove(pkg.getPackageId()));
         assertTrue(queue.getStatus().isEmpty());
         assertNotNull(status);

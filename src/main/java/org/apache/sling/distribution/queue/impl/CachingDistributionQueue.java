@@ -70,6 +70,7 @@ public class CachingDistributionQueue extends DistributionQueueWrapper {
         return queueStatus;
     }
 
+    @NotNull
     @Override
     public DistributionQueueType getType() {
         return wrappedQueue.getType();

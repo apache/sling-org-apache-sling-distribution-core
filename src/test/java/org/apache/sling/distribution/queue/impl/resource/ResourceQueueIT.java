@@ -149,7 +149,7 @@ public class ResourceQueueIT extends DistributionBaseIT {
     }
 
     void clear(DistributionQueue queue) {
-        for (DistributionQueueEntry entry : queue.getItems(0, -1)) {
+        for (DistributionQueueEntry entry : queue.getEntries(0, -1)) {
             queue.remove(entry.getId());
         }
     }

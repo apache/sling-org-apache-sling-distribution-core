@@ -21,25 +21,16 @@ package org.apache.sling.distribution.queue.spi;
 import java.util.Set;
 
 import aQute.bnd.annotation.ConsumerType;
-import org.apache.sling.distribution.agent.spi.DistributionAgent;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueStatus;
 import org.apache.sling.distribution.queue.DistributionQueueType;
-import org.apache.sling.distribution.queue.impl.DistributionQueueProcessor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * A queue is responsible for collecting the {@link DistributionPackage}s
- * exported by a {@link DistributionAgent} in
- * order to be able to process them also when there are multiple (concurrent)
- * {@link org.apache.sling.distribution.DistributionRequest}s executed
- * on that same agent.
- * <p/>
- * The items (packages) in the queue can then get processed according to a FIFO
- * strategy or in parallel, or some other way, via {@link DistributionQueueProcessor}s.
+ * Holds the {@link DistributionQueueItem} queue items in a sequential queue.
  */
 @ConsumerType
 public interface DistributionQueue {
@@ -63,42 +54,42 @@ public interface DistributionQueue {
     DistributionQueueEntry add(@NotNull DistributionQueueItem item);
 
     /**
-     * get the first item (in a FIFO strategy, the next to be processed) from the queue
+     * get the first entry (in a FIFO strategy, the next to be processed) from the queue
      *
-     * @return the first item into the queue or {@code null} if the queue is empty
+     * @return the first entry into the queue or {@code null} if the queue is empty
      */
     @Nullable
     DistributionQueueEntry getHead();
 
     /**
-     * get all the items in the queue
+     * get all the entries in the queue
      *
-     * @param skip the number of items to skip
-     * @param limit the maximum number of items to return. use -1 to return all items.
-     * @return a {@link java.lang.Iterable} of {@link DistributionQueueItem}s
+     * @param skip the number of entries to skip
+     * @param limit the maximum number of entries to return. use -1 to return all entries.
+     * @return a {@link java.lang.Iterable} of {@link DistributionQueueEntry} entries
      */
     @NotNull
-    Iterable<DistributionQueueEntry> getItems(int skip, int limit);
+    Iterable<DistributionQueueEntry> getEntries(int skip, int limit);
 
     /**
-     * gets an item from the queue by specifying its id
+     * gets an entry from the queue by specifying its id
      *
-     * @param itemId the id of the item as returned by {@link DistributionQueueItem#getPackageId()}
-     * @return the item, or {@code null} if the item with the given id
+     * @param entryId the entry identifier
+     * @return the entry, or {@code null} if the entry with the given id
      * doesn't exist
      */
     @Nullable
-    DistributionQueueEntry getItem(@NotNull String itemId);
+    DistributionQueueEntry getEntry(@NotNull String entryId);
 
     /**
-     * remove an item from the queue by specifying its id
+     * remove an entry from the queue by specifying its id
      *
-     * @param itemId the id the item as returned by {@link DistributionQueueItem#getPackageId()}
-     * @return the removed item, or {@code null} if the item with the given id
+     * @param entryId the entry identifier
+     * @return the removed entry, or {@code null} if the entry with the given id
      * doesn't exist
      */
     @Nullable
-    DistributionQueueEntry remove(@NotNull String itemId);
+    DistributionQueueEntry remove(@NotNull String entryId);
 
     /**
      * Remove a set entries from the queue by specifying their identifiers.
