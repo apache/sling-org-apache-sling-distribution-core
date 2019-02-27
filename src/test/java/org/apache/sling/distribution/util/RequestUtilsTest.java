@@ -24,7 +24,6 @@ import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.DistributionRequestType;
 import org.junit.Test;
 
-import static org.apache.sling.distribution.util.RequestUtils.fromServletRequest;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -40,14 +39,14 @@ public class RequestUtilsTest {
 
     @Test
     public void testFromServletRequest() throws Exception {
-        DistributionRequest dr = fromServletRequest(buildServletRequest(REQ_TYPE.toString(), P_PATHS, "true"));
+        DistributionRequest dr = RequestUtils.fromServletRequest(buildServletRequest(REQ_TYPE.toString(), P_PATHS, "true"));
         assertEquals(REQ_TYPE, dr.getRequestType());
         assertArrayEquals(P_PATHS, dr.getPaths());
     }
 
     @Test
     public void testFromServletRequestEmptyPath() throws Exception {
-        DistributionRequest dr = fromServletRequest(buildServletRequest(REQ_TYPE.toString(), null, "true"));
+        DistributionRequest dr = RequestUtils.fromServletRequest(buildServletRequest(REQ_TYPE.toString(), null, "true"));
         assertEquals(REQ_TYPE, dr.getRequestType());
         assertArrayEquals(EMPTY_PATHS, dr.getPaths());
     }
