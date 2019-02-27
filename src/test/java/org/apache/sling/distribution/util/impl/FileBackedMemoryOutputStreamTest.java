@@ -42,6 +42,14 @@ import org.junit.Test;
  */
 public class FileBackedMemoryOutputStreamTest {
 
+    @Test(expected = IllegalArgumentException.class)
+    public void thresholdMustBePositive() throws IOException {
+        new FileBackedMemoryOutputStream(-1,
+            MemoryUnit.BYTES,
+            false,
+            new File("/tmp"), "FileBackedMemoryOutputStreamTest.justKeepDataInMemory", ".tmp");
+    }
+
     @Test
     public void justKeepDataInMemory() throws IOException {
         FileBackedMemoryOutputStream output = new FileBackedMemoryOutputStream(10,
@@ -58,14 +66,14 @@ public class FileBackedMemoryOutputStreamTest {
         assertEquals(2, output.size());
         assertNull(output.getFile());
 
-        verifyWrittenData(data, output);
+        verifyWrittenData(output, data);
     }
 
     @Test
-    public void backedToFile() throws IOException {
+    public void backedOnlyToFile() throws IOException {
         FileBackedMemoryOutputStream output = new FileBackedMemoryOutputStream(10,
                                                                                MemoryUnit.BYTES,
-                                                                               false,
+                                                                               true,
                                                                                new File("/tmp"),
                                                                                "FileBackedMemoryOutputStreamTest.backedToFile",
                                                                                ".tmp");
@@ -79,7 +87,31 @@ public class FileBackedMemoryOutputStreamTest {
         assertTrue(output.getFile().exists());
         assertEquals(90, output.getFile().length());
 
-        verifyWrittenData(data, output);
+        verifyWrittenData(output, data);
+
+        output.clean();
+        assertFalse(output.getFile().exists());
+    }
+
+    @Test
+    public void backedToFile() throws IOException {
+        FileBackedMemoryOutputStream output = new FileBackedMemoryOutputStream(10,
+                MemoryUnit.BYTES,
+                false,
+                new File("/tmp"),
+                "FileBackedMemoryOutputStreamTest.backedToFile",
+                ".tmp");
+        byte[] data = newDataArray(100);
+
+        output.write(data);
+        output.close();
+
+        assertEquals(100, output.size());
+        assertNotNull(output.getFile());
+        assertTrue(output.getFile().exists());
+        assertEquals(90, output.getFile().length());
+
+        verifyWrittenData(output, data);
 
         output.clean();
         assertFalse(output.getFile().exists());
@@ -98,8 +130,23 @@ public class FileBackedMemoryOutputStreamTest {
             output.write(data);
             output.close();
             assertEquals(data.length, output.size());
-            verifyWrittenData(data, output);
+            verifyWrittenData(output, data);
         }
+    }
+
+    @Test
+    public void singleByteWritesBackedToFile() throws IOException {
+        FileBackedMemoryOutputStream output = new FileBackedMemoryOutputStream(1,
+                MemoryUnit.BYTES,
+                false,
+                new File("/tmp"),
+                "FileBackedMemoryOutputStreamTest.singleByteBackedToFile",
+                ".tmp");
+        byte[] data = {0x0F, 0x0D};
+        output.write(data[0]);
+        output.write(data[1]);
+        output.flush();
+        verifyWrittenData(output, data);
     }
 
     private byte[] newDataArray(int size) {
@@ -109,7 +156,7 @@ public class FileBackedMemoryOutputStreamTest {
         return data;
     }
 
-    private void verifyWrittenData(byte[] expecteds, FileBackedMemoryOutputStream writtenData) throws IOException {
+    private void verifyWrittenData(FileBackedMemoryOutputStream writtenData, byte... expecteds) throws IOException {
         InputStream input = writtenData.openWrittenDataInputStream();
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         copy(input, output);
