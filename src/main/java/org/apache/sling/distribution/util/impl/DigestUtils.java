@@ -21,12 +21,9 @@ package org.apache.sling.distribution.util.impl;
 import static java.lang.Integer.toHexString;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.security.DigestInputStream;
@@ -74,28 +71,6 @@ public final class DigestUtils {
             closeQuietly(writer);
         }
         return writer.toString();
-    }
-
-    public static File rewriteDigestMessage(DigestOutputStream digestOutput, File target) throws IOException {
-        File targetDigest = new File(target.getParentFile(),
-                                     target.getName()
-                                     + '.'
-                                     + digestOutput.getMessageDigest()
-                                                   .getAlgorithm()
-                                                   .toLowerCase()
-                                                   .replace('-', Character.MIN_VALUE));
-        rewriteDigestMessage(digestOutput, new FileOutputStream(targetDigest));
-        return targetDigest;
-    }
-
-    private static void rewriteDigestMessage(DigestOutputStream digestOutput, OutputStream target) throws IOException {
-        final Writer writer = new OutputStreamWriter(target);
-        try {
-            readDigest(digestOutput.getMessageDigest(), writer);
-        } finally {
-            closeQuietly(writer);
-            closeQuietly(target);
-        }
     }
 
     private static void readDigest(MessageDigest messageDigest, Writer writer) throws IOException {
