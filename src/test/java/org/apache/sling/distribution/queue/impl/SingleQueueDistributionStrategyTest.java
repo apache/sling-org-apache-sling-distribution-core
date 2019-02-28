@@ -19,6 +19,7 @@
 package org.apache.sling.distribution.queue.impl;
 
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -49,7 +50,8 @@ public class SingleQueueDistributionStrategyTest {
         DistributionQueue queue = mock(DistributionQueue.class);
         when(queueProvider.getQueue(DistributionQueueDispatchingStrategy.DEFAULT_QUEUE_NAME)).thenReturn(queue);
         DistributionQueueItemStatus state = newDistributionQueueItemStatus();
-        when(queue.add(any(DistributionQueueItem.class))).thenReturn(new DistributionQueueEntry(null, null, state));
+        DistributionQueueItem queueItem = new DistributionQueueItem("packageId", Collections.<String, Object>emptyMap());
+        when(queue.add(any(DistributionQueueItem.class))).thenReturn(new DistributionQueueEntry("entryId", queueItem, state));
 
         Iterable<DistributionQueueItemStatus> returnedStates = singleQueueDistributionStrategy.add(distributionPackage, queueProvider);
         assertNotNull(returnedStates);
@@ -85,8 +87,8 @@ public class SingleQueueDistributionStrategyTest {
         DistributionQueue queue = mock(DistributionQueue.class);
         when(queueProvider.getQueue(DistributionQueueDispatchingStrategy.DEFAULT_QUEUE_NAME)).thenReturn(queue);
         DistributionQueueItemStatus state = newDistributionQueueItemStatus();
-
-        when(queue.add(any(DistributionQueueItem.class))).thenReturn(new DistributionQueueEntry(null, null, state));
+        DistributionQueueItem queueItem = new DistributionQueueItem("packageId", Collections.<String, Object>emptyMap());
+        when(queue.add(any(DistributionQueueItem.class))).thenReturn(new DistributionQueueEntry("entryId", queueItem, state));
 
         Iterable<DistributionQueueItemStatus> returnedStates = singleQueueDistributionStrategy.add(distributionPackage, queueProvider);
         assertNotNull(returnedStates);
