@@ -31,6 +31,7 @@ import org.apache.sling.distribution.SimpleDistributionRequest;
 import org.apache.sling.distribution.event.impl.DistributionEventFactory;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
+import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
 import org.apache.sling.distribution.packaging.impl.FileDistributionPackageBuilder;
 import org.apache.sling.distribution.serialization.impl.vlt.FileVaultContentSerializer;
@@ -38,12 +39,14 @@ import org.apache.sling.testing.mock.sling.ResourceResolverType;
 import org.apache.sling.testing.mock.sling.junit.SlingContext;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.Map;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Testcase for {@link LocalDistributionPackageImporter}
@@ -67,6 +70,10 @@ public class LocalDistributionPackageImporterTest {
     @Test
     public void importPackageWithLargeHeader() throws Exception {
         DistributionPackageBuilder packageBuilder = mock(DistributionPackageBuilder.class);
+        DistributionPackageInfo packageInfo = new DistributionPackageInfo("ADD");
+        when(packageBuilder.installPackage(Mockito.any(ResourceResolver.class), Mockito.any(InputStream.class)))
+                .thenReturn(packageInfo);
+
         DistributionEventFactory distributionEventFactory = mock(DistributionEventFactory.class);
         LocalDistributionPackageImporter localdistributionPackageImporter =
                 new LocalDistributionPackageImporter("mockImporter", distributionEventFactory, packageBuilder);
