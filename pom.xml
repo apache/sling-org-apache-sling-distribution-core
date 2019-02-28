@@ -137,12 +137,6 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
                     <redirectTestOutputToFile>true</redirectTestOutputToFile>
-                    <systemProperties>
-                        <property>
-                            <name>bundle.filename</name>
-                            <value>${basedir}/target/${project.build.finalName}.jar</value>
-                        </property>
-                    </systemProperties>
                     <includes>
                         <include>**/*IT.java</include>
                     </includes>

@@ -61,6 +61,8 @@ public class DistributionBaseIT extends TestSupport {
 
     @Configuration
     public Option[] configuration() {
+        // Patch versions of features provided by SlingOptions
+        SlingOptions.versionResolver.setVersionFromProject("org.apache.sling", "org.apache.sling.distribution.core");
         return new Option[]{
                 baseConfiguration(),
                 slingQuickstart(),
@@ -68,7 +70,6 @@ public class DistributionBaseIT extends TestSupport {
                 // build artifact
                 slingDistribution(),
                 // testing
-                testBundle(    "bundle.filename"),
                 defaultOsgiConfigs(),
                 junitBundles()
         };
