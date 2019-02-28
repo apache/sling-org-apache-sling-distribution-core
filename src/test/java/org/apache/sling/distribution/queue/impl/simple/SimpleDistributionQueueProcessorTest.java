@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import org.apache.sling.distribution.queue.DistributionQueueItemState;
+import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
@@ -65,7 +67,8 @@ public class SimpleDistributionQueueProcessorTest {
         Collection<SimpleDistributionQueue> queues = new LinkedList<SimpleDistributionQueue>();
         SimpleDistributionQueue queue = mock(SimpleDistributionQueue.class);
         DistributionQueueItem item = new DistributionQueueItem("packageId", new HashMap<String, Object>());
-        when(queue.getHead()).thenReturn(new DistributionQueueEntry(null, item, null)).thenReturn(null);
+        DistributionQueueItemStatus status = new DistributionQueueItemStatus(DistributionQueueItemState.QUEUED, "queueName");
+        when(queue.getHead()).thenReturn(new DistributionQueueEntry(null, item, status)).thenReturn(null);
 
         queues.add(queue);
         when(queueProvider.getQueues()).thenReturn(queues);
