@@ -124,8 +124,9 @@ public class DistributionQueueHealthCheck implements HealthCheck {
                         } else {
                             resultLog.debug("No items in queue [{}]", q.getName());
                         }
-
-                    } catch (Exception e) {
+                    } catch (IllegalStateException e) {
+                        resultLog.healthCheckError("The queue is not (yet) ready to serve queries while inspecting queue [{}]", queueName);
+	                } catch (Exception e) {
                         resultLog.warn("Exception while inspecting distribution queue [{}]: {}", queueName, e);
                     }
                 }
