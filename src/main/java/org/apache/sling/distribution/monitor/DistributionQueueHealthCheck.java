@@ -126,7 +126,7 @@ public class DistributionQueueHealthCheck implements HealthCheck {
                         }
                     } catch (IllegalStateException e) {
                         resultLog.healthCheckError("The queue is not (yet) ready to serve queries while inspecting queue [{}]", queueName);
-	                } catch (Exception e) {
+                    } catch (Exception e) {
                         resultLog.warn("Exception while inspecting distribution queue [{}]: {}", queueName, e);
                     }
                 }
