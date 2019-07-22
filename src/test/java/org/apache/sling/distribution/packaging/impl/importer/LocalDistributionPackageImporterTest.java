@@ -32,8 +32,10 @@ import org.apache.sling.distribution.event.impl.DistributionEventFactory;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
+import org.apache.sling.distribution.packaging.PackageInstallHook;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
 import org.apache.sling.distribution.packaging.impl.FileDistributionPackageBuilder;
+import org.apache.sling.distribution.packaging.impl.NoopPackageInstallHook;
 import org.apache.sling.distribution.serialization.impl.vlt.FileVaultContentSerializer;
 import org.apache.sling.testing.mock.sling.ResourceResolverType;
 import org.apache.sling.testing.mock.sling.junit.SlingContext;
@@ -92,8 +94,9 @@ public class LocalDistributionPackageImporterTest {
                 false
         );
 
+        PackageInstallHook postInstallHook = new NoopPackageInstallHook();
         DistributionPackageBuilder builder =
-                new FileDistributionPackageBuilder(DistributionRequestType.ADD.name(), vaultSerializer, null, null, null, null);
+                new FileDistributionPackageBuilder(DistributionRequestType.ADD.name(), vaultSerializer, null, null, null, null, postInstallHook);
 
         ResourceResolver resourceResolver = slingContext.resourceResolver();
 

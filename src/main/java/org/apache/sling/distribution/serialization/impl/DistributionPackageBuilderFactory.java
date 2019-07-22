@@ -44,6 +44,7 @@ import org.apache.sling.distribution.monitor.impl.MonitoringDistributionPackageB
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
+import org.apache.sling.distribution.packaging.PackageInstallHook;
 import org.apache.sling.distribution.packaging.impl.FileDistributionPackageBuilder;
 import org.apache.sling.distribution.packaging.impl.InMemoryDistributionPackageBuilder;
 import org.apache.sling.distribution.packaging.impl.ResourceDistributionPackageBuilder;
@@ -193,6 +194,10 @@ public class DistributionPackageBuilderFactory implements DistributionPackageBui
 
     private ServiceRegistration packageCleanup = null;
 
+    @Property(name = "installHook.target", label = "install hook", description = "Hook to be called after package was installed and before package will be removed.", value = PackageInstallHook.NOOP_FILTER)
+    @Reference
+    private PackageInstallHook installHook;
+
     @Activate
     public void activate(BundleContext context,
                          Map<String, Object> config) {
@@ -209,15 +214,15 @@ public class DistributionPackageBuilderFactory implements DistributionPackageBui
 
         DistributionPackageBuilder wrapped;
         if ("file".equals(persistenceType)) {
-            wrapped = new FileDistributionPackageBuilder(contentSerializer.getName(), contentSerializer, tempFsFolder, digestAlgorithm, nodeFilters, propertyFilters);
+            wrapped = new FileDistributionPackageBuilder(contentSerializer.getName(), contentSerializer, tempFsFolder, digestAlgorithm, nodeFilters, propertyFilters, installHook);
         } else if ("inmemory".equals(persistenceType)) {
-            wrapped = new InMemoryDistributionPackageBuilder(contentSerializer.getName(), contentSerializer, nodeFilters, propertyFilters);
+            wrapped = new InMemoryDistributionPackageBuilder(contentSerializer.getName(), contentSerializer, nodeFilters, propertyFilters, installHook);
         } else {
             final int fileThreshold = PropertiesUtil.toInteger(config.get(FILE_THRESHOLD), DEFAULT_FILE_THRESHOLD_VALUE);
             String memoryUnitName = PropertiesUtil.toString(config.get(MEMORY_UNIT), DEFAULT_MEMORY_UNIT);
             final MemoryUnit memoryUnit = MemoryUnit.valueOf(memoryUnitName);
             final boolean useOffHeapMemory = PropertiesUtil.toBoolean(config.get(USE_OFF_HEAP_MEMORY), DEFAULT_USE_OFF_HEAP_MEMORY);
-            ResourceDistributionPackageBuilder resourceDistributionPackageBuilder = new ResourceDistributionPackageBuilder(contentSerializer.getName(), contentSerializer, tempFsFolder, fileThreshold, memoryUnit, useOffHeapMemory, digestAlgorithm, nodeFilters, propertyFilters);
+            ResourceDistributionPackageBuilder resourceDistributionPackageBuilder = new ResourceDistributionPackageBuilder(contentSerializer.getName(), contentSerializer, tempFsFolder, fileThreshold, memoryUnit, useOffHeapMemory, digestAlgorithm, nodeFilters, propertyFilters, installHook);
             Runnable cleanup = new ResourceDistributionPackageCleanup(resolverFactory, resourceDistributionPackageBuilder);
             Dictionary<String, Object> props = new Hashtable<String, Object>();
             props.put(Scheduler.PROPERTY_SCHEDULER_CONCURRENT, false);

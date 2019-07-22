@@ -17,8 +17,15 @@
  * under the License.
  */
 
-@Version("0.1.0")
 package org.apache.sling.distribution.packaging;
 
-import aQute.bnd.annotation.Version;
+import org.junit.Test;
 
+public class DistributionPackageInfoTest {
+
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalid(){
+        new DistributionPackageInfo(null);
+    }
+}
