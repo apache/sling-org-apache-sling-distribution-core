@@ -27,8 +27,8 @@ import aQute.bnd.annotation.ProviderType;
  */
 @ProviderType
 public interface PackageInstallHook {
-    public static String NOOP_NAME = "noop_install_hook";
-    public static String NOOP_FILTER = "(name=" + PackageInstallHook.NOOP_NAME + ")";
+    public static final String NOOP_NAME = "noop_install_hook";
+    public static final String NOOP_FILTER = "(name=" + PackageInstallHook.NOOP_NAME + ")";
     
     /**
      * Will be called after a package was installed into the repository

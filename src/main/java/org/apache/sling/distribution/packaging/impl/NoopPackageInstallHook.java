@@ -35,9 +35,11 @@ public class NoopPackageInstallHook implements PackageInstallHook {
 
     @Override
     public void onPostAdd(ResourceResolver resourceResolver, DistributionPackage distPackage) {
+        // Noop
     }
 
     @Override
     public void onPreRemove(ResourceResolver resourceResolver, DistributionPackage distPackage) {
+        // Noop
     }
 }
