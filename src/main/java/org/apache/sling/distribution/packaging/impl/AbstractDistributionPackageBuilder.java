@@ -35,6 +35,7 @@ import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
+import org.apache.sling.distribution.packaging.PackageInstallHook;
 import org.apache.sling.distribution.serialization.impl.vlt.VltUtils;
 import org.apache.sling.distribution.util.DistributionJcrUtils;
 import org.jetbrains.annotations.NotNull;
@@ -51,8 +52,11 @@ public abstract class AbstractDistributionPackageBuilder implements Distribution
 
     private final String type;
 
-    AbstractDistributionPackageBuilder(String type) {
+    private PackageInstallHook installHook;
+
+    AbstractDistributionPackageBuilder(String type, PackageInstallHook installHook) {
         this.type = type;
+        this.installHook = installHook;
     }
 
     public String getType() {
@@ -170,6 +174,7 @@ public abstract class AbstractDistributionPackageBuilder implements Distribution
         Session session = null;
         try {
             if (distributionPackage != null) {
+                installHook.onPreRemove(resourceResolver, distributionPackage);
                 session = getSession(resourceResolver);
                 for (String path : distributionPackage.getInfo().getPaths()) {
                     if (session.itemExists(path)) {
@@ -193,7 +198,11 @@ public abstract class AbstractDistributionPackageBuilder implements Distribution
         InputStream inputStream = null;
         try {
             inputStream = distributionPackage.createInputStream();
-            return installPackageInternal(resourceResolver, inputStream);
+            boolean isInstalled = installPackageInternal(resourceResolver, inputStream);
+            if (isInstalled) {
+                installHook.onPostAdd(resourceResolver, distributionPackage);
+            }
+            return isInstalled;
         } catch (IOException e) {
             throw new DistributionException(e);
         } finally {

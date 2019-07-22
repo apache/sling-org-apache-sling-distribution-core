@@ -28,6 +28,7 @@ import org.apache.sling.distribution.DistributionRequestType;
 import org.apache.sling.distribution.SimpleDistributionRequest;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.packaging.DistributionPackage;
+import org.apache.sling.distribution.packaging.PackageInstallHook;
 import org.apache.sling.distribution.serialization.DistributionContentSerializer;
 import org.apache.sling.distribution.serialization.DistributionExportOptions;
 import org.junit.Test;
@@ -39,7 +40,8 @@ public class InMemoryDistributionPackageBuilderTest {
 
     @Test
     public void testCreatePackage() throws Exception {
-        InMemoryDistributionPackageBuilder builder = new InMemoryDistributionPackageBuilder("name", new InMemDistributionContentSerializer(), new String[0], new String[0]);
+        PackageInstallHook postInstallHook = new NoopPackageInstallHook();
+        InMemoryDistributionPackageBuilder builder = new InMemoryDistributionPackageBuilder("name", new InMemDistributionContentSerializer(), new String[0], new String[0], postInstallHook);
         DistributionPackage pkg = builder.createPackageForAdd(mock(ResourceResolver.class), new SimpleDistributionRequest(DistributionRequestType.ADD, false, "/test"));
         assertNotNull(pkg.createInputStream());
     }
