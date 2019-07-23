@@ -153,11 +153,10 @@ public class FileDistributionPackageBuilder extends AbstractDistributionPackageB
     }
 
     @Override
-    protected boolean installPackageInternal(@NotNull ResourceResolver resourceResolver, @NotNull InputStream inputStream)
+    protected void installPackageInternal(@NotNull ResourceResolver resourceResolver, @NotNull InputStream inputStream)
             throws DistributionException {
         try {
             distributionContentSerializer.importFromStream(resourceResolver, inputStream);
-            return true;
         } finally {
             IOUtils.closeQuietly(inputStream);
         }

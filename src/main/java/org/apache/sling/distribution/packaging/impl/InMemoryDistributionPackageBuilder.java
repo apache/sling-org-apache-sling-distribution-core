@@ -111,12 +111,11 @@ public class InMemoryDistributionPackageBuilder extends AbstractDistributionPack
     }
 
     @Override
-    protected boolean installPackageInternal(@NotNull ResourceResolver resourceResolver,
+    protected void installPackageInternal(@NotNull ResourceResolver resourceResolver,
                                              @NotNull InputStream inputStream)
             throws DistributionException {
         try {
             serializer.importFromStream(resourceResolver, inputStream);
-            return true;
         } finally {
             IOUtils.closeQuietly(inputStream);
         }

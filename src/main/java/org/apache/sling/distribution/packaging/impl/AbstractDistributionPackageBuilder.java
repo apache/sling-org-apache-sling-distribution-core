@@ -157,7 +157,8 @@ public abstract class AbstractDistributionPackageBuilder implements Distribution
         boolean installed;
         // not a simple package
         if (distributionPackage == null) {
-            installed = installPackageInternal(resourceResolver, stream);
+            installPackageInternal(resourceResolver, stream);
+            installed = true;
         } else {
             installed = installPackage(resourceResolver, distributionPackage);
             packageInfo.putAll(distributionPackage.getInfo());
@@ -198,11 +199,9 @@ public abstract class AbstractDistributionPackageBuilder implements Distribution
         InputStream inputStream = null;
         try {
             inputStream = distributionPackage.createInputStream();
-            boolean isInstalled = installPackageInternal(resourceResolver, inputStream);
-            if (isInstalled) {
-                installHook.onPostAdd(resourceResolver, distributionPackage);
-            }
-            return isInstalled;
+            installPackageInternal(resourceResolver, inputStream);
+            installHook.onPostAdd(resourceResolver, distributionPackage);
+            return true;
         } catch (IOException e) {
             throw new DistributionException(e);
         } finally {
@@ -260,7 +259,7 @@ public abstract class AbstractDistributionPackageBuilder implements Distribution
             throws DistributionException;
 
 
-    protected abstract boolean installPackageInternal(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream)
+    protected abstract void installPackageInternal(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream)
             throws DistributionException;
 
     @Nullable
