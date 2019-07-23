@@ -31,7 +31,6 @@ import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.DistributionBaseIT;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.PaxExam;
@@ -49,7 +48,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-@Ignore
 @RunWith(PaxExam.class)
 public class ResourceQueueIT extends DistributionBaseIT {
 

@@ -84,11 +84,6 @@ public class InMemoryDistributionPackageBuilderTest {
     
     @Test
     public void testGetPackageInvalid() throws Exception {
-        
-    }
-    
-    @Test
-    public void testGetPackageSimple() throws Exception {
         String id = "invalid";
         DistributionPackage distPackage = builder.getPackage(resolver, id);
         assertThat(distPackage, nullValue());
