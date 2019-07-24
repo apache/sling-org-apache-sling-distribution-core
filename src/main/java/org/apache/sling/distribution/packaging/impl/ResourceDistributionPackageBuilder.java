@@ -44,6 +44,7 @@ import org.apache.sling.api.resource.ResourceUtil;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.packaging.DistributionPackage;
+import org.apache.sling.distribution.packaging.PackageInstallHook;
 import org.apache.sling.distribution.serialization.DistributionContentSerializer;
 import org.apache.sling.distribution.serialization.DistributionExportFilter;
 import org.apache.sling.distribution.serialization.DistributionExportOptions;
@@ -76,8 +77,9 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
                                               MemoryUnit memoryUnit,
                                               boolean useOffHeapMemory,
                                               String digestAlgorithm, String[] nodeFilters,
-                                              String[] propertyFilters) {
-        super(type);
+                                              String[] propertyFilters, 
+                                              PackageInstallHook postInstallHook) {
+        super(type, postInstallHook);
         this.distributionContentSerializer = distributionContentSerializer;
         this.nodeFilters = VltUtils.parseFilters(nodeFilters);
         this.propertyFilters = VltUtils.parseFilters(propertyFilters);
@@ -158,11 +160,10 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
     }
 
     @Override
-    protected boolean installPackageInternal(@NotNull ResourceResolver resourceResolver, @NotNull InputStream inputStream)
+    protected void installPackageInternal(@NotNull ResourceResolver resourceResolver, @NotNull InputStream inputStream)
             throws DistributionException {
         try {
             distributionContentSerializer.importFromStream(resourceResolver, inputStream);
-            return true;
         } finally {
             IOUtils.closeQuietly(inputStream);
         }

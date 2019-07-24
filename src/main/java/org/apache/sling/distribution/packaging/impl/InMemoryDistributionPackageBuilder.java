@@ -33,6 +33,7 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.packaging.DistributionPackage;
+import org.apache.sling.distribution.packaging.PackageInstallHook;
 import org.apache.sling.distribution.serialization.DistributionContentSerializer;
 import org.apache.sling.distribution.serialization.DistributionExportFilter;
 import org.apache.sling.distribution.serialization.DistributionExportOptions;
@@ -58,8 +59,9 @@ public class InMemoryDistributionPackageBuilder extends AbstractDistributionPack
     public InMemoryDistributionPackageBuilder(@NotNull String type,
                                               @NotNull DistributionContentSerializer serializer,
                                               @Nullable String[] nodeFilters,
-                                              @Nullable String[] propertyFilters) {
-        super(type);
+                                              @Nullable String[] propertyFilters,
+                                              PackageInstallHook postInstallHook) {
+        super(type, postInstallHook);
         this.serializer = serializer;
         this.nodeFilters = VltUtils.parseFilters(nodeFilters);
         this.propertyFilters = VltUtils.parseFilters(propertyFilters);
@@ -109,12 +111,11 @@ public class InMemoryDistributionPackageBuilder extends AbstractDistributionPack
     }
 
     @Override
-    protected boolean installPackageInternal(@NotNull ResourceResolver resourceResolver,
+    protected void installPackageInternal(@NotNull ResourceResolver resourceResolver,
                                              @NotNull InputStream inputStream)
             throws DistributionException {
         try {
             serializer.importFromStream(resourceResolver, inputStream);
-            return true;
         } finally {
             IOUtils.closeQuietly(inputStream);
         }

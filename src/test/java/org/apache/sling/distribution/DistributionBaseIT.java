@@ -27,7 +27,6 @@ import org.apache.sling.distribution.serialization.impl.vlt.VaultDistributionPac
 import org.apache.sling.testing.paxexam.SlingOptions;
 import org.apache.sling.testing.paxexam.TestSupport;
 import org.ops4j.pax.exam.Configuration;
-import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
@@ -35,8 +34,6 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 
 import javax.inject.Inject;
-
-import java.io.File;
 
 import static org.apache.sling.testing.paxexam.SlingOptions.logback;
 import static org.apache.sling.testing.paxexam.SlingOptions.slingDistribution;
