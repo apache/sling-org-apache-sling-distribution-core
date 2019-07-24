@@ -19,23 +19,8 @@
 
 package org.apache.sling.distribution.queue.impl.resource;
 
-import org.apache.sling.api.resource.LoginException;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.distribution.DistributionRequestType;
-import org.apache.sling.distribution.DistributionResponse;
-import org.apache.sling.distribution.Distributor;
-import org.apache.sling.distribution.SimpleDistributionRequest;
-import org.apache.sling.distribution.agent.spi.DistributionAgent;
-import org.apache.sling.distribution.common.DistributionException;
-import org.apache.sling.distribution.queue.DistributionQueueEntry;
-import org.apache.sling.distribution.queue.DistributionQueueItem;
-import org.apache.sling.distribution.DistributionBaseIT;
-import org.apache.sling.distribution.queue.spi.DistributionQueue;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.PaxExam;
-
-import javax.inject.Inject;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,9 +29,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import javax.inject.Inject;
+
+import org.apache.sling.api.resource.LoginException;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.distribution.DistributionBaseIT;
+import org.apache.sling.distribution.DistributionRequestType;
+import org.apache.sling.distribution.DistributionResponse;
+import org.apache.sling.distribution.Distributor;
+import org.apache.sling.distribution.SimpleDistributionRequest;
+import org.apache.sling.distribution.agent.spi.DistributionAgent;
+import org.apache.sling.distribution.common.DistributionException;
+import org.apache.sling.distribution.queue.DistributionQueueEntry;
+import org.apache.sling.distribution.queue.DistributionQueueItem;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.util.Filter;
 
 @RunWith(PaxExam.class)
 public class ResourceQueueIT extends DistributionBaseIT {
@@ -56,48 +59,49 @@ public class ResourceQueueIT extends DistributionBaseIT {
 
     @Inject
     protected Distributor distributor;
+    
+    @Inject
+    ResourceResolverFactory resolverFactory;
+    
+    @Filter("name=" + AGENT_RESOURCE_QUEUE + ")")
+    @Inject
+    private DistributionAgent agent;
+    
+    private DistributionQueue queue;
 
+    @Before
+    public void getQueue() {
+        queue = agent.getQueue(QUEUE_NAME);
+    }
+    
+    @After
+    public void clear() {
+        for (DistributionQueueEntry entry : queue.getEntries(0, -1)) {
+            queue.remove(entry.getId());
+        }
+    }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testExecute() throws LoginException, DistributionException {
-
-        DistributionAgent agent = getAgent(AGENT_RESOURCE_QUEUE);
-
-        assertNotNull(agent);
-
         ResourceResolver resourceResolver =  resolverFactory.getAdministrativeResourceResolver(null);
 
-        DistributionResponse response = agent.execute(resourceResolver,
-                new SimpleDistributionRequest(DistributionRequestType.ADD, "/content" ));
+        SimpleDistributionRequest request = new SimpleDistributionRequest(DistributionRequestType.ADD, "/content" );
+        DistributionResponse response = agent.execute(resourceResolver, request);
+
         assertTrue(response.isSuccessful());
-
-        DistributionQueue queue = agent.getQueue(QUEUE_NAME);
-
         assertEquals(1, queue.getStatus().getItemsCount());
-
-        clear(queue);
-
     }
 
 
     @Test
     public void testFifo() {
-        DistributionAgent agent = getAgent(AGENT_RESOURCE_QUEUE);
-
-        DistributionQueue queue = agent.getQueue(QUEUE_NAME);
-
         queue.add(new DistributionQueueItem("packageId", 10, new HashMap<String, Object>()));
-
         assertEquals(1, queue.getStatus().getItemsCount());
-
-        clear(queue);
     }
 
     @Test
     public void testConcurrentFifo () throws InterruptedException {
-        final DistributionAgent agent = getAgent(AGENT_RESOURCE_QUEUE);
-        final DistributionQueue queue = agent.getQueue(QUEUE_NAME);
-
         Producer p1 = new Producer(queue, "p1");
         Producer p2 = new Producer(queue, "p2");
         Producer p3 = new Producer(queue, "p3");
@@ -144,14 +148,6 @@ public class ResourceQueueIT extends DistributionBaseIT {
         }
 
         assertEquals(0, queue.getStatus().getItemsCount());
-
-        clear(queue);
-    }
-
-    void clear(DistributionQueue queue) {
-        for (DistributionQueueEntry entry : queue.getEntries(0, -1)) {
-            queue.remove(entry.getId());
-        }
     }
 
     class Producer implements Runnable {
@@ -163,7 +159,6 @@ public class ResourceQueueIT extends DistributionBaseIT {
             this.queue = queue;
             this.name = name;
         }
-
 
         public void run() {
             for(int i=0; i<ITERATIONS; i++) {

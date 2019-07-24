@@ -19,22 +19,6 @@
 
 package org.apache.sling.distribution;
 
-import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.apache.sling.distribution.agent.impl.PrivilegeDistributionRequestAuthorizationStrategyFactory;
-import org.apache.sling.distribution.agent.impl.QueueDistributionAgentFactory;
-import org.apache.sling.distribution.agent.spi.DistributionAgent;
-import org.apache.sling.distribution.serialization.impl.vlt.VaultDistributionPackageBuilderFactory;
-import org.apache.sling.testing.paxexam.SlingOptions;
-import org.apache.sling.testing.paxexam.TestSupport;
-import org.ops4j.pax.exam.Configuration;
-import org.ops4j.pax.exam.Option;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.Filter;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
-
-import javax.inject.Inject;
-
 import static org.apache.sling.testing.paxexam.SlingOptions.logback;
 import static org.apache.sling.testing.paxexam.SlingOptions.slingDistribution;
 import static org.apache.sling.testing.paxexam.SlingOptions.slingQuickstartOakTar;
@@ -43,18 +27,18 @@ import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.cm.ConfigurationAdminOptions.factoryConfiguration;
 import static org.ops4j.pax.exam.cm.ConfigurationAdminOptions.newConfiguration;
 
+import org.apache.sling.distribution.agent.impl.PrivilegeDistributionRequestAuthorizationStrategyFactory;
+import org.apache.sling.distribution.agent.impl.QueueDistributionAgentFactory;
+import org.apache.sling.distribution.serialization.impl.vlt.VaultDistributionPackageBuilderFactory;
+import org.apache.sling.testing.paxexam.SlingOptions;
+import org.apache.sling.testing.paxexam.TestSupport;
+import org.ops4j.pax.exam.Configuration;
+import org.ops4j.pax.exam.Option;
+
 public class DistributionBaseIT extends TestSupport {
 
     protected static final String AGENT_RESOURCE_QUEUE = "agentResourceQueue";
     protected static final String AGENT_JOB_QUEUE = "agentJobQueue";
-
-
-    @Inject
-    protected ResourceResolverFactory resolverFactory;
-
-    @Inject
-    protected BundleContext context;
-
 
     @Configuration
     public Option[] configuration() {
@@ -117,34 +101,6 @@ public class DistributionBaseIT extends TestSupport {
                         .put("queueProviderFactory.target", "(name=jobQueue)")
                         .asOption()
         );
-    }
-
-
-    protected DistributionAgent getAgent(String agentName) {
-
-        for (int i=0; i< 10; i++) {
-            try {
-                Filter filter = context.createFilter("(name="+agentName+")");
-
-                ServiceReference[] srs = this.context.getServiceReferences(DistributionAgent.class.getName(), filter.toString());
-                if (srs == null || srs.length == 0) {
-                    Thread.sleep(1000);
-                    continue;
-                }
-                ServiceReference sr = srs[0];
-
-                Object service = context.getService(sr);
-
-                return (DistributionAgent) service;
-            } catch (InvalidSyntaxException e) {
-
-            } catch (InterruptedException e) {
-            }
-
-
-        }
-
-        return null;
     }
 
 }
