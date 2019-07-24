@@ -44,7 +44,7 @@ public class DefaultDistributionEventFactory implements DistributionEventFactory
     @Reference
     private EventAdmin eventAdmin;
 
-    private void generateEvent(@NotNull String distributionEventTopic, @NotNull Dictionary<?, ?> properties) {
+    private void generateEvent(@NotNull String distributionEventTopic, @NotNull Dictionary<String, ?> properties) {
         eventAdmin.postEvent(new Event(distributionEventTopic, properties));
         log.debug("distribution event {} posted", distributionEventTopic);
     }
