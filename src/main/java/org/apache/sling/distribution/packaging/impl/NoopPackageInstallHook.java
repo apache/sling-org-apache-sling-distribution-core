@@ -30,7 +30,7 @@ import org.apache.sling.distribution.packaging.PackageInstallHook;
  */
 @Component
 @Service(PackageInstallHook.class)
-@Property(name = "name", value = "Builder name: {name}")
+@Property(name = "name", value = PackageInstallHook.NOOP_NAME)
 public class NoopPackageInstallHook implements PackageInstallHook {
 
     @Override
