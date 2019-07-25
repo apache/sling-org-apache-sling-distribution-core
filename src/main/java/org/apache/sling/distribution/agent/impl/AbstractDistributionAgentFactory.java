@@ -58,8 +58,8 @@ abstract class AbstractDistributionAgentFactory<DistributionAgentMBeanType> {
 
     private final Class<DistributionAgentMBeanType> distributionAgentMBeanType;
 
-    private ServiceRegistration componentReg;
-    private ServiceRegistration mbeanServiceRegistration;
+    private ServiceRegistration<DistributionAgent> componentReg;
+    private ServiceRegistration<DistributionAgentMBeanType> mbeanServiceRegistration;
     private String agentName;
     private final List<DistributionTrigger> triggers = new CopyOnWriteArrayList<DistributionTrigger>();
     private boolean triggersEnabled = false;
@@ -120,7 +120,7 @@ abstract class AbstractDistributionAgentFactory<DistributionAgentMBeanType> {
                 if (agent != null) {
 
                     // register agent service
-                    componentReg = context.registerService(DistributionAgent.class.getName(), agent, props);
+                    componentReg = context.registerService(DistributionAgent.class, agent, props);
                     agent.enable();
 
 
@@ -134,7 +134,7 @@ abstract class AbstractDistributionAgentFactory<DistributionAgentMBeanType> {
                     mbeanProps.put("jmx.objectname", "org.apache.sling.distribution:type=agent,id=" + ObjectName.quote(agentName));
 
                     DistributionAgentMBeanType mbean = createMBeanAgent(agent, config);
-                    mbeanServiceRegistration = context.registerService(distributionAgentMBeanType.getName(), mbean, mbeanProps);
+                    mbeanServiceRegistration = context.registerService(distributionAgentMBeanType, mbean, mbeanProps);
 
                 }
 
@@ -163,7 +163,7 @@ abstract class AbstractDistributionAgentFactory<DistributionAgentMBeanType> {
 
     void deactivate(BundleContext context) {
         if (componentReg != null) {
-            ServiceReference reference = componentReg.getReference();
+            ServiceReference<DistributionAgent> reference = componentReg.getReference();
             Object service = context.getService(reference);
             if (service instanceof SimpleDistributionAgent) {
                 SimpleDistributionAgent agent = (SimpleDistributionAgent) service;
@@ -188,7 +188,7 @@ abstract class AbstractDistributionAgentFactory<DistributionAgentMBeanType> {
         log.info("deactivated agent {}", agentName);
     }
 
-    private static boolean safeUnregister(ServiceRegistration serviceRegistration) {
+    private static boolean safeUnregister(ServiceRegistration<?> serviceRegistration) {
         if (serviceRegistration != null) {
             serviceRegistration.unregister();
             return true;

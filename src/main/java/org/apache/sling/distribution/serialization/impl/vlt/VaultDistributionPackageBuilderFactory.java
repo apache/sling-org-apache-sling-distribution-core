@@ -223,7 +223,7 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
     @Reference
     private ResourceResolverFactory resolverFactory;
 
-    private ServiceRegistration packageCleanup = null;
+    private ServiceRegistration<Runnable> packageCleanup = null;
 
     private MonitoringDistributionPackageBuilder packageBuilder;
 
@@ -289,7 +289,7 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
             Dictionary<String, Object> props = new Hashtable<String, Object>();
             props.put(Scheduler.PROPERTY_SCHEDULER_CONCURRENT, false);
             props.put(Scheduler.PROPERTY_SCHEDULER_PERIOD, cleanupDelay);
-            packageCleanup = context.registerService(Runnable.class.getName(), cleanup, props);
+            packageCleanup = context.registerService(Runnable.class, cleanup, props);
             wrapped = resourceDistributionPackageBuilder;
         }
 

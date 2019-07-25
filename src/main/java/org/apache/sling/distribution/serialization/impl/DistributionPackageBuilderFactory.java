@@ -192,7 +192,7 @@ public class DistributionPackageBuilderFactory implements DistributionPackageBui
 
     private MonitoringDistributionPackageBuilder packageBuilder;
 
-    private ServiceRegistration packageCleanup = null;
+    private ServiceRegistration<Runnable> packageCleanup = null;
 
     @Property(name = "installHook.target", label = "install hook", description = "Hook to be called after package was installed and before package will be removed.", value = PackageInstallHook.NOOP_FILTER)
     @Reference
@@ -227,7 +227,7 @@ public class DistributionPackageBuilderFactory implements DistributionPackageBui
             Dictionary<String, Object> props = new Hashtable<String, Object>();
             props.put(Scheduler.PROPERTY_SCHEDULER_CONCURRENT, false);
             props.put(Scheduler.PROPERTY_SCHEDULER_PERIOD, cleanupDelay);
-            packageCleanup = context.registerService(Runnable.class.getName(), cleanup, props);
+            packageCleanup = context.registerService(Runnable.class, cleanup, props);
             wrapped = resourceDistributionPackageBuilder;
         }
 

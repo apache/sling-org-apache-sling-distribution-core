@@ -67,7 +67,7 @@ public class UserCredentialsDistributionTransportSecretProvider implements
     private String username;
     private String password;
 
-    private ServiceRegistration mbeanServiceRegistration;
+    private ServiceRegistration<UserCredentialsDistributionTransportSecretMBean> mbeanServiceRegistration;
 
     @Activate
     protected void activate(BundleContext context, Map<String, Object> config) {
@@ -82,7 +82,7 @@ public class UserCredentialsDistributionTransportSecretProvider implements
         UserCredentialsDistributionTransportSecretMBean mbean =
                         new UserCredentialsDistributionTransportSecretMBeanImpl(username);
         mbeanServiceRegistration =
-                        context.registerService(UserCredentialsDistributionTransportSecretMBean.class.getName(), mbean, mbeanProps);
+                        context.registerService(UserCredentialsDistributionTransportSecretMBean.class, mbean, mbeanProps);
     }
 
     @Deactivate

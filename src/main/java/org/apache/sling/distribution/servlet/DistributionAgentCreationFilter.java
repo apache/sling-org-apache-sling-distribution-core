@@ -26,6 +26,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collection;
 
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
@@ -92,8 +93,8 @@ public final class DistributionAgentCreationFilter implements Filter {
             if (type != null && name != null) {
                 String filter = format(FACTORY_FILTER_PATTERN, name, type);
                 try {
-                    ServiceReference[] services = context.getAllServiceReferences(DistributionAgent.class.getName(), filter);
-                    if (services != null && services.length > 0) {
+                    Collection<ServiceReference<DistributionAgent>> services = context.getServiceReferences(DistributionAgent.class, filter);
+                    if (!services.isEmpty()) {
                         String errorMessage = format("An agent named '%s' of different type than '%s' was already previously registered, please change the Agent name.",
                                 name, type);
                         ((HttpServletResponse) response).sendError(SC_CONFLICT, errorMessage);

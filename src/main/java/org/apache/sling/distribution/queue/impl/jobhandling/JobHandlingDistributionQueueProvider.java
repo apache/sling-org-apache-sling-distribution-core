@@ -58,7 +58,7 @@ public class JobHandlingDistributionQueueProvider implements DistributionQueuePr
 
     private final JobManager jobManager;
 
-    private ServiceRegistration jobConsumer = null;
+    private ServiceRegistration<JobConsumer> jobConsumer = null;
 
     private BundleContext context;
     private Set<String> processingQueueNames = null;
@@ -144,7 +144,7 @@ public class JobHandlingDistributionQueueProvider implements DistributionQueuePr
 
         log.debug("registering job consumer for prefix {}", prefix);
         log.info("qp: {}, jp: {}", queueProcessor, jobProps);
-        jobConsumer = context.registerService(JobConsumer.class.getName(), new DistributionAgentJobConsumer(queueProcessor), jobProps);
+        jobConsumer = context.registerService(JobConsumer.class, new DistributionAgentJobConsumer(queueProcessor), jobProps);
         log.debug("job consumer for prefix {} registered", prefix);
     }
 

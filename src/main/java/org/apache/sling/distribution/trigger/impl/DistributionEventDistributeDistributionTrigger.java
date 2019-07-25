@@ -48,7 +48,7 @@ public class DistributionEventDistributeDistributionTrigger implements Distribut
     private final String pathPrefix;
 
     private final BundleContext bundleContext;
-    private final Map<String, ServiceRegistration> registrations = new ConcurrentHashMap<String, ServiceRegistration>();
+    private final Map<String, ServiceRegistration<EventHandler>> registrations = new ConcurrentHashMap<>();
 
 
     public DistributionEventDistributeDistributionTrigger(String pathPrefix, BundleContext bundleContext) {
@@ -68,7 +68,7 @@ public class DistributionEventDistributeDistributionTrigger implements Distribut
         log.info("handler {} will chain distribute on path '{}'", requestHandler, pathPrefix);
 
         if (bundleContext != null) {
-            ServiceRegistration triggerPathEventRegistration = bundleContext.registerService(EventHandler.class.getName(),
+            ServiceRegistration<EventHandler> triggerPathEventRegistration = bundleContext.registerService(EventHandler.class,
                     new TriggerAgentEventListener(requestHandler, pathPrefix), properties);
             if (triggerPathEventRegistration != null) {
                 registrations.put(requestHandler.toString(), triggerPathEventRegistration);
@@ -79,14 +79,14 @@ public class DistributionEventDistributeDistributionTrigger implements Distribut
     }
 
     public void unregister(@NotNull DistributionRequestHandler requestHandler) throws DistributionException {
-        ServiceRegistration serviceRegistration = registrations.get(requestHandler.toString());
+        ServiceRegistration<EventHandler> serviceRegistration = registrations.get(requestHandler.toString());
         if (serviceRegistration != null) {
             serviceRegistration.unregister();
         }
     }
 
     public void disable() {
-        for (Map.Entry<String, ServiceRegistration> entry : registrations.entrySet()) {
+        for (Map.Entry<String, ServiceRegistration<EventHandler>> entry : registrations.entrySet()) {
             if (entry.getValue() != null) {
                 entry.getValue().unregister();
             }

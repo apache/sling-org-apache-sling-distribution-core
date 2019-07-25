@@ -44,14 +44,14 @@ public final class MonitoringDistributionPackageBuilder implements DistributionP
 
     private final int queueCapacity;
 
-    private final Queue<ServiceRegistration> mBeans;
+    private final Queue<ServiceRegistration<DistributionPackageMBean>> mBeans;
 
     public MonitoringDistributionPackageBuilder(int queueCapacity, DistributionPackageBuilder wrapped, BundleContext context) {
         this.wrapped = wrapped;
         this.context = context;
         this.queueCapacity = queueCapacity;
 
-        mBeans = new LinkedBlockingDeque<ServiceRegistration>();
+        mBeans = new LinkedBlockingDeque<ServiceRegistration<DistributionPackageMBean>>();
     }
 
     @Override
@@ -103,10 +103,10 @@ public final class MonitoringDistributionPackageBuilder implements DistributionP
         mbeanProps.put("jmx.objectname", "org.apache.sling.distribution:type=distributionpackage,id="
                                          + ObjectName.quote(distributionPackage.getId()));
 
-        ServiceRegistration mBeanRegistration = context.registerService(DistributionPackageMBean.class.getName(), mBean, mbeanProps);
+        ServiceRegistration<DistributionPackageMBean> mBeanRegistration = context.registerService(DistributionPackageMBean.class, mBean, mbeanProps);
 
         if (queueCapacity == mBeans.size()) {
-            ServiceRegistration toBeRemoved = mBeans.poll();
+            ServiceRegistration<DistributionPackageMBean> toBeRemoved = mBeans.poll();
             safeUnregister(toBeRemoved);
         }
 
@@ -115,12 +115,12 @@ public final class MonitoringDistributionPackageBuilder implements DistributionP
 
     public void clear() {
         while (!mBeans.isEmpty()) {
-            ServiceRegistration toBeRemoved = mBeans.poll();
+            ServiceRegistration<DistributionPackageMBean> toBeRemoved = mBeans.poll();
             safeUnregister(toBeRemoved);
         }
     }
 
-    private static void safeUnregister(ServiceRegistration serviceRegistration) {
+    private static void safeUnregister(ServiceRegistration<?> serviceRegistration) {
         if (serviceRegistration != null) {
             serviceRegistration.unregister();
         }

@@ -41,7 +41,7 @@ public class ResourceQueueProvider implements DistributionQueueProvider {
     private String serviceName;
     private String agentRootPath;
 
-    private ServiceRegistration cleanupTask;
+    private ServiceRegistration<Runnable> cleanupTask;
 
 
     public ResourceQueueProvider(BundleContext context, ResourceResolverFactory resolverFactory, String serviceName, String agentName) {
@@ -80,7 +80,7 @@ public class ResourceQueueProvider implements DistributionQueueProvider {
         Dictionary<String, Object> props = new Hashtable<String, Object>();
         props.put(Scheduler.PROPERTY_SCHEDULER_CONCURRENT, false);
         props.put(Scheduler.PROPERTY_SCHEDULER_PERIOD, 300L);
-        cleanupTask = context.registerService(Runnable.class.getName(), cleanup, props);
+        cleanupTask = context.registerService(Runnable.class, cleanup, props);
     }
 
     public void close() {

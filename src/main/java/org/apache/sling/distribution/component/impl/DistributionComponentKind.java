@@ -41,7 +41,6 @@ import org.apache.sling.distribution.trigger.DistributionTrigger;
 /**
  * Enum that represents the main distribution component kinds that can be configured for distribution.
  */
-@SuppressWarnings( "serial" )
 public enum DistributionComponentKind {
 
     AGENT("agent", AGENT_RESOURCE_TYPE, AGENT_LIST_RESOURCE_TYPE, DistributionAgent.class),

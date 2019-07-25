@@ -65,7 +65,6 @@ public class OsgiConfigurationManager implements DistributionConfigurationManage
 
 
         for (Configuration configuration : configurations) {
-            @SuppressWarnings( "unchecked" )
             Dictionary<String, Object> propertiesDict = configuration.getProperties();
             Map<String, Object> properties = OsgiUtils.fromDictionary(propertiesDict);
 
@@ -87,13 +86,12 @@ public class OsgiConfigurationManager implements DistributionConfigurationManage
 
         if (configurations.size() > 1) {
             log.warn("Found more than one configuration of kind: {} and with name: {}",
-                    new String[]{kind.getName(), name});
+                    kind.getName(), name);
         }
 
         Configuration configuration = configurations.get(0);
 
         if (configuration != null) {
-            @SuppressWarnings( "unchecked" )
             Dictionary<String, Object> properties = configuration.getProperties();
             Map<String, Object> result = OsgiUtils.fromDictionary(properties);
 

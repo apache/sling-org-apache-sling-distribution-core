@@ -78,7 +78,7 @@ public class DigestUtilsTest {
         ByteArrayOutputStream bos = new ByteArrayOutputStream(DATA.length);
         bos.write(DATA);
         bos.flush();
-        DigestOutputStream dos = DigestUtils.openDigestOutputStream(bos, "unsupported");
+        DigestUtils.openDigestOutputStream(bos, "unsupported");
     }
 
 }

@@ -44,7 +44,7 @@ public class MonitoringDistributionQueueProvider implements DistributionQueuePro
 
     private final Set<String> monitoredQueues = new HashSet<String>();
 
-    private final List<ServiceRegistration> mBeans = new LinkedList<ServiceRegistration>();
+    private final List<ServiceRegistration<DistributionQueueMBean>> mBeans = new LinkedList<>();
 
     private final DistributionQueueProvider wrapped;
 
@@ -78,10 +78,8 @@ public class MonitoringDistributionQueueProvider implements DistributionQueuePro
     public void disableQueueProcessing() throws DistributionException {
         wrapped.disableQueueProcessing();
 
-        for (ServiceRegistration mBean : mBeans) {
-            if (mBean != null) {
-                mBean.unregister();
-            }
+        for (ServiceRegistration<DistributionQueueMBean> mBean : mBeans) {
+            safeUnregister(mBean);
         }
 
         mBeans.clear();
@@ -97,13 +95,19 @@ public class MonitoringDistributionQueueProvider implements DistributionQueuePro
                 mBeanProps.put("jmx.objectname", "org.apache.sling.distribution:type=queue,id="
                         + ObjectName.quote(distributionQueue.getName()));
 
-                ServiceRegistration mBeanRegistration = context.registerService(DistributionQueueMBean.class.getName(), mBean, mBeanProps);
+                ServiceRegistration<DistributionQueueMBean> mBeanRegistration = context.registerService(DistributionQueueMBean.class, mBean, mBeanProps);
                 mBeans.add(mBeanRegistration);
             }
         } catch (Throwable e) {
             log.error("cannot register queue mbean", e);
         }
 
+    }
+    
+    private static void safeUnregister(ServiceRegistration<?> serviceRegistration) {
+        if (serviceRegistration != null) {
+            serviceRegistration.unregister();
+        }
     }
 
 }

@@ -49,7 +49,7 @@ public class ResourceEventDistributionTrigger implements DistributionTrigger {
 
     private final BundleContext bundleContext;
     private final String path;
-    private final Map<String, ServiceRegistration> registrations = new ConcurrentHashMap<String, ServiceRegistration>();
+    private final Map<String, ServiceRegistration<EventHandler>> registrations = new ConcurrentHashMap<>();
 
 
     public ResourceEventDistributionTrigger(String path, BundleContext bundleContext) {
@@ -70,7 +70,7 @@ public class ResourceEventDistributionTrigger implements DistributionTrigger {
     }
 
     public void disable() {
-        for (ServiceRegistration serviceRegistration : registrations.values()) {
+        for (ServiceRegistration<EventHandler> serviceRegistration : registrations.values()) {
             serviceRegistration.unregister();
         }
 
@@ -86,7 +86,7 @@ public class ResourceEventDistributionTrigger implements DistributionTrigger {
 
         properties.put(EventConstants.EVENT_FILTER, "(&(path=" + path + "/*) (!(" + DEAConstants.PROPERTY_APPLICATION + "=*)))");
 
-        ServiceRegistration triggerPathEventRegistration = bundleContext.registerService(EventHandler.class.getName(),
+        ServiceRegistration<EventHandler> triggerPathEventRegistration = bundleContext.registerService(EventHandler.class,
                 new TriggerAgentEventListener(requestHandler), properties);
         if (triggerPathEventRegistration != null) {
             registrations.put(requestHandler.toString(), triggerPathEventRegistration);
@@ -96,7 +96,7 @@ public class ResourceEventDistributionTrigger implements DistributionTrigger {
     }
 
     public void unregister(@NotNull DistributionRequestHandler requestHandler) throws DistributionException {
-        ServiceRegistration serviceRegistration = registrations.get(requestHandler.toString());
+        ServiceRegistration<EventHandler> serviceRegistration = registrations.get(requestHandler.toString());
         if (serviceRegistration != null) {
             serviceRegistration.unregister();
         }

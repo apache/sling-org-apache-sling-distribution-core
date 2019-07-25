@@ -44,10 +44,11 @@ public class FileBackedMemoryOutputStreamTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void thresholdMustBePositive() throws IOException {
-        new FileBackedMemoryOutputStream(-1,
+        FileBackedMemoryOutputStream os = new FileBackedMemoryOutputStream(-1,
             MemoryUnit.BYTES,
             false,
             new File("/tmp"), "FileBackedMemoryOutputStreamTest.justKeepDataInMemory", ".tmp");
+        os.close();
     }
 
     @Test
