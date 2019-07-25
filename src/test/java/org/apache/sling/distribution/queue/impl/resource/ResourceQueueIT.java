@@ -63,7 +63,7 @@ public class ResourceQueueIT extends DistributionBaseIT {
     @Inject
     ResourceResolverFactory resolverFactory;
     
-    @Filter("name=" + AGENT_RESOURCE_QUEUE + ")")
+    @Filter("(name=" + AGENT_RESOURCE_QUEUE + ")")
     @Inject
     private DistributionAgent agent;
     

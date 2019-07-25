@@ -33,6 +33,7 @@ import org.apache.sling.distribution.serialization.impl.vlt.VaultDistributionPac
 import org.apache.sling.testing.paxexam.SlingOptions;
 import org.apache.sling.testing.paxexam.TestSupport;
 import org.ops4j.pax.exam.Configuration;
+import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
 
 public class DistributionBaseIT extends TestSupport {
@@ -52,6 +53,8 @@ public class DistributionBaseIT extends TestSupport {
                 slingDistribution(),
                 // testing
                 defaultOsgiConfigs(),
+                SlingOptions.webconsole(),
+                CoreOptions.mavenBundle("org.apache.felix", "org.apache.felix.webconsole.plugins.ds", "2.0.8"),
                 junitBundles()
         };
     }
