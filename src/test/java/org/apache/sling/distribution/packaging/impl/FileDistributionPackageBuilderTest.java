@@ -30,7 +30,6 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.packaging.DistributionPackage;
-import org.apache.sling.distribution.packaging.PackageInstallHook;
 import org.apache.sling.distribution.serialization.DistributionContentSerializer;
 import org.apache.sling.distribution.serialization.DistributionExportOptions;
 import org.junit.Test;
@@ -39,9 +38,8 @@ public class FileDistributionPackageBuilderTest {
 
     @Test
     public void testDefaultTempDirectory() throws DistributionException, IOException {
-        PackageInstallHook postInstallHook = new NoopPackageInstallHook();
         FileDistributionPackageBuilder builder = new FileDistributionPackageBuilder("test", new TestSerializer(), null, null, new String[0],
-                new String[0], postInstallHook);
+                new String[0]);
         DistributionPackage createdPackage = builder.createPackageForAdd(mock(ResourceResolver.class), mock(DistributionRequest.class));
 
         try {

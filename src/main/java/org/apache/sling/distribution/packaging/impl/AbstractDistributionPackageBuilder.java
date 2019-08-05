@@ -35,7 +35,6 @@ import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
-import org.apache.sling.distribution.packaging.PackageInstallHook;
 import org.apache.sling.distribution.serialization.impl.vlt.VltUtils;
 import org.apache.sling.distribution.util.DistributionJcrUtils;
 import org.jetbrains.annotations.NotNull;
@@ -52,11 +51,8 @@ public abstract class AbstractDistributionPackageBuilder implements Distribution
 
     private final String type;
 
-    private PackageInstallHook installHook;
-
-    AbstractDistributionPackageBuilder(String type, PackageInstallHook installHook) {
+    AbstractDistributionPackageBuilder(String type) {
         this.type = type;
-        this.installHook = installHook;
     }
 
     public String getType() {
@@ -157,8 +153,7 @@ public abstract class AbstractDistributionPackageBuilder implements Distribution
         boolean installed;
         // not a simple package
         if (distributionPackage == null) {
-            installPackageInternal(resourceResolver, stream);
-            installed = true;
+            installed = installPackageInternal(resourceResolver, stream);
         } else {
             installed = installPackage(resourceResolver, distributionPackage);
             packageInfo.putAll(distributionPackage.getInfo());
@@ -175,7 +170,6 @@ public abstract class AbstractDistributionPackageBuilder implements Distribution
         Session session = null;
         try {
             if (distributionPackage != null) {
-                installHook.onPreRemove(resourceResolver, distributionPackage);
                 session = getSession(resourceResolver);
                 for (String path : distributionPackage.getInfo().getPaths()) {
                     if (session.itemExists(path)) {
@@ -199,9 +193,7 @@ public abstract class AbstractDistributionPackageBuilder implements Distribution
         InputStream inputStream = null;
         try {
             inputStream = distributionPackage.createInputStream();
-            installPackageInternal(resourceResolver, inputStream);
-            installHook.onPostAdd(resourceResolver, distributionPackage);
-            return true;
+            return installPackageInternal(resourceResolver, inputStream);
         } catch (IOException e) {
             throw new DistributionException(e);
         } finally {
@@ -259,7 +251,7 @@ public abstract class AbstractDistributionPackageBuilder implements Distribution
             throws DistributionException;
 
 
-    protected abstract void installPackageInternal(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream)
+    protected abstract boolean installPackageInternal(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream)
             throws DistributionException;
 
     @Nullable

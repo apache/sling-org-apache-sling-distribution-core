@@ -34,7 +34,6 @@ import org.apache.sling.distribution.monitor.impl.MonitoringDistributionPackageB
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
-import org.apache.sling.distribution.packaging.PackageInstallHook;
 import org.apache.sling.distribution.packaging.impl.FileDistributionPackageBuilder;
 import org.apache.sling.distribution.packaging.impl.InMemoryDistributionPackageBuilder;
 import org.apache.sling.distribution.packaging.impl.ResourceDistributionPackageBuilder;
@@ -227,11 +226,6 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
 
     private MonitoringDistributionPackageBuilder packageBuilder;
 
-    @Property(name = "postInstallHook.target", label = "Post install hook", description = "Hook to be called after package was installed.",
-            value = PackageInstallHook.NOOP_FILTER)
-    @Reference
-    private PackageInstallHook postInstallHook;
-
     @Activate
     public void activate(BundleContext context, Map<String, Object> config) {
 
@@ -276,15 +270,15 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
 
         DistributionPackageBuilder wrapped;
         if ("filevlt".equals(type)) {
-            wrapped = new FileDistributionPackageBuilder(name, contentSerializer, tempFsFolder, digestAlgorithm, packageNodeFilters, packagePropertyFilters, postInstallHook);
+            wrapped = new FileDistributionPackageBuilder(name, contentSerializer, tempFsFolder, digestAlgorithm, packageNodeFilters, packagePropertyFilters);
         } else if ("inmemory".equals(type)) {
-            wrapped = new InMemoryDistributionPackageBuilder(name, contentSerializer, packageNodeFilters, packagePropertyFilters, postInstallHook);
+            wrapped = new InMemoryDistributionPackageBuilder(name, contentSerializer, packageNodeFilters, packagePropertyFilters);
         } else {
             final int fileThreshold = PropertiesUtil.toInteger(config.get(FILE_THRESHOLD), DEFAULT_FILE_THRESHOLD_VALUE);
             String memoryUnitName = PropertiesUtil.toString(config.get(MEMORY_UNIT), DEFAULT_MEMORY_UNIT);
             final MemoryUnit memoryUnit = MemoryUnit.valueOf(memoryUnitName);
             final boolean useOffHeapMemory = PropertiesUtil.toBoolean(config.get(USE_OFF_HEAP_MEMORY), DEFAULT_USE_OFF_HEAP_MEMORY);
-            ResourceDistributionPackageBuilder resourceDistributionPackageBuilder = new ResourceDistributionPackageBuilder(contentSerializer.getName(), contentSerializer, tempFsFolder, fileThreshold, memoryUnit, useOffHeapMemory, digestAlgorithm, packageNodeFilters, packagePropertyFilters, postInstallHook);
+            ResourceDistributionPackageBuilder resourceDistributionPackageBuilder = new ResourceDistributionPackageBuilder(contentSerializer.getName(), contentSerializer, tempFsFolder, fileThreshold, memoryUnit, useOffHeapMemory, digestAlgorithm, packageNodeFilters, packagePropertyFilters);
             Runnable cleanup = new ResourceDistributionPackageCleanup(resolverFactory, resourceDistributionPackageBuilder);
             Dictionary<String, Object> props = new Hashtable<String, Object>();
             props.put(Scheduler.PROPERTY_SCHEDULER_CONCURRENT, false);
