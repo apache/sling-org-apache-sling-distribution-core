@@ -74,6 +74,7 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
     private final Packaging packaging;
     private final ImportMode importMode;
     private final AccessControlHandling aclHandling;
+    private final AccessControlHandling cugHandling;
     private final String[] packageRoots;
     private final int autosaveThreshold;
     private final TreeMap<String, List<String>> nodeFilters;
@@ -83,7 +84,7 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
     private final Map<String, String> exportPathMapping;
     private final boolean strict;
 
-    public FileVaultContentSerializer(String name, Packaging packaging, ImportMode importMode, AccessControlHandling aclHandling, String[] packageRoots,
+    public FileVaultContentSerializer(String name, Packaging packaging, ImportMode importMode, AccessControlHandling aclHandling, AccessControlHandling cugHandling, String[] packageRoots,
                                       String[] nodeFilters, String[] propertyFilters, boolean useBinaryReferences, int autosaveThreshold,
                                       Map<String, String> exportPathMapping,
                                       boolean strict) {
@@ -91,6 +92,7 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
         this.packaging = packaging;
         this.importMode = importMode;
         this.aclHandling = aclHandling;
+        this.cugHandling = cugHandling;
         this.packageRoots = packageRoots;
         this.autosaveThreshold = autosaveThreshold;
         this.nodeFilters = VltUtils.parseFilters(nodeFilters);
@@ -130,7 +132,7 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
         Archive archive = null;
         try {
             session = getSession(resourceResolver);
-            ImportOptions importOptions = VltUtils.getImportOptions(aclHandling, importMode, autosaveThreshold, strict);
+            ImportOptions importOptions = VltUtils.getImportOptions(aclHandling, cugHandling, importMode, autosaveThreshold, strict);
             Importer importer = new Importer(importOptions);
             archive = new ZipStreamArchive(inputStream);
             archive.open(false);
