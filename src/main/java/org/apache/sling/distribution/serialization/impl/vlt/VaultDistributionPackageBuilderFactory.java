@@ -100,6 +100,12 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
     private static final String ACL_HANDLING = "aclHandling";
 
     /**
+     * CUG handling property for file vault package builder
+     */
+    @Property(label = "Cug Handling", description = "The vlt cug handling mode for created packages.")
+    private static final String CUG_HANDLING = "cugHandling";
+
+    /**
      * Package roots
      */
     @Property(label = "Package Roots", description = "The package roots to be used for created packages. (this is useful for assembling packages with an user that cannot read above the package root)")
@@ -233,6 +239,7 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
         String type = PropertiesUtil.toString(config.get(TYPE), null);
         String importModeString = SettingsUtils.removeEmptyEntry(PropertiesUtil.toString(config.get(IMPORT_MODE), null));
         String aclHandlingString = SettingsUtils.removeEmptyEntry(PropertiesUtil.toString(config.get(ACL_HANDLING), null));
+        String cugHandlingString = SettingsUtils.removeEmptyEntry(PropertiesUtil.toString(config.get(CUG_HANDLING), null));
 
         String[] packageRoots = SettingsUtils.removeEmptyEntries(PropertiesUtil.toStringArray(config.get(PACKAGE_ROOTS), null));
         String[] packageNodeFilters = SettingsUtils.removeEmptyEntries(PropertiesUtil.toStringArray(config.get(PACKAGE_FILTERS), null));
@@ -259,13 +266,18 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
             aclHandling = AccessControlHandling.valueOf(aclHandlingString.trim());
         }
 
+        AccessControlHandling cugHandling = null;
+        if (cugHandlingString != null) {
+            cugHandling = AccessControlHandling.valueOf(cugHandlingString.trim());
+        }
+
         // check the mount path patterns, if any
         Map<String, String> pathsMapping = PropertiesUtil.toMap(config.get(PATHS_MAPPING), new String[0]);
         pathsMapping = SettingsUtils.removeEmptyEntries(pathsMapping);
 
         boolean strictImport = PropertiesUtil.toBoolean(config.get(STRICT_IMPORT_SETTINGS), DEFAULT_STRICT_IMPORT_SETTINGS);
 
-        DistributionContentSerializer contentSerializer = new FileVaultContentSerializer(name, packaging, importMode, aclHandling,
+        DistributionContentSerializer contentSerializer = new FileVaultContentSerializer(name, packaging, importMode, aclHandling, cugHandling,
                 packageRoots, packageNodeFilters, packagePropertyFilters, useBinaryReferences, autosaveThreshold, pathsMapping, strictImport);
 
         DistributionPackageBuilder wrapped;

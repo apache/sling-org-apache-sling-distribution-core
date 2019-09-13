@@ -83,6 +83,7 @@ public class LocalDistributionPackageImporterTest {
                 new PackagingImpl(),
                 ImportMode.UPDATE,
                 AccessControlHandling.IGNORE,
+                AccessControlHandling.IGNORE,
                 new String[0],
                 new String[0],
                 new String[0],

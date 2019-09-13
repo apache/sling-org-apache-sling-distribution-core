@@ -226,13 +226,19 @@ public class VltUtils {
         return packageRoot;
     }
 
-    public static ImportOptions getImportOptions(AccessControlHandling aclHandling, ImportMode importMode, int autosaveThreshold, boolean strict) {
+    public static ImportOptions getImportOptions(AccessControlHandling aclHandling, AccessControlHandling cugHandling, ImportMode importMode, int autosaveThreshold, boolean strict) {
         ImportOptions opts = new ImportOptions();
         if (aclHandling != null) {
             opts.setAccessControlHandling(aclHandling);
         } else {
             // default to overwrite
             opts.setAccessControlHandling(AccessControlHandling.OVERWRITE);
+        }
+        if (cugHandling != null) {
+            opts.setCugHandling(cugHandling);
+        } else {
+            // default to overwrite
+            opts.setCugHandling(AccessControlHandling.OVERWRITE);
         }
         if (importMode != null) {
             opts.setImportMode(importMode);
