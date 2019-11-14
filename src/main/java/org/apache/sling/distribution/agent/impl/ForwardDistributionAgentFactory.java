@@ -59,6 +59,7 @@ import org.apache.sling.distribution.queue.impl.ErrorQueueDispatchingStrategy;
 import org.apache.sling.distribution.queue.impl.MultipleQueueDispatchingStrategy;
 import org.apache.sling.distribution.queue.impl.PriorityQueueDispatchingStrategy;
 import org.apache.sling.distribution.queue.impl.jobhandling.JobHandlingDistributionQueueProvider;
+import org.apache.sling.distribution.queue.impl.resource.ResourceQueueProvider;
 import org.apache.sling.distribution.queue.impl.simple.SimpleDistributionQueueProvider;
 import org.apache.sling.distribution.transport.DistributionTransportSecretProvider;
 import org.apache.sling.distribution.transport.impl.HttpConfiguration;
@@ -170,6 +171,7 @@ public class ForwardDistributionAgentFactory extends AbstractDistributionAgentFa
 
     @Property(options = {
             @PropertyOption(name = JobHandlingDistributionQueueProvider.TYPE, value = "Sling Jobs"),
+            @PropertyOption(name = ResourceQueueProvider.TYPE, value = "Resource Backed"),
             @PropertyOption(name = SimpleDistributionQueueProvider.TYPE, value = "In-memory"),
             @PropertyOption(name = SimpleDistributionQueueProvider.TYPE_CHECKPOINT, value = "In-file")},
             value = "jobs",
@@ -257,7 +259,10 @@ public class ForwardDistributionAgentFactory extends AbstractDistributionAgentFa
             queueProvider = new JobHandlingDistributionQueueProvider(agentName, jobManager, context, configAdmin);
         } else if (SimpleDistributionQueueProvider.TYPE.equals(queueProviderName)) {
             queueProvider = new SimpleDistributionQueueProvider(scheduler, agentName, false);
-        } else {
+        } else if (ResourceQueueProvider.TYPE.equals(queueProviderName)) {
+            queueProvider = new ResourceQueueProvider(context,
+                    resourceResolverFactory, SimpleDistributionAgent.DEFAULT_AGENT_SERVICE, agentName, scheduler, true);
+        } else { // if (SimpleDistributionQueueProvider.TYPE_CHECKPOINT.equals(queueProviderName))
             queueProvider = new SimpleDistributionQueueProvider(scheduler, agentName, true);
         }
         queueProvider = new MonitoringDistributionQueueProvider(queueProvider, context);

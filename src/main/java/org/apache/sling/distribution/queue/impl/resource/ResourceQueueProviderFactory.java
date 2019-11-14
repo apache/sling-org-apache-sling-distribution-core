@@ -21,10 +21,14 @@ package org.apache.sling.distribution.queue.impl.resource;
 
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.ConfigurationPolicy;
+import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.commons.osgi.PropertiesUtil;
+import org.apache.sling.commons.scheduler.Scheduler;
 import org.apache.sling.distribution.component.impl.DistributionComponentConstants;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProviderFactory;
@@ -32,25 +36,41 @@ import org.osgi.framework.BundleContext;
 
 import java.util.Map;
 
-@Component
+@Component(metatype = true,
+            label = "Apache Sling Resource Queue Provider Factory",
+            description = "OSGi configuration factory for Resource-backed queues",
+            configurationFactory = true,
+            policy = ConfigurationPolicy.REQUIRE)
 @Service(DistributionQueueProviderFactory.class)
-@Property(name = DistributionComponentConstants.PN_NAME, value = "resourceQueue")
+@Properties({
+        @Property(name = DistributionComponentConstants.PN_NAME, value = "resourceQueue"),
+        @Property(name = ResourceQueueProviderFactory.PN_IS_ACTIVE,
+                label = "Should the Resource-backed queue created with a Queue Processor (i.e., ACTIVE)",
+                boolValue = {false})
+})
 public class ResourceQueueProviderFactory implements DistributionQueueProviderFactory {
+
+    static final String PN_IS_ACTIVE = "queue.isActive";
 
     @Reference
     ResourceResolverFactory resourceResolverFactory;
+    @Reference
+    Scheduler scheduler;
 
     BundleContext context;
+
+    private boolean isActive;
 
     @Activate
     protected void activate(BundleContext context, Map<String, Object> config)
     {
+        this.isActive = PropertiesUtil.toBoolean(PN_IS_ACTIVE, false);
         this.context = context;
     }
 
     @Override
     public DistributionQueueProvider getProvider(String agentName, String serviceName) {
-        return new ResourceQueueProvider(context, resourceResolverFactory, serviceName, agentName);
+        return new ResourceQueueProvider(context, resourceResolverFactory, serviceName, agentName, scheduler, isActive);
     }
 
     @Override

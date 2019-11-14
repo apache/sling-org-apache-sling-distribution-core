@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 /**
  * a simple scheduled {@link SimpleDistributionQueue}s processor
  */
-class SimpleDistributionQueueProcessor implements Runnable {
+public class SimpleDistributionQueueProcessor implements Runnable {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final DistributionQueue queue;

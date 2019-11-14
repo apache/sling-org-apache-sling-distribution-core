@@ -55,17 +55,17 @@ public class ResourceQueue implements DistributionQueue {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-
-    private final ResourceResolverFactory resolverFactory;
-    private String serviceName;
-    private String queueName;
-    private final String queueRootPath;
+    protected final ResourceResolverFactory resolverFactory;
+    protected final String queueRootPath;
+    protected String serviceName;
+    protected String queueName;
 
     public ResourceQueue(ResourceResolverFactory resolverFactory, String serviceName, String queueName, String rootPath) {
         this.resolverFactory = resolverFactory;
         this.serviceName = serviceName;
         this.queueName = queueName;
         this.queueRootPath = rootPath + "/" + queueName;
+        log.debug("starting a Resource Queue {}", queueName);
     }
 
     @NotNull
@@ -128,6 +128,10 @@ public class ResourceQueue implements DistributionQueue {
     @NotNull
     @Override
     public Iterable<DistributionQueueEntry> getEntries(int skip, int limit) {
+        return getEntriesList(skip, limit);
+    }
+
+    protected List<DistributionQueueEntry> getEntriesList(int skip, int limit) {
         ResourceResolver resourceResolver = null;
         try {
             resourceResolver = DistributionUtils.loginService(resolverFactory, serviceName);
@@ -145,7 +149,6 @@ public class ResourceQueue implements DistributionQueue {
         } finally {
             DistributionUtils.safelyLogout(resourceResolver);
         }
-
     }
 
     @Nullable
@@ -176,6 +179,11 @@ public class ResourceQueue implements DistributionQueue {
     @NotNull
     @Override
     public Iterable<DistributionQueueEntry> remove(@NotNull Set<String> entryIds) {
+        return removeAndCollect(entryIds);
+    }
+
+    @NotNull
+    protected List<DistributionQueueEntry> removeAndCollect(@NotNull Set<String> entryIds) {
         List<DistributionQueueEntry> removed = new ArrayList<DistributionQueueEntry>();
         for (String entryId : entryIds) {
             DistributionQueueEntry entry = remove(entryId);
