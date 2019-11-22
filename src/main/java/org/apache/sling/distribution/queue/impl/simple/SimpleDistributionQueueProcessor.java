@@ -43,6 +43,7 @@ class SimpleDistributionQueueProcessor implements Runnable {
         try {
             DistributionQueueEntry entry;
             while ((entry = queue.getHead()) != null) {
+                queue.recordProcessingAttempt(entry);
                 if (queueProcessor.process(queue.getName(), entry)) {
                     if (queue.remove(entry.getId()) != null) {
                         log.debug("item {} processed and removed from the queue", entry.getItem());

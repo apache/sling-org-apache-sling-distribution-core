@@ -130,4 +130,14 @@ public interface DistributionQueue {
      *         {@code false} otherwise
      */
     boolean hasCapability(@NotNull String capability);
+
+    /**
+     * record processing-attempts against the specified queue-entry
+     * useful for ACTIVE queues to monitor/persist dequeue attempts
+     *
+     * @param entry queue-entry whose processing-attempts are to be recorded
+     */
+    default void recordProcessingAttempt(@NotNull DistributionQueueEntry entry) {
+        // intentionally left empty - not all implementations would need it
+    }
 }

@@ -63,13 +63,21 @@ public class SimpleDistributionQueueTest {
         DistributionQueueItem pkg = new DistributionQueueItem("id", new HashMap<String, Object>());
         assertNotNull(queue.add(pkg));
         assertFalse(queue.getStatus().isEmpty());
-        assertEquals(pkg, queue.getHead().getItem());
-        assertFalse(queue.getStatus().isEmpty());
+
+        DistributionQueueEntry entry = queue.getHead();
         DistributionQueueItemStatus status = queue.getEntry(pkg.getPackageId()).getStatus();
-        assertNotNull(queue.remove(pkg.getPackageId()));
-        assertTrue(queue.getStatus().isEmpty());
+        assertNotNull(status);
+        assertEquals(0, status.getAttempts());
+
+        queue.recordProcessingAttempt(entry);
+        status = queue.getEntry(pkg.getPackageId()).getStatus();
         assertNotNull(status);
         assertEquals(1, status.getAttempts());
+
+        assertEquals(pkg, entry.getItem());
+        assertFalse(queue.getStatus().isEmpty());
+        assertNotNull(queue.remove(pkg.getPackageId()));
+        assertTrue(queue.getStatus().isEmpty());
     }
 
 }
