@@ -26,8 +26,8 @@ import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.distribution.component.impl.DistributionComponentConstants;
-import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
-import org.apache.sling.distribution.queue.impl.DistributionQueueProviderFactory;
+import org.apache.sling.distribution.queue.DistributionQueueProviderFactory;
+import org.apache.sling.distribution.queue.spi.DistributionQueueProvider;
 import org.osgi.framework.BundleContext;
 
 import java.util.Map;

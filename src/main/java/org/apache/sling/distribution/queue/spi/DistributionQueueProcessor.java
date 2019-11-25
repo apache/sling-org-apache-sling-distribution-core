@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.sling.distribution.queue.impl;
+package org.apache.sling.distribution.queue.spi;
 
-import aQute.bnd.annotation.ProviderType;
+import aQute.bnd.annotation.ConsumerType;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Processor of {@link DistributionQueueItem}s
  */
-@ProviderType
+@ConsumerType
 public interface DistributionQueueProcessor {
 
     /**

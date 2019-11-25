@@ -20,6 +20,7 @@ package org.apache.sling.distribution.queue.impl;
 
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.packaging.DistributionPackage;
+import org.apache.sling.distribution.queue.spi.DistributionQueueProvider;
 import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
 import org.jetbrains.annotations.NotNull;
 

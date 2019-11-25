@@ -19,7 +19,7 @@
 package org.apache.sling.distribution.queue.impl.jobhandling;
 
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
-import org.apache.sling.distribution.queue.impl.DistributionQueueProcessor;
+import org.apache.sling.distribution.queue.spi.DistributionQueueProcessor;
 import org.apache.sling.event.jobs.JobManager;
 import org.apache.sling.event.jobs.QueueConfiguration;
 import org.junit.Test;

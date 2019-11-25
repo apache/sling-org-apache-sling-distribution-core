@@ -28,6 +28,7 @@ import org.apache.sling.distribution.packaging.impl.ReferencePackage;
 import org.apache.sling.distribution.packaging.impl.SharedDistributionPackage;
 import org.apache.sling.distribution.queue.*;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
+import org.apache.sling.distribution.queue.spi.DistributionQueueProvider;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
