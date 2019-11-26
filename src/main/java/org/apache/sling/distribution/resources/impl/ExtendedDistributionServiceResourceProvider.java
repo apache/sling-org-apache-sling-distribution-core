@@ -155,7 +155,7 @@ public class ExtendedDistributionServiceResourceProvider extends DistributionSer
 
                 List<String> nameList = new ArrayList<String>();
 
-                DistributionQueueEntry entry = queue.getHead();
+                DistributionQueueEntry entry = queue.peek();
                 if (entry != null) {
                     nameList.add(entry.getId());
                 }

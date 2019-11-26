@@ -58,6 +58,11 @@ public abstract class DistributionQueueWrapper implements DistributionQueue {
     }
 
     @Override
+    public DistributionQueueEntry peek() {
+        return wrappedQueue.peek();
+    }
+
+    @Override
     public DistributionQueueEntry getHead() {
         return wrappedQueue.getHead();
     }

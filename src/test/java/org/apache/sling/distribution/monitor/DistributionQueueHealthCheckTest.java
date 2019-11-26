@@ -61,7 +61,7 @@ public class DistributionQueueHealthCheckTest {
 
         distributionQueueHealthCheck.activate(Collections.<String, Object>emptyMap());
         DistributionQueue queue = mock(DistributionQueue.class);
-        when(queue.getHead()).thenReturn(null);
+        when(queue.peek()).thenReturn(null);
         DistributionAgent distributionAgent = mock(DistributionAgent.class);
 
         List<String> queues = new ArrayList<String>();
@@ -84,7 +84,7 @@ public class DistributionQueueHealthCheckTest {
         DistributionQueueItem item = new DistributionQueueItem("packageId", new HashMap<String, Object>());
         DistributionQueueItemStatus status = new DistributionQueueItemStatus(Calendar.getInstance(), DistributionQueueItemState.QUEUED, 1, "queueName");
         when(queue.getEntry(any(String.class))).thenReturn(new DistributionQueueEntry(null, item, status));
-        when(queue.getHead()).thenReturn(new DistributionQueueEntry(null, item, status));
+        when(queue.peek()).thenReturn(new DistributionQueueEntry(null, item, status));
         DistributionAgent distributionAgent = mock(DistributionAgent.class);
 
         List<String> queues = new ArrayList<String>();
@@ -108,7 +108,7 @@ public class DistributionQueueHealthCheckTest {
         DistributionQueueItem item = new DistributionQueueItem("packageId", new HashMap<String, Object>());
         DistributionQueueItemStatus status = new DistributionQueueItemStatus(Calendar.getInstance(), DistributionQueueItemState.QUEUED, 10, "queueName");
         when(queue.getEntry(any(String.class))).thenReturn(new DistributionQueueEntry(null, item, status));
-        when(queue.getHead()).thenReturn(new DistributionQueueEntry(null, item, status));
+        when(queue.peek()).thenReturn(new DistributionQueueEntry(null, item, status));
         DistributionAgent distributionAgent = mock(DistributionAgent.class);
 
         List<String> queues = new ArrayList<String>();

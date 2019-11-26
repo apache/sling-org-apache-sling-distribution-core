@@ -51,7 +51,7 @@ public class DistributionQueueMBeanTest {
 
         DistributionQueue distributionQueue = mock(DistributionQueue.class);
         when(distributionQueue.getName()).thenReturn("#distributionQueue");
-        when(distributionQueue.getHead()).thenReturn(null);
+        when(distributionQueue.peek()).thenReturn(null);
         when(distributionQueue.getType()).thenReturn(ORDERED);
         when(distributionQueue.getStatus()).thenReturn(status);
 
@@ -77,7 +77,7 @@ public class DistributionQueueMBeanTest {
 
         DistributionQueue distributionQueue = mock(DistributionQueue.class);
         when(distributionQueue.getName()).thenReturn("#distributionQueue");
-        when(distributionQueue.getHead()).thenReturn(entry);
+        when(distributionQueue.peek()).thenReturn(entry);
         when(distributionQueue.getType()).thenReturn(PARALLEL);
         when(distributionQueue.getStatus()).thenReturn(status);
 

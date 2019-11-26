@@ -60,32 +60,32 @@ public final class DistributionQueueMBeanImpl implements DistributionQueueMBean 
 
     @Override
     public String getHeadId() {
-        if (distributionQueue.getHead() != null) {
-            return distributionQueue.getHead().getId();
+        if (distributionQueue.peek() != null) {
+            return distributionQueue.peek().getId();
         }
         return null;
     }
 
     @Override
     public int getHeadDequeuingAttempts() {
-        if (distributionQueue.getHead() != null) {
-            return distributionQueue.getHead().getStatus().getAttempts();
+        if (distributionQueue.peek() != null) {
+            return distributionQueue.peek().getStatus().getAttempts();
         }
         return -1;
     }
 
     @Override
     public String getHeadStatus() {
-        if (distributionQueue.getHead() != null) {
-            return distributionQueue.getHead().getStatus().getItemState().name().toLowerCase();
+        if (distributionQueue.peek() != null) {
+            return distributionQueue.peek().getStatus().getItemState().name().toLowerCase();
         }
         return null;
     }
 
     @Override
     public Calendar getHeadEnqueuingDate() {
-        if (distributionQueue.getHead() != null) {
-            return distributionQueue.getHead().getStatus().getEntered();
+        if (distributionQueue.peek() != null) {
+            return distributionQueue.peek().getStatus().getEntered();
         }
         return null;
     }

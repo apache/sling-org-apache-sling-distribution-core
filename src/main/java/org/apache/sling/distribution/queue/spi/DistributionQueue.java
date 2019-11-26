@@ -54,6 +54,18 @@ public interface DistributionQueue {
     DistributionQueueEntry add(@NotNull DistributionQueueItem item);
 
     /**
+     * get the first entry from the queue for introspection
+     * if the entry is retrieved with the intent of processing it, use
+     * {@link DistributionQueue#getHead()} instead
+     *
+     * @return the first entry into the queue or {@code null} if the queue is empty
+     */
+    @Nullable
+    default DistributionQueueEntry peek() {
+        return getHead();
+    }
+
+    /**
      * get the first entry (in a FIFO strategy, the next to be processed) from the queue
      *
      * @return the first entry into the queue or {@code null} if the queue is empty

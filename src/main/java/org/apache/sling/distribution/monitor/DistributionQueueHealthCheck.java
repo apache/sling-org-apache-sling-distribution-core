@@ -110,7 +110,7 @@ public class DistributionQueueHealthCheck implements HealthCheck {
                     try {
                         DistributionQueue q = distributionAgent.getQueue(queueName);
 
-                        DistributionQueueEntry entry = q.getHead();
+                        DistributionQueueEntry entry = q.peek();
                         if (entry != null) {
                             DistributionQueueItemStatus status = entry.getStatus();
                             if (status.getAttempts() <= numberOfRetriesAllowed) {

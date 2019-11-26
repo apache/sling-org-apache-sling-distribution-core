@@ -101,19 +101,14 @@ public class SimpleDistributionQueue implements DistributionQueue {
         return null;
     }
 
+    @Nullable
+    public DistributionQueueEntry peek() {
+        return getHeadEntry(false);
+    }
 
     @Nullable
     public DistributionQueueEntry getHead() {
-        DistributionQueueItem element = queue.peek();
-        if (element != null) {
-            DistributionQueueItemStatus itemState = statusMap.get(element);
-            statusMap.put(element, new DistributionQueueItemStatus(itemState.getEntered(),
-                    itemState.getItemState(),
-                    itemState.getAttempts() + 1, name));
-
-            return new DistributionQueueEntry(element.getPackageId(), element, itemState);
-        }
-        return null;
+        return getHeadEntry(true);
     }
 
     @NotNull
@@ -209,6 +204,22 @@ public class SimpleDistributionQueue implements DistributionQueue {
             }
         }
         return removedEntries;
+    }
+
+    @Nullable
+    private DistributionQueueEntry getHeadEntry(boolean incrementAttempt) {
+        DistributionQueueItem element = queue.peek();
+        if (element != null) {
+            DistributionQueueItemStatus itemState = statusMap.get(element);
+            int attempts = itemState.getAttempts();
+            if (incrementAttempt) {
+                ++attempts;
+            }
+            statusMap.put(element, new DistributionQueueItemStatus(itemState.getEntered(),
+                    itemState.getItemState(), attempts, name));
+            return new DistributionQueueEntry(element.getPackageId(), element, itemState);
+        }
+        return null;
     }
 
 }
