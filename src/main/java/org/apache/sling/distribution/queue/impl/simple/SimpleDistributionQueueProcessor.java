@@ -19,7 +19,11 @@
 package org.apache.sling.distribution.queue.impl.simple;
 
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
+
+import java.util.Map;
+
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
+import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,17 +36,23 @@ class SimpleDistributionQueueProcessor implements Runnable {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final DistributionQueue queue;
     private final DistributionQueueProcessor queueProcessor;
+    private final Map<String, DistributionQueueItemStatus> statusMap;
 
     public SimpleDistributionQueueProcessor(DistributionQueue queue,
-                                            DistributionQueueProcessor queueProcessor) {
+                                            DistributionQueueProcessor queueProcessor,
+                                            Map<String, DistributionQueueItemStatus> statusMap) {
         this.queue = queue;
         this.queueProcessor = queueProcessor;
+        this.statusMap = statusMap;
     }
 
     public void run() {
         try {
             DistributionQueueEntry entry;
             while ((entry = queue.getHead()) != null) {
+                DistributionQueueItemStatus itemStatus = entry.getStatus();
+                statusMap.put(entry.getId(),  new DistributionQueueItemStatus(itemStatus.getEntered(),
+                        itemStatus.getItemState(), itemStatus.getAttempts() + 1, queue.getName()));
                 if (queueProcessor.process(queue.getName(), entry)) {
                     if (queue.remove(entry.getId()) != null) {
                         log.debug("item {} processed and removed from the queue", entry.getItem());

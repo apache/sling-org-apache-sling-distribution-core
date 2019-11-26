@@ -21,7 +21,6 @@ package org.apache.sling.distribution.queue.impl.simple;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
-
 import org.apache.sling.distribution.queue.DistributionQueueItemState;
 import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
@@ -43,7 +42,7 @@ public class SimpleDistributionQueueProcessorTest {
         DistributionQueue queue = mock(DistributionQueue.class);
         DistributionQueueProcessor queueProcessor = mock(DistributionQueueProcessor.class);
         SimpleDistributionQueueProcessor simpleDistributionQueueProcessor = new SimpleDistributionQueueProcessor(
-                queue, queueProcessor);
+                queue, queueProcessor, new HashMap<String, DistributionQueueItemStatus>());
         simpleDistributionQueueProcessor.run();
     }
 
@@ -57,7 +56,7 @@ public class SimpleDistributionQueueProcessorTest {
         when(queueProvider.getQueues()).thenReturn(queues);
         DistributionQueueProcessor queueProcessor = mock(DistributionQueueProcessor.class);
         SimpleDistributionQueueProcessor simpleDistributionQueueProcessor = new SimpleDistributionQueueProcessor(
-                queue, queueProcessor);
+                queue, queueProcessor, new HashMap<String, DistributionQueueItemStatus>());
         simpleDistributionQueueProcessor.run();
     }
 
@@ -74,7 +73,7 @@ public class SimpleDistributionQueueProcessorTest {
         when(queueProvider.getQueues()).thenReturn(queues);
         DistributionQueueProcessor queueProcessor = mock(DistributionQueueProcessor.class);
         SimpleDistributionQueueProcessor simpleDistributionQueueProcessor = new SimpleDistributionQueueProcessor(
-                queue, queueProcessor);
+                queue, queueProcessor, new HashMap<String, DistributionQueueItemStatus>());
         simpleDistributionQueueProcessor.run();
     }
 }

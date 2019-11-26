@@ -21,7 +21,7 @@ package org.apache.sling.distribution.agent.impl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-
+import java.util.HashMap;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.distribution.DistributionRequest;
@@ -125,7 +125,7 @@ public class SimpleDistributionAgentTest {
 
 
         when(queueProvider.getQueue(DistributionQueueDispatchingStrategy.DEFAULT_QUEUE_NAME)).thenReturn(
-                new SimpleDistributionQueue(name, "name"));
+                new SimpleDistributionQueue(name, "name", new HashMap<String, DistributionQueueItemStatus>()));
         DistributionResponse response = agent.execute(resourceResolver, request);
         assertNotNull(response);
         assertEquals("[ERROR]", response.getMessage());
@@ -165,7 +165,7 @@ public class SimpleDistributionAgentTest {
             }
         }).when(packageExporter).exportPackages(any(ResourceResolver.class), any(DistributionRequest.class), any(DistributionPackageProcessor.class));
         when(queueProvider.getQueue(DistributionQueueDispatchingStrategy.DEFAULT_QUEUE_NAME)).thenReturn(
-                new SimpleDistributionQueue(name, "name"));
+                new SimpleDistributionQueue(name, "name", new HashMap<String, DistributionQueueItemStatus>()));
         DistributionResponse response = agent.execute(resourceResolver, request);
         assertNotNull(response);
         assertEquals("[QUEUED]", response.getMessage());
@@ -205,7 +205,7 @@ public class SimpleDistributionAgentTest {
                 return null;
             }
         }).when(packageExporter).exportPackages(any(ResourceResolver.class), any(DistributionRequest.class), any(DistributionPackageProcessor.class));        when(queueProvider.getQueue(DistributionQueueDispatchingStrategy.DEFAULT_QUEUE_NAME)).thenReturn(
-                new SimpleDistributionQueue(name, "name"));
+                new SimpleDistributionQueue(name, "name", new HashMap<String, DistributionQueueItemStatus>()));
 
         agent.execute(resourceResolver, request);
     }
@@ -298,7 +298,7 @@ public class SimpleDistributionAgentTest {
                 return null;
             }
         }).when(packageExporter).exportPackages(any(ResourceResolver.class), any(DistributionRequest.class), any(DistributionPackageProcessor.class));        when(queueProvider.getQueue(DistributionQueueDispatchingStrategy.DEFAULT_QUEUE_NAME)).thenReturn(
-                new SimpleDistributionQueue(name, "name"));
+                new SimpleDistributionQueue(name, "name", new HashMap<String, DistributionQueueItemStatus>()));
 
         DistributionResponse response = agent.execute(resourceResolver, request);
 
@@ -344,7 +344,7 @@ public class SimpleDistributionAgentTest {
                 return null;
             }
         }).when(packageExporter).exportPackages(any(ResourceResolver.class), any(DistributionRequest.class), any(DistributionPackageProcessor.class));        when(queueProvider.getQueue(DistributionQueueDispatchingStrategy.DEFAULT_QUEUE_NAME)).thenReturn(
-                new SimpleDistributionQueue(name, "name"));
+                new SimpleDistributionQueue(name, "name", new HashMap<String, DistributionQueueItemStatus>()));
 
         DistributionResponse response = agent.execute(resourceResolver, request);
 
