@@ -33,6 +33,7 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.packaging.DistributionPackage;
+import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.apache.sling.distribution.serialization.DistributionContentSerializer;
 import org.apache.sling.distribution.serialization.DistributionExportFilter;
 import org.apache.sling.distribution.serialization.DistributionExportOptions;
@@ -75,7 +76,9 @@ public class InMemoryDistributionPackageBuilder extends AbstractDistributionPack
 
         String packageId = "dstrpck-" + System.currentTimeMillis() + "-" + UUID.randomUUID().toString();
 
-        return new InMemoryDistributionPackage(packageId, getType(), baos.toByteArray());
+        DistributionPackageInfo info = new DistributionPackageInfo(getType());
+        DistributionPackageUtils.fillInfo(info, request);
+        return new InMemoryDistributionPackage(packageId, getType(), baos.toByteArray(), info);
     }
 
     @Override
@@ -102,7 +105,7 @@ public class InMemoryDistributionPackageBuilder extends AbstractDistributionPack
             baos.flush();
 
             byte[] data = baos.toByteArray();
-            return new InMemoryDistributionPackage(packageId, getType(), data);
+            return new InMemoryDistributionPackage(packageId, getType(), data, info);
         } catch (IOException e) {
             throw new DistributionException(e);
         }

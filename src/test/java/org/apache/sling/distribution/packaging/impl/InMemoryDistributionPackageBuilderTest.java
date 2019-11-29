@@ -21,7 +21,6 @@ package org.apache.sling.distribution.packaging.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequestType;
@@ -40,8 +39,8 @@ public class InMemoryDistributionPackageBuilderTest {
     @Test
     public void testCreatePackage() throws Exception {
         InMemoryDistributionPackageBuilder builder = new InMemoryDistributionPackageBuilder("name", new InMemDistributionContentSerializer(), new String[0], new String[0]);
-        DistributionPackage pkg = builder.createPackageForAdd(mock(ResourceResolver.class), new SimpleDistributionRequest(DistributionRequestType.ADD, false, "/test"));
-        assertNotNull(pkg.createInputStream());
+        DistributionPackage createdPkg = builder.createPackageForAdd(mock(ResourceResolver.class), new SimpleDistributionRequest(DistributionRequestType.ADD, false, "/test"));
+        assertNotNull(createdPkg.createInputStream());
     }
 
     private final class InMemDistributionContentSerializer implements DistributionContentSerializer {

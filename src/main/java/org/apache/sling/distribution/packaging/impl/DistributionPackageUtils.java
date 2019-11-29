@@ -20,6 +20,7 @@ package org.apache.sling.distribution.packaging.impl;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
@@ -37,7 +38,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.jcr.Binary;
 import javax.jcr.Node;
-import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.nodetype.NodeType;
 import java.io.ByteArrayInputStream;
@@ -287,15 +287,16 @@ public class DistributionPackageUtils {
 
     public static InputStream getStream(Resource resource) throws RepositoryException {
         Node parent = resource.adaptTo(Node.class);
-        return parent.getProperty("bin/jcr:content/jcr:data").getBinary().getStream();
+        return parent.getProperty("bin/" + JcrConstants.JCR_CONTENT
+                + "/" + JcrConstants.JCR_DATA).getBinary().getStream();
     }
 
     public static void uploadStream(Resource resource, InputStream stream) throws RepositoryException {
         Node parent = resource.adaptTo(Node.class);
         Node file = JcrUtils.getOrAddNode(parent, "bin", NodeType.NT_FILE);
-        Node content = JcrUtils.getOrAddNode(file, Node.JCR_CONTENT, NodeType.NT_RESOURCE);
+        Node content = JcrUtils.getOrAddNode(file, JcrConstants.JCR_CONTENT, NodeType.NT_RESOURCE);
         Binary binary = parent.getSession().getValueFactory().createBinary(stream);
-        content.setProperty(Property.JCR_DATA, binary);
+        content.setProperty(JcrConstants.JCR_DATA, binary);
         JcrUtils.getOrAddNode(parent, "refs", NodeType.NT_UNSTRUCTURED);
     }
 
@@ -365,7 +366,7 @@ public class DistributionPackageUtils {
 
                 if (file.exists()) {
                     inputStream = getSafeObjectInputStream(new FileInputStream(file));
-                    @SuppressWarnings("unchecked") // type is known by sedign
+                    @SuppressWarnings("unchecked") // type is known by design
                     HashSet<String> fromStreamSet = (HashSet<String>) inputStream.readObject();
                     set = fromStreamSet;
                 } else {

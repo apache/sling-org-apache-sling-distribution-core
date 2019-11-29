@@ -21,6 +21,7 @@ package org.apache.sling.distribution.packaging.impl;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
@@ -38,12 +39,16 @@ public class InMemoryDistributionPackage implements DistributionPackage {
 
     private final DistributionPackageInfo info;
 
-    public InMemoryDistributionPackage(String id, String type, byte[] data) {
+    public InMemoryDistributionPackage(String id, String type, byte[] data, Map<String, Object> baseInfoMap) {
         this.id = id;
         this.type = type;
         this.data = data;
         this.size = data.length;
         this.info = new DistributionPackageInfo(type);
+
+        if (null != baseInfoMap) {
+            this.info.putAll(baseInfoMap);
+        }
     }
 
     @NotNull

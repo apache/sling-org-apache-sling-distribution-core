@@ -36,29 +36,44 @@ import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.apache.sling.distribution.serialization.DistributionContentSerializer;
 import org.apache.sling.distribution.serialization.DistributionExportOptions;
+import org.apache.sling.distribution.util.impl.FileBackedMemoryOutputStream.MemoryUnit;
+import org.apache.sling.testing.mock.osgi.MockOsgi;
+import org.apache.sling.testing.mock.sling.MockSling;
+import org.apache.sling.testing.mock.sling.ResourceResolverType;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.osgi.framework.BundleContext;
 
-public class FileDistributionPackageBuilderTest {
+public class ResourceDistributionPackageBuilderTest {
+    BundleContext bundleContext = null;
+    ResourceResolver resolver = null;
 
     @Test
-    public void testDefaultTempDirectory() throws DistributionException, IOException {
+    public void testResourceDistributionBuilder() throws DistributionException, IOException {
         final String testPath = "/a/test/path";
         final String testDeepPath = "/a/deep/test/path";
         final String[] requestPaths = {testPath, testDeepPath};
+
         DistributionRequest mockRequest = mock(DistributionRequest.class);
         when(mockRequest.getPaths()).thenReturn(requestPaths);
         when(mockRequest.isDeep(testDeepPath)).thenReturn(true);
         when(mockRequest.isDeep(testPath)).thenReturn(false);
 
-        FileDistributionPackageBuilder builder = new FileDistributionPackageBuilder("test", new TestSerializer(), null, null, new String[0],
-                new String[0]);
+        ResourceDistributionPackageBuilder builder = new ResourceDistributionPackageBuilder("test",
+                new TestSerializer(), null, 0, MemoryUnit.valueOf("MEGA_BYTES"), false, null,
+                new String[0],new String[0]);
 
-        DistributionPackage createdPackage = builder.createPackageForAdd(mock(ResourceResolver.class), mockRequest);
+        DistributionPackage createdPackage = builder.createPackageForAdd(resolver, mockRequest);
+
+        InputStream createdPackageContentIS = createdPackage.createInputStream();
+        assertNotNull("Couldn't create stream from DistributionPackage", createdPackageContentIS);
+        // create a new package from the stream of created-package
+        assertNotNull("Couldn't read stream from DistributionPackage",
+                builder.readPackage(resolver, createdPackageContentIS));
 
         try {
-            assertNotNull(createdPackage.createInputStream());
-            DistributionPackage gotPackage = builder.getPackageInternal(mock(ResourceResolver.class), createdPackage.getId());
-            assertNotNull(gotPackage.createInputStream()); // this will throw an exception when the file doesn't exist
+            DistributionPackage gotPackage = builder.getPackageInternal(resolver, createdPackage.getId());
             final String[] createdPackagePaths = createdPackage.getInfo().getPaths();
             final String[] gotPackagePaths = gotPackage.getInfo().getPaths();
             final String[] createdPackageDeepPaths = (String[]) createdPackage.getInfo()
@@ -100,5 +115,18 @@ public class FileDistributionPackageBuilderTest {
         @Override public boolean isRequestFiltering() {
             return true;
         }
+    }
+
+    @Before
+    public void setUp() {
+        bundleContext = MockOsgi.newBundleContext();
+        MockSling.setAdapterManagerBundleContext(bundleContext);
+        resolver = MockSling.newResourceResolver(ResourceResolverType.JCR_MOCK, bundleContext);
+    }
+
+    @After
+    public void tearDown() {
+        resolver.close();
+        MockSling.clearAdapterManagerBundleContext();
     }
 }
