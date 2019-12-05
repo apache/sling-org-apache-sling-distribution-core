@@ -205,10 +205,26 @@ public class SimpleHttpDistributionTransport implements DistributionTransport {
 
 
     private Executor getExecutor(DistributionTransportContext distributionContext) {
-        Executor executor = distributionContext.get(contextKeyExecutor, Executor.class);
-        if (executor == null) {
-            executor = buildExecutor();
-            distributionContext.put(contextKeyExecutor, executor);
+        DistributionTransportSecret secret = secretProvider.getSecret(distributionEndpoint.getUri());
+        Map<String, String> credentialsMap = secret.asCredentialsMap();
+        Executor executor = null;
+        if (credentialsMap != null) {
+            if (credentialsMap.containsKey(AUTHORIZATION)) {
+                // for authorization based executor we do not want to cache the executor as tokens may expire
+                executor = buildAuthExecutor(credentialsMap.get(AUTHORIZATION));
+            } else {
+                executor = distributionContext.get(contextKeyExecutor, Executor.class);
+                if (executor == null) {
+                    executor = buildAuthExecutor(credentialsMap.get(USERNAME), credentialsMap.get(PASSWORD));
+                    distributionContext.put(contextKeyExecutor, executor);
+                }
+            }
+        } else {
+            executor = distributionContext.get(contextKeyExecutor, Executor.class);
+            if (executor == null) {
+                executor = Executor.newInstance();
+                distributionContext.put(contextKeyExecutor, executor);
+            }
         }
         return executor;
     }
@@ -229,20 +245,4 @@ public class SimpleHttpDistributionTransport implements DistributionTransport {
         log.debug("set Authorization header, endpoint={}", distributionEndpoint.getUri());
         return executor;
     }
-
-    private Executor buildAuthExecutor(@NotNull Map<String, String> credentialsMap) {
-        return (credentialsMap.containsKey(AUTHORIZATION))
-                ? buildAuthExecutor(credentialsMap.get(AUTHORIZATION))
-                : buildAuthExecutor(credentialsMap.get(USERNAME), credentialsMap.get(PASSWORD));
-    }
-
-    private Executor buildExecutor() {
-        DistributionTransportSecret secret = secretProvider.getSecret(distributionEndpoint.getUri());
-        Map<String, String> credentialsMap = secret.asCredentialsMap();
-        return (credentialsMap != null)
-                ? buildAuthExecutor(credentialsMap)
-                : Executor.newInstance();
-    }
-
-
 }
