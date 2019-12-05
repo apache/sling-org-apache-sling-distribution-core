@@ -20,7 +20,9 @@ package org.apache.sling.distribution.transport.impl;
 
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHeaders;
@@ -125,10 +127,8 @@ public class SimpleHttpDistributionTransport implements DistributionTransport {
                         .addHeader(HTTP.CONN_DIRECTIVE, HTTP.CONN_CLOSE)
                         .useExpectContinue();
 
-                String authorizationHeader = getAuthSecret();
-                if (null != authorizationHeader) {
-                    req.addHeader(new BasicHeader(HttpHeaders.AUTHORIZATION, authorizationHeader));
-                }
+                // re-apply secrets, in case they've been refreshed behind-the-scenes
+                updateAuthSecret(executor, req);
 
                 // add the message body digest, see https://tools.ietf.org/html/rfc3230#section-4.3.2
                 if (distributionPackage instanceof AbstractDistributionPackage) {
@@ -225,24 +225,31 @@ public class SimpleHttpDistributionTransport implements DistributionTransport {
     }
 
     private Executor buildAuthExecutor(Map<String, String> credentialsMap) {
-        return (null != credentialsMap && !credentialsMap.containsKey(AUTHORIZATION))
+        return (!credentialsMap.containsKey(AUTHORIZATION))
                 ? buildAuthExecutor(credentialsMap.get(USERNAME), credentialsMap.get(PASSWORD))
                 : Executor.newInstance();
     }
 
     private Executor buildExecutor() {
-        DistributionTransportSecret secret = secretProvider.getSecret(distributionEndpoint.getUri());
-        Map<String, String> credentialsMap = secret.asCredentialsMap();
-        return buildAuthExecutor(credentialsMap);
+        return buildAuthExecutor(getCredentialsMap());
     }
 
-    private String getAuthSecret() {
-        DistributionTransportSecret secret = secretProvider.getSecret(distributionEndpoint.getUri());
-        Map<String, String> credentialsMap = secret.asCredentialsMap();
-        if (null != credentialsMap && credentialsMap.containsKey(AUTHORIZATION)) {
-            return credentialsMap.get(AUTHORIZATION);
+    private void updateAuthSecret(Executor executor, Request httpReq) {
+        Map<String, String> credentialsMap = getCredentialsMap();
+        if (credentialsMap.containsKey(AUTHORIZATION)) {
+            httpReq.addHeader(new BasicHeader(HttpHeaders.AUTHORIZATION,
+                    credentialsMap.get(AUTHORIZATION)));
+        } else if (credentialsMap.containsKey(USERNAME)) {
+            executor.auth(credentialsMap.get(USERNAME), credentialsMap.get(PASSWORD));
         }
-        return null;
     }
 
+    @NotNull
+    private Map<String, String> getCredentialsMap() {
+        Optional<DistributionTransportSecret> optionalSecret =
+                Optional.ofNullable(secretProvider
+                        .getSecret(distributionEndpoint.getUri()));
+        return optionalSecret.map(secret -> secret.asCredentialsMap())
+            .orElse(Collections.<String, String>emptyMap());
+    }
 }
