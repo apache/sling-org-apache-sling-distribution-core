@@ -59,7 +59,7 @@ public class ResourceQueueProvider implements DistributionQueueProvider {
 
     public ResourceQueueProvider(BundleContext context, ResourceResolverFactory resolverFactory,
             String serviceName, String agentName, Scheduler scheduler, boolean isActive) {
-        if (serviceName == null || scheduler == null
+        if (serviceName == null || (scheduler == null && isActive)
                 || context == null || resolverFactory == null || agentName == null) {
             throw new IllegalArgumentException("all arguments are required");
         }

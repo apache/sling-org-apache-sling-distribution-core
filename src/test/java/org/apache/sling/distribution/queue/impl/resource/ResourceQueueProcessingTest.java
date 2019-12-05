@@ -30,6 +30,7 @@ import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueState;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProcessor;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
+import org.apache.sling.distribution.queue.impl.DistributionQueueProviderFactory;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.testing.mock.osgi.MockOsgi;
 import org.apache.sling.testing.mock.sling.MockSling;
@@ -38,6 +39,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Matchers;
+import org.mockito.internal.util.reflection.Whitebox;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.osgi.framework.BundleContext;
@@ -101,12 +103,42 @@ public class ResourceQueueProcessingTest {
         }
     }
 
+    @Test
+    public void testActiveResourceQueueWithoutEnablingProcessing() throws DistributionException {
+        final String QUEUE_NAME = "testActiveQueue_2";
+        final int MAX_ENTRIES = 2;
+        Scheduler tempScheduler = mock(Scheduler.class);
+        when(tempScheduler.unschedule(Matchers.anyString())).thenReturn(false);
+
+        DistributionQueueProvider resourceQueueProvider = new ResourceQueueProvider(bundleContext,
+                rrf, "test", "testAgent", tempScheduler, true);
+        DistributionQueue resourceQueue = resourceQueueProvider.getQueue(QUEUE_NAME);
+
+        try {
+            populateDistributionQueue(resourceQueue, MAX_ENTRIES);
+
+            assertTrue("Resource Queue state is not RUNNING",
+                    resourceQueue.getStatus().getState().equals(DistributionQueueState.RUNNING));
+            assertEquals(MAX_ENTRIES, resourceQueue.getStatus().getItemsCount());
+        } finally {
+            // should log a WARN for ResourceQueueProvider class
+            resourceQueueProvider.disableQueueProcessing();
+            resourceQueue.clear(Integer.MAX_VALUE);
+        }
+    }
+
     @Test(expected = DistributionException.class)
     public void testPassiveResourceQueueEnableProcessing() throws DistributionException {
         final String QUEUE_NAME = "testPassiveQueue_1";
         final int MAX_ENTRIES = 4;
-        DistributionQueueProvider resourceQueueProvider = new ResourceQueueProvider(bundleContext,
-                rrf, "test", "testAgent", scheduler, false);
+        DistributionQueueProviderFactory resQueueProviderFactory= new ResourceQueueProviderFactory();
+        Whitebox.setInternalState(resQueueProviderFactory, "isActive", false);
+        Whitebox.setInternalState(resQueueProviderFactory, "resourceResolverFactory", rrf);
+        Whitebox.setInternalState(resQueueProviderFactory, "scheduler", scheduler);
+        MockOsgi.activate(resQueueProviderFactory, bundleContext);
+
+        DistributionQueueProvider resourceQueueProvider = resQueueProviderFactory
+                .getProvider("test", "testAgent");
 
         DistributionQueue resourceQueue = resourceQueueProvider.getQueue(QUEUE_NAME, null);
 
@@ -128,7 +160,7 @@ public class ResourceQueueProcessingTest {
         final String QUEUE_NAME = "testPassiveQueue_2";
         final int MAX_ENTRIES = 2;
         DistributionQueueProvider resourceQueueProvider = new ResourceQueueProvider(bundleContext,
-                rrf, "test", "testAgent", scheduler, false);
+                rrf, "test", "testAgent", null, false);
 
         DistributionQueue resourceQueue = resourceQueueProvider.getQueue(QUEUE_NAME, null);
 
@@ -144,10 +176,64 @@ public class ResourceQueueProcessingTest {
         }
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidQueueProviderConstruction_1() {
+        constructIllegalResourceQueueProvider(IllegalQueueProviderType.MISSING_BUNDLE_CONTEXT);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidQueueProviderConstruction_2() {
+        constructIllegalResourceQueueProvider(IllegalQueueProviderType.MISSING_RESOLVER_FACTORY);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidQueueProviderConstruction_3() {
+        constructIllegalResourceQueueProvider(IllegalQueueProviderType.MISSING_SERVICENAME);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidQueueProviderConstruction_4() {
+        constructIllegalResourceQueueProvider(IllegalQueueProviderType.MISSING_AGENTNAME);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidQueueProviderConstruction_5() {
+        constructIllegalResourceQueueProvider(IllegalQueueProviderType.MISSING_SCHEDULER_WHEN_ACTIVE);
+    }
+
     private void populateDistributionQueue(DistributionQueue queue, int maxEntries) {
         for (int i = 0; i < maxEntries; i++) {
             queue.add(new DistributionQueueItem(PACKAGE_ID, Collections.<String, Object>emptyMap()));
         }
+    }
+
+    private ResourceQueueProvider constructIllegalResourceQueueProvider(IllegalQueueProviderType type) {
+        switch(type) {
+        case MISSING_BUNDLE_CONTEXT:
+            return new ResourceQueueProvider(null,
+                    rrf, "test", "testAgent", scheduler, true);
+        case MISSING_RESOLVER_FACTORY:
+            return new ResourceQueueProvider(bundleContext,
+                    null, "test", "testAgent", scheduler, true);
+        case MISSING_SERVICENAME:
+            return new ResourceQueueProvider(bundleContext,
+                    rrf, null, "testAgent", scheduler, true);
+        case MISSING_AGENTNAME:
+            return new ResourceQueueProvider(bundleContext,
+                    rrf, "test", null, scheduler, true);
+        case MISSING_SCHEDULER_WHEN_ACTIVE:
+        default:
+            return new ResourceQueueProvider(bundleContext,
+                    rrf, "test", "testAgent", null, true);
+        }
+    }
+
+    private enum IllegalQueueProviderType {
+        MISSING_BUNDLE_CONTEXT,
+        MISSING_RESOLVER_FACTORY,
+        MISSING_SERVICENAME,
+        MISSING_AGENTNAME,
+        MISSING_SCHEDULER_WHEN_ACTIVE,
     }
 
     @BeforeClass
