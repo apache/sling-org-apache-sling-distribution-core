@@ -20,7 +20,6 @@ package org.apache.sling.distribution.transport.impl;
 
 import java.io.InputStream;
 import java.net.URI;
-import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 import org.apache.commons.io.IOUtils;
@@ -32,8 +31,6 @@ import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.entity.ContentType;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -127,6 +124,11 @@ public class SimpleHttpDistributionTransport implements DistributionTransport {
                         .socketTimeout(httpConfiguration.getSocketTimeout())
                         .addHeader(HTTP.CONN_DIRECTIVE, HTTP.CONN_CLOSE)
                         .useExpectContinue();
+
+                String authorizationHeader = getAuthSecret();
+                if (null != authorizationHeader) {
+                    req.addHeader(new BasicHeader(HttpHeaders.AUTHORIZATION, authorizationHeader));
+                }
 
                 // add the message body digest, see https://tools.ietf.org/html/rfc3230#section-4.3.2
                 if (distributionPackage instanceof AbstractDistributionPackage) {
@@ -222,27 +224,25 @@ public class SimpleHttpDistributionTransport implements DistributionTransport {
         return executor;
     }
 
-    private Executor buildAuthExecutor(String authorizationHeader) {
-        HttpClientBuilder builder = HttpClients.custom();
-        builder.setDefaultHeaders(Collections.singletonList(new BasicHeader(HttpHeaders.AUTHORIZATION, authorizationHeader)));
-        Executor executor = Executor.newInstance(builder.build());
-        log.debug("set Authorization header, endpoint={}", distributionEndpoint.getUri());
-        return executor;
-    }
-
-    private Executor buildAuthExecutor(@NotNull Map<String, String> credentialsMap) {
-        return (credentialsMap.containsKey(AUTHORIZATION))
-                ? buildAuthExecutor(credentialsMap.get(AUTHORIZATION))
-                : buildAuthExecutor(credentialsMap.get(USERNAME), credentialsMap.get(PASSWORD));
+    private Executor buildAuthExecutor(Map<String, String> credentialsMap) {
+        return (null != credentialsMap && !credentialsMap.containsKey(AUTHORIZATION))
+                ? buildAuthExecutor(credentialsMap.get(USERNAME), credentialsMap.get(PASSWORD))
+                : Executor.newInstance();
     }
 
     private Executor buildExecutor() {
         DistributionTransportSecret secret = secretProvider.getSecret(distributionEndpoint.getUri());
         Map<String, String> credentialsMap = secret.asCredentialsMap();
-        return (credentialsMap != null)
-                ? buildAuthExecutor(credentialsMap)
-                : Executor.newInstance();
+        return buildAuthExecutor(credentialsMap);
     }
 
+    private String getAuthSecret() {
+        DistributionTransportSecret secret = secretProvider.getSecret(distributionEndpoint.getUri());
+        Map<String, String> credentialsMap = secret.asCredentialsMap();
+        if (null != credentialsMap && credentialsMap.containsKey(AUTHORIZATION)) {
+            return credentialsMap.get(AUTHORIZATION);
+        }
+        return null;
+    }
 
 }
