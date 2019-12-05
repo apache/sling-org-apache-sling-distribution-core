@@ -22,6 +22,8 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.sling.distribution.DistributionRequestType;
@@ -43,11 +45,27 @@ public class FileDistributionPackage extends AbstractDistributionPackage {
     public FileDistributionPackage(@NotNull File file,
                                    @NotNull String type,
                                    @Nullable String digestAlgorithm,
-                                   @Nullable String digestMessage) {
+                                   @Nullable String digestMessage,
+                                   @Nullable Map<String, Object> baseInfoMap) {
         super(file.getName(), type, digestAlgorithm, digestMessage);
         this.file = file;
 
+        if (null == baseInfoMap) {
+            try (InputStream metaInfoIS = FileUtils.openInputStream(getMetaInfoFile())) {
+                DistributionPackageUtils.readInfo(metaInfoIS, this.getInfo());
+            } catch (IOException e) {
+                log.error("cannot read meta-info for the package at {}", file.getAbsoluteFile(), e);
+            }
+        }
         this.getInfo().put(DistributionPackageInfo.PROPERTY_REQUEST_TYPE, DistributionRequestType.ADD);
+        if (null != baseInfoMap) {
+            this.getInfo().putAll(baseInfoMap);
+            try (OutputStream metaInfoOS = FileUtils.openOutputStream(getMetaInfoFile(), false)) {
+                DistributionPackageUtils.writeInfo(metaInfoOS, baseInfoMap);
+            } catch (IOException e) {
+                log.error("cannot create meta-info for the package at {}", file.getAbsoluteFile(), e);
+            }
+        }
     }
 
     @NotNull
@@ -67,6 +85,7 @@ public class FileDistributionPackage extends AbstractDistributionPackage {
     public void delete() {
         FileUtils.deleteQuietly(file);
         FileUtils.deleteQuietly(getStatusFile());
+        FileUtils.deleteQuietly(getMetaInfoFile());
     }
 
     public File getFile() {
@@ -99,6 +118,11 @@ public class FileDistributionPackage extends AbstractDistributionPackage {
     private File getStatusFile() {
         String statusFilePath = file.getAbsolutePath() + ".status";
         return new File(statusFilePath);
+    }
+
+    private File getMetaInfoFile() {
+        String metaInfoFilePath = file.getAbsolutePath() + ".metainfo";
+        return new File(metaInfoFilePath);
     }
 
 

@@ -22,6 +22,7 @@ import javax.jcr.RepositoryException;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
@@ -50,14 +51,26 @@ public class ResourceDistributionPackage extends AbstractDistributionPackage {
                                 String type,
                                 ResourceResolver resourceResolver,
                                 @Nullable String digestAlgorithm,
-                                @Nullable String digestMessage) {
+                                @Nullable String digestMessage,
+                                @Nullable Map<String, Object> baseInfoMap) {
         super(resource.getName(), type, digestAlgorithm, digestMessage);
         this.resourceResolver = resourceResolver;
         ValueMap valueMap = resource.getValueMap();
         assert type.equals(valueMap.get("type")) : "wrong resource type";
         this.resource = resource;
         Object sizeProperty = resource.getValueMap().get("size");
+        Object paths = resource.getValueMap().get(DistributionPackageInfo.PROPERTY_REQUEST_PATHS);
+        Object deepPaths = resource.getValueMap().get(DistributionPackageInfo.PROPERTY_REQUEST_DEEP_PATHS);
         this.size = sizeProperty == null ? -1 : Long.parseLong(sizeProperty.toString());
+        if (null != baseInfoMap) {
+            this.getInfo().putAll(baseInfoMap);
+        }
+        if (paths instanceof String[]) {
+            this.getInfo().put(DistributionPackageInfo.PROPERTY_REQUEST_PATHS, (String[])paths);
+        }
+        if (deepPaths instanceof String[]) {
+            this.getInfo().put(DistributionPackageInfo.PROPERTY_REQUEST_DEEP_PATHS, (String[])deepPaths);
+        }
 
         this.getInfo().put(DistributionPackageInfo.PROPERTY_REQUEST_TYPE, DistributionRequestType.ADD);
     }

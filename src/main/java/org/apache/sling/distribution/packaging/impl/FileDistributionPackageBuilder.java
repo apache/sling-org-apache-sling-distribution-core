@@ -37,6 +37,7 @@ import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
+import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.apache.sling.distribution.serialization.DistributionContentSerializer;
 import org.apache.sling.distribution.serialization.DistributionExportFilter;
 import org.apache.sling.distribution.serialization.DistributionExportOptions;
@@ -104,7 +105,10 @@ public class FileDistributionPackageBuilder extends AbstractDistributionPackageB
             if (digestAlgorithm != null) {
                 digestMessage = readDigestMessage((DigestOutputStream) outputStream);
             }
-            distributionPackage = new FileDistributionPackage(file, getType(), digestAlgorithm, digestMessage);
+            DistributionPackageInfo info = new DistributionPackageInfo(getType());
+            DistributionPackageUtils.fillInfo(info, request);
+            distributionPackage = new FileDistributionPackage(file, getType(), digestAlgorithm, digestMessage,
+                    info);
         } catch (IOException e) {
             throw new DistributionException(e);
         } finally {
@@ -140,7 +144,7 @@ public class FileDistributionPackageBuilder extends AbstractDistributionPackageB
             outputStream.flush();
 
             String digestMessage = readDigestMessage(outputStream);
-            distributionPackage = new FileDistributionPackage(file, getType(), digestAlgorithm, digestMessage);
+            distributionPackage = new FileDistributionPackage(file, getType(), digestAlgorithm, digestMessage, null);
         } catch (Exception e) {
             throw new DistributionException(e);
         } finally {
@@ -168,6 +172,6 @@ public class FileDistributionPackageBuilder extends AbstractDistributionPackageB
             log.warn("file package does not exist", file.getAbsolutePath());
             return null;
         }
-        return new FileDistributionPackage(file, getType(), null, null);
+        return new FileDistributionPackage(file, getType(), null, null, null);
     }
 }

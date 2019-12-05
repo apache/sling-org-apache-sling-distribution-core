@@ -44,6 +44,7 @@ import org.apache.sling.api.resource.ResourceUtil;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.packaging.DistributionPackage;
+import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.apache.sling.distribution.serialization.DistributionContentSerializer;
 import org.apache.sling.distribution.serialization.DistributionExportFilter;
 import org.apache.sling.distribution.serialization.DistributionExportOptions;
@@ -124,13 +125,15 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
             try {
                 inputStream = outputStream.openWrittenDataInputStream();
 
-                packageResource = uploadStream(resourceResolver, packagesRoot, inputStream, outputStream.size());
+                packageResource = uploadStream(resourceResolver, packagesRoot, inputStream, outputStream.size(),
+                        request);
             } finally {
                 IOUtils.closeQuietly(inputStream);
                 outputStream.clean();
             }
 
-            distributionPackage = new ResourceDistributionPackage(packageResource, getType(), resourceResolver, digestAlgorithm, digestMessage);
+            distributionPackage = new ResourceDistributionPackage(packageResource, getType(), resourceResolver,
+                    digestAlgorithm, digestMessage, null);
         } catch (IOException e) {
             throw new DistributionException(e);
         }
@@ -150,8 +153,8 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
         try {
             Resource packagesRoot = DistributionPackageUtils.getPackagesRoot(resourceResolver, packagesPath);
 
-            Resource packageResource = uploadStream(resourceResolver, packagesRoot, inputStream, -1);
-            return new ResourceDistributionPackage(packageResource, getType(), resourceResolver, null, null);
+            Resource packageResource = uploadStream(resourceResolver, packagesRoot, inputStream, -1, null);
+            return new ResourceDistributionPackage(packageResource, getType(), resourceResolver, null, null, null);
         } catch (PersistenceException e) {
             throw new DistributionException(e);
         }
@@ -176,7 +179,7 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
             if (packageResource == null) {
                 return null;
             } else {
-                return new ResourceDistributionPackage(packageResource, getType(), resourceResolver, null, null);
+                return new ResourceDistributionPackage(packageResource, getType(), resourceResolver, null, null, null);
             }
         } catch (PersistenceException e) {
             return null;
@@ -184,7 +187,8 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
     }
 
 
-    private Resource uploadStream(ResourceResolver resourceResolver, Resource parent, InputStream stream, long size) throws PersistenceException {
+    private Resource uploadStream(ResourceResolver resourceResolver, Resource parent, InputStream stream,
+            long size, DistributionRequest request) throws PersistenceException {
 
         String name;
         log.debug("uploading stream");
@@ -211,6 +215,13 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
         Map<String, Object> props = new HashMap<String, Object>();
         props.put(ResourceResolver.PROPERTY_RESOURCE_TYPE, "sling:Folder");
         props.put("type", getType());
+        if (null != request) {
+            DistributionPackageInfo info = new DistributionPackageInfo(getType());
+            DistributionPackageUtils.fillInfo(info, request);
+            props.put(DistributionPackageInfo.PROPERTY_REQUEST_PATHS, info.getPaths());
+            props.put(DistributionPackageInfo.PROPERTY_REQUEST_DEEP_PATHS,
+                    info.get(DistributionPackageInfo.PROPERTY_REQUEST_DEEP_PATHS));
+        }
 
         if (size != -1) {
             props.put("size", size);
@@ -272,7 +283,7 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
         @Override
         public ResourceDistributionPackage next() {
             Resource packageResource = packages.next();
-            return new ResourceDistributionPackage(packageResource, type, resourceResolver, null, null);
+            return new ResourceDistributionPackage(packageResource, type, resourceResolver, null, null, null);
         }
 
         @Override
