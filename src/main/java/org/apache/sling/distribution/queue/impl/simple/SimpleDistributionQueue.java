@@ -207,7 +207,6 @@ public class SimpleDistributionQueue implements DistributionQueue {
         return removedEntries;
     }
 
-    @Override
     public void recordProcessingAttempt(@NotNull DistributionQueueEntry entry) {
         statusMap.computeIfPresent(entry.getItem(), (item, status) ->
             new DistributionQueueItemStatus(status.getEntered(),
