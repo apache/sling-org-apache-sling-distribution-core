@@ -61,11 +61,11 @@ public class ActiveResourceQueue extends ResourceQueue {
             DistributionQueueEntry head = ResourceQueueUtils.getHead(queueRoot);
             DistributionQueueItem firstItem = (null != head)? head.getItem(): null;
             DistributionQueueItemStatus firstItemStatus = (null != head)? head.getStatus(): null;
+            log.debug("Queue has {} items, with following status for the head: {}",
+                    count, firstItemStatus);
             return new DistributionQueueStatus(count,
                     DistributionQueueUtils.calculateState(firstItem, firstItemStatus));
-        } catch (LoginException e) {
-            throw new RuntimeException(e);
-        } catch (PersistenceException e) {
+        } catch (LoginException | PersistenceException e) {
             throw new RuntimeException(e);
         } finally {
             DistributionUtils.safelyLogout(resourceResolver);

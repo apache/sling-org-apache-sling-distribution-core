@@ -262,7 +262,7 @@ public class ForwardDistributionAgentFactory extends AbstractDistributionAgentFa
         } else if (ResourceQueueProvider.TYPE.equals(queueProviderName)) {
             queueProvider = new ResourceQueueProvider(context,
                     resourceResolverFactory, SimpleDistributionAgent.DEFAULT_AGENT_SERVICE, agentName, scheduler, true);
-        } else { // if (SimpleDistributionQueueProvider.TYPE_CHECKPOINT.equals(queueProviderName))
+        } else { // when SimpleDistributionQueueProvider.TYPE_CHECKPOINT is "queueProviderName"
             queueProvider = new SimpleDistributionQueueProvider(scheduler, agentName, true);
         }
         queueProvider = new MonitoringDistributionQueueProvider(queueProvider, context);

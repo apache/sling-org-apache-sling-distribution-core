@@ -39,10 +39,9 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 
 public class ResourceQueueProvider implements DistributionQueueProvider {
-    public final static String TYPE = "resource";
+    public static final String TYPE = "resource";
 
     private final static String QUEUES_ROOT = "/var/sling/distribution/queues/";
 
@@ -54,7 +53,7 @@ public class ResourceQueueProvider implements DistributionQueueProvider {
     private Scheduler scheduler;
     private boolean isActive;
 
-    private final Map<String, ResourceQueue> queueMap = new ConcurrentHashMap<String, ResourceQueue>();
+    private final Map<String, ResourceQueue> queueMap = new ConcurrentHashMap<>();
 
     private ServiceRegistration<Runnable> cleanupTask;
 
@@ -76,7 +75,7 @@ public class ResourceQueueProvider implements DistributionQueueProvider {
     @NotNull
     @Override
     public DistributionQueue getQueue(@NotNull String queueName) throws DistributionException {
-        return queueMap.computeIfAbsent(queueName, (name) -> {
+        return queueMap.computeIfAbsent(queueName, name -> {
             if (isActive) {
                 return new ActiveResourceQueue(resolverFactory, serviceName, name, agentRootPath);
             } else {

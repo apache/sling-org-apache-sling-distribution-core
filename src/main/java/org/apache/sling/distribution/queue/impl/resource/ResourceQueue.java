@@ -128,10 +128,6 @@ public class ResourceQueue implements DistributionQueue {
     @NotNull
     @Override
     public Iterable<DistributionQueueEntry> getEntries(int skip, int limit) {
-        return getEntriesList(skip, limit);
-    }
-
-    protected List<DistributionQueueEntry> getEntriesList(int skip, int limit) {
         ResourceResolver resourceResolver = null;
         try {
             resourceResolver = DistributionUtils.loginService(resolverFactory, serviceName);
@@ -179,11 +175,6 @@ public class ResourceQueue implements DistributionQueue {
     @NotNull
     @Override
     public Iterable<DistributionQueueEntry> remove(@NotNull Set<String> entryIds) {
-        return removeAndCollect(entryIds);
-    }
-
-    @NotNull
-    protected List<DistributionQueueEntry> removeAndCollect(@NotNull Set<String> entryIds) {
         List<DistributionQueueEntry> removed = new ArrayList<DistributionQueueEntry>();
         for (String entryId : entryIds) {
             DistributionQueueEntry entry = remove(entryId);

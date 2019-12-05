@@ -46,7 +46,6 @@ import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -60,6 +59,7 @@ public class ResourceQueueProcessingTest {
 
     public static final Logger log = LoggerFactory.getLogger(ResourceQueueProcessingTest.class);
 
+    protected static final String PACKAGE_ID = "testPackageId";
     protected static BundleContext bundleContext = null;
     protected static ResourceResolverFactory rrf = null;
     protected static Scheduler scheduler = null;
@@ -68,8 +68,7 @@ public class ResourceQueueProcessingTest {
     @Test
     public void testActiveResourceQueue() throws DistributionException, PersistenceException, LoginException {
         // obtain an active queue provider instance
-        final String QUEUE_NAME = "testQueue";
-        final String PACKAGE_ID = "testPackageId";
+        final String QUEUE_NAME = "testActiveQueue";
         final int MAX_ENTRIES = 32;
 
         DistributionQueueProvider resourceQueueProvider = new ResourceQueueProvider(bundleContext,
@@ -79,9 +78,7 @@ public class ResourceQueueProcessingTest {
         DistributionQueue resourceQueue = resourceQueueProvider.getQueue(QUEUE_NAME);
 
         try {
-            for (int i = 0; i < MAX_ENTRIES; i++) {
-                resourceQueue.add(new DistributionQueueItem(PACKAGE_ID, Collections.<String, Object>emptyMap()));
-            }
+            populateDistributionQueue(resourceQueue, MAX_ENTRIES);
 
             assertTrue("Resource Queue state is not RUNNING",
                     resourceQueue.getStatus().getState().equals(DistributionQueueState.RUNNING));
@@ -99,7 +96,57 @@ public class ResourceQueueProcessingTest {
 
             assertEquals(0, resourceQueue.getStatus().getItemsCount());
         } finally {
+            resourceQueueProvider.disableQueueProcessing();
             resourceQueue.clear(Integer.MAX_VALUE);
+        }
+    }
+
+    @Test(expected = DistributionException.class)
+    public void testPassiveResourceQueueEnableProcessing() throws DistributionException {
+        final String QUEUE_NAME = "testPassiveQueue_1";
+        final int MAX_ENTRIES = 4;
+        DistributionQueueProvider resourceQueueProvider = new ResourceQueueProvider(bundleContext,
+                rrf, "test", "testAgent", scheduler, false);
+
+        DistributionQueue resourceQueue = resourceQueueProvider.getQueue(QUEUE_NAME, null);
+
+        try {
+            populateDistributionQueue(resourceQueue, MAX_ENTRIES);
+
+            assertTrue("Resource Queue state is PASSIVE",
+                    resourceQueue.getStatus().getState().equals(DistributionQueueState.PASSIVE));
+            assertEquals(MAX_ENTRIES, resourceQueue.getStatus().getItemsCount());
+
+            resourceQueueProvider.enableQueueProcessing(null, QUEUE_NAME); // expect exception
+        } finally {
+            resourceQueue.clear(Integer.MAX_VALUE);
+        }
+    }
+
+    @Test(expected = DistributionException.class)
+    public void testPassiveResourceQueueDisableProcessing() throws DistributionException {
+        final String QUEUE_NAME = "testPassiveQueue_2";
+        final int MAX_ENTRIES = 2;
+        DistributionQueueProvider resourceQueueProvider = new ResourceQueueProvider(bundleContext,
+                rrf, "test", "testAgent", scheduler, false);
+
+        DistributionQueue resourceQueue = resourceQueueProvider.getQueue(QUEUE_NAME, null);
+
+        try {
+            populateDistributionQueue(resourceQueue, MAX_ENTRIES);
+
+            assertTrue("Resource Queue state is PASSIVE",
+                    resourceQueue.getStatus().getState().equals(DistributionQueueState.PASSIVE));
+            assertEquals(MAX_ENTRIES, resourceQueue.getStatus().getItemsCount());
+        } finally {
+            resourceQueueProvider.disableQueueProcessing(); // expect exception
+            resourceQueue.clear(Integer.MAX_VALUE);
+        }
+    }
+
+    private void populateDistributionQueue(DistributionQueue queue, int maxEntries) {
+        for (int i = 0; i < maxEntries; i++) {
+            queue.add(new DistributionQueueItem(PACKAGE_ID, Collections.<String, Object>emptyMap()));
         }
     }
 
@@ -124,6 +171,7 @@ public class ResourceQueueProcessingTest {
                     return true;
                 }
             });
+        when(scheduler.unschedule(Matchers.anyString())).thenReturn(true);
     }
 
     @AfterClass
