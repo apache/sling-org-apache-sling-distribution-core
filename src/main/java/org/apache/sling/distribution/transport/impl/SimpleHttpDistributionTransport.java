@@ -231,18 +231,25 @@ public class SimpleHttpDistributionTransport implements DistributionTransport {
     }
 
     private Executor buildExecutor() {
-        DistributionTransportSecret secret = secretProvider.getSecret(distributionEndpoint.getUri());
-        Map<String, String> credentialsMap = secret.asCredentialsMap();
+        Map<String, String> credentialsMap = getCredentialsMap();
         return buildAuthExecutor(credentialsMap);
     }
 
     private String getAuthSecret() {
-        DistributionTransportSecret secret = secretProvider.getSecret(distributionEndpoint.getUri());
-        Map<String, String> credentialsMap = secret.asCredentialsMap();
+        Map<String, String> credentialsMap = getCredentialsMap();
         if (null != credentialsMap && credentialsMap.containsKey(AUTHORIZATION)) {
             return credentialsMap.get(AUTHORIZATION);
         }
         return null;
+    }
+    
+    private Map<String, String> getCredentialsMap() {
+        DistributionTransportSecret secret = secretProvider.getSecret(distributionEndpoint.getUri());
+        Map<String, String> credentialsMap = null;
+        if (null != secret) {
+            credentialsMap = secret.asCredentialsMap();
+        }
+        return credentialsMap;
     }
 
 }
