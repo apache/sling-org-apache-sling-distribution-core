@@ -209,10 +209,10 @@ public class SimpleDistributionQueue implements DistributionQueue {
 
     @Override
     public void recordProcessingAttempt(@NotNull DistributionQueueEntry entry) {
-        statusMap.computeIfPresent(entry.getItem(), (item, status) -> {
-            return new DistributionQueueItemStatus(status.getEntered(),
-                    status.getItemState(), status.getAttempts() + 1, status.getQueueName());
-        });
+        statusMap.computeIfPresent(entry.getItem(), (item, status) ->
+            new DistributionQueueItemStatus(status.getEntered(),
+                    status.getItemState(), status.getAttempts() + 1, status.getQueueName())
+        );
     }
 
 }
