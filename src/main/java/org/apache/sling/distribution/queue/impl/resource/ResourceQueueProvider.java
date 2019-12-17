@@ -51,6 +51,7 @@ public class ResourceQueueProvider implements DistributionQueueProvider {
     private String serviceName;
     private String agentRootPath;
     private Scheduler scheduler;
+    private String agentName;
     private boolean isActive;
 
     private final Map<String, ResourceQueue> queueMap = new ConcurrentHashMap<>();
@@ -65,6 +66,7 @@ public class ResourceQueueProvider implements DistributionQueueProvider {
         }
         this.resolverFactory = resolverFactory;
         this.serviceName = serviceName;
+        this.agentName = agentName;
         this.agentRootPath = QUEUES_ROOT + agentName;
         this.scheduler = scheduler;
         this.isActive = isActive;
@@ -129,7 +131,7 @@ public class ResourceQueueProvider implements DistributionQueueProvider {
     }
 
     private String getJobName(String queueName) {
-        return "resource-queueProcessor-" + serviceName + "-" + queueName;
+        return "resource-queueProcessor-" + agentName + "-" + queueName;
     }
 
 
