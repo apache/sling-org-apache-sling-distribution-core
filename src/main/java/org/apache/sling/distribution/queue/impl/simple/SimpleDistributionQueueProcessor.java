@@ -20,10 +20,8 @@ package org.apache.sling.distribution.queue.impl.simple;
 
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
 
-import java.util.Map;
-
+import java.util.function.Consumer;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
-import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,34 +34,35 @@ public class SimpleDistributionQueueProcessor implements Runnable {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final DistributionQueue queue;
     private final DistributionQueueProcessor queueProcessor;
-    private final Map<String, DistributionQueueItemStatus> statusMap;
+    private Consumer<DistributionQueueEntry> recordProcessingAttempt;
 
     public SimpleDistributionQueueProcessor(DistributionQueue queue,
                                             DistributionQueueProcessor queueProcessor,
-                                            Map<String, DistributionQueueItemStatus> statusMap) {
+                                            Consumer<DistributionQueueEntry> processingAttemptRecorder) {
         this.queue = queue;
         this.queueProcessor = queueProcessor;
-        this.statusMap = statusMap;
+        this.recordProcessingAttempt = (null != processingAttemptRecorder)?
+                processingAttemptRecorder:
+                (entry) -> {};
     }
 
     public void run() {
         try {
             DistributionQueueEntry entry;
             while ((entry = queue.getHead()) != null) {
-                DistributionQueueItemStatus itemStatus = entry.getStatus();
-                statusMap.put(entry.getId(),  new DistributionQueueItemStatus(itemStatus.getEntered(),
-                        itemStatus.getItemState(), itemStatus.getAttempts() + 1, queue.getName()));
-                if (queueProcessor.process(queue.getName(), entry)) {
-                    if (queue.remove(entry.getId()) != null) {
-                        log.debug("item {} processed and removed from the queue", entry.getItem());
-                    }
+                boolean wasProcessed = queueProcessor.process(queue.getName(), entry);
+                boolean wasRemoved = wasProcessed?
+                        (queue.remove(entry.getId()) != null):
+                            false;
+                if (wasProcessed && wasRemoved) {
+                    log.debug("item {} processed and removed from the queue", entry.getItem());
                 } else {
-                    log.warn("processing of item {} failed", entry.getId());
+                    log.warn("processing and removal of item {} failed; will reattempt", entry.getId());
+                    this.recordProcessingAttempt.accept(entry);
                 }
             }
         } catch (Exception e) {
             log.error("error while processing queue {}", e);
         }
-
     }
 }

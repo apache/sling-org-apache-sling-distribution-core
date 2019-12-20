@@ -20,6 +20,7 @@
 package org.apache.sling.distribution.queue.impl.resource;
 
 
+import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -70,6 +71,7 @@ public class ResourceQueueUtils {
     private static final String DISTRIBUTION_PACKAGE_ID = DISTRIBUTION_PACKAGE_PREFIX + "item.id";
     private static final String DISTRIBUTION_PACKAGE_SIZE = DISTRIBUTION_PACKAGE_PREFIX + "package.size";
     private static final String ENTERED_DATE = "entered.date";
+    private static final String PROCESSING_ATTEMPTS = "processing.attempts";
 
 
     private static final AtomicLong itemCounter = new AtomicLong(0);
@@ -145,8 +147,9 @@ public class ResourceQueueUtils {
         ValueMap valueMap = resource.getValueMap();
         DistributionQueueItem queueItem = deserializeItem(valueMap);
         Calendar entered = valueMap.get(ENTERED_DATE, Calendar.getInstance());
+        int attempts = valueMap.get(PROCESSING_ATTEMPTS, 0);
         DistributionQueueItemStatus queueItemStatus = new DistributionQueueItemStatus(entered,
-                DistributionQueueItemState.QUEUED, 0, queueName);
+                DistributionQueueItemState.QUEUED, attempts, queueName);
 
         String entryId = getIdFromPath(queueRoot.getPath(), resource.getPath());
 
@@ -418,6 +421,12 @@ public class ResourceQueueUtils {
         }
 
         return itemId.replace(ID_START, "").replace("--", "/");
+    }
+
+    public static void incrementProcessingAttemptForQueueItem(Resource queueItemResource) {
+        ValueMap vm = queueItemResource.adaptTo(ModifiableValueMap.class);
+        int attempts = vm.get(PROCESSING_ATTEMPTS, 0);
+        vm.put(PROCESSING_ATTEMPTS, attempts + 1);
     }
 
 }

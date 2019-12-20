@@ -87,7 +87,7 @@ public class ResourceQueueProcessingTest {
             assertEquals(MAX_ENTRIES, resourceQueue.getStatus().getItemsCount());
 
             when(mockResourceQueueProcessor.process(eq(QUEUE_NAME), Matchers.any(DistributionQueueEntry.class)))
-                .thenReturn(true);
+                .thenReturn(false, true);
 
             resourceQueueProvider.enableQueueProcessing(mockResourceQueueProcessor, QUEUE_NAME);
             while (!resourceQueue.getStatus().getState().equals(DistributionQueueState.IDLE)) {

@@ -71,4 +71,20 @@ public class ActiveResourceQueue extends ResourceQueue {
             DistributionUtils.safelyLogout(resourceResolver);
         }
     }
+
+    public void recordProcessingAttempt(@NotNull DistributionQueueEntry entry) {
+        ResourceResolver resourceResolver = null;
+        try {
+            resourceResolver = DistributionUtils.loginService(resolverFactory, serviceName);
+            Resource queueRoot = ResourceQueueUtils.getRootResource(resourceResolver, queueRootPath);
+            Resource queueItemResource = ResourceQueueUtils.getResourceById(queueRoot, entry.getId());
+            ResourceQueueUtils.incrementProcessingAttemptForQueueItem(queueItemResource);
+            resourceResolver.commit();
+            log.debug("incremented processing-attempt for queue entry with id: {}", entry.getId());
+        } catch (Exception e) {
+            log.warn("Couldn't increment processing-attempt for queue entry with id: {}", entry.getId());
+        } finally {
+            DistributionUtils.safelyLogout(resourceResolver);
+        }
+    }
 }

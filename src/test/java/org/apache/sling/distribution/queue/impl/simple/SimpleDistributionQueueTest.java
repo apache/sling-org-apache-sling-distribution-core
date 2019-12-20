@@ -19,6 +19,7 @@
 package org.apache.sling.distribution.queue.impl.simple;
 
 import java.util.HashMap;
+
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
@@ -38,8 +39,7 @@ public class SimpleDistributionQueueTest {
 
     @Test
     public void testPackageAddition() throws Exception {
-        DistributionQueue queue = new SimpleDistributionQueue("agentName", "default",
-                new HashMap<String, DistributionQueueItemStatus>());
+        DistributionQueue queue = new SimpleDistributionQueue("agentName", "default");
         DistributionQueueItem pkg = new DistributionQueueItem("packageId", new HashMap<String, Object>());
         assertNotNull(queue.add(pkg));
         assertFalse(queue.getStatus().isEmpty());
@@ -47,8 +47,7 @@ public class SimpleDistributionQueueTest {
 
     @Test
     public void testPackageAdditionAndRemoval() throws Exception {
-        DistributionQueue queue = new SimpleDistributionQueue("agentName", "default",
-                new HashMap<String, DistributionQueueItemStatus>());
+        DistributionQueue queue = new SimpleDistributionQueue("agentName", "default");
         DistributionQueueItem pkg = new DistributionQueueItem("id", new HashMap<String, Object>());
         assertNotNull(queue.add(pkg));
         assertFalse(queue.getStatus().isEmpty());
@@ -60,18 +59,26 @@ public class SimpleDistributionQueueTest {
 
     @Test
     public void testPackageAdditionRetrievalAndRemoval() throws Exception {
-        DistributionQueue queue = new SimpleDistributionQueue("agentName", "default",
-                new HashMap<String, DistributionQueueItemStatus>());
+        DistributionQueue queue = new SimpleDistributionQueue("agentName", "default");
         DistributionQueueItem pkg = new DistributionQueueItem("id", new HashMap<String, Object>());
         assertNotNull(queue.add(pkg));
         assertFalse(queue.getStatus().isEmpty());
-        assertEquals(pkg, queue.getHead().getItem());
-        assertFalse(queue.getStatus().isEmpty());
+        DistributionQueueEntry entry = queue.getHead();
+
         DistributionQueueItemStatus status = queue.getEntry(pkg.getPackageId()).getStatus();
+        assertNotNull(status);
+        assertEquals(0, status.getAttempts());
+
+        ((SimpleDistributionQueue)queue).recordProcessingAttempt(entry);
+
+        assertEquals(pkg, entry.getItem());
+        assertFalse(queue.getStatus().isEmpty());
+
+        status = queue.getEntry(pkg.getPackageId()).getStatus();
         assertNotNull(queue.remove(pkg.getPackageId()));
         assertTrue(queue.getStatus().isEmpty());
         assertNotNull(status);
-        assertEquals(0, status.getAttempts());
+        assertEquals(1, status.getAttempts());
     }
 
 }

@@ -27,14 +27,15 @@ import java.io.FilenameFilter;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.sling.commons.scheduler.ScheduleOptions;
 import org.apache.sling.commons.scheduler.Scheduler;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
+import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
-import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProcessor;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
 import org.apache.sling.distribution.queue.DistributionQueueType;
@@ -56,8 +57,7 @@ public class SimpleDistributionQueueProvider implements DistributionQueueProvide
     private final String name;
     private final Scheduler scheduler;
 
-    private final Map<String, SimpleDistributionQueue> queueMap = new ConcurrentHashMap<>();
-    private final Map<String, Map<String, DistributionQueueItemStatus>> statusMap = new ConcurrentHashMap<>();
+    private final Map<String, SimpleDistributionQueue> queueMap = new ConcurrentHashMap<String, SimpleDistributionQueue>();
     private final boolean checkpoint;
     private File checkpointDirectory;
 
@@ -92,11 +92,8 @@ public class SimpleDistributionQueueProvider implements DistributionQueueProvide
         SimpleDistributionQueue queue = queueMap.get(key);
         if (queue == null) {
             log.debug("creating a queue with key {}", key);
-            Map<String, DistributionQueueItemStatus> queueStatusMap
-                    = new ConcurrentHashMap<>();
-            queue = new SimpleDistributionQueue(name, queueName, queueStatusMap);
+            queue = new SimpleDistributionQueue(name, queueName);
             queueMap.put(key, queue);
-            statusMap.put(key, queueStatusMap);
             log.debug("queue created {}", queue);
         }
         return queue;
@@ -155,9 +152,14 @@ public class SimpleDistributionQueueProvider implements DistributionQueueProvide
 
         // enable processing
         for (String queueName : queueNames) {
-            ScheduleOptions options = scheduler.NOW(-1, 1).canRunConcurrently(false).name(getJobName(queueName));
-            scheduler.schedule(new SimpleDistributionQueueProcessor(getQueue(queueName), queueProcessor,
-                    statusMap.get(getKey(queueName))), options);
+            ScheduleOptions options = scheduler.NOW(-1, 1)
+                    .canRunConcurrently(false)
+                    .name(getJobName(queueName));
+            DistributionQueue queueImpl = getQueue(queueName);
+            Consumer<DistributionQueueEntry> processingAttemptRecorder =
+                    ((SimpleDistributionQueue)queueImpl)::recordProcessingAttempt;
+            scheduler.schedule(new SimpleDistributionQueueProcessor(getQueue(queueName), queueProcessor, processingAttemptRecorder),
+                    options);
         }
 
     }
