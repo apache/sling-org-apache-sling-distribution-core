@@ -21,6 +21,7 @@ package org.apache.sling.distribution.queue.impl.simple;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
+
 import org.apache.sling.distribution.queue.DistributionQueueItemState;
 import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
@@ -28,7 +29,6 @@ import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProcessor;
 import org.junit.Test;
-
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -42,7 +42,7 @@ public class SimpleDistributionQueueProcessorTest {
         DistributionQueue queue = mock(DistributionQueue.class);
         DistributionQueueProcessor queueProcessor = mock(DistributionQueueProcessor.class);
         SimpleDistributionQueueProcessor simpleDistributionQueueProcessor = new SimpleDistributionQueueProcessor(
-                queue, queueProcessor, new HashMap<String, DistributionQueueItemStatus>());
+                queue, queueProcessor, null);
         simpleDistributionQueueProcessor.run();
     }
 
@@ -56,7 +56,7 @@ public class SimpleDistributionQueueProcessorTest {
         when(queueProvider.getQueues()).thenReturn(queues);
         DistributionQueueProcessor queueProcessor = mock(DistributionQueueProcessor.class);
         SimpleDistributionQueueProcessor simpleDistributionQueueProcessor = new SimpleDistributionQueueProcessor(
-                queue, queueProcessor, new HashMap<String, DistributionQueueItemStatus>());
+                queue, queueProcessor, null);
         simpleDistributionQueueProcessor.run();
     }
 
@@ -73,7 +73,7 @@ public class SimpleDistributionQueueProcessorTest {
         when(queueProvider.getQueues()).thenReturn(queues);
         DistributionQueueProcessor queueProcessor = mock(DistributionQueueProcessor.class);
         SimpleDistributionQueueProcessor simpleDistributionQueueProcessor = new SimpleDistributionQueueProcessor(
-                queue, queueProcessor, new HashMap<String, DistributionQueueItemStatus>());
+                queue, queueProcessor, queue::recordProcessingAttempt);
         simpleDistributionQueueProcessor.run();
     }
 }
