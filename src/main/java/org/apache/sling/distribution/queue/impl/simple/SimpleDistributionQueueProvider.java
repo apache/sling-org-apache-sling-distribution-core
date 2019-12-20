@@ -26,6 +26,7 @@ import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.util.Collection;
 import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.IOUtils;
@@ -34,6 +35,7 @@ import org.apache.sling.commons.scheduler.ScheduleOptions;
 import org.apache.sling.commons.scheduler.Scheduler;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
+import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProcessor;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
 import org.apache.sling.distribution.queue.DistributionQueueType;
@@ -56,6 +58,8 @@ public class SimpleDistributionQueueProvider implements DistributionQueueProvide
     private final Scheduler scheduler;
 
     private final Map<String, SimpleDistributionQueue> queueMap = new ConcurrentHashMap<String, SimpleDistributionQueue>();
+    private final Map<SimpleDistributionQueue, Map<String, DistributionQueueItemStatus>> statusMap
+            = new WeakHashMap<SimpleDistributionQueue, Map<String, DistributionQueueItemStatus>>();
     private final boolean checkpoint;
     private File checkpointDirectory;
 
@@ -75,7 +79,8 @@ public class SimpleDistributionQueueProvider implements DistributionQueueProvide
             if (!checkpointDirectory.exists()) {
                 created = checkpointDirectory.mkdir();
             }
-            log.info("checkpoint directory created: {}, exists {}", created, checkpointDirectory.isDirectory() && checkpointDirectory.exists());
+            log.info("checkpoint directory created: {}, exists {}", created,
+                    checkpointDirectory.isDirectory() && checkpointDirectory.exists());
         }
 
         this.scheduler = scheduler;
@@ -89,8 +94,11 @@ public class SimpleDistributionQueueProvider implements DistributionQueueProvide
         SimpleDistributionQueue queue = queueMap.get(key);
         if (queue == null) {
             log.debug("creating a queue with key {}", key);
-            queue = new SimpleDistributionQueue(name, queueName);
+            Map<String, DistributionQueueItemStatus> queueStatusMap
+                    = new ConcurrentHashMap<String, DistributionQueueItemStatus>();
+            queue = new SimpleDistributionQueue(name, queueName, queueStatusMap);
             queueMap.put(key, queue);
+            statusMap.put(queue, queueStatusMap);
             log.debug("queue created {}", queue);
         }
         return queue;
@@ -125,7 +133,7 @@ public class SimpleDistributionQueueProvider implements DistributionQueueProvide
                     try {
                         LineIterator lineIterator = IOUtils.lineIterator(new FileReader(qf));
                         while (lineIterator.hasNext()) {
-                            String line  = lineIterator.nextLine();
+                            String line = lineIterator.nextLine();
                             DistributionQueueItem item = mapper.readQueueItem(line);
                             queue.add(item);
                         }
@@ -140,19 +148,18 @@ public class SimpleDistributionQueueProvider implements DistributionQueueProvide
 
             // enable checkpointing
             for (String queueName : queueNames) {
-                ScheduleOptions options = scheduler.NOW(-1, 15)
-                        .canRunConcurrently(false)
+                ScheduleOptions options = scheduler.NOW(-1, 15).canRunConcurrently(false)
                         .name(getJobName(queueName + "-checkpoint"));
-                scheduler.schedule(new SimpleDistributionQueueCheckpoint(getQueue(queueName), checkpointDirectory), options);
+                scheduler.schedule(new SimpleDistributionQueueCheckpoint(getQueue(queueName), checkpointDirectory),
+                        options);
             }
         }
 
         // enable processing
         for (String queueName : queueNames) {
-            ScheduleOptions options = scheduler.NOW(-1, 1)
-                    .canRunConcurrently(false)
-                    .name(getJobName(queueName));
-            scheduler.schedule(new SimpleDistributionQueueProcessor(getQueue(queueName), queueProcessor), options);
+            ScheduleOptions options = scheduler.NOW(-1, 1).canRunConcurrently(false).name(getJobName(queueName));
+            scheduler.schedule(new SimpleDistributionQueueProcessor(getQueue(queueName), queueProcessor,
+                    statusMap.get(getQueue(queueName))), options);
         }
 
     }

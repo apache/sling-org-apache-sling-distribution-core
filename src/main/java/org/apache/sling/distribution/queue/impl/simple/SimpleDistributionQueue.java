@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
-import java.util.WeakHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
@@ -68,13 +67,13 @@ public class SimpleDistributionQueue implements DistributionQueue {
 
     private final Queue<DistributionQueueItem> queue;
 
-    private final Map<DistributionQueueItem, DistributionQueueItemStatus> statusMap;
+    private final Map<String, DistributionQueueItemStatus> statusMap;
 
-    public SimpleDistributionQueue(String agentName, String name) {
+    public SimpleDistributionQueue(String agentName, String name, Map<String, DistributionQueueItemStatus> statusMap) {
         log.debug("starting a simple queue {} for agent {}", name, agentName);
         this.name = name;
         this.queue = new LinkedBlockingQueue<DistributionQueueItem>();
-        this.statusMap = new WeakHashMap<DistributionQueueItem, DistributionQueueItemStatus>(10);
+        this.statusMap = statusMap;
     }
 
     @NotNull
@@ -85,17 +84,19 @@ public class SimpleDistributionQueue implements DistributionQueue {
     public DistributionQueueEntry add(@NotNull DistributionQueueItem item) {
         DistributionQueueItemState itemState = DistributionQueueItemState.ERROR;
         boolean result = false;
+        String entryId = item.getPackageId();
         try {
             result = queue.offer(item);
             itemState = DistributionQueueItemState.QUEUED;
         } catch (Exception e) {
             log.error("cannot add an item to the queue", e);
         } finally {
-            statusMap.put(item, new DistributionQueueItemStatus(Calendar.getInstance(), itemState, 0, name));
+            statusMap.put(entryId, new DistributionQueueItemStatus(Calendar.getInstance(), itemState, 0, name));
         }
 
         if (result) {
-            return new DistributionQueueEntry(item.getPackageId(), item, statusMap.get(item));
+            
+            return new DistributionQueueEntry(item.getPackageId(), item, statusMap.get(entryId));
         }
 
         return null;
@@ -106,10 +107,7 @@ public class SimpleDistributionQueue implements DistributionQueue {
     public DistributionQueueEntry getHead() {
         DistributionQueueItem element = queue.peek();
         if (element != null) {
-            DistributionQueueItemStatus itemState = statusMap.get(element);
-            statusMap.put(element, new DistributionQueueItemStatus(itemState.getEntered(),
-                    itemState.getItemState(),
-                    itemState.getAttempts() + 1, name));
+            DistributionQueueItemStatus itemState = statusMap.get(element.getPackageId());
 
             return new DistributionQueueEntry(element.getPackageId(), element, itemState);
         }
@@ -119,7 +117,7 @@ public class SimpleDistributionQueue implements DistributionQueue {
     @NotNull
     private DistributionQueueState getState() {
         DistributionQueueItem firstItem = queue.peek();
-        DistributionQueueItemStatus firstItemStatus = firstItem != null ? statusMap.get(firstItem) : null;
+        DistributionQueueItemStatus firstItemStatus = firstItem != null ? statusMap.get(firstItem.getPackageId()) : null;
         return DistributionQueueUtils.calculateState(firstItem, firstItemStatus);
     }
 
@@ -146,7 +144,7 @@ public class SimpleDistributionQueue implements DistributionQueue {
         List<DistributionQueueEntry> result = new ArrayList<DistributionQueueEntry>();
 
         for (DistributionQueueItem item : queue) {
-            result.add(new DistributionQueueEntry(item.getPackageId(), item, statusMap.get(item)));
+            result.add(new DistributionQueueEntry(item.getPackageId(), item, statusMap.get(item.getPackageId())));
         }
         return result;
     }
@@ -155,7 +153,7 @@ public class SimpleDistributionQueue implements DistributionQueue {
     public DistributionQueueEntry getEntry(@NotNull String id) {
         for (DistributionQueueItem item : queue) {
             if (id.equals(item.getPackageId())) {
-                return new DistributionQueueEntry(id, item, statusMap.get(item));
+                return new DistributionQueueEntry(id, item, statusMap.get(item.getPackageId()));
             }
         }
 
@@ -182,6 +180,7 @@ public class SimpleDistributionQueue implements DistributionQueue {
         boolean removed = false;
         if (toRemove != null) {
             removed = queue.remove(toRemove.getItem());
+            statusMap.remove(id);
         }
         log.debug("item with id {} removed from the queue: {}", id, removed);
         if (removed) {
