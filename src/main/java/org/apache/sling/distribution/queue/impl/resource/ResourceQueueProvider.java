@@ -23,6 +23,7 @@ import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.commons.scheduler.ScheduleOptions;
 import org.apache.sling.commons.scheduler.Scheduler;
 import org.apache.sling.distribution.common.DistributionException;
+import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
 import org.apache.sling.distribution.queue.DistributionQueueType;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProcessor;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
@@ -56,6 +57,9 @@ public class ResourceQueueProvider implements DistributionQueueProvider {
 
     private final Map<String, ResourceQueue> queueMap = new ConcurrentHashMap<>();
 
+    private final Map<String, Map<String, DistributionQueueItemStatus>> statusMap = new ConcurrentHashMap<>();
+
+
     private ServiceRegistration<Runnable> cleanupTask;
 
     public ResourceQueueProvider(BundleContext context, ResourceResolverFactory resolverFactory,
@@ -77,11 +81,13 @@ public class ResourceQueueProvider implements DistributionQueueProvider {
     @NotNull
     @Override
     public DistributionQueue getQueue(@NotNull String queueName) throws DistributionException {
-        return queueMap.computeIfAbsent(queueName, name -> {
+        String key = getKey(queueName);
+        return queueMap.computeIfAbsent(key, k -> {
+            statusMap.put(key, new ConcurrentHashMap<>());
             if (isActive) {
-                return new ActiveResourceQueue(resolverFactory, serviceName, name, agentRootPath);
+                return new ActiveResourceQueue(resolverFactory, serviceName, queueName, agentRootPath);
             } else {
-                return new ResourceQueue(resolverFactory, serviceName, name, agentRootPath);
+                return new ResourceQueue(resolverFactory, serviceName, queueName, agentRootPath);
             }
         });
     }
@@ -105,7 +111,8 @@ public class ResourceQueueProvider implements DistributionQueueProvider {
                         .canRunConcurrently(false)
                         .onSingleInstanceOnly(true)
                         .name(getJobName(queueName));
-                scheduler.schedule(new SimpleDistributionQueueProcessor(getQueue(queueName), queueProcessor), options);
+                scheduler.schedule(new SimpleDistributionQueueProcessor(getQueue(queueName), queueProcessor,
+                        statusMap.get(getKey(queueName))), options);
             }
         } else {
             throw new DistributionException(new UnsupportedOperationException("enable Processing not supported for Passive Queues"));
@@ -141,6 +148,10 @@ public class ResourceQueueProvider implements DistributionQueueProvider {
         props.put(Scheduler.PROPERTY_SCHEDULER_CONCURRENT, false);
         props.put(Scheduler.PROPERTY_SCHEDULER_PERIOD, 300L);
         cleanupTask = context.registerService(Runnable.class, cleanup, props);
+    }
+
+    private String getKey(String queueName) {
+        return agentName + "#" + queueName;
     }
 
     public void close() {

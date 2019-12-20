@@ -26,7 +26,6 @@ import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.util.Collection;
 import java.util.Map;
-import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.IOUtils;
@@ -57,9 +56,8 @@ public class SimpleDistributionQueueProvider implements DistributionQueueProvide
     private final String name;
     private final Scheduler scheduler;
 
-    private final Map<String, SimpleDistributionQueue> queueMap = new ConcurrentHashMap<String, SimpleDistributionQueue>();
-    private final Map<SimpleDistributionQueue, Map<String, DistributionQueueItemStatus>> statusMap
-            = new WeakHashMap<SimpleDistributionQueue, Map<String, DistributionQueueItemStatus>>();
+    private final Map<String, SimpleDistributionQueue> queueMap = new ConcurrentHashMap<>();
+    private final Map<String, Map<String, DistributionQueueItemStatus>> statusMap = new ConcurrentHashMap<>();
     private final boolean checkpoint;
     private File checkpointDirectory;
 
@@ -89,16 +87,16 @@ public class SimpleDistributionQueueProvider implements DistributionQueueProvide
 
     @NotNull
     public DistributionQueue getQueue(@NotNull String queueName) {
-        String key = name + queueName;
+        String key = getKey(queueName);
 
         SimpleDistributionQueue queue = queueMap.get(key);
         if (queue == null) {
             log.debug("creating a queue with key {}", key);
             Map<String, DistributionQueueItemStatus> queueStatusMap
-                    = new ConcurrentHashMap<String, DistributionQueueItemStatus>();
+                    = new ConcurrentHashMap<>();
             queue = new SimpleDistributionQueue(name, queueName, queueStatusMap);
             queueMap.put(key, queue);
-            statusMap.put(queue, queueStatusMap);
+            statusMap.put(key, queueStatusMap);
             log.debug("queue created {}", queue);
         }
         return queue;
@@ -159,7 +157,7 @@ public class SimpleDistributionQueueProvider implements DistributionQueueProvide
         for (String queueName : queueNames) {
             ScheduleOptions options = scheduler.NOW(-1, 1).canRunConcurrently(false).name(getJobName(queueName));
             scheduler.schedule(new SimpleDistributionQueueProcessor(getQueue(queueName), queueProcessor,
-                    statusMap.get(getQueue(queueName))), options);
+                    statusMap.get(getKey(queueName))), options);
         }
 
     }
@@ -182,6 +180,10 @@ public class SimpleDistributionQueueProvider implements DistributionQueueProvide
                 }
             }
         }
+    }
+
+    private String getKey(String queueName) {
+        return name + "#" + queueName;
     }
 
     private String getJobName(String queueName) {
