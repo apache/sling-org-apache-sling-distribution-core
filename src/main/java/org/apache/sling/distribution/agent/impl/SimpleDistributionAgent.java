@@ -59,7 +59,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Basic implementation of a {@link DistributionAgent}
  */
 public class SimpleDistributionAgent implements DistributionAgent {
-    private final static String DEFAULT_AGENT_SERVICE = "defaultAgentService";
+    final static String DEFAULT_AGENT_SERVICE = "defaultAgentService";
 
     private final DistributionQueueProvider queueProvider;
     private final DistributionPackageImporter distributionPackageImporter;
