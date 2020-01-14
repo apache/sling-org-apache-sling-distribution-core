@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.jcr.Binary;
 import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.nodetype.NodeType;
 import java.io.ByteArrayInputStream;
@@ -341,10 +342,10 @@ public class DistributionPackageUtils {
         Node refs = parent.getNode("refs");
 
         for (String holderName : holderNames) {
-            Node refNode = refs.getNode(holderName);
-            if (refNode != null) {
+            try {
+                Node refNode = refs.getNode(holderName);
                 refNode.remove();
-            }
+            } catch (PathNotFoundException ign) { }
         }
 
         if (!refs.hasProperty("released")) {

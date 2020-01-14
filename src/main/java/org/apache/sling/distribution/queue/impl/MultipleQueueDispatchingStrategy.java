@@ -63,13 +63,9 @@ public class MultipleQueueDispatchingStrategy implements DistributionQueueDispat
         // second add the package to all queues
         for (String queueName : queueNames) {
             DistributionQueue queue = queueProvider.getQueue(queueName);
-            DistributionQueueItemStatus status = new DistributionQueueItemStatus(DistributionQueueItemState.ERROR, queue.getName());
-
-            DistributionQueueEntry queueEntry = queue.add(queueItem);
-
-            if (queueEntry != null) {
-                status = queueEntry.getStatus();
-            } else {
+            DistributionQueueItemStatus status = addItemToQueue(queueItem, queue);
+            if (null == status) {
+                status = new DistributionQueueItemStatus(DistributionQueueItemState.ERROR, queueName);
                 DistributionPackageUtils.release(distributionPackage, queueName);
                 log.error("cannot add package {} to queue {}", distributionPackage.getId(), queueName);
             }
@@ -86,8 +82,21 @@ public class MultipleQueueDispatchingStrategy implements DistributionQueueDispat
         return Arrays.asList(queueNames);
     }
 
-    private DistributionQueueItem getItem(DistributionPackage distributionPackage) {
+    protected DistributionQueueItem getItem(DistributionPackage distributionPackage) {
         return DistributionPackageUtils.toQueueItem(distributionPackage);
     }
 
+    protected DistributionQueueItemStatus addItemToQueue(@NotNull DistributionQueueItem queueItem,
+            @NotNull DistributionQueue queue) throws DistributionException {
+
+        DistributionQueueItemStatus status = null;
+
+        DistributionQueueEntry queueEntry = queue.add(queueItem);
+
+        if (queueEntry != null) {
+            status = queueEntry.getStatus();
+        }
+
+        return status;
+    }
 }

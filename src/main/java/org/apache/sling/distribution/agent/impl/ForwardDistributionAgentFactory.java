@@ -58,6 +58,7 @@ import org.apache.sling.distribution.queue.impl.DistributionQueueDispatchingStra
 import org.apache.sling.distribution.queue.impl.ErrorQueueDispatchingStrategy;
 import org.apache.sling.distribution.queue.impl.MultipleQueueDispatchingStrategy;
 import org.apache.sling.distribution.queue.impl.PriorityQueueDispatchingStrategy;
+import org.apache.sling.distribution.queue.impl.SingleQueueDispatchingStrategy;
 import org.apache.sling.distribution.queue.impl.jobhandling.JobHandlingDistributionQueueProvider;
 import org.apache.sling.distribution.queue.impl.resource.ResourceQueueProvider;
 import org.apache.sling.distribution.queue.impl.simple.SimpleDistributionQueueProvider;
@@ -301,7 +302,13 @@ public class ForwardDistributionAgentFactory extends AbstractDistributionAgentFa
                 processingQueues.addAll(deliveryQueues.values());
                 exportQueueStrategy = new AsyncDeliveryDispatchingStrategy(deliveryQueues);
             } else {
-                exportQueueStrategy = new MultipleQueueDispatchingStrategy(endpointNames.toArray(new String[endpointNames.size()]));
+                if (endpointNames.size() == 1) {
+                    exportQueueStrategy = new SingleQueueDispatchingStrategy(endpointNames
+                            .toArray(new String[0])[0]);
+                } else {
+                    exportQueueStrategy = new MultipleQueueDispatchingStrategy(endpointNames
+                            .toArray(new String[endpointNames.size()]));
+                }
             }
         }
 

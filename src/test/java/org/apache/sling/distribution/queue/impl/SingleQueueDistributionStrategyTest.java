@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import org.apache.sling.distribution.packaging.DistributionPackage;
+import org.apache.sling.distribution.packaging.impl.SharedDistributionPackage;
 import org.apache.sling.distribution.queue.DistributionQueueItemState;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
@@ -45,7 +46,7 @@ public class SingleQueueDistributionStrategyTest {
     @Test
     public void testPackageAdditionWithSucceedingItemDelivery() throws Exception {
         SingleQueueDispatchingStrategy singleQueueDistributionStrategy = new SingleQueueDispatchingStrategy();
-        DistributionPackage distributionPackage = mock(DistributionPackage.class);
+        DistributionPackage distributionPackage = mock(SharedDistributionPackage.class);
         DistributionQueueProvider queueProvider = mock(DistributionQueueProvider.class);
         DistributionQueue queue = mock(DistributionQueue.class);
         when(queueProvider.getQueue(DistributionQueueDispatchingStrategy.DEFAULT_QUEUE_NAME)).thenReturn(queue);
@@ -64,7 +65,7 @@ public class SingleQueueDistributionStrategyTest {
     @Test
     public void testPackageAdditionWithFailingItemDelivery() throws Exception {
         SingleQueueDispatchingStrategy singleQueueDistributionStrategy = new SingleQueueDispatchingStrategy();
-        DistributionPackage distributionPackage = mock(DistributionPackage.class);
+        DistributionPackage distributionPackage = mock(SharedDistributionPackage.class);
         DistributionQueueProvider queueProvider = mock(DistributionQueueProvider.class);
         DistributionQueue queue = mock(DistributionQueue.class);
         DistributionQueueItem queueItem = new DistributionQueueItem("packageId", new HashMap<String, Object>());
@@ -82,7 +83,7 @@ public class SingleQueueDistributionStrategyTest {
     @Test
     public void testPackageAdditionWithNotNullItemStateFromTheQueue() throws Exception {
         SingleQueueDispatchingStrategy singleQueueDistributionStrategy = new SingleQueueDispatchingStrategy();
-        DistributionPackage distributionPackage = mock(DistributionPackage.class);
+        DistributionPackage distributionPackage = mock(SharedDistributionPackage.class);
         DistributionQueueProvider queueProvider = mock(DistributionQueueProvider.class);
         DistributionQueue queue = mock(DistributionQueue.class);
         when(queueProvider.getQueue(DistributionQueueDispatchingStrategy.DEFAULT_QUEUE_NAME)).thenReturn(queue);
