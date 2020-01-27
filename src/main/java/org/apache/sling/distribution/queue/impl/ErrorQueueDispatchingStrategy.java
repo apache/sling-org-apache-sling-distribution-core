@@ -22,6 +22,7 @@ package org.apache.sling.distribution.queue.impl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import org.apache.sling.distribution.common.DistributionException;
@@ -47,13 +48,24 @@ public class ErrorQueueDispatchingStrategy implements DistributionQueueDispatchi
 
     public final static String ERROR_PREFIX = "error-";
     private final Set<String> queueNames = new TreeSet<String>();
+    private DistributionQueueProvider queueProvider;
+
+    public ErrorQueueDispatchingStrategy(String[] queueNames, @NotNull DistributionQueueProvider queueProvider) {
+        this(queueNames);
+        this.queueProvider = queueProvider;
+    }
 
     public ErrorQueueDispatchingStrategy(String[] queueNames) {
         this.queueNames.addAll(Arrays.asList(queueNames));
+        this.queueProvider = null;
     }
 
     @Override
-    public Iterable<DistributionQueueItemStatus> add(@NotNull DistributionPackage distributionPackage, @NotNull DistributionQueueProvider queueProvider) throws DistributionException {
+    public Iterable<DistributionQueueItemStatus> add(@NotNull DistributionPackage distributionPackage,
+            @NotNull DistributionQueueProvider suppliedQueueProvider) throws DistributionException {
+
+        DistributionQueueProvider queueProvider = Optional.ofNullable(this.queueProvider)
+                .orElse(suppliedQueueProvider);
 
         List<DistributionQueueItemStatus> result = new ArrayList<DistributionQueueItemStatus>();
         String originQueue = DistributionPackageUtils.getQueueName(distributionPackage.getInfo());

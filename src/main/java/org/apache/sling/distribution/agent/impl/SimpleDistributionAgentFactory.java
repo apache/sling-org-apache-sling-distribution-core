@@ -167,14 +167,12 @@ public class SimpleDistributionAgentFactory extends AbstractDistributionAgentFac
 
         DistributionQueueProvider queueProvider = new JobHandlingDistributionQueueProvider(agentName, jobManager, context);
         DistributionQueueDispatchingStrategy exportQueueStrategy = new SingleQueueDispatchingStrategy();
-        DistributionQueueDispatchingStrategy importQueueStrategy = null;
-
         Set<String> processingQueues = new HashSet<String>();
         processingQueues.addAll(exportQueueStrategy.getQueueNames());
 
         return new SimpleDistributionAgent(agentName, queueProcessingEnabled, processingQueues,
                 serviceName, packageImporter, packageExporter, requestAuthorizationStrategy,
-                queueProvider, exportQueueStrategy, importQueueStrategy, distributionEventFactory, resourceResolverFactory, slingRepository,
+                queueProvider, exportQueueStrategy, null, null, distributionEventFactory, resourceResolverFactory, slingRepository,
                 distributionLog, null, null, 0);
 
     }

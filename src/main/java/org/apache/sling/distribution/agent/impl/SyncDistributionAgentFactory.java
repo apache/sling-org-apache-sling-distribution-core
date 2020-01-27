@@ -239,21 +239,23 @@ public class SyncDistributionAgentFactory extends AbstractDistributionAgentFacto
 
         DistributionPackageExporter packageExporter = new RemoteDistributionPackageExporter(distributionLog, packageBuilder,
                 transportSecretProvider, exporterEndpoints, pullItems, httpConfiguration);
-        DistributionQueueProvider queueProvider = new MonitoringDistributionQueueProvider(new JobHandlingDistributionQueueProvider(agentName, jobManager, context), context);
+        DistributionQueueProvider exportQueueProvider = new MonitoringDistributionQueueProvider(new JobHandlingDistributionQueueProvider(agentName, jobManager, context), context);
         DistributionRequestType[] allowedRequests = new DistributionRequestType[]{DistributionRequestType.PULL};
 
         String retryStrategy = SettingsUtils.removeEmptyEntry(PropertiesUtil.toString(config.get(RETRY_STRATEGY), null));
         int retryAttepts = PropertiesUtil.toInteger(config.get(RETRY_ATTEMPTS), 100);
 
-
+        DistributionQueueProvider importQueueProvider = null;
         if ("errorQueue".equals(retryStrategy)) {
             importQueueStrategy = new ErrorQueueDispatchingStrategy(processingQueues.toArray(new String[processingQueues.size()]));
+            importQueueProvider = new MonitoringDistributionQueueProvider(new JobHandlingDistributionQueueProvider(agentName, jobManager, context), context);
         }
 
 
         return new SimpleDistributionAgent(agentName, queueProcessingEnabled, processingQueues,
                 serviceName, packageImporter, packageExporter, requestAuthorizationStrategy,
-                queueProvider, exportQueueStrategy, importQueueStrategy, distributionEventFactory, resourceResolverFactory, slingRepository,
+                exportQueueProvider, exportQueueStrategy, importQueueStrategy, importQueueProvider,
+                distributionEventFactory, resourceResolverFactory, slingRepository,
                 distributionLog, allowedRequests, null, retryAttepts);
 
     }

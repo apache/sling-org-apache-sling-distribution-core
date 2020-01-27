@@ -201,7 +201,8 @@ public class QueueDistributionAgentFactory extends AbstractDistributionAgentFact
 
         return new SimpleDistributionAgent(agentName, false, null,
                 serviceName, null, packageExporter, requestAuthorizationStrategy,
-                monitoringQueueProvider, exportQueueStrategy, null, distributionEventFactory, resourceResolverFactory, slingRepository,
+                monitoringQueueProvider, exportQueueStrategy, null, null,
+                distributionEventFactory, resourceResolverFactory, slingRepository,
                 distributionLog, allowedRequests, allowedRoots, 0);
     }
 
