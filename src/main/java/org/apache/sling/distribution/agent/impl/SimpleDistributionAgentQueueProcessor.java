@@ -148,7 +148,11 @@ class SimpleDistributionAgentQueueProcessor implements DistributionQueueProcesso
                     distributionLog.error("[{}] PACKAGE-FAIL {}: could not deliver {}, {}", queueName, requestId, distributionPackage.getId(), e.getMessage());
                     distributionLog.debug("could not deliver package {}", distributionPackage.getId(), e);
 
-                    log.error("could not deliver package {}", distributionPackage.getId(), e);
+                    if (log.isDebugEnabled()) {
+                        log.error("could not deliver package {}, will retry", distributionPackage.getId(), e);
+                    } else {
+                        log.warn("could not deliver package {} due to {}, will retry", distributionPackage.getId(), e.getMessage());
+                    }
 
                 } catch (Throwable e) {
                     distributionLog.error("[{}] PACKAGE-FAIL {}: could not deliver package {} {}", queueName, requestId, distributionPackage.getId(), e.getMessage(), e);
