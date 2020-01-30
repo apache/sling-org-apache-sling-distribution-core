@@ -157,6 +157,8 @@ class SimpleDistributionAgentQueueProcessor implements DistributionQueueProcesso
 
                     if (errorQueueStrategy != null && queueItemStatus.getAttempts() > retryAttempts) {
                         removeItemFromQueue = reEnqueuePackage(distributionPackage);
+                        distributionEventFactory.generatePackageEvent(DistributionEventTopics.AGENT_PACKAGE_DROPPED,
+                                DistributionComponentKind.AGENT, agentName, distributionPackage.getInfo());
                         distributionLog.info("[{}] PACKAGE-QUEUED {}: distribution package {} was enqueued to an error queue", queueName, requestId, distributionPackage.getId());
                     }
                 }
