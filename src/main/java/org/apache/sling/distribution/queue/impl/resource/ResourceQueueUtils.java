@@ -172,7 +172,7 @@ public class ResourceQueueUtils {
             DistributionQueueEntry entry = readEntry(queueRoot, resource);
             entries.add(entry);
 
-            if (entries.size() >= limit) {
+            if (limit != -1 && entries.size() >= limit) {
                 break;
             }
         }
@@ -318,26 +318,7 @@ public class ResourceQueueUtils {
 
 
     public static int getResourceCount(Resource root) {
-        ResourceResolver resolver = root.getResourceResolver();
-        Session session = resolver.adaptTo(Session.class);
-
-        StringBuilder buf = new StringBuilder();
-        buf.append("/jcr:root");
-        buf.append(root.getPath());
-        buf.append("//element(*,");
-        buf.append(RESOURCE_ITEM);
-        buf.append(")");
-
-        try {
-            QueryManager qManager = session.getWorkspace().getQueryManager();
-            Query q = qManager.createQuery(buf.toString(), "xpath");
-            final QueryResult res = q.execute();
-
-            NodeIterator it = res.getNodes();
-            return  (int) it.getSize();
-        } catch (RepositoryException e) {
-            return -1;
-        }
+        return getEntries(root, 0, -1).size();
     }
 
 
