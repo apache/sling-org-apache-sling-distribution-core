@@ -45,7 +45,7 @@ import java.util.function.Consumer;
 public class ResourceQueueProvider implements DistributionQueueProvider {
     public static final String TYPE = "resource";
 
-    private final static String QUEUES_ROOT = "/var/sling/distribution/queues/";
+    public final static String QUEUES_ROOT = "/var/sling/distribution/queues/";
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 

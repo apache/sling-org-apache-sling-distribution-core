@@ -18,15 +18,33 @@
  */
 package org.apache.sling.distribution.queue.impl.resource;
 
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.distribution.queue.DistributionQueueItem;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
+import org.apache.sling.testing.resourceresolver.MockResourceResolverFactory;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.GregorianCalendar;
 
+import static java.util.Collections.emptyMap;
+import static java.util.UUID.randomUUID;
+import static org.apache.sling.distribution.queue.impl.resource.ResourceQueueProvider.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class ResourceQueueUtilsTest {
+
+    private MockResourceResolverFactory rrf;
+
+    private static final String QUEUE_NAME = "test-queue";
+
+    @Before
+    public void setUp() throws Exception {
+        rrf = new MockResourceResolverFactory();
+    }
 
     @Test
     public void testTimePath() throws Exception {
@@ -41,6 +59,29 @@ public class ResourceQueueUtilsTest {
 
         assertEquals("2018/12/31/23/59",
                 ResourceQueueUtils.getTimePath(new GregorianCalendar(2018, 11, 31, 23, 59)));
+    }
+
+    @Test
+    public void testResourceCountEmpty() throws Exception {
+        String agentPath = QUEUES_ROOT + QUEUE_NAME;
+        DistributionQueue queue = new ResourceQueue(rrf, "test", QUEUE_NAME, agentPath);
+        assertTrue(queue.getStatus().isEmpty());
+    }
+
+    @Test
+    public void testResourceCountNonEmpty() throws Exception {
+        String agentPath = QUEUES_ROOT + QUEUE_NAME;
+        DistributionQueue queue = new ResourceQueue(rrf, "test", QUEUE_NAME, agentPath);
+
+        queue.add(new DistributionQueueItem(randomUUID().toString(), emptyMap()));
+        queue.add(new DistributionQueueItem(randomUUID().toString(), emptyMap()));
+        queue.add(new DistributionQueueItem(randomUUID().toString(), emptyMap()));
+
+        assertFalse(queue.getStatus().isEmpty());
+
+        ResourceResolver rr = rrf.getResourceResolver(null);
+        Resource root = ResourceQueueUtils.getRootResource(rr, agentPath);
+        assertEquals(3, ResourceQueueUtils.getResourceCount(root));
     }
 
 
