@@ -123,6 +123,6 @@ public class DistributionTriggerServlet extends SlingAllMethodsServlet {
 
         // flush the buffers to make sure the container sends the bytes
         writer.flush();
-        log.debug("SSE event {} {}", new Object[]{distributionRequest.getRequestType(), distributionRequest.getPaths()});
+        log.debug("SSE event {} {}", distributionRequest.getRequestType(), distributionRequest.getPaths());
     }
 }

@@ -128,7 +128,7 @@ public class ScheduledDistributionTrigger implements DistributionTrigger {
         }
 
         public void run() {
-            log.debug("agent {}: scheduling {} distribution of {}", new Object[]{requestHandler, distributionAction, path});
+            log.debug("agent {}: scheduling {} distribution of {}", requestHandler, distributionAction, path);
 
             if (serviceName == null) {
                 requestHandler.handle(null, new SimpleDistributionRequest(distributionAction, path));

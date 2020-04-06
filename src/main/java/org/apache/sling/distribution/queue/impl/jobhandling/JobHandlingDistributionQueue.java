@@ -110,7 +110,8 @@ public class JobHandlingDistributionQueue implements DistributionQueue {
         if (jobs.size() > 0) {
             Job firstItem = jobs.get(0);
             log.debug("first item in the queue is {}, retried {} times, state {}",
-                    new Object[]{ firstItem.getId(), firstItem.getRetryCount(), firstItem.getJobState() });            return firstItem;
+                    firstItem.getId(), firstItem.getRetryCount(), firstItem.getJobState());
+            return firstItem;
         }
         return null;
     }
@@ -123,7 +124,7 @@ public class JobHandlingDistributionQueue implements DistributionQueue {
             log.warn("item with id {} cannot be found", itemId);
         } else {
             log.debug("retrieved item with id {}, retried {} times, state {}",
-                    new Object[]{ job.getId(), job.getRetryCount(), job.getJobState() });
+                    job.getId(), job.getRetryCount(), job.getJobState());
         }
 
         return job;

@@ -79,8 +79,7 @@ public class DistributionPackageImporterServlet extends SlingAllMethodsServlet {
                 digestAlgorithm = matcher.group(1);
                 digestMessage = matcher.group(2);
             } else {
-                log.debug("Digest header {} not supported, it doesn't match with expected pattern {}",
-                          new Object[]{ digestHeader, digestHeaderRegex.pattern() });
+                log.debug("Digest header {} not supported, it doesn't match with expected pattern {}", digestHeader, digestHeaderRegex.pattern());
             }
         }
 
@@ -108,7 +107,7 @@ public class DistributionPackageImporterServlet extends SlingAllMethodsServlet {
                 String receivedDigestMessage = readDigestMessage((DigestInputStream) stream);
                 if (!digestMessage.equalsIgnoreCase(receivedDigestMessage)) {
                     log.error("Error during distribution import: received distribution package is corrupted, expected [{}] but received [{}]",
-                              new Object[]{ digestMessage, receivedDigestMessage });
+                              digestMessage, receivedDigestMessage);
                     Map<String, String> kv = new HashMap<String, String>();
                     kv.put("digestAlgorithm", digestAlgorithm);
                     kv.put("expected", digestMessage);

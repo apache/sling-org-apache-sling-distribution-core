@@ -154,7 +154,7 @@ class SimpleDistributionAgentQueueProcessor implements DistributionQueueProcesso
                 } catch (Throwable e) {
                     distributionLog.error("[{}] PACKAGE-FAIL {}: could not deliver package {} {}", queueName, requestId, distributionPackage.getId(), e.getMessage(), e);
 
-                    log.error("could not deliver package {} from queue {}", new Object[]{distributionPackage.getId(), queueName}, e);
+                    log.error("could not deliver package {} from queue {}", distributionPackage.getId(), queueName, e);
 
                     if (errorQueueStrategy != null && queueItemStatus.getAttempts() > retryAttempts) {
                         removeItemFromQueue = reEnqueuePackage(distributionPackage);
