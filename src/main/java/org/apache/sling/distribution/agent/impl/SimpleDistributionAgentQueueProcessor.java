@@ -145,17 +145,10 @@ class SimpleDistributionAgentQueueProcessor implements DistributionQueueProcesso
                             endTime - startTime, endTime - globalStartTime,
                             packageSize);
                 } catch (RecoverableDistributionException e) {
-                    distributionLog.error("[{}] PACKAGE-FAIL {}: could not deliver {}, {}", queueName, requestId, distributionPackage.getId(), e.getMessage());
+                    distributionLog.warn("[{}] PACKAGE-FAIL {}: could not deliver {}, {}", queueName, requestId, distributionPackage.getId(), e.getMessage());
                     distributionLog.debug("could not deliver package {}", distributionPackage.getId(), e);
-
-                    log.warn("could not deliver package {} due to {}, will retry", distributionPackage.getId(), e.getMessage());
-                    log.debug("Stacktrace: ", e);
-
                 } catch (Throwable e) {
                     distributionLog.error("[{}] PACKAGE-FAIL {}: could not deliver package {} {}", queueName, requestId, distributionPackage.getId(), e.getMessage(), e);
-
-                    log.error("could not deliver package {} from queue {}", new Object[]{distributionPackage.getId(), queueName}, e);
-
                     if (errorQueueStrategy != null && queueItemStatus.getAttempts() > retryAttempts) {
                         removeItemFromQueue = reEnqueuePackage(distributionPackage);
                         distributionEventFactory.generatePackageEvent(DistributionEventTopics.AGENT_PACKAGE_DROPPED,
