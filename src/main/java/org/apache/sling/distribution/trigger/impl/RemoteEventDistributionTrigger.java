@@ -121,15 +121,15 @@ public class RemoteEventDistributionTrigger implements DistributionTrigger {
             log.debug("complete {}", decoder.isCompleted());
             ByteBuffer buffer = ByteBuffer.allocate(1024);
             decoder.read(buffer);
-            log.debug("content {} received {},{}", new Object[]{buffer, decoder, ioctrl});
+            log.debug("content {} received {},{}", buffer, decoder, ioctrl);
 
             // TODO : currently it always triggers pull request on /, should this be configurable?
             DistributionRequest distributionRequest = new SimpleDistributionRequest(DistributionRequestType.PULL, "/");
             handler.handle(null, distributionRequest);
-            log.info("distribution request to agent {} sent ({} {})", new Object[]{
+            log.info("distribution request to agent {} sent ({} {})",
                     handler,
                     distributionRequest.getRequestType(),
-                    distributionRequest.getPaths()});
+                    distributionRequest.getPaths());
 
             super.onContentReceived(decoder, ioctrl);
         }

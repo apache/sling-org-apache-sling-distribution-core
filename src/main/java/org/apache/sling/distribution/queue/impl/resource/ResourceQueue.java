@@ -135,7 +135,7 @@ public class ResourceQueue implements DistributionQueue {
 
             List<DistributionQueueEntry> entries =  ResourceQueueUtils.getEntries(queueRoot, skip, limit);
 
-            log.debug("queue[{}] getEntries entries={}", new Object[] { queueName, entries.size() });
+            log.debug("queue[{}] getEntries entries={}", queueName, entries.size());
 
             return entries;
         } catch (LoginException e) {

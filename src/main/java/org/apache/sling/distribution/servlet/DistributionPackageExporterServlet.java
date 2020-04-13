@@ -121,7 +121,7 @@ public class DistributionPackageExporterServlet extends SlingAllMethodsServlet {
 
                     // everything ok
                     response.setStatus(200);
-                    log.debug("exported package {} was sent (and deleted={}), bytes written {}", new Object[]{packageId, delete, bytesCopied});
+                    log.debug("exported package {} was sent (and deleted={}), bytes written {}", packageId, delete, bytesCopied);
                 }
 
                 @Override
@@ -142,7 +142,7 @@ public class DistributionPackageExporterServlet extends SlingAllMethodsServlet {
 
             if (fetched.get() > 0) {
                 long end = System.currentTimeMillis();
-                log.info("Processed distribution export request in {} ms: : fetched {}", new Object[]{end - start, fetched});
+                log.info("Processed distribution export request in {} ms: : fetched {}", end - start, fetched);
             } else {
                 response.setStatus(204);
                 log.debug("nothing to fetch");
