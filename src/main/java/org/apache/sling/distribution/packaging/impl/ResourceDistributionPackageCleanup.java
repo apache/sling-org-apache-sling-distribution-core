@@ -71,7 +71,7 @@ public class ResourceDistributionPackageCleanup implements Runnable {
                 serviceResolver.commit();
             }
             log.debug("Cleaned up {}/{} {} packages",
-                    new Object[]{deleted, total, packageBuilder.getType()});
+                    deleted, total, packageBuilder.getType());
         } catch (LoginException e) {
             log.error("Failed to get distribution service resolver: {}", e.getMessage());
         } catch (DistributionException e) {
