@@ -59,13 +59,26 @@ public class PrivilegeDistributionRequestAuthorizationStrategyFactory implements
     @Property(label = "Jcr Privilege", description = "Jcr privilege to check for authorizing distribution requests. The privilege is checked for the calling user session.")
     private static final String JCR_PRIVILEGE = "jcrPrivilege";
 
+    /**
+     * privilege ADD request authorization strategy jcr privilege property
+     */
+    @Property(cardinality = 100, label = "Jcr Privilege Add", description = "Jcr privilege to check for authorizing ADD distribution requests. The privilege is checked for the calling user session.")
+    private static final String JCR_ADD_PRIVILEGE = "jcrAddPrivilege";
+
+    /**
+     * privilege DELETE request authorization strategy jcr privilege property
+     */
+    @Property(cardinality = 100, label = "Jcr Privilege Delete", description = "Jcr privilege to check for authorizing DELETE distribution requests. The privilege is checked for the calling user session.")
+    private static final String JCR_DELETE_PRIVILEGE = "jcrDeletePrivilege";
 
     private DistributionRequestAuthorizationStrategy authorizationStrategy;
 
     @Activate
     public void activate(BundleContext context, Map<String, Object> config) {
         String jcrPrivilege = PropertiesUtil.toString(config.get(JCR_PRIVILEGE), null);
-        authorizationStrategy = new PrivilegeDistributionRequestAuthorizationStrategy(jcrPrivilege);
+        String[] jcrAddPrivilege = PropertiesUtil.toStringArray(config.get(JCR_ADD_PRIVILEGE), null);
+        String[] jcrDeletePrivilege = PropertiesUtil.toStringArray(config.get(JCR_DELETE_PRIVILEGE), null);
+        authorizationStrategy = new PrivilegeDistributionRequestAuthorizationStrategy(jcrPrivilege, jcrAddPrivilege, jcrDeletePrivilege);
     }
 
     public void checkPermission(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest) throws DistributionException {
