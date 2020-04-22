@@ -39,18 +39,18 @@ public class PrivilegeDistributionRequestAuthorizationStrategy implements Distri
 
     private final String jcrPrivilege;
 
-    private final String[] jcrAddPrivileges;
+    private String[] additionalJcrPrivilegesForAdd;
 
-    private final String[] jcrDeletePrivileges;
+    private String[] additionalJcrPrivilegesForDelete;
 
-    public PrivilegeDistributionRequestAuthorizationStrategy(String jcrPrivilege, String[] jcrAddPrivileges, String[] jcrDeletePrivileges) {
-        if (jcrPrivilege == null || jcrAddPrivileges == null || jcrDeletePrivileges == null) {
+    public PrivilegeDistributionRequestAuthorizationStrategy(String jcrPrivilege, String[] additionalJcrPrivilegesForAdd, String[] additionalJcrPrivilegesForDelete) {
+        if (jcrPrivilege == null) {
             throw new IllegalArgumentException("Jcr Privilege is required");
         }
 
         this.jcrPrivilege = jcrPrivilege;
-        this.jcrAddPrivileges = jcrAddPrivileges;
-        this.jcrDeletePrivileges = jcrDeletePrivileges;
+        this.additionalJcrPrivilegesForAdd = additionalJcrPrivilegesForAdd;
+        this.additionalJcrPrivilegesForDelete = additionalJcrPrivilegesForDelete;
     }
 
     public void checkPermission(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest) throws DistributionException {
@@ -76,7 +76,8 @@ public class PrivilegeDistributionRequestAuthorizationStrategy implements Distri
     private void checkPermissionForAdd(Session session, String[] paths)
             throws RepositoryException, DistributionException {
         AccessControlManager acMgr = session.getAccessControlManager();
-        Privilege[] privileges = computePrivileges(acMgr, jcrAddPrivileges);
+        additionalJcrPrivilegesForAdd = additionalJcrPrivilegesForAdd.length > 0 ? additionalJcrPrivilegesForAdd : new String[] {Privilege.JCR_READ};
+        Privilege[] privileges = computePrivileges(acMgr, additionalJcrPrivilegesForAdd);
         for (String path : paths) {
             if (!acMgr.hasPrivileges(path, privileges)) {
                 throw new DistributionException("Not enough privileges");
@@ -88,7 +89,8 @@ public class PrivilegeDistributionRequestAuthorizationStrategy implements Distri
     private void checkPermissionForDelete(Session session, String[] paths)
             throws RepositoryException, DistributionException {
         AccessControlManager acMgr = session.getAccessControlManager();
-        Privilege[] privileges = computePrivileges(acMgr, jcrDeletePrivileges);
+        additionalJcrPrivilegesForDelete = additionalJcrPrivilegesForDelete.length > 0 ? additionalJcrPrivilegesForDelete : new String[] {Privilege.JCR_REMOVE_NODE};
+        Privilege[] privileges = computePrivileges(acMgr, additionalJcrPrivilegesForDelete);
         for (String path : paths) {
 
             String closestParentPath = getClosestParent(session, path);
@@ -117,6 +119,7 @@ public class PrivilegeDistributionRequestAuthorizationStrategy implements Distri
         for (String privilege : jcrPrivileges) {
             privileges.add(acMgr.privilegeFromName(privilege));
         }
+        privileges.add(acMgr.privilegeFromName(jcrPrivilege));
         return privileges.toArray(new Privilege[0]);
     }
 

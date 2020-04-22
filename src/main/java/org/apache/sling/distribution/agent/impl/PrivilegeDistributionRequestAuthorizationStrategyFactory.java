@@ -62,14 +62,14 @@ public class PrivilegeDistributionRequestAuthorizationStrategyFactory implements
     /**
      * privilege ADD request authorization strategy jcr privilege property
      */
-    @Property(cardinality = 100, label = "Jcr Privilege Add", description = "Jcr privilege to check for authorizing ADD distribution requests. The privilege is checked for the calling user session.")
-    private static final String JCR_ADD_PRIVILEGE = "jcrAddPrivilege";
+    @Property(cardinality = 100, label = "Jcr Privilege Add", description = "Additional Jcr privileges to check for authorizing ADD distribution requests. The privilege is checked for the calling user session.")
+    private static final String JCR_ADD_PRIVILEGE = "additionalJcrPrivilegesForAdd";
 
     /**
      * privilege DELETE request authorization strategy jcr privilege property
      */
-    @Property(cardinality = 100, label = "Jcr Privilege Delete", description = "Jcr privilege to check for authorizing DELETE distribution requests. The privilege is checked for the calling user session.")
-    private static final String JCR_DELETE_PRIVILEGE = "jcrDeletePrivilege";
+    @Property(cardinality = 100, label = "Jcr Privilege Delete", description = "Additional Jcr privileges to check for authorizing DELETE distribution requests. The privilege is checked for the calling user session.")
+    private static final String JCR_DELETE_PRIVILEGE = "additionalJcrPrivilegesForDelete";
 
     private DistributionRequestAuthorizationStrategy authorizationStrategy;
 
