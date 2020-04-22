@@ -37,8 +37,8 @@ import org.junit.Test;
 public class PrivilegeDistributionRequestAuthorizationStrategyTest {
 
     String jcrPrivilege = "foo";
-    String[] additionalJcrPrivilegesForAdd = {"addPermission"};
-    String[] additionalJcrPrivilegesForDelete = {"deletePermission"};
+    String[] additionalJcrPrivilegesForAdd;
+    String[] additionalJcrPrivilegesForDelete;
 
     @Test(expected = DistributionException.class)
     public void testCheckPermissionWithoutSession() throws Exception {
@@ -60,7 +60,6 @@ public class PrivilegeDistributionRequestAuthorizationStrategyTest {
 
     @Test(expected = DistributionException.class)
     public void testNoPermissionOnAdd() throws Exception {
-        additionalJcrPrivilegesForAdd = new String[0];
         PrivilegeDistributionRequestAuthorizationStrategy strategy = new PrivilegeDistributionRequestAuthorizationStrategy(jcrPrivilege, additionalJcrPrivilegesForAdd, additionalJcrPrivilegesForDelete);
         DistributionRequest distributionRequest = mock(DistributionRequest.class);
         ResourceResolver resourceResolver = mock(ResourceResolver.class);
@@ -84,7 +83,6 @@ public class PrivilegeDistributionRequestAuthorizationStrategyTest {
 
     @Test
     public void testPermissionOnAdd() throws Exception {
-        additionalJcrPrivilegesForAdd = new String[0];
         PrivilegeDistributionRequestAuthorizationStrategy strategy = new PrivilegeDistributionRequestAuthorizationStrategy(jcrPrivilege, additionalJcrPrivilegesForAdd, additionalJcrPrivilegesForDelete);
         DistributionRequest distributionRequest = mock(DistributionRequest.class);
         ResourceResolver resourceResolver = mock(ResourceResolver.class);
@@ -109,6 +107,7 @@ public class PrivilegeDistributionRequestAuthorizationStrategyTest {
     
     @Test
     public void testAdditionalPermissionsOnAdd() throws Exception {
+        additionalJcrPrivilegesForAdd = new String[] {"addPermission"};
         PrivilegeDistributionRequestAuthorizationStrategy strategy = new PrivilegeDistributionRequestAuthorizationStrategy(jcrPrivilege, additionalJcrPrivilegesForAdd, additionalJcrPrivilegesForDelete);
         DistributionRequest distributionRequest = mock(DistributionRequest.class);
         ResourceResolver resourceResolver = mock(ResourceResolver.class);
@@ -135,7 +134,6 @@ public class PrivilegeDistributionRequestAuthorizationStrategyTest {
 
     @Test(expected = DistributionException.class)
     public void testNoPermissionOnDelete() throws Exception {
-        additionalJcrPrivilegesForDelete = new String[0];
         PrivilegeDistributionRequestAuthorizationStrategy strategy = new PrivilegeDistributionRequestAuthorizationStrategy(jcrPrivilege, additionalJcrPrivilegesForAdd, additionalJcrPrivilegesForDelete);
         DistributionRequest distributionRequest = mock(DistributionRequest.class);
         ResourceResolver resourceResolver = mock(ResourceResolver.class);
@@ -160,7 +158,6 @@ public class PrivilegeDistributionRequestAuthorizationStrategyTest {
 
     @Test
     public void testPermissionOnDelete() throws Exception {
-        additionalJcrPrivilegesForDelete = new String[0];
         PrivilegeDistributionRequestAuthorizationStrategy strategy = new PrivilegeDistributionRequestAuthorizationStrategy(jcrPrivilege, additionalJcrPrivilegesForAdd, additionalJcrPrivilegesForDelete);
         DistributionRequest distributionRequest = mock(DistributionRequest.class);
         ResourceResolver resourceResolver = mock(ResourceResolver.class);
@@ -186,6 +183,7 @@ public class PrivilegeDistributionRequestAuthorizationStrategyTest {
     
     @Test
     public void testAdditionalPermissionsOnDelete() throws Exception {
+        additionalJcrPrivilegesForDelete = new String[] {"deletePermission"};
         PrivilegeDistributionRequestAuthorizationStrategy strategy = new PrivilegeDistributionRequestAuthorizationStrategy(jcrPrivilege, additionalJcrPrivilegesForAdd, additionalJcrPrivilegesForDelete);
         DistributionRequest distributionRequest = mock(DistributionRequest.class);
         ResourceResolver resourceResolver = mock(ResourceResolver.class);
