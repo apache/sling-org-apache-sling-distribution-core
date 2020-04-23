@@ -62,23 +62,23 @@ public class PrivilegeDistributionRequestAuthorizationStrategyFactory implements
     /**
      * privilege ADD request authorization strategy jcr privilege property
      */
-    @Property(cardinality = 100, label = "Jcr Privilege Add", description = "Additional Jcr privileges to check for authorizing ADD distribution requests. The privilege is checked for the calling user session.")
-    private static final String JCR_ADD_PRIVILEGE = "additionalJcrPrivilegesForAdd";
+    @Property(cardinality = 100, label = "Additional Jcr Privileges for Add", description = "Additional Jcr privileges to check for authorizing ADD distribution requests. The privilege is checked for the calling user session.")
+    private static final String JCR_ADD_PRIVILEGES = "additionalJcrPrivilegesForAdd";
 
     /**
      * privilege DELETE request authorization strategy jcr privilege property
      */
-    @Property(cardinality = 100, label = "Jcr Privilege Delete", description = "Additional Jcr privileges to check for authorizing DELETE distribution requests. The privilege is checked for the calling user session.")
-    private static final String JCR_DELETE_PRIVILEGE = "additionalJcrPrivilegesForDelete";
+    @Property(cardinality = 100, label = "Additional Jcr Privileges for Delete", description = "Additional Jcr privileges to check for authorizing DELETE distribution requests. The privilege is checked for the calling user session.")
+    private static final String JCR_DELETE_PRIVILEGES = "additionalJcrPrivilegesForDelete";
 
     private DistributionRequestAuthorizationStrategy authorizationStrategy;
 
     @Activate
     public void activate(BundleContext context, Map<String, Object> config) {
         String jcrPrivilege = PropertiesUtil.toString(config.get(JCR_PRIVILEGE), null);
-        String[] jcrAddPrivilege = PropertiesUtil.toStringArray(config.get(JCR_ADD_PRIVILEGE), null);
-        String[] jcrDeletePrivilege = PropertiesUtil.toStringArray(config.get(JCR_DELETE_PRIVILEGE), null);
-        authorizationStrategy = new PrivilegeDistributionRequestAuthorizationStrategy(jcrPrivilege, jcrAddPrivilege, jcrDeletePrivilege);
+        String[] jcrAddPrivileges = PropertiesUtil.toStringArray(config.get(JCR_ADD_PRIVILEGES), null);
+        String[] jcrDeletePrivileges = PropertiesUtil.toStringArray(config.get(JCR_DELETE_PRIVILEGES), null);
+        authorizationStrategy = new PrivilegeDistributionRequestAuthorizationStrategy(jcrPrivilege, jcrAddPrivileges, jcrDeletePrivileges);
     }
 
     public void checkPermission(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest) throws DistributionException {

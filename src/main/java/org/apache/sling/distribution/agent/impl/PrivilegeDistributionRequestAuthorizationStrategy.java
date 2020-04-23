@@ -77,7 +77,7 @@ public class PrivilegeDistributionRequestAuthorizationStrategy implements Distri
             throws RepositoryException, DistributionException {
         AccessControlManager acMgr = session.getAccessControlManager();
         additionalJcrPrivilegesForAdd = additionalJcrPrivilegesForAdd != null ? additionalJcrPrivilegesForAdd : new String[] {Privilege.JCR_READ};
-        Privilege[] privileges = computePrivileges(acMgr, additionalJcrPrivilegesForAdd);
+        Privilege[] privileges = computePrivileges(acMgr, additionalJcrPrivilegesForAdd, jcrPrivilege);
         for (String path : paths) {
             if (!acMgr.hasPrivileges(path, privileges)) {
                 throw new DistributionException("Not enough privileges");
@@ -90,7 +90,7 @@ public class PrivilegeDistributionRequestAuthorizationStrategy implements Distri
             throws RepositoryException, DistributionException {
         AccessControlManager acMgr = session.getAccessControlManager();
         additionalJcrPrivilegesForDelete = additionalJcrPrivilegesForDelete != null ? additionalJcrPrivilegesForDelete : new String[] {Privilege.JCR_REMOVE_NODE};
-        Privilege[] privileges = computePrivileges(acMgr, additionalJcrPrivilegesForDelete);
+        Privilege[] privileges = computePrivileges(acMgr, additionalJcrPrivilegesForDelete, jcrPrivilege);
         for (String path : paths) {
 
             String closestParentPath = getClosestParent(session, path);
@@ -113,13 +113,13 @@ public class PrivilegeDistributionRequestAuthorizationStrategy implements Distri
         return null;
     }
 
-    private Privilege[] computePrivileges(AccessControlManager acMgr, String[] jcrPrivileges)
+    private static Privilege[] computePrivileges(AccessControlManager acMgr, String[] jcrPrivileges, String jcrPrivilege)
             throws RepositoryException {
         ArrayList<Privilege> privileges = new ArrayList<Privilege>();
+        privileges.add(acMgr.privilegeFromName(jcrPrivilege));
         for (String privilege : jcrPrivileges) {
             privileges.add(acMgr.privilegeFromName(privilege));
         }
-        privileges.add(acMgr.privilegeFromName(jcrPrivilege));
         return privileges.toArray(new Privilege[0]);
     }
 
