@@ -19,6 +19,7 @@
 package org.apache.sling.distribution.agent.impl;
 
 import java.util.Map;
+
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.ConfigurationPolicy;
@@ -62,13 +63,15 @@ public class PrivilegeDistributionRequestAuthorizationStrategyFactory implements
     /**
      * privilege ADD request authorization strategy jcr privilege property
      */
-    @Property(cardinality = 100, label = "Additional Jcr Privileges for Add", description = "Additional Jcr privileges to check for authorizing ADD distribution requests. The privilege is checked for the calling user session.")
+    @Property(cardinality = 100, label = "Additional Jcr Privileges for Add", description = "Additional Jcr privileges to check for authorizing ADD distribution requests. " +
+            "The privilege is checked for the calling user session.", value = "jcr:read")
     private static final String JCR_ADD_PRIVILEGES = "additionalJcrPrivilegesForAdd";
 
     /**
      * privilege DELETE request authorization strategy jcr privilege property
      */
-    @Property(cardinality = 100, label = "Additional Jcr Privileges for Delete", description = "Additional Jcr privileges to check for authorizing DELETE distribution requests. The privilege is checked for the calling user session.")
+    @Property(cardinality = 100, label = "Additional Jcr Privileges for Delete", description = "Additional Jcr privileges to check for authorizing DELETE distribution requests. " +
+             "The privilege is checked for the calling user session.", value = "jcr:removeNode")
     private static final String JCR_DELETE_PRIVILEGES = "additionalJcrPrivilegesForDelete";
 
     private DistributionRequestAuthorizationStrategy authorizationStrategy;

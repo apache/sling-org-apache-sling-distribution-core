@@ -39,13 +39,13 @@ public class PrivilegeDistributionRequestAuthorizationStrategy implements Distri
 
     private final String jcrPrivilege;
 
-    private String[] additionalJcrPrivilegesForAdd;
+    private final String[] additionalJcrPrivilegesForAdd;
 
-    private String[] additionalJcrPrivilegesForDelete;
+    private final String[] additionalJcrPrivilegesForDelete;
 
     public PrivilegeDistributionRequestAuthorizationStrategy(String jcrPrivilege, String[] additionalJcrPrivilegesForAdd, String[] additionalJcrPrivilegesForDelete) {
-        if (jcrPrivilege == null) {
-            throw new IllegalArgumentException("Jcr Privilege is required");
+        if (jcrPrivilege == null || additionalJcrPrivilegesForAdd == null || additionalJcrPrivilegesForDelete == null) {
+            throw new IllegalArgumentException("Missing required privilege(s).");
         }
 
         this.jcrPrivilege = jcrPrivilege;
@@ -76,7 +76,6 @@ public class PrivilegeDistributionRequestAuthorizationStrategy implements Distri
     private void checkPermissionForAdd(Session session, String[] paths)
             throws RepositoryException, DistributionException {
         AccessControlManager acMgr = session.getAccessControlManager();
-        additionalJcrPrivilegesForAdd = additionalJcrPrivilegesForAdd != null ? additionalJcrPrivilegesForAdd : new String[] {Privilege.JCR_READ};
         Privilege[] privileges = computePrivileges(acMgr, jcrPrivilege, additionalJcrPrivilegesForAdd);
         for (String path : paths) {
             if (!acMgr.hasPrivileges(path, privileges)) {
@@ -89,7 +88,6 @@ public class PrivilegeDistributionRequestAuthorizationStrategy implements Distri
     private void checkPermissionForDelete(Session session, String[] paths)
             throws RepositoryException, DistributionException {
         AccessControlManager acMgr = session.getAccessControlManager();
-        additionalJcrPrivilegesForDelete = additionalJcrPrivilegesForDelete != null ? additionalJcrPrivilegesForDelete : new String[] {Privilege.JCR_REMOVE_NODE};
         Privilege[] privileges = computePrivileges(acMgr, jcrPrivilege, additionalJcrPrivilegesForDelete);
         for (String path : paths) {
 
