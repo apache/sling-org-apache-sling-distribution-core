@@ -79,8 +79,8 @@ public class PrivilegeDistributionRequestAuthorizationStrategyFactory implements
     @Activate
     public void activate(BundleContext context, Map<String, Object> config) {
         String jcrPrivilege = PropertiesUtil.toString(config.get(JCR_PRIVILEGE), null);
-        String[] jcrAddPrivileges = PropertiesUtil.toStringArray(config.get(JCR_ADD_PRIVILEGES), null);
-        String[] jcrDeletePrivileges = PropertiesUtil.toStringArray(config.get(JCR_DELETE_PRIVILEGES), null);
+        String[] jcrAddPrivileges = PropertiesUtil.toStringArray(config.get(JCR_ADD_PRIVILEGES));
+        String[] jcrDeletePrivileges = PropertiesUtil.toStringArray(config.get(JCR_DELETE_PRIVILEGES));
         authorizationStrategy = new PrivilegeDistributionRequestAuthorizationStrategy(jcrPrivilege, jcrAddPrivileges, jcrDeletePrivileges);
     }
 
