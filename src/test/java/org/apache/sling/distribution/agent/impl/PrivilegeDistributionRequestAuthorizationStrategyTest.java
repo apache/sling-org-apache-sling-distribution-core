@@ -97,7 +97,7 @@ public class PrivilegeDistributionRequestAuthorizationStrategyTest {
     @Test
     public void testDefaultPermissionOnAdd() throws Exception {
         String jcrPrivilege = "somePermission";
-        String DEFAULT_READ_PRIVELEGE = "jcr:read";
+        String DEFAULT_READ_PRIVILEGE = "jcr:read";
         DistributionRequestAuthorizationStrategy strategy = context.registerInjectActivateService(new PrivilegeDistributionRequestAuthorizationStrategyFactory(),
                 JCR_PRIVILEGE_PROP, jcrPrivilege);
         DistributionRequest distributionRequest = mock(DistributionRequest.class);
@@ -107,7 +107,7 @@ public class PrivilegeDistributionRequestAuthorizationStrategyTest {
         Privilege privilege = mock(Privilege.class);
         when(acm.privilegeFromName(jcrPrivilege)).thenReturn(privilege);
         Privilege jcrReadPrivilege = mock(Privilege.class);
-        when(acm.privilegeFromName(DEFAULT_READ_PRIVELEGE)).thenReturn(jcrReadPrivilege);
+        when(acm.privilegeFromName(DEFAULT_READ_PRIVILEGE)).thenReturn(jcrReadPrivilege);
 
         when(session.getAccessControlManager()).thenReturn(acm);
         when(resourceResolver.adaptTo(Session.class)).thenReturn(session);
@@ -177,7 +177,7 @@ public class PrivilegeDistributionRequestAuthorizationStrategyTest {
     @Test
     public void testDefaultPermissionOnDelete() throws Exception {
         String jcrPrivilege = "somePermission";
-        String DEFAULT_DELETE_PRIVELEGE = "jcr:removeNode";
+        String DEFAULT_DELETE_PRIVILEGE = "jcr:removeNode";
         DistributionRequestAuthorizationStrategy strategy = context.registerInjectActivateService(new PrivilegeDistributionRequestAuthorizationStrategyFactory(),
                 JCR_PRIVILEGE_PROP, jcrPrivilege);
         DistributionRequest distributionRequest = mock(DistributionRequest.class);
@@ -187,7 +187,7 @@ public class PrivilegeDistributionRequestAuthorizationStrategyTest {
         Privilege privilege = mock(Privilege.class);
         when(acm.privilegeFromName(jcrPrivilege)).thenReturn(privilege);
         Privilege jcrDeletePrivilege = mock(Privilege.class);
-        when(acm.privilegeFromName(DEFAULT_DELETE_PRIVELEGE)).thenReturn(jcrDeletePrivilege);
+        when(acm.privilegeFromName(DEFAULT_DELETE_PRIVILEGE)).thenReturn(jcrDeletePrivilege);
 
         when(session.getAccessControlManager()).thenReturn(acm);
         when(resourceResolver.adaptTo(Session.class)).thenReturn(session);
