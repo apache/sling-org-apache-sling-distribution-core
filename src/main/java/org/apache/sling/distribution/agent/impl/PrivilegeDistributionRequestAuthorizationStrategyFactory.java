@@ -19,6 +19,7 @@
 package org.apache.sling.distribution.agent.impl;
 
 import java.util.Map;
+
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.ConfigurationPolicy;
@@ -59,13 +60,28 @@ public class PrivilegeDistributionRequestAuthorizationStrategyFactory implements
     @Property(label = "Jcr Privilege", description = "Jcr privilege to check for authorizing distribution requests. The privilege is checked for the calling user session.")
     private static final String JCR_PRIVILEGE = "jcrPrivilege";
 
+    /**
+     * privilege ADD request authorization strategy jcr privilege property
+     */
+    @Property(cardinality = 100, label = "Additional Jcr Privileges for Add", description = "Additional Jcr privileges to check for authorizing ADD distribution requests. " +
+            "The privilege is checked for the calling user session.", value = "jcr:read")
+    private static final String JCR_ADD_PRIVILEGES = "additionalJcrPrivilegesForAdd";
+
+    /**
+     * privilege DELETE request authorization strategy jcr privilege property
+     */
+    @Property(cardinality = 100, label = "Additional Jcr Privileges for Delete", description = "Additional Jcr privileges to check for authorizing DELETE distribution requests. " +
+             "The privilege is checked for the calling user session.", value = "jcr:removeNode")
+    private static final String JCR_DELETE_PRIVILEGES = "additionalJcrPrivilegesForDelete";
 
     private DistributionRequestAuthorizationStrategy authorizationStrategy;
 
     @Activate
     public void activate(BundleContext context, Map<String, Object> config) {
         String jcrPrivilege = PropertiesUtil.toString(config.get(JCR_PRIVILEGE), null);
-        authorizationStrategy = new PrivilegeDistributionRequestAuthorizationStrategy(jcrPrivilege);
+        String[] jcrAddPrivileges = PropertiesUtil.toStringArray(config.get(JCR_ADD_PRIVILEGES));
+        String[] jcrDeletePrivileges = PropertiesUtil.toStringArray(config.get(JCR_DELETE_PRIVILEGES));
+        authorizationStrategy = new PrivilegeDistributionRequestAuthorizationStrategy(jcrPrivilege, jcrAddPrivileges, jcrDeletePrivileges);
     }
 
     public void checkPermission(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest) throws DistributionException {

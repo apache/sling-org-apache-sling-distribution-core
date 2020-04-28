@@ -29,6 +29,8 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.DistributionRequestType;
 import org.apache.sling.distribution.common.DistributionException;
+import org.apache.sling.testing.mock.osgi.junit.OsgiContext;
+import org.junit.Rule;
 import org.junit.Test;
 
 /**
@@ -36,10 +38,20 @@ import org.junit.Test;
  */
 public class PrivilegeDistributionRequestAuthorizationStrategyTest {
 
+    @Rule
+    public final OsgiContext context = new OsgiContext();
+
+    final String JCR_PRIVILEGE_PROP = "jcrPrivilege";
+
+    final String ADDITIONAL_JCR_PRIVILEGES_FOR_ADD_PROP = "additionalJcrPrivilegesForAdd";
+
+    final String ADDITIONAL_JCR_PRIVILEGES_FOR_DELETE_PROP = "additionalJcrPrivilegesForDelete";
+
     @Test(expected = DistributionException.class)
     public void testCheckPermissionWithoutSession() throws Exception {
         String jcrPrivilege = "foo";
-        PrivilegeDistributionRequestAuthorizationStrategy strategy = new PrivilegeDistributionRequestAuthorizationStrategy(jcrPrivilege);
+        DistributionRequestAuthorizationStrategy strategy = context.registerInjectActivateService(new PrivilegeDistributionRequestAuthorizationStrategyFactory(),
+                JCR_PRIVILEGE_PROP, jcrPrivilege);
         DistributionRequest distributionRequest = mock(DistributionRequest.class);
         ResourceResolver resourceResolver = mock(ResourceResolver.class);
         strategy.checkPermission(resourceResolver, distributionRequest);
@@ -48,7 +60,8 @@ public class PrivilegeDistributionRequestAuthorizationStrategyTest {
     @Test
     public void testCheckPermissionWithSession() throws Exception {
         String jcrPrivilege = "foo";
-        PrivilegeDistributionRequestAuthorizationStrategy strategy = new PrivilegeDistributionRequestAuthorizationStrategy(jcrPrivilege);
+        DistributionRequestAuthorizationStrategy strategy = context.registerInjectActivateService(new PrivilegeDistributionRequestAuthorizationStrategyFactory(),
+                JCR_PRIVILEGE_PROP, jcrPrivilege);
         DistributionRequest distributionRequest = mock(DistributionRequest.class);
         ResourceResolver resourceResolver = mock(ResourceResolver.class);
         Session session = mock(Session.class);
@@ -59,7 +72,8 @@ public class PrivilegeDistributionRequestAuthorizationStrategyTest {
     @Test(expected = DistributionException.class)
     public void testNoPermissionOnAdd() throws Exception {
         String jcrPrivilege = "somePermission";
-        PrivilegeDistributionRequestAuthorizationStrategy strategy = new PrivilegeDistributionRequestAuthorizationStrategy(jcrPrivilege);
+        DistributionRequestAuthorizationStrategy strategy = context.registerInjectActivateService(new PrivilegeDistributionRequestAuthorizationStrategyFactory(),
+                JCR_PRIVILEGE_PROP, jcrPrivilege);
         DistributionRequest distributionRequest = mock(DistributionRequest.class);
         ResourceResolver resourceResolver = mock(ResourceResolver.class);
         Session session = mock(Session.class);
@@ -81,9 +95,11 @@ public class PrivilegeDistributionRequestAuthorizationStrategyTest {
     }
 
     @Test
-    public void testPermissionOnAdd() throws Exception {
+    public void testDefaultPermissionOnAdd() throws Exception {
         String jcrPrivilege = "somePermission";
-        PrivilegeDistributionRequestAuthorizationStrategy strategy = new PrivilegeDistributionRequestAuthorizationStrategy(jcrPrivilege);
+        String DEFAULT_READ_PRIVILEGE = "jcr:read";
+        DistributionRequestAuthorizationStrategy strategy = context.registerInjectActivateService(new PrivilegeDistributionRequestAuthorizationStrategyFactory(),
+                JCR_PRIVILEGE_PROP, jcrPrivilege);
         DistributionRequest distributionRequest = mock(DistributionRequest.class);
         ResourceResolver resourceResolver = mock(ResourceResolver.class);
         Session session = mock(Session.class);
@@ -91,7 +107,7 @@ public class PrivilegeDistributionRequestAuthorizationStrategyTest {
         Privilege privilege = mock(Privilege.class);
         when(acm.privilegeFromName(jcrPrivilege)).thenReturn(privilege);
         Privilege jcrReadPrivilege = mock(Privilege.class);
-        when(acm.privilegeFromName(Privilege.JCR_READ)).thenReturn(jcrReadPrivilege);
+        when(acm.privilegeFromName(DEFAULT_READ_PRIVILEGE)).thenReturn(jcrReadPrivilege);
 
         when(session.getAccessControlManager()).thenReturn(acm);
         when(resourceResolver.adaptTo(Session.class)).thenReturn(session);
@@ -104,11 +120,39 @@ public class PrivilegeDistributionRequestAuthorizationStrategyTest {
         when(distributionRequest.getRequestType()).thenReturn(DistributionRequestType.ADD);
         strategy.checkPermission(resourceResolver, distributionRequest);
     }
+    
+    @Test
+    public void testAdditionalPermissionsOnAdd() throws Exception {
+        String jcrPrivilege = "somePermission";
+        String[] additionalJcrPrivilegesForAdd = new String[]{"addPermission"};
+        DistributionRequestAuthorizationStrategy strategy = context.registerInjectActivateService(new PrivilegeDistributionRequestAuthorizationStrategyFactory(),
+                JCR_PRIVILEGE_PROP, jcrPrivilege, ADDITIONAL_JCR_PRIVILEGES_FOR_ADD_PROP, additionalJcrPrivilegesForAdd);
+        DistributionRequest distributionRequest = mock(DistributionRequest.class);
+        ResourceResolver resourceResolver = mock(ResourceResolver.class);
+        Session session = mock(Session.class);
+        AccessControlManager acm = mock(AccessControlManager.class);
+        Privilege privilege = mock(Privilege.class);
+        when(acm.privilegeFromName(jcrPrivilege)).thenReturn(privilege);
+        Privilege additionalPrivilegeForAdd = mock(Privilege.class);
+        when(acm.privilegeFromName(additionalJcrPrivilegesForAdd[0])).thenReturn(additionalPrivilegeForAdd);
+
+        when(session.getAccessControlManager()).thenReturn(acm);
+        when(resourceResolver.adaptTo(Session.class)).thenReturn(session);
+        String[] paths = new String[]{"/foo"};
+        for (String path : paths) {
+            when(acm.hasPrivileges(path, new Privilege[]{privilege, additionalPrivilegeForAdd})).thenReturn(true);
+        }
+        when(distributionRequest.getPaths()).thenReturn(paths);
+
+        when(distributionRequest.getRequestType()).thenReturn(DistributionRequestType.ADD);
+        strategy.checkPermission(resourceResolver, distributionRequest);
+    }
 
     @Test(expected = DistributionException.class)
     public void testNoPermissionOnDelete() throws Exception {
         String jcrPrivilege = "somePermission";
-        PrivilegeDistributionRequestAuthorizationStrategy strategy = new PrivilegeDistributionRequestAuthorizationStrategy(jcrPrivilege);
+        DistributionRequestAuthorizationStrategy strategy = context.registerInjectActivateService(new PrivilegeDistributionRequestAuthorizationStrategyFactory(),
+                JCR_PRIVILEGE_PROP, jcrPrivilege);
         DistributionRequest distributionRequest = mock(DistributionRequest.class);
         ResourceResolver resourceResolver = mock(ResourceResolver.class);
         Session session = mock(Session.class);
@@ -131,23 +175,53 @@ public class PrivilegeDistributionRequestAuthorizationStrategyTest {
     }
 
     @Test
-    public void testPermissionOnDelete() throws Exception {
+    public void testDefaultPermissionOnDelete() throws Exception {
         String jcrPrivilege = "somePermission";
-        PrivilegeDistributionRequestAuthorizationStrategy strategy = new PrivilegeDistributionRequestAuthorizationStrategy(jcrPrivilege);
+        String DEFAULT_DELETE_PRIVILEGE = "jcr:removeNode";
+        DistributionRequestAuthorizationStrategy strategy = context.registerInjectActivateService(new PrivilegeDistributionRequestAuthorizationStrategyFactory(),
+                JCR_PRIVILEGE_PROP, jcrPrivilege);
         DistributionRequest distributionRequest = mock(DistributionRequest.class);
         ResourceResolver resourceResolver = mock(ResourceResolver.class);
         Session session = mock(Session.class);
         AccessControlManager acm = mock(AccessControlManager.class);
         Privilege privilege = mock(Privilege.class);
         when(acm.privilegeFromName(jcrPrivilege)).thenReturn(privilege);
-        Privilege jcrReadPrivilege = mock(Privilege.class);
-        when(acm.privilegeFromName(Privilege.JCR_REMOVE_NODE)).thenReturn(jcrReadPrivilege);
+        Privilege jcrDeletePrivilege = mock(Privilege.class);
+        when(acm.privilegeFromName(DEFAULT_DELETE_PRIVILEGE)).thenReturn(jcrDeletePrivilege);
 
         when(session.getAccessControlManager()).thenReturn(acm);
         when(resourceResolver.adaptTo(Session.class)).thenReturn(session);
         String[] paths = new String[]{"/foo"};
         for (String path : paths) {
-            when(acm.hasPrivileges(path, new Privilege[]{privilege, jcrReadPrivilege})).thenReturn(true);
+            when(acm.hasPrivileges(path, new Privilege[]{privilege, jcrDeletePrivilege})).thenReturn(true);
+            when(session.nodeExists(path)).thenReturn(true);
+        }
+        when(distributionRequest.getPaths()).thenReturn(paths);
+
+        when(distributionRequest.getRequestType()).thenReturn(DistributionRequestType.DELETE);
+        strategy.checkPermission(resourceResolver, distributionRequest);
+    }
+    
+    @Test
+    public void testAdditionalPermissionsOnDelete() throws Exception {
+        String jcrPrivilege = "somePermission";
+        String[] additionalJcrPrivilegesForDelete = new String[]{"deletePermission"};
+        DistributionRequestAuthorizationStrategy strategy = context.registerInjectActivateService(new PrivilegeDistributionRequestAuthorizationStrategyFactory(),
+                JCR_PRIVILEGE_PROP, jcrPrivilege, ADDITIONAL_JCR_PRIVILEGES_FOR_DELETE_PROP, additionalJcrPrivilegesForDelete);
+        DistributionRequest distributionRequest = mock(DistributionRequest.class);
+        ResourceResolver resourceResolver = mock(ResourceResolver.class);
+        Session session = mock(Session.class);
+        AccessControlManager acm = mock(AccessControlManager.class);
+        Privilege privilege = mock(Privilege.class);
+        when(acm.privilegeFromName(jcrPrivilege)).thenReturn(privilege);
+        Privilege additionalPrivilegeForDelete = mock(Privilege.class);
+        when(acm.privilegeFromName(additionalJcrPrivilegesForDelete[0])).thenReturn(additionalPrivilegeForDelete);
+
+        when(session.getAccessControlManager()).thenReturn(acm);
+        when(resourceResolver.adaptTo(Session.class)).thenReturn(session);
+        String[] paths = new String[]{"/foo"};
+        for (String path : paths) {
+            when(acm.hasPrivileges(path, new Privilege[]{privilege, additionalPrivilegeForDelete})).thenReturn(true);
             when(session.nodeExists(path)).thenReturn(true);
         }
         when(distributionRequest.getPaths()).thenReturn(paths);
