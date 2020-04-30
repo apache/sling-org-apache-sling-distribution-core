@@ -19,6 +19,8 @@
 package org.apache.sling.distribution.agent.impl;
 
 import java.util.Calendar;
+import java.util.Optional;
+
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequestType;
 import org.apache.sling.distribution.common.DistributionException;
@@ -110,7 +112,7 @@ class SimpleDistributionAgentQueueProcessor implements DistributionQueueProcesso
         DistributionQueueItem queueItem = queueEntry.getItem();
         DistributionQueueItemStatus queueItemStatus = queueEntry.getStatus();
         
-        final Calendar queueItemCreationTime = queueItemStatus.getEntered();
+        final Optional<Calendar> queueItemCreationTime = Optional.of(queueItemStatus.getEntered());
         try {
 
             String callingUser = queueItem.get(DistributionPackageUtils.PACKAGE_INFO_PROPERTY_REQUEST_USER, String.class);

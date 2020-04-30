@@ -18,14 +18,21 @@
  */
 package org.apache.sling.distribution.agent.impl;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.DistributionRequestState;
 import org.apache.sling.distribution.DistributionRequestType;
 import org.apache.sling.distribution.DistributionResponse;
-import org.apache.sling.distribution.agent.spi.DistributionAgent;
 import org.apache.sling.distribution.agent.DistributionAgentState;
+import org.apache.sling.distribution.agent.spi.DistributionAgent;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.component.impl.DistributionComponentKind;
 import org.apache.sling.distribution.component.impl.SettingsUtils;
@@ -33,28 +40,22 @@ import org.apache.sling.distribution.event.DistributionEventTopics;
 import org.apache.sling.distribution.event.impl.DistributionEventFactory;
 import org.apache.sling.distribution.impl.CompositeDistributionResponse;
 import org.apache.sling.distribution.impl.SimpleDistributionResponse;
-import org.apache.sling.distribution.log.spi.DistributionLog;
 import org.apache.sling.distribution.log.impl.DefaultDistributionLog;
+import org.apache.sling.distribution.log.spi.DistributionLog;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageExporter;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageProcessor;
-import org.apache.sling.distribution.queue.spi.DistributionQueue;
-import org.apache.sling.distribution.queue.impl.DistributionQueueProcessor;
-import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
 import org.apache.sling.distribution.queue.DistributionQueueState;
 import org.apache.sling.distribution.queue.impl.DistributionQueueDispatchingStrategy;
+import org.apache.sling.distribution.queue.impl.DistributionQueueProcessor;
+import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
 import org.apache.sling.distribution.queue.impl.SimpleAgentDistributionQueue;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.trigger.DistributionTrigger;
 import org.apache.sling.distribution.util.impl.DistributionUtils;
 import org.apache.sling.jcr.api.SlingRepository;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Basic implementation of a {@link DistributionAgent}
  */
@@ -355,8 +356,8 @@ public class SimpleDistributionAgent implements DistributionAgent {
 
     private void generatePackageEvent(String topic, DistributionPackage... distributionPackages) {
         for (DistributionPackage distributionPackage : distributionPackages) {
-            distributionEventFactory.generatePackageEvent(topic, DistributionComponentKind.AGENT, name, distributionPackage.getInfo(),
-                null);
+            distributionEventFactory.generatePackageEvent(topic, DistributionComponentKind.AGENT, name,
+                distributionPackage.getInfo(), Optional.empty());
         }
     }
 

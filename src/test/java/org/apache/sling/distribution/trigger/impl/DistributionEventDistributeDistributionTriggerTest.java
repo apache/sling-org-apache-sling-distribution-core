@@ -37,6 +37,7 @@ import static org.junit.Assert.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -98,7 +99,7 @@ public class DistributionEventDistributeDistributionTriggerTest {
             public void handle(ResourceResolver resourceResolver, DistributionRequest request) {
                 // we simple fire an event, to cause the loop
                 eventFactory.generatePackageEvent(DistributionEventTopics.AGENT_PACKAGE_DISTRIBUTED,
-                        DistributionComponentKind.AGENT, "test", info, null);
+                        DistributionComponentKind.AGENT, "test", info, Optional.empty());
                 handled.addAndGet(1);
             }
         };
@@ -108,7 +109,7 @@ public class DistributionEventDistributeDistributionTriggerTest {
         Thread testExecution = new Thread() {
             @Override public void run() {
                 eventFactory.generatePackageEvent(DistributionEventTopics.AGENT_PACKAGE_DISTRIBUTED, DistributionComponentKind.AGENT,
-                        "origin", info, null);
+                        "origin", info, Optional.empty());
             }
         };
 
