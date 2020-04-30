@@ -21,7 +21,6 @@ package org.apache.sling.distribution.agent.impl;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -129,7 +128,7 @@ class QueueingDistributionPackageProcessor implements DistributionPackageProcess
 
             distributionEventFactory.generatePackageEvent(DistributionEventTopics.AGENT_PACKAGE_QUEUED,
                     DistributionComponentKind.AGENT, agentName, distributionPackage.getInfo(),
-                    Optional.empty());
+                    null);
         } catch (DistributionException e) {
             log.error("an error happened during dispatching items to the queue(s)", e);
             distributionResponses.add(new SimpleDistributionResponse(DistributionRequestState.DROPPED, e.toString()));

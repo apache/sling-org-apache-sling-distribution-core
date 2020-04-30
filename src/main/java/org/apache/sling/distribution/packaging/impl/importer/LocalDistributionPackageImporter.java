@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.common.DistributionException;
@@ -32,8 +31,8 @@ import org.apache.sling.distribution.event.DistributionEventTopics;
 import org.apache.sling.distribution.event.impl.DistributionEventFactory;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
-import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
 import org.apache.sling.distribution.packaging.impl.ReferencePackage;
 import org.jetbrains.annotations.NotNull;
@@ -82,7 +81,7 @@ public class LocalDistributionPackageImporter implements DistributionPackageImpo
         }
 
         eventFactory.generatePackageEvent(DistributionEventTopics.IMPORTER_PACKAGE_IMPORTED, DistributionComponentKind.IMPORTER,
-                name, distributionPackage.getInfo(), Optional.empty());
+                name, distributionPackage.getInfo(), null);
     }
 
     @Override
@@ -109,7 +108,7 @@ public class LocalDistributionPackageImporter implements DistributionPackageImpo
                             DistributionPackageInfo info = distributionPackage.getInfo();
                             log.info("package installed {}", info);
                             eventFactory.generatePackageEvent(DistributionEventTopics.IMPORTER_PACKAGE_IMPORTED,
-                                    DistributionComponentKind.IMPORTER, name, info, Optional.empty());
+                                    DistributionComponentKind.IMPORTER, name, info, null);
                             return info;
                         } else {
                             throw new DistributionException("could not install package {}" + distributionPackage);

@@ -20,7 +20,6 @@ package org.apache.sling.distribution.agent.impl;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -357,7 +356,7 @@ public class SimpleDistributionAgent implements DistributionAgent {
     private void generatePackageEvent(String topic, DistributionPackage... distributionPackages) {
         for (DistributionPackage distributionPackage : distributionPackages) {
             distributionEventFactory.generatePackageEvent(topic, DistributionComponentKind.AGENT, name,
-                distributionPackage.getInfo(), Optional.empty());
+                distributionPackage.getInfo(), null);
         }
     }
 
