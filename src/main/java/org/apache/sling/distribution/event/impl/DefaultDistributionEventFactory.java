@@ -18,8 +18,10 @@
  */
 package org.apache.sling.distribution.event.impl;
 
+import java.util.Calendar;
 import java.util.Dictionary;
 import java.util.Hashtable;
+
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
@@ -50,7 +52,7 @@ public class DefaultDistributionEventFactory implements DistributionEventFactory
     }
 
     public void generatePackageEvent(@NotNull String distributionEventTopic, @NotNull DistributionComponentKind kind,
-                                     @NotNull String name, @NotNull DistributionPackageInfo info) {
+                                     @NotNull String name, @NotNull DistributionPackageInfo info, Calendar queueItemCreationTime) {
         try {
             Dictionary<String, Object> dictionary = new Hashtable<String, Object>();
             dictionary.put(DistributionEventProperties.DISTRIBUTION_COMPONENT_NAME, name);
@@ -60,6 +62,10 @@ public class DefaultDistributionEventFactory implements DistributionEventFactory
             }
             if (info.getPaths() != null) {
                 dictionary.put(DistributionEventProperties.DISTRIBUTION_PATHS, info.getPaths());
+            }
+            
+            if(null != queueItemCreationTime) {
+                dictionary.put(DistributionEventProperties.DISTRIBUTION_ENQUEUE_TIMESTAMP, queueItemCreationTime.getTimeInMillis());
             }
             generateEvent(distributionEventTopic, dictionary);
 

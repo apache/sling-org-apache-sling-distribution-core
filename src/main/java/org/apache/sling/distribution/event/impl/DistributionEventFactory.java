@@ -18,6 +18,8 @@
  */
 package org.apache.sling.distribution.event.impl;
 
+import java.util.Calendar;
+
 import org.apache.sling.distribution.component.impl.DistributionComponentKind;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.jetbrains.annotations.NotNull;
@@ -33,6 +35,6 @@ public interface DistributionEventFactory {
      * @param distributionEventType the type of event to be generated
      */
     void generatePackageEvent(@NotNull String distributionEventType, @NotNull DistributionComponentKind kind,
-                              @NotNull String name, @NotNull DistributionPackageInfo info);
+                              @NotNull String name, @NotNull DistributionPackageInfo info, Calendar queueItemCreationTime);
 
 }

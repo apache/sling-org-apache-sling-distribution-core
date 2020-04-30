@@ -18,6 +18,8 @@
  */
 package org.apache.sling.distribution.agent.impl;
 
+import java.util.Calendar;
+
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequestType;
 import org.apache.sling.distribution.common.DistributionException;
@@ -33,9 +35,9 @@ import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
+import org.apache.sling.distribution.queue.impl.DistributionQueueDispatchingStrategy;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProcessor;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
-import org.apache.sling.distribution.queue.impl.DistributionQueueDispatchingStrategy;
 import org.apache.sling.distribution.util.impl.DistributionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -108,6 +110,8 @@ class SimpleDistributionAgentQueueProcessor implements DistributionQueueProcesso
         DistributionPackage distributionPackage = null;
         DistributionQueueItem queueItem = queueEntry.getItem();
         DistributionQueueItemStatus queueItemStatus = queueEntry.getStatus();
+        
+        final Calendar queueItemCreationTime = queueItemStatus.getEntered();
         try {
 
             String callingUser = queueItem.get(DistributionPackageUtils.PACKAGE_INFO_PROPERTY_REQUEST_USER, String.class);
@@ -135,7 +139,7 @@ class SimpleDistributionAgentQueueProcessor implements DistributionQueueProcesso
 
                     // generated event
                     distributionEventFactory.generatePackageEvent(DistributionEventTopics.AGENT_PACKAGE_DISTRIBUTED,
-                            DistributionComponentKind.AGENT, agentName, distributionPackage.getInfo());
+                            DistributionComponentKind.AGENT, agentName, distributionPackage.getInfo(), queueItemCreationTime);
 
                     removeItemFromQueue = true;
                     final long endTime = System.currentTimeMillis();
@@ -152,7 +156,7 @@ class SimpleDistributionAgentQueueProcessor implements DistributionQueueProcesso
                     if (errorQueueStrategy != null && queueItemStatus.getAttempts() > retryAttempts) {
                         removeItemFromQueue = reEnqueuePackage(distributionPackage);
                         distributionEventFactory.generatePackageEvent(DistributionEventTopics.AGENT_PACKAGE_DROPPED,
-                                DistributionComponentKind.AGENT, agentName, distributionPackage.getInfo());
+                                DistributionComponentKind.AGENT, agentName, distributionPackage.getInfo(), queueItemCreationTime);
                         distributionLog.info("[{}] PACKAGE-QUEUED {}: distribution package {} was enqueued to an error queue", queueName, requestId, distributionPackage.getId());
                     }
                 }

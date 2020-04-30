@@ -98,7 +98,7 @@ public class DistributionEventDistributeDistributionTriggerTest {
             public void handle(ResourceResolver resourceResolver, DistributionRequest request) {
                 // we simple fire an event, to cause the loop
                 eventFactory.generatePackageEvent(DistributionEventTopics.AGENT_PACKAGE_DISTRIBUTED,
-                        DistributionComponentKind.AGENT, "test", info);
+                        DistributionComponentKind.AGENT, "test", info, null);
                 handled.addAndGet(1);
             }
         };
@@ -108,7 +108,7 @@ public class DistributionEventDistributeDistributionTriggerTest {
         Thread testExecution = new Thread() {
             @Override public void run() {
                 eventFactory.generatePackageEvent(DistributionEventTopics.AGENT_PACKAGE_DISTRIBUTED, DistributionComponentKind.AGENT,
-                        "origin", info);
+                        "origin", info, null);
             }
         };
 

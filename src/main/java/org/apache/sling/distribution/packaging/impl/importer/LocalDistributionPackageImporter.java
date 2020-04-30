@@ -79,7 +79,8 @@ public class LocalDistributionPackageImporter implements DistributionPackageImpo
             log.warn("could not install distribution package {}", distributionPackage.getId());
         }
 
-        eventFactory.generatePackageEvent(DistributionEventTopics.IMPORTER_PACKAGE_IMPORTED, DistributionComponentKind.IMPORTER, name, distributionPackage.getInfo());
+        eventFactory.generatePackageEvent(DistributionEventTopics.IMPORTER_PACKAGE_IMPORTED, DistributionComponentKind.IMPORTER,
+                name, distributionPackage.getInfo(), null);
     }
 
     @Override
@@ -105,7 +106,8 @@ public class LocalDistributionPackageImporter implements DistributionPackageImpo
                         if (packageBuilder.installPackage(resourceResolver, distributionPackage)) {
                             DistributionPackageInfo info = distributionPackage.getInfo();
                             log.info("package installed {}", info);
-                            eventFactory.generatePackageEvent(DistributionEventTopics.IMPORTER_PACKAGE_IMPORTED, DistributionComponentKind.IMPORTER, name, info);
+                            eventFactory.generatePackageEvent(DistributionEventTopics.IMPORTER_PACKAGE_IMPORTED,
+                                    DistributionComponentKind.IMPORTER, name, info, null);
                             return info;
                         } else {
                             throw new DistributionException("could not install package {}" + distributionPackage);
@@ -134,13 +136,15 @@ public class LocalDistributionPackageImporter implements DistributionPackageImpo
                     packageInfo = packageBuilder.installPackage(resourceResolver, stream);
                     log.info("package installed {}", packageInfo);
                 }
-                eventFactory.generatePackageEvent(DistributionEventTopics.IMPORTER_PACKAGE_IMPORTED, DistributionComponentKind.IMPORTER, name, packageInfo);
+                eventFactory.generatePackageEvent(DistributionEventTopics.IMPORTER_PACKAGE_IMPORTED, DistributionComponentKind.IMPORTER,
+                        name, packageInfo, null);
                 return packageInfo;
             }
         } else {
             DistributionPackageInfo packageInfo = packageBuilder.installPackage(resourceResolver, stream);
             log.info("package installed");
-            eventFactory.generatePackageEvent(DistributionEventTopics.IMPORTER_PACKAGE_IMPORTED, DistributionComponentKind.IMPORTER, name, packageInfo);
+            eventFactory.generatePackageEvent(DistributionEventTopics.IMPORTER_PACKAGE_IMPORTED,
+                    DistributionComponentKind.IMPORTER, name, packageInfo, null);
             return packageInfo;
         }
 
