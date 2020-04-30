@@ -19,7 +19,6 @@
 package org.apache.sling.distribution.agent.impl;
 
 import java.util.Calendar;
-
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequestType;
 import org.apache.sling.distribution.common.DistributionException;
