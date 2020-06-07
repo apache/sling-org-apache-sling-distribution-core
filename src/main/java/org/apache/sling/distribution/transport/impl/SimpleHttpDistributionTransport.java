@@ -30,7 +30,9 @@ import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
 import org.apache.http.conn.HttpHostConnectException;
+import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -142,7 +144,11 @@ public class SimpleHttpDistributionTransport implements DistributionTransport {
                 try {
                     inputStream = DistributionPackageUtils.createStreamWithHeader(distributionPackage);
 
-                    req = req.bodyStream(inputStream, ContentType.APPLICATION_OCTET_STREAM);
+                    InputStreamEntity ise = new InputStreamEntity(inputStream);
+
+                    BufferedHttpEntity be = new BufferedHttpEntity(ise);
+
+                    req.body(be);
 
                     Response response = executor.execute(req);
                     response.returnContent(); // throws an error if HTTP status is >= 300
