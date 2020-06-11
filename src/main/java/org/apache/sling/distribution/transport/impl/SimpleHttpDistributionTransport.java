@@ -144,11 +144,7 @@ public class SimpleHttpDistributionTransport implements DistributionTransport {
                 try {
                     inputStream = DistributionPackageUtils.createStreamWithHeader(distributionPackage);
 
-                    InputStreamEntity ise = new InputStreamEntity(inputStream);
-
-                    BufferedHttpEntity be = new BufferedHttpEntity(ise);
-
-                    req.body(be);
+                    req.bodyStream(inputStream, ContentType.APPLICATION_OCTET_STREAM);
 
                     Response response = executor.execute(req);
                     response.returnContent(); // throws an error if HTTP status is >= 300
