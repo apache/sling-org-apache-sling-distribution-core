@@ -34,6 +34,7 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.apache.sling.distribution.resources.impl.OsgiUtils;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
@@ -45,11 +46,12 @@ import org.slf4j.LoggerFactory;
 public class OsgiConfigurationManager implements DistributionConfigurationManager {
     private final ConfigurationAdmin configurationAdmin;
     private final Logger log = LoggerFactory.getLogger(getClass());
+    private final ServiceReference<?> ref;
 
     private final DistributionComponentFactoryMap componentFactoryMap;
 
-    public OsgiConfigurationManager(ConfigurationAdmin configurationAdmin, DistributionComponentFactoryMap componentFactoryMap) {
-
+    public OsgiConfigurationManager(ConfigurationAdmin configurationAdmin, DistributionComponentFactoryMap componentFactoryMap, ServiceReference<?> ref) {
+        this.ref = ref;
         this.configurationAdmin = configurationAdmin;
         this.componentFactoryMap = componentFactoryMap;
     }
@@ -65,7 +67,7 @@ public class OsgiConfigurationManager implements DistributionConfigurationManage
 
 
         for (Configuration configuration : configurations) {
-            Dictionary<String, Object> propertiesDict = configuration.getProperties();
+            Dictionary<String, Object> propertiesDict = configuration.getProcessedProperties(ref);
             Map<String, Object> properties = OsgiUtils.fromDictionary(propertiesDict);
 
             properties = filterBeforeRead(properties);
@@ -92,7 +94,7 @@ public class OsgiConfigurationManager implements DistributionConfigurationManage
         Configuration configuration = configurations.get(0);
 
         if (configuration != null) {
-            Dictionary<String, Object> properties = configuration.getProperties();
+            Dictionary<String, Object> properties = configuration.getProcessedProperties(ref);
             Map<String, Object> result = OsgiUtils.fromDictionary(properties);
 
             String factoryPid = PropertiesUtil.toString(result.get(ConfigurationAdmin.SERVICE_FACTORYPID), null);

@@ -157,9 +157,23 @@
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>osgi.cmpn</artifactId>
+            <artifactId>org.osgi.service.cm</artifactId>
+            <version>1.6.0</version>
+           <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.service.component</artifactId>
+            <version>1.4.0</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.service.event</artifactId>
+            <version>1.4.0</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- need it here as to avoid classpath conflicts with testing mock -->
         <dependency>
             <groupId>org.apache.sling</groupId>
