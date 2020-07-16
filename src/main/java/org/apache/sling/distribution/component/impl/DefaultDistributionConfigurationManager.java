@@ -33,6 +33,7 @@ import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.osgi.service.cm.ConfigurationAdmin;
+import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +76,7 @@ public class DefaultDistributionConfigurationManager implements DistributionConf
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Activate
-    void activate(Map<String, Object> properties) {
+    void activate(ComponentContext ctx, Map<String, Object> properties) {
         boolean configEnabled = PropertiesUtil.toBoolean(properties.get(CONFIG_ENABLED), false);
 
         String configRoot = SettingsUtils.removeEmptyEntry(PropertiesUtil.toString(properties.get(CONFIG_ROOT), null));
@@ -89,7 +90,7 @@ public class DefaultDistributionConfigurationManager implements DistributionConf
             resourceManager = new ResourceConfigurationManager(configRoot, configProperties, configDefaults);
         }
 
-        osgiManager = new OsgiConfigurationManager(configurationAdmin, componentFactoryMap);
+        osgiManager = new OsgiConfigurationManager(configurationAdmin, componentFactoryMap, ctx.getServiceReference());
     }
 
     @Deactivate
