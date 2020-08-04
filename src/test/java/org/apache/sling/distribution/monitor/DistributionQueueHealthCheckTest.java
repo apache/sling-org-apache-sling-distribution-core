@@ -30,7 +30,7 @@ import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
-import org.apache.sling.hc.api.Result;
+import org.apache.felix.hc.api.Result;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
