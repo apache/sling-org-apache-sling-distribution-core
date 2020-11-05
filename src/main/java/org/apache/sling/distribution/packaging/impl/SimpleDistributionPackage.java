@@ -38,9 +38,11 @@ public class SimpleDistributionPackage extends AbstractDistributionPackage imple
 
     private static final Logger log = LoggerFactory.getLogger(SimpleDistributionPackage.class);
 
-    private final static String PACKAGE_START = "DSTRPCK:";
+    private final static String PACKAGE_START = "DSTRPCK::";
+    private final static String PACKAGE_START_OLD = "DSTRPCK:";
     private final static String DELIM = "|";
     private final static String PATH_DELIM = ":";
+    private final static String PATH_DELIM_OLD = ",";
     private final long size;
 
     public SimpleDistributionPackage(DistributionRequest request, String type) {
@@ -78,12 +80,15 @@ public class SimpleDistributionPackage extends AbstractDistributionPackage imple
         return b.toString();
     }
 
-    public static SimpleDistributionPackage fromIdString(String id, String type) {
-        if (!id.startsWith(PACKAGE_START)) {
+    public static SimpleDistributionPackage fromIdString(String packageId, String type) {
+        String id = null;
+        if (packageId.startsWith(PACKAGE_START)) {
+            id = packageId.substring(PACKAGE_START.length());
+        } else if (packageId.startsWith(PACKAGE_START_OLD)) { //For back compatibility with old path delimiter.
+            id = packageId.substring(PACKAGE_START_OLD.length());
+        } else {
             return null;
         }
-
-        id = id.substring(PACKAGE_START.length());
 
         String[] parts = id.split(Pattern.quote(DELIM));
 
@@ -98,7 +103,16 @@ public class SimpleDistributionPackage extends AbstractDistributionPackage imple
 
         SimpleDistributionPackage distributionPackage = null;
         if (distributionRequestType != null) {
-            String[] paths = pathsString == null ? new String[0] : pathsString.split(PATH_DELIM);
+            String[] paths = null;
+            if (pathsString != null) {
+                if (packageId.startsWith(PACKAGE_START)) {
+                    paths = pathsString.split(PATH_DELIM);
+                } else {
+                    paths = pathsString.split(PATH_DELIM_OLD); //For back compatibility with old path delimiter
+                }
+            } else {
+                paths = new String[0];
+            }
 
             DistributionRequest request = new SimpleDistributionRequest(distributionRequestType, paths);
             distributionPackage = new SimpleDistributionPackage(request, type);

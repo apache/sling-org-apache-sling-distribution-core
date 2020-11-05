@@ -44,8 +44,8 @@ import static org.mockito.Mockito.when;
  */
 public class SimpleDistributionPackageTest {
 
-    private static final String DSTRPCK_DELETE = "DSTRPCK:DELETE|/abc:/c";
-    private static final String DSTRPCK_ITEM_WITH_COMMA_DELETE = "DSTRPCK:DELETE|/ab,c:/c";
+    private static final String DSTRPCK_DELETE = "DSTRPCK::DELETE|/abc:/c";
+    private static final String DSTRPCK_ITEM_WITH_COMMA_DELETE = "DSTRPCK::DELETE|/ab,c:/c";
 
     @Test
     public void testInvalid() {
@@ -118,7 +118,7 @@ public class SimpleDistributionPackageTest {
     public void testSimplePackageFromTest() throws Exception {
         DistributionRequest distributionRequest = new SimpleDistributionRequest(DistributionRequestType.TEST);
         SimpleDistributionPackage createdPackage = new SimpleDistributionPackage(distributionRequest, "VOID");
-        SimpleDistributionPackage readPackage = SimpleDistributionPackage.fromStream(new ByteArrayInputStream(("DSTRPCK:TEST|").getBytes()), "VOID");
+        SimpleDistributionPackage readPackage = SimpleDistributionPackage.fromStream(new ByteArrayInputStream(("DSTRPCK::TEST|").getBytes()), "VOID");
         assertNotNull(readPackage);
         assertEquals(createdPackage.getType(), readPackage.getType());
         assertEquals(createdPackage.getInfo().getRequestType(), readPackage.getInfo().getRequestType());
