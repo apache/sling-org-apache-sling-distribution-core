@@ -27,7 +27,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.DistributionRequestType;
 import org.apache.sling.distribution.SimpleDistributionRequest;
-import org.apache.sling.distribution.packaging.impl.SimpleDistributionPackage;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -45,7 +44,8 @@ import static org.mockito.Mockito.when;
  */
 public class SimpleDistributionPackageTest {
 
-    private static final String DSTRPCK_DELETE = "DSTRPCK:DELETE|/abc,/c";
+    private static final String DSTRPCK_DELETE = "DSTRPCK::DELETE|/abc:/c";
+    private static final String DSTRPCK_ITEM_WITH_COMMA_DELETE = "DSTRPCK::DELETE|/ab,c:/c";
 
     @Test
     public void testInvalid() {
@@ -75,6 +75,22 @@ public class SimpleDistributionPackageTest {
         SimpleDistributionPackage pkg = SimpleDistributionPackage.fromStream(stream, "ADD");
         assertThat(pkg, nullValue());
     }
+
+    @Test
+    public void testCreatedAndReadPackagesEqualityWithCommaInName() throws Exception {
+        DistributionRequest request = new SimpleDistributionRequest(DistributionRequestType.DELETE, "/ab,c", "/c");
+        SimpleDistributionPackage createdPackage = new SimpleDistributionPackage(request, "VOID");
+        assertThat(createdPackage.toString(), equalTo(DSTRPCK_ITEM_WITH_COMMA_DELETE));
+        // Just to run the code
+        createdPackage.acquire();
+        createdPackage.release();
+        createdPackage.close();
+        createdPackage.delete();
+
+        SimpleDistributionPackage readPackage = SimpleDistributionPackage.fromStream(new ByteArrayInputStream(DSTRPCK_ITEM_WITH_COMMA_DELETE.getBytes()), "VOID");
+        assertNotNull(readPackage);
+        assertEquals(Arrays.toString(createdPackage.getInfo().getPaths()), Arrays.toString(readPackage.getInfo().getPaths()));
+    }
     
     @Test
     public void testCreatedAndReadPackagesEquality() throws Exception {
@@ -102,7 +118,7 @@ public class SimpleDistributionPackageTest {
     public void testSimplePackageFromTest() throws Exception {
         DistributionRequest distributionRequest = new SimpleDistributionRequest(DistributionRequestType.TEST);
         SimpleDistributionPackage createdPackage = new SimpleDistributionPackage(distributionRequest, "VOID");
-        SimpleDistributionPackage readPackage = SimpleDistributionPackage.fromStream(new ByteArrayInputStream(("DSTRPCK:TEST|").getBytes()), "VOID");
+        SimpleDistributionPackage readPackage = SimpleDistributionPackage.fromStream(new ByteArrayInputStream(("DSTRPCK::TEST|").getBytes()), "VOID");
         assertNotNull(readPackage);
         assertEquals(createdPackage.getType(), readPackage.getType());
         assertEquals(createdPackage.getInfo().getRequestType(), readPackage.getInfo().getRequestType());
