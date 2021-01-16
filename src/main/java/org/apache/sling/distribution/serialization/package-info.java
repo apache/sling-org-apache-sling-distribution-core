@@ -20,5 +20,4 @@
 @Version("0.1.1")
 package org.apache.sling.distribution.serialization;
 
-import aQute.bnd.annotation.Version;
-
+import org.osgi.annotation.versioning.Version;
