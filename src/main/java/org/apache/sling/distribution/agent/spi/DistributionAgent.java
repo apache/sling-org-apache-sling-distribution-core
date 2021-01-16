@@ -18,7 +18,6 @@
  */
 package org.apache.sling.distribution.agent.spi;
 
-import aQute.bnd.annotation.ConsumerType;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.DistributionResponse;
@@ -28,6 +27,7 @@ import org.apache.sling.distribution.log.spi.DistributionLog;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.osgi.annotation.versioning.ConsumerType;
 
 /**
  * A distribution agent is responsible for handling {@link org.apache.sling.distribution.DistributionRequest}s.
