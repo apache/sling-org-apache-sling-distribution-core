@@ -27,42 +27,41 @@ import java.util.Map;
 
 import javax.management.ObjectName;
 
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.ConfigurationPolicy;
-import org.apache.felix.scr.annotations.Deactivate;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Service;
-import org.apache.sling.commons.osgi.PropertiesUtil;
-import org.apache.sling.distribution.component.impl.DistributionComponentConstants;
 import org.apache.sling.distribution.monitor.impl.UserCredentialsDistributionTransportSecretMBean;
 import org.apache.sling.distribution.monitor.impl.UserCredentialsDistributionTransportSecretMBeanImpl;
 import org.apache.sling.distribution.transport.DistributionTransportSecret;
 import org.apache.sling.distribution.transport.DistributionTransportSecretProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-@Component(metatype = true,
-        label = "Apache Sling Distribution Transport Credentials - User Credentials based DistributionTransportSecretProvider",
-        configurationFactory = true,
-        specVersion = "1.1",
-        policy = ConfigurationPolicy.REQUIRE)
-@Service(value = DistributionTransportSecretProvider.class)
-@Property(name="webconsole.configurationFactory.nameHint", value="Secret provider name: {name}")
+@Component(
+        configurationPolicy = ConfigurationPolicy.REQUIRE,
+        service=DistributionTransportSecretProvider.class,
+        properties= {
+                "webconsole.configurationFactory.nameHint=Secret provider name: {name}"
+        })
+@Designate(ocd=UserCredentialsDistributionTransportSecretProvider.Config.class, factory = true)
 public class UserCredentialsDistributionTransportSecretProvider implements
         DistributionTransportSecretProvider {
-
-    /**
-     * name of this component.
-     */
-    @Property(label = "Name")
-    public static final String NAME = DistributionComponentConstants.PN_NAME;
-
-    @Property(label = "User Name", description = "The name of the user used to perform remote actions.")
-    private final static String USERNAME = "username";
-
-    @Property(label = "Password", description = "The clear text password to perform authentication. Warning: storing clear text passwords is not safe.")
-    private final static String PASSWORD = "password";
+    
+    @ObjectClassDefinition(name="Apache Sling Distribution Transport Credentials - User Credentials based DistributionTransportSecretProvider")
+    public @interface Config {
+        @AttributeDefinition(name="Name")
+        String name();
+        
+        @AttributeDefinition(name="User Name", description = "The name of the user used to perform remote actions.")
+        String username();
+        
+        @AttributeDefinition(name="Password", description = "The clear text password to perform authentication. Warning: storing clear text passwords is not safe.")
+        String password();
+    }
 
     private String username;
     private String password;
@@ -70,9 +69,9 @@ public class UserCredentialsDistributionTransportSecretProvider implements
     private ServiceRegistration<UserCredentialsDistributionTransportSecretMBean> mbeanServiceRegistration;
 
     @Activate
-    protected void activate(BundleContext context, Map<String, Object> config) {
-        username = PropertiesUtil.toString(config.get(USERNAME), "").trim();
-        password = PropertiesUtil.toString(config.get(PASSWORD), "").trim();
+    protected void activate(BundleContext context, Config conf) {
+        username = conf.username().trim();
+        password = conf.password().trim();
 
         String id = String.valueOf(username.hashCode());
 
@@ -97,8 +96,8 @@ public class UserCredentialsDistributionTransportSecretProvider implements
         return new DistributionTransportSecret() {
             public Map<String, String> asCredentialsMap() {
                 Map<String, String> map = new HashMap<String, String>();
-                map.put(USERNAME, username);
-                map.put(PASSWORD, password);
+                map.put("username", username);
+                map.put("password", password);
                 return Collections.unmodifiableMap(map);
             }
         };

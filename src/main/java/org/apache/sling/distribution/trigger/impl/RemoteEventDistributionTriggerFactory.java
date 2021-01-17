@@ -18,46 +18,42 @@
  */
 package org.apache.sling.distribution.trigger.impl;
 
-import java.util.Map;
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.ConfigurationPolicy;
-import org.apache.felix.scr.annotations.Deactivate;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
-import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.apache.sling.commons.scheduler.Scheduler;
-import org.apache.sling.distribution.component.impl.DistributionComponentConstants;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.transport.DistributionTransportSecretProvider;
 import org.apache.sling.distribution.trigger.DistributionRequestHandler;
 import org.apache.sling.distribution.trigger.DistributionTrigger;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-@Component(metatype = true,
-        label = "Apache Sling Distribution Trigger - Remote Event Triggers Factory",
-        configurationFactory = true,
-        specVersion = "1.1",
-        policy = ConfigurationPolicy.REQUIRE
+@Component(
+        configurationPolicy = ConfigurationPolicy.REQUIRE,
+        service=DistributionTrigger.class,
+        properties= {
+                "webconsole.configurationFactory.nameHint=Trigger name: {name}"
+        }
 )
-@Service(DistributionTrigger.class)
-@Property(name="webconsole.configurationFactory.nameHint", value="Trigger name: {name}")
+@Designate(ocd=RemoteEventDistributionTriggerFactory.Config.class)
 public class RemoteEventDistributionTriggerFactory implements DistributionTrigger {
+    
+    @ObjectClassDefinition(name="Apache Sling Distribution Trigger - Remote Event Triggers Factory")
+    public @interface Config {
+        @AttributeDefinition(name="Name", description = "The name of the trigger.")
+        String name();
+        @AttributeDefinition(name="Endpoint", description = "The endpoint from which the remote requests should be polled.")
+        String endpoint();
+        @AttributeDefinition()
+        String transportSecretProvider_target();
+    }
 
-
-    @Property(label = "Name", description = "The name of the trigger.")
-    public static final String NAME = DistributionComponentConstants.PN_NAME;
-
-    /**
-     * remote event endpoint property
-     */
-    @Property(label = "Endpoint", description = "The endpoint from which the remote requests should be polled.")
-    private static final String ENDPOINT = "endpoint";
-
-
-    @Property(name = "transportSecretProvider.target")
     @Reference(name = "transportSecretProvider")
     private
     DistributionTransportSecretProvider transportSecretProvider;
@@ -70,8 +66,8 @@ public class RemoteEventDistributionTriggerFactory implements DistributionTrigge
 
 
     @Activate
-    public void activate(BundleContext bundleContext, Map<String, Object> config) {
-        String endpoint = PropertiesUtil.toString(config.get(ENDPOINT), null);
+    public void activate(BundleContext bundleContext, Config conf) {
+        String endpoint = conf.endpoint();
         trigger = new RemoteEventDistributionTrigger(endpoint, transportSecretProvider, scheduler);
     }
 

@@ -18,48 +18,42 @@
  */
 package org.apache.sling.distribution.trigger.impl;
 
-import java.util.Map;
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.ConfigurationPolicy;
-import org.apache.felix.scr.annotations.Deactivate;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Service;
-import org.apache.sling.commons.osgi.PropertiesUtil;
-import org.apache.sling.distribution.component.impl.DistributionComponentConstants;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.trigger.DistributionRequestHandler;
 import org.apache.sling.distribution.trigger.DistributionTrigger;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-@Component(metatype = true,
-        label = "Apache Sling Distribution Trigger - Distribution Event Triggers Factory",
-        configurationFactory = true,
-        specVersion = "1.1",
-        policy = ConfigurationPolicy.REQUIRE
-)
-@Service(DistributionTrigger.class)
-@Property(name="webconsole.configurationFactory.nameHint", value="Trigger name: {name}")
+@Component(
+        configurationPolicy = ConfigurationPolicy.REQUIRE,
+        service=DistributionTrigger.class,
+        properties= {
+                "webconsole.configurationFactory.nameHint=Trigger name: {name}"    
+        })
+@Designate(ocd=DistributionEventDistributeDistributionTriggerFactory.Config.class, factory = true)
 public class DistributionEventDistributeDistributionTriggerFactory implements DistributionTrigger {
-
-    @Property(label = "Name", description = "The name of the trigger.")
-    public static final String NAME = DistributionComponentConstants.PN_NAME;
-
-    /**
-     * chain distribution path property
-     */
-    @Property(label = "Path", description = "The path for which the distribution events will be forwarded.")
-    private static final String PATH = "path";
-
+    
+    @ObjectClassDefinition(name="Apache Sling Distribution Trigger - Distribution Event Triggers Factory")
+    public @interface Config {
+        @AttributeDefinition(name="Name",description = "The name of the trigger.")
+        String name();
+        @AttributeDefinition(name="Path", description = "The path for which the distribution events will be forwarded.")
+        String path();
+    }
 
     private DistributionEventDistributeDistributionTrigger trigger;
 
 
     @Activate
-    public void activate(BundleContext bundleContext, Map<String, Object> config) {
-        String path = PropertiesUtil.toString(config.get(PATH), null);
-
+    public void activate(BundleContext bundleContext, Config conf) {
+        String path = conf.path();
         trigger = new DistributionEventDistributeDistributionTrigger(path, bundleContext);
     }
 

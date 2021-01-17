@@ -18,44 +18,40 @@
  */
 package org.apache.sling.distribution.trigger.impl;
 
-import java.util.Map;
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.ConfigurationPolicy;
-import org.apache.felix.scr.annotations.Deactivate;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
-import org.apache.sling.commons.osgi.PropertiesUtil;
-import org.apache.sling.distribution.component.impl.DistributionComponentConstants;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.trigger.DistributionRequestHandler;
 import org.apache.sling.distribution.trigger.DistributionTrigger;
 import org.apache.sling.jcr.api.SlingRepository;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-@Component(metatype = true,
-        label = "Apache Sling Distribution Trigger - Resource Event Triggers Factory",
-        configurationFactory = true,
-        specVersion = "1.1",
-        policy = ConfigurationPolicy.REQUIRE,
-        description = "Triggers a distribution request ('ADD', 'DELETE') " +
-                "for the given path (path) whenever the resource at the given path is modified (added, resp. removed)."
+@Component(
+        configurationPolicy = ConfigurationPolicy.REQUIRE,
+        service=DistributionTrigger.class,
+        properties= {
+                "webconsole.configurationFactory.nameHint=Trigger name: {name}"    
+        }
 )
-@Service(DistributionTrigger.class)
-@Property(name="webconsole.configurationFactory.nameHint", value="Trigger name: {name}")
+@Designate(ocd=ResourceEventDistributionTriggerFactory.Config.class, factory=true)
 public class ResourceEventDistributionTriggerFactory implements DistributionTrigger {
 
-
-    @Property(label = "Name", description = "The name of the trigger.")
-    public static final String NAME = DistributionComponentConstants.PN_NAME;
-
-    /**
-     * resource event path property
-     */
-    @Property(label = "Path", description = "The resource path for which changes are distributed")
-    private static final String PATH = "path";
+    @ObjectClassDefinition(name="Apache Sling Distribution Trigger - Resource Event Triggers Factory",
+            description = "Triggers a distribution request ('ADD', 'DELETE') " +
+                    "for the given path (path) whenever the resource at the given path is modified (added, resp. removed).")
+    public @interface Config {
+        @AttributeDefinition(name="Name", description = "The name of the trigger.")
+        String name();
+        @AttributeDefinition(name="Name", description = "The resource path for which changes are distributed")
+        String path();
+    }
 
     private ResourceEventDistributionTrigger trigger;
 
@@ -63,8 +59,8 @@ public class ResourceEventDistributionTriggerFactory implements DistributionTrig
     private SlingRepository repository;
 
     @Activate
-    public void activate(BundleContext bundleContext, Map<String, Object> config) {
-        String path = PropertiesUtil.toString(config.get(PATH), null);
+    public void activate(BundleContext bundleContext, Config conf) {
+        String path = conf.path();
 
         trigger = new ResourceEventDistributionTrigger(path, bundleContext);
     }

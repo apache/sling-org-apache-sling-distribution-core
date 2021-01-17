@@ -18,62 +18,52 @@
  */
 package org.apache.sling.distribution.trigger.impl;
 
-import java.util.Map;
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.ConfigurationPolicy;
-import org.apache.felix.scr.annotations.Deactivate;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.apache.sling.commons.scheduler.Scheduler;
 import org.apache.sling.distribution.DistributionRequestType;
-import org.apache.sling.distribution.component.impl.DistributionComponentConstants;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.component.impl.SettingsUtils;
 import org.apache.sling.distribution.trigger.DistributionRequestHandler;
 import org.apache.sling.distribution.trigger.DistributionTrigger;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-@Component(metatype = true,
-        label = "Apache Sling Distribution Trigger - Scheduled Triggers Factory",
-        configurationFactory = true,
-        specVersion = "1.1",
-        policy = ConfigurationPolicy.REQUIRE,
-        description = "Triggers a distribution request of the given type (action) " +
-                "for the given path (path) at a periodical time interval (seconds)."
-)
-@Service(DistributionTrigger.class)
-@Property(name="webconsole.configurationFactory.nameHint", value="Trigger name: {name}")
+@Component(
+        configurationPolicy = ConfigurationPolicy.REQUIRE,
+        service=DistributionTrigger.class,
+        properties= {
+               "webconsole.configurationFactory.nameHint=Trigger name: {name}"
+        })
+@Designate(ocd=ScheduledDistributionTriggerFactory.Config.class,factory=true)
 public class ScheduledDistributionTriggerFactory implements DistributionTrigger {
 
-
-    @Property(label = "Name", description = "The name of the trigger.")
-    public static final String NAME = DistributionComponentConstants.PN_NAME;
-
-    /**
-     * scheduled trigger action property
-     */
-    @Property(label = "Distribution Type", description = "The type of the distribution request produced by this trigger in ('ADD', 'DELETE', 'PULL', 'TEST'). Default 'PULL'.")
-    private static final String ACTION = "action";
-
-    /**
-     * scheduled trigger path property
-     */
-    @Property(label = "Distributed Path", description = "The path to be distributed periodically.")
-    private static final String PATH = "path";
-
-    /**
-     * scheduled trigger seconds property
-     */
-    @Property(label = "Interval in Seconds", description = "The number of seconds between distribution requests. Default 30 seconds.")
-    private static final String SECONDS = "seconds";
-
-    @Property(label = "Service Name", description = "The name of the service used to trigger the distribution requests.")
-    private static final String SERVICE_NAME = "serviceName";
+    @ObjectClassDefinition(name="Apache Sling Distribution Trigger - Scheduled Triggers Factory",
+            description = "Triggers a distribution request of the given type (action) " +
+                    "for the given path (path) at a periodical time interval (seconds).")
+    public @interface Config {
+        @AttributeDefinition(name="Name", description = "The name of the trigger.")
+        String name();
+        @AttributeDefinition(name="Distribution Type", description = "The type of the distribution request produced by "
+                + "this trigger in ('ADD', 'DELETE', 'PULL', 'TEST'). Default 'PULL'.")
+        String action();
+        @AttributeDefinition(name="Name", description = "The path to be distributed periodically.")
+        String path();
+        
+        @AttributeDefinition(name="Interval in Seconds", 
+                description = "The number of seconds between distribution requests. Default 30 seconds.")
+        int seconds() default 30;
+        
+        @AttributeDefinition(name="Service Name", description = "The name of the service used to trigger the distribution requests.")
+        String serviceName();
+    }
 
     private ScheduledDistributionTrigger trigger;
 
@@ -85,11 +75,16 @@ public class ScheduledDistributionTriggerFactory implements DistributionTrigger 
 
 
     @Activate
-    public void activate(BundleContext bundleContext, Map<String, Object> config) {
-        String action = PropertiesUtil.toString(config.get(ACTION), DistributionRequestType.PULL.name());
-        String path = PropertiesUtil.toString(config.get(PATH), null);
-        int interval = PropertiesUtil.toInteger(config.get(SECONDS), 30);
-        String serviceName = SettingsUtils.removeEmptyEntry(PropertiesUtil.toString(config.get(SERVICE_NAME), null));
+    public void activate(BundleContext bundleContext, Config conf) {
+        // Unfortunately we cannot make DistributionRequestType.PULL.name() a default value in the above annotation.
+        // see https://stackoverflow.com/questions/13253624/how-to-supply-enum-value-to-an-annotation-from-a-constant-in-java
+        String action = conf.action();
+        if (action == null || action.isEmpty()) {
+            action = DistributionRequestType.PULL.name();
+        }
+        String path = conf.path();
+        int interval = conf.seconds();
+        String serviceName = SettingsUtils.removeEmptyEntry(conf.serviceName());
 
         trigger = new ScheduledDistributionTrigger(action, path, interval, serviceName, scheduler, resolverFactory);
     }

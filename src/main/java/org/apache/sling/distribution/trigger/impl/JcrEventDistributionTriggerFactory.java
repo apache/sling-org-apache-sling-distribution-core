@@ -18,65 +18,49 @@
  */
 package org.apache.sling.distribution.trigger.impl;
 
-import java.util.Map;
-
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.ConfigurationPolicy;
-import org.apache.felix.scr.annotations.Deactivate;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.apache.sling.commons.scheduler.Scheduler;
 import org.apache.sling.distribution.common.DistributionException;
-import org.apache.sling.distribution.component.impl.DistributionComponentConstants;
 import org.apache.sling.distribution.component.impl.SettingsUtils;
 import org.apache.sling.distribution.trigger.DistributionRequestHandler;
 import org.apache.sling.distribution.trigger.DistributionTrigger;
 import org.apache.sling.jcr.api.SlingRepository;
 import org.jetbrains.annotations.NotNull;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-@Component(metatype = true,
-        label = "Apache Sling Distribution Trigger - Jcr Event Triggers Factory",
-        configurationFactory = true,
-        specVersion = "1.1",
-        policy = ConfigurationPolicy.REQUIRE,
-        description = "Triggers a distribution request ('ADD', 'DELETE') " +
-                "for the given path (path) whenever the JCR node at the given path is modified (added, resp. removed)."
-)
-@Service(DistributionTrigger.class)
-@Property(name="webconsole.configurationFactory.nameHint", value="Trigger name: {name} on path {path}")
+@Component(
+        configurationPolicy = ConfigurationPolicy.REQUIRE,
+        service=DistributionTrigger.class,
+        properties= {
+                "webconsole.configurationFactory.nameHint=Trigger name: {name} on path {path}"
+        })
+@Designate(ocd=JcrEventDistributionTriggerFactory.Config.class, factory = true)
 public class JcrEventDistributionTriggerFactory implements DistributionTrigger {
 
-
-    @Property(label = "Name", description = "The name of the trigger.")
-    public static final String NAME = DistributionComponentConstants.PN_NAME;
-
-    /**
-     * jcr event trigger path property
-     */
-    @Property(label = "Path", description = "The path for which changes are distributed.")
-    private static final String PATH = "path";
-
-    /**
-     * jcr event trigger path property
-     */
-    @Property(cardinality = 100, label = "Ignored Paths Patterns", description = "The paths matching one of these patterns will be ignored.")
-    private static final String IGNORED_PATHS_PATTERNS = "ignoredPathsPatterns";
-
-    /**
-     * jcr event trigger service user property
-     */
-    @Property(label = "Service Name", description = "The service used to listen for jcr events")
-    private static final String SERVICE_NAME = "serviceName";
-
-    /**
-     * use deep distribution
-     */
-    @Property(label = "Use deep distribution", description = "Distribute entire subtree of the event node path. Default is 'false'.", boolValue = false)
-    private static final String DEEP = "deep";
+    @ObjectClassDefinition(name="Apache Sling Distribution Trigger - Jcr Event Triggers Factory",
+            description = "Triggers a distribution request ('ADD', 'DELETE') " +
+                    "for the given path (path) whenever the JCR node at the given path is modified (added, resp. removed).")
+    public @interface Config {
+        @AttributeDefinition(name="Name", description = "The name of the trigger.")
+        String name();
+        @AttributeDefinition(name="Name", description = "The path for which changes are distributed.")
+        String path();
+        @AttributeDefinition(cardinality = 100, 
+                name = "Ignored Paths Patterns", 
+                description = "The paths matching one of these patterns will be ignored.")
+        String[] ignoredPathsPatterns();
+        @AttributeDefinition(name="Service Name", description = "The service used to listen for jcr events")
+        String serviceName();
+        @AttributeDefinition(name="Use deep distribution", description = "Distribute entire subtree of the event node path. Default is 'false'.")
+        boolean deep() default false;
+    }
 
 
     private JcrEventDistributionTrigger trigger;
@@ -92,12 +76,12 @@ public class JcrEventDistributionTriggerFactory implements DistributionTrigger {
 
 
     @Activate
-    public void activate(Map<String, Object> config) {
-        String path = PropertiesUtil.toString(config.get(PATH), null);
-        String serviceName = SettingsUtils.removeEmptyEntry(PropertiesUtil.toString(config.get(SERVICE_NAME), null));
-        String[] ignoredPathsPatterns = PropertiesUtil.toStringArray(config.get(IGNORED_PATHS_PATTERNS), null);
+    public void activate(Config conf) {
+        String path = conf.path();
+        String serviceName = SettingsUtils.removeEmptyEntry(conf.serviceName());
+        String[] ignoredPathsPatterns = conf.ignoredPathsPatterns();
         ignoredPathsPatterns = SettingsUtils.removeEmptyEntries(ignoredPathsPatterns);
-        boolean deep = PropertiesUtil.toBoolean(config.get(DEEP), false);
+        boolean deep = conf.deep();
 
         trigger = new JcrEventDistributionTrigger(repository, scheduler, resolverFactory, path, deep, serviceName, ignoredPathsPatterns);
         trigger.enable();
