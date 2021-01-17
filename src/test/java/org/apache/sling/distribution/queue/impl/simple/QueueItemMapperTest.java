@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.sling.distribution.queue.DistributionQueueItem;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -29,6 +30,7 @@ import static org.junit.Assert.*;
 public class QueueItemMapperTest {
 
     @Test
+    @Ignore
     public void testReadWriteQueueItem() throws Exception {
         QueueItemMapper mapper = new QueueItemMapper();
         Map<String, Object> properties = new HashMap<String, Object>();
