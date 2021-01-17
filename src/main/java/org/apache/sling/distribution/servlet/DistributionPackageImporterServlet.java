@@ -30,9 +30,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 
-import org.apache.felix.scr.annotations.sling.SlingServlet;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -40,6 +40,8 @@ import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.apache.sling.distribution.resources.DistributionResourceTypes;
+import org.apache.sling.servlets.annotations.SlingServletResourceTypes;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +49,10 @@ import org.slf4j.LoggerFactory;
  * Servlet to handle reception of distribution content.
  */
 @SuppressWarnings("serial")
-@SlingServlet(resourceTypes = DistributionResourceTypes.IMPORTER_RESOURCE_TYPE, methods = "POST")
+@Component(service=Servlet.class)
+@SlingServletResourceTypes(
+        methods = {"POST"},
+        resourceTypes = {DistributionResourceTypes.IMPORTER_RESOURCE_TYPE})
 public class DistributionPackageImporterServlet extends SlingAllMethodsServlet {
 
     private final Logger log = LoggerFactory.getLogger(getClass());

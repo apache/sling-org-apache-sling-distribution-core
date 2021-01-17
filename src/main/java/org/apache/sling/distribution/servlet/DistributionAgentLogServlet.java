@@ -18,19 +18,22 @@
  */
 package org.apache.sling.distribution.servlet;
 
-import javax.servlet.ServletException;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import org.apache.felix.scr.annotations.sling.SlingServlet;
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
-import org.apache.sling.api.servlets.SlingAllMethodsServlet;
+import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.agent.spi.DistributionAgent;
 import org.apache.sling.distribution.log.spi.DistributionLog;
 import org.apache.sling.distribution.resources.DistributionResourceTypes;
 import org.apache.sling.distribution.util.RequestUtils;
+import org.apache.sling.servlets.annotations.SlingServletResourceTypes;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,8 +41,12 @@ import org.slf4j.LoggerFactory;
  * Servlet to ask {@link DistributionAgent}s to distribute (via HTTP POST).
  */
 @SuppressWarnings("serial")
-@SlingServlet(resourceTypes = DistributionResourceTypes.LOG_RESOURCE_TYPE, methods = "GET", extensions = "txt")
-public class DistributionAgentLogServlet extends SlingAllMethodsServlet {
+@Component(service=Servlet.class)
+@SlingServletResourceTypes(
+        methods = {"GET"},
+        resourceTypes = {DistributionResourceTypes.LOG_RESOURCE_TYPE}, 
+        extensions = {"txt"})
+public class DistributionAgentLogServlet extends SlingSafeMethodsServlet {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 

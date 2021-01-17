@@ -18,10 +18,10 @@
  */
 package org.apache.sling.distribution.servlet;
 
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import java.io.IOException;
 
-import org.apache.felix.scr.annotations.sling.SlingServlet;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -31,6 +31,8 @@ import org.apache.sling.distribution.DistributionResponse;
 import org.apache.sling.distribution.agent.spi.DistributionAgent;
 import org.apache.sling.distribution.resources.DistributionResourceTypes;
 import org.apache.sling.distribution.util.RequestUtils;
+import org.apache.sling.servlets.annotations.SlingServletResourceTypes;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +40,10 @@ import org.slf4j.LoggerFactory;
  * Servlet to ask {@link DistributionAgent}s to distribute (via HTTP POST).
  */
 @SuppressWarnings("serial")
-@SlingServlet(resourceTypes = DistributionResourceTypes.AGENT_RESOURCE_TYPE, methods = "POST")
+@Component(service=Servlet.class)
+@SlingServletResourceTypes(
+        methods = {"POST"},
+        resourceTypes = {DistributionResourceTypes.AGENT_RESOURCE_TYPE})
 public class DistributionAgentServlet extends SlingAllMethodsServlet {
 
     private final Logger log = LoggerFactory.getLogger(getClass());

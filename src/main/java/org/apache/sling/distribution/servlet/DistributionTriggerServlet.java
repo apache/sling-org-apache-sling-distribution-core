@@ -18,12 +18,12 @@
  */
 package org.apache.sling.distribution.servlet;
 
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-import org.apache.felix.scr.annotations.sling.SlingServlet;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -34,8 +34,10 @@ import org.apache.sling.distribution.component.impl.DistributionComponentKind;
 import org.apache.sling.distribution.resources.DistributionResourceTypes;
 import org.apache.sling.distribution.trigger.DistributionRequestHandler;
 import org.apache.sling.distribution.trigger.DistributionTrigger;
+import org.apache.sling.servlets.annotations.SlingServletResourceTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +45,11 @@ import org.slf4j.LoggerFactory;
  * Triggers Server Sent Events servlet
  */
 @SuppressWarnings("serial")
-@SlingServlet(resourceTypes = DistributionResourceTypes.TRIGGER_RESOURCE_TYPE, extensions = "event", methods = "GET")
+@Component(service=Servlet.class)
+@SlingServletResourceTypes(
+        methods = {"GET"},
+        resourceTypes = {DistributionResourceTypes.TRIGGER_RESOURCE_TYPE},
+        extensions = {"event"})
 public class DistributionTriggerServlet extends SlingAllMethodsServlet {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
