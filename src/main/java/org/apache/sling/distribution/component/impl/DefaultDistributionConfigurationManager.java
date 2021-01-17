@@ -24,16 +24,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Deactivate;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,24 +43,27 @@ import org.slf4j.LoggerFactory;
  * For each tree of properties a set of OSGI configs is generated and registered in ConfigurationAdmin.
  * To delete a component all configs owned by that component will be unregistered from ConfigurationAdmin.
  */
-@Component
-@Service(DistributionConfigurationManager.class)
+@Component(service=DistributionConfigurationManager.class)
+@Designate(ocd=DefaultDistributionConfigurationManager.Config.class)
 public class DefaultDistributionConfigurationManager implements DistributionConfigurationManager {
-
-    @Property(label = "Resource Config Enabled", description = "If storing config in resource tree is enabled.", boolValue = false)
-    public static final String CONFIG_ENABLED = "resource.config.enabled";
-
-    @Property(label = "Resource Config Prefix", description = "The prefix of properties to be stored in content", value = "etc.")
-    public static final String CONFIG_PREFIX = "resource.config.prefix";
-
-    @Property(label = "Resource Config Root", description = "The resource config root", value = "/etc/distribution")
-    public static final String CONFIG_ROOT = "resource.config.root";
-
-    @Property(label = "Resource Config Properties", description = "The resource config properties", value = {"enabled"})
-    public static final String CONFIG_PROPERTIES = "resource.config.properties";
-
-    @Property(label = "Resource Config Defaults", description = "The default values for resource config properties", value = {"serializationType=distribution"})
-    public static final String CONFIG_DEFAULTS = "resource.config.defaults";
+    
+    @ObjectClassDefinition()
+    public @interface Config {
+        @AttributeDefinition(name="Resource Config enabled",description = "If storing config in resource tree is enabled.")
+        boolean enabled() default false;
+        
+        @AttributeDefinition(name="Resource Config prefix",description = "The prefix of properties to be stored in content")
+        String resourceConfigPrefix() default "etc.";
+        
+        @AttributeDefinition(name="Resource Config Root", description = "The resource config root")
+        String resourceConfigRoot() default "/etc/distribution";
+        
+        @AttributeDefinition(name="Resource Config Properties", description = "The resource config properties")
+        String[] resourceConfigProperties() default {"enabled"};
+        
+        @AttributeDefinition(name="Resource Config Defaults", description = "The default values for resource config properties")
+        String[] resourceConfigDefaults() default {"serializationType=distribution"};
+    }
 
     @Reference
     ConfigurationAdmin configurationAdmin;
@@ -76,16 +80,16 @@ public class DefaultDistributionConfigurationManager implements DistributionConf
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Activate
-    void activate(ComponentContext ctx, Map<String, Object> properties) {
-        boolean configEnabled = PropertiesUtil.toBoolean(properties.get(CONFIG_ENABLED), false);
+    void activate(ComponentContext ctx, Config conf) {
+        boolean configEnabled = conf.enabled();
 
-        String configRoot = SettingsUtils.removeEmptyEntry(PropertiesUtil.toString(properties.get(CONFIG_ROOT), null));
-        resourcePrefix = SettingsUtils.removeEmptyEntry(PropertiesUtil.toString(properties.get(CONFIG_PREFIX), null));
+        String configRoot = SettingsUtils.removeEmptyEntry(conf.resourceConfigRoot());
+        resourcePrefix = SettingsUtils.removeEmptyEntry(conf.resourceConfigPrefix());
 
-        String[] configProperties = SettingsUtils.removeEmptyEntries(PropertiesUtil.toStringArray(properties.get(CONFIG_PROPERTIES), null));
+        String[] configProperties = SettingsUtils.removeEmptyEntries(conf.resourceConfigProperties());
 
         if (configEnabled && configRoot != null && configProperties != null) {
-            Map<String, String> configDefaults = PropertiesUtil.toMap(properties.get(CONFIG_DEFAULTS), new String[0]);
+            Map<String, String> configDefaults = PropertiesUtil.toMap(conf.resourceConfigDefaults(), new String[0]);
 
             resourceManager = new ResourceConfigurationManager(configRoot, configProperties, configDefaults);
         }

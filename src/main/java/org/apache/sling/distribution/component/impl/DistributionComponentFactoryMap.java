@@ -19,16 +19,22 @@
 package org.apache.sling.distribution.component.impl;
 
 
+import static java.lang.String.format;
+import static org.apache.sling.distribution.component.impl.DistributionComponentKind.AGENT;
+import static org.apache.sling.distribution.component.impl.DistributionComponentKind.EXPORTER;
+import static org.apache.sling.distribution.component.impl.DistributionComponentKind.IMPORTER;
+import static org.apache.sling.distribution.component.impl.DistributionComponentKind.PACKAGE_BUILDER;
+import static org.apache.sling.distribution.component.impl.DistributionComponentKind.QUEUE_PROVIDER;
+import static org.apache.sling.distribution.component.impl.DistributionComponentKind.QUEUE_STRATEGY;
+import static org.apache.sling.distribution.component.impl.DistributionComponentKind.REQUEST_AUTHORIZATION;
+import static org.apache.sling.distribution.component.impl.DistributionComponentKind.TRANSPORT_SECRET_PROVIDER;
+import static org.apache.sling.distribution.component.impl.DistributionComponentKind.TRIGGER;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.PropertyUnbounded;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.distribution.agent.impl.ForwardDistributionAgentFactory;
 import org.apache.sling.distribution.agent.impl.PrivilegeDistributionRequestAuthorizationStrategy;
 import org.apache.sling.distribution.agent.impl.QueueDistributionAgentFactory;
@@ -49,16 +55,51 @@ import org.apache.sling.distribution.trigger.impl.ResourceEventDistributionTrigg
 import org.apache.sling.distribution.trigger.impl.ScheduledDistributionTriggerFactory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static java.lang.String.format;
-import static org.apache.sling.commons.osgi.PropertiesUtil.*;
-import static org.apache.sling.distribution.component.impl.DistributionComponentKind.*;
 
-@Service(value = DistributionComponentFactoryMap.class)
-@Component(metatype = false)
+@Component(service=DistributionComponentFactoryMap.class)
+@Designate(ocd=DistributionComponentFactoryMap.Config.class)
 public class DistributionComponentFactoryMap {
+    
+    // Note: Before converting to OSGI annotations there were properties, but
+    // not metatype(s)!
+    
+    @ObjectClassDefinition()
+    public @interface Config {
+        @AttributeDefinition()
+        String[] mapping_agent();
+        
+        @AttributeDefinition()
+        String[] mapping_importer();
+        
+        @AttributeDefinition()
+        String[] mapping_exporter();
+        
+        @AttributeDefinition()
+        String[] mapping_queueProvider();
+        
+        @AttributeDefinition() 
+        String[] mapping_queueStrategy();
+        
+        @AttributeDefinition()
+        String[] mapping_transportSecretProvider();
+        
+        @AttributeDefinition()
+        String[] mapping_packageBuilder();
+        
+        @AttributeDefinition()
+        String[] mapping_requestAuthorization();
+        
+        @AttributeDefinition()
+        String[] mapping_trigger();
+    }
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -110,47 +151,20 @@ public class DistributionComponentFactoryMap {
             format("jcrEvent:%s", JcrEventDistributionTriggerFactory.class.getName()) };
 
 
-    @Property(unbounded = PropertyUnbounded.ARRAY)
-    private static final String MAPPING_AGENT = "mapping.agent";
-
-    @Property(unbounded = PropertyUnbounded.ARRAY)
-    private static final String MAPPING_IMPORTER = "mapping.importer";
-
-    @Property(unbounded = PropertyUnbounded.ARRAY)
-    private static final String MAPPING_EXPORTER = "mapping.exporter";
-
-    @Property(unbounded = PropertyUnbounded.ARRAY)
-    private static final String MAPPING_QUEUE_PROVIDER = "mapping.queueProvider";
-
-    @Property(unbounded = PropertyUnbounded.ARRAY)
-    private static final String MAPPING_QUEUE_STRATEGY = "mapping.queueStrategy";
-
-    @Property(unbounded = PropertyUnbounded.ARRAY)
-    private static final String MAPPING_TRANSPORT_SECRET_PROVIDER = "mapping.transportSecretProvider";
-
-    @Property(unbounded = PropertyUnbounded.ARRAY)
-    private static final String MAPPING_PACKAGE_BUILDER = "mapping.packageBuilder";
-
-    @Property(unbounded = PropertyUnbounded.ARRAY)
-    private static final String MAPPING_REQUEST_AUTHORIZATION = "mapping.requestAuthorization";
-
-    @Property(unbounded = PropertyUnbounded.ARRAY)
-    private static final String MAPPING_TRIGGER = "mapping.trigger";
-
     private final Map<DistributionComponentKind, Map<String, String>> mapping =
             new HashMap<DistributionComponentKind, Map<String, String>>();
 
     @Activate
-    protected void activate(Map<String, Object> config) {
-        mapping.put(AGENT, parse(toStringArray(config.get(MAPPING_AGENT)), MAPPING_AGENT_DEFAULT));
-        mapping.put(IMPORTER, parse(toStringArray(config.get(MAPPING_IMPORTER)), MAPPING_IMPORTER_DEFAULT));
-        mapping.put(EXPORTER, parse(toStringArray(config.get(MAPPING_EXPORTER)), MAPPING_EXPORTER_DEFAULT));
-        mapping.put(QUEUE_PROVIDER, parse(toStringArray(config.get(MAPPING_QUEUE_PROVIDER)), MAPPING_QUEUE_PROVIDER_DEFAULT));
-        mapping.put(QUEUE_STRATEGY, parse(toStringArray(config.get(MAPPING_QUEUE_STRATEGY)), MAPPING_QUEUE_STRATEGY_DEFAULT));
-        mapping.put(TRANSPORT_SECRET_PROVIDER, parse(toStringArray(config.get(MAPPING_TRANSPORT_SECRET_PROVIDER)), MAPPING_TRANSPORT_SECRET_PROVIDER_DEFAULT));
-        mapping.put(PACKAGE_BUILDER, parse(toStringArray(config.get(MAPPING_PACKAGE_BUILDER)), MAPPING_PACKAGE_BUILDER_DEFAULT));
-        mapping.put(REQUEST_AUTHORIZATION, parse(toStringArray(config.get(MAPPING_REQUEST_AUTHORIZATION)), MAPPING_REQUEST_AUTHORIZATION_DEFAULT));
-        mapping.put(TRIGGER, parse(toStringArray(config.get(MAPPING_TRIGGER)), MAPPING_TRIGGER_DEFAULT));
+    protected void activate(Config conf) {
+        mapping.put(AGENT, parse(conf.mapping_agent(), MAPPING_AGENT_DEFAULT));
+        mapping.put(IMPORTER, parse(conf.mapping_importer(), MAPPING_IMPORTER_DEFAULT));
+        mapping.put(EXPORTER, parse(conf.mapping_exporter(), MAPPING_EXPORTER_DEFAULT));
+        mapping.put(QUEUE_PROVIDER, parse(conf.mapping_queueProvider(), MAPPING_QUEUE_PROVIDER_DEFAULT));
+        mapping.put(QUEUE_STRATEGY, parse(conf.mapping_queueStrategy(), MAPPING_QUEUE_STRATEGY_DEFAULT));
+        mapping.put(TRANSPORT_SECRET_PROVIDER, parse(conf.mapping_transportSecretProvider(), MAPPING_TRANSPORT_SECRET_PROVIDER_DEFAULT));
+        mapping.put(PACKAGE_BUILDER, parse(conf.mapping_packageBuilder(), MAPPING_PACKAGE_BUILDER_DEFAULT));
+        mapping.put(REQUEST_AUTHORIZATION, parse(conf.mapping_requestAuthorization(), MAPPING_REQUEST_AUTHORIZATION_DEFAULT));
+        mapping.put(TRIGGER, parse(conf.mapping_trigger(), MAPPING_TRIGGER_DEFAULT));
     }
 
     String getType(DistributionComponentKind kind, @NotNull String factoryPid) {
