@@ -20,12 +20,6 @@ package org.apache.sling.distribution.packaging.impl.exporter;
 
 import java.util.Map;
 
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.ConfigurationPolicy;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.apache.sling.distribution.DistributionRequest;
@@ -39,32 +33,40 @@ import org.apache.sling.distribution.packaging.impl.DistributionPackageExporter;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageProcessor;
 import org.apache.sling.distribution.queue.impl.DistributionQueueDispatchingStrategy;
 import org.jetbrains.annotations.NotNull;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 /**
  * OSGi configuration factory for {@link AgentDistributionPackageExporter}s
  */
-@Component(label = "Apache Sling Distribution Exporter - Agent Based Package Exporter",
-        metatype = true,
-        configurationFactory = true,
-        specVersion = "1.1",
-        policy = ConfigurationPolicy.REQUIRE)
-@Service(value = DistributionPackageExporter.class)
-@Property(name="webconsole.configurationFactory.nameHint", value="Exporter name: {name}")
+@Component(
+        configurationPolicy = ConfigurationPolicy.REQUIRE,
+        service=DistributionPackageExporter.class,
+        properties = {
+                "webconsole.configurationFactory.nameHint=Exporter name: {name}"
+        })
+@Designate(ocd=AgentDistributionPackageExporterFactory.Config.class, factory = true)
 public class AgentDistributionPackageExporterFactory implements DistributionPackageExporter {
+    
+    @ObjectClassDefinition(name="Apache Sling Distribution Exporter - Agent Based Package Exporter")
+    public @interface Config {
+        @AttributeDefinition(name="Name", description = "The name of the exporter.")
+        String name();
+        @AttributeDefinition(name="Queue", description = "The name of the queue from which the packages should be exported.")
+        String queue() default DistributionQueueDispatchingStrategy.DEFAULT_QUEUE_NAME;
+        
+        @AttributeDefinition(name="Drop invalid queue items", description = "Remove invalid items from the queue.")
+        boolean drop_invalid_items() default false;
+        
+        @AttributeDefinition(name = "The target reference for the DistributionAgent that will be used to export packages.")
+        String agent_target();
+    }
 
-    /**
-     * name of this exporter.
-     */
-    @Property(label = "Name", description = "The name of the exporter.")
-    private static final String NAME = DistributionComponentConstants.PN_NAME;
-
-    @Property(label = "Queue", description = "The name of the queue from which the packages should be exported.")
-    private static final String QUEUE_NAME = "queue";
-
-    @Property(label = "Drop invalid queue items", description = "Remove invalid items from the queue.", boolValue = false)
-    private static final String DROP_INVALID_QUEUE_ITEMS = "drop.invalid.items";
-
-    @Property(name = "agent.target", label = "The target reference for the DistributionAgent that will be used to export packages.")
     @Reference(name = "agent")
     private DistributionAgent agent;
 
@@ -76,14 +78,14 @@ public class AgentDistributionPackageExporterFactory implements DistributionPack
 
 
     @Activate
-    public void activate(Map<String, Object> config) throws Exception {
+    public void activate(Config conf) throws Exception {
 
-        String queueName = PropertiesUtil.toString(config.get(QUEUE_NAME), DistributionQueueDispatchingStrategy.DEFAULT_QUEUE_NAME);
+        String queueName = conf.queue();
         queueName = SettingsUtils.removeEmptyEntry(queueName);
         queueName = queueName == null ? DistributionQueueDispatchingStrategy.DEFAULT_QUEUE_NAME : queueName;
 
-        String name = PropertiesUtil.toString(config.get(NAME), "");
-        boolean dropInvalidItems = PropertiesUtil.toBoolean(config.get(DROP_INVALID_QUEUE_ITEMS), false);
+        String name = conf.name();
+        boolean dropInvalidItems = conf.drop_invalid_items();
 
 
         packageExporter = new AgentDistributionPackageExporter(queueName, agent, packageBuilderProvider, name, dropInvalidItems);

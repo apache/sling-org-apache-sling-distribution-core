@@ -18,9 +18,9 @@
  */
 package org.apache.sling.distribution.packaging.impl;
 
-import aQute.bnd.annotation.ProviderType;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
 import org.jetbrains.annotations.Nullable;
+import org.osgi.annotation.versioning.ProviderType;
 
 /**
  * A helper interface to allow finding registered {@link DistributionPackageBuilder}s
