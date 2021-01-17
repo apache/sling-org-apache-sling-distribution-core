@@ -21,45 +21,45 @@ package org.apache.sling.distribution.resources.impl;
 
 import java.util.Map;
 
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.ConfigurationPolicy;
-import org.apache.felix.scr.annotations.Deactivate;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ResourceProvider;
 import org.apache.sling.api.resource.ResourceProviderFactory;
-import org.apache.sling.commons.osgi.PropertiesUtil;
-import org.apache.sling.distribution.component.impl.DistributionComponentConstants;
 import org.apache.sling.distribution.component.impl.DistributionConfigurationManager;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * A {@link ResourceProviderFactory} for distribution configuration resources.
  */
-@Component(metatype = true,
-        label = "Apache Sling Distribution Resources - Configuration Resource Provider Factory",
-        description = "Distribution Configuration Resource Provider Factory",
-        configurationFactory = true,
-        specVersion = "1.1",
-        policy = ConfigurationPolicy.REQUIRE)
-@Service(value = ResourceProviderFactory.class)
-@Properties({
-        @Property(name = ResourceProvider.ROOTS),
-        @Property(name = ResourceProvider.OWNS_ROOTS, boolValue = true, propertyPrivate = true)
-})
-@Property(name="webconsole.configurationFactory.nameHint", value="Resource kind: {kind}")
+@Component(
+        configurationPolicy = ConfigurationPolicy.REQUIRE,
+        service=ResourceProviderFactory.class,
+        properties= {
+                "webconsole.configurationFactory.nameHint=Resource kind: {kind}",
+                "provider.ownsRoots=true"
+        })
+@Designate(ocd=DistributionConfigurationResourceProviderFactory.Config.class, factory = true)
 public class DistributionConfigurationResourceProviderFactory implements ResourceProviderFactory {
+    
+    @ObjectClassDefinition(name="Apache Sling Distribution Resources - Configuration Resource Provider Factory",
+            description="Distribution Configuration Resource Provider Factory")
+    public @interface Config {
+        @AttributeDefinition()
+        String provider_roots();
+        @AttributeDefinition()
+        String kind();
+    }
 
     private final Logger log = LoggerFactory.getLogger(getClass());
-
-    @Property
-    private final static String KIND = DistributionComponentConstants.PN_KIND;
 
     @Reference
     private
@@ -69,13 +69,10 @@ public class DistributionConfigurationResourceProviderFactory implements Resourc
     private String kind;
 
     @Activate
-    public void activate(BundleContext context, Map<String, Object> properties) {
-
-        log.debug("activating resource provider with config {}", properties);
-
-        resourceRoot = PropertiesUtil.toString(properties.get(ResourceProvider.ROOTS), null);
-        kind = PropertiesUtil.toString(properties.get(KIND), null);
-
+    public void activate(BundleContext context, Config conf) {
+        log.debug("activating resource provider with config {}", conf);
+        resourceRoot = conf.provider_roots();
+        kind = conf.kind();
     }
 
     @Deactivate
