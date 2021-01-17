@@ -20,13 +20,12 @@ package org.apache.sling.distribution.event.impl;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.distribution.component.impl.DistributionComponentKind;
 import org.apache.sling.distribution.event.DistributionEventProperties;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.jetbrains.annotations.NotNull;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.slf4j.Logger;
@@ -35,8 +34,7 @@ import org.slf4j.LoggerFactory;
 /**
  * {@link DistributionEventFactory} OSGi service
  */
-@Component(immediate = true)
-@Service(value = DistributionEventFactory.class)
+@Component(immediate = true, service=DistributionEventFactory.class)
 public class DefaultDistributionEventFactory implements DistributionEventFactory {
 
     private final Logger log = LoggerFactory.getLogger(getClass());

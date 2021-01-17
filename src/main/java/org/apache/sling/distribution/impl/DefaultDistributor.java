@@ -19,9 +19,6 @@
 
 package org.apache.sling.distribution.impl;
 
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.DistributionRequestState;
@@ -31,22 +28,22 @@ import org.apache.sling.distribution.agent.spi.DistributionAgent;
 import org.apache.sling.distribution.component.impl.DistributionComponentProvider;
 import org.apache.sling.distribution.common.DistributionException;
 import org.jetbrains.annotations.NotNull;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Default implementation of Distributor interface that dispatches the request to available agents.
  */
-@Component
-@Service(Distributor.class)
+@Component(service=Distributor.class)
 public class DefaultDistributor implements Distributor {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
 
     @Reference
-    private
-    DistributionComponentProvider componentProvider;
+    private DistributionComponentProvider componentProvider;
 
     @NotNull
     public DistributionResponse distribute(@NotNull String agentName, @NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest) {
