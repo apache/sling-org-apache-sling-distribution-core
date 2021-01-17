@@ -18,7 +18,6 @@
  */
 package org.apache.sling.distribution.agent.impl;
 
-import org.apache.felix.scr.annotations.*;
 import org.apache.jackrabbit.vault.packaging.Packaging;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.commons.osgi.PropertiesUtil;
@@ -48,6 +47,17 @@ import org.apache.sling.event.jobs.JobManager;
 import org.apache.sling.jcr.api.SlingRepository;
 import org.apache.sling.settings.SlingSettingsService;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+import org.osgi.service.metatype.annotations.Option;
 
 import java.util.*;
 
@@ -56,109 +66,115 @@ import java.util.*;
  *
  * @see {@link DistributionAgent}
  */
-@Component(metatype = true,
-        label = "Apache Sling Distribution Agent - Sync Agents Factory",
-        description = "OSGi configuration factory for syncing agents",
-        configurationFactory = true,
-        specVersion = "1.1",
-        policy = ConfigurationPolicy.REQUIRE
+@Component(
+        configurationPolicy = ConfigurationPolicy.REQUIRE,
+        property = {
+                "webconsole.configurationFactory.nameHint=Agent name: {name}"
+        }
 )
-@Reference(name = "triggers", referenceInterface = DistributionTrigger.class,
-        policy = ReferencePolicy.DYNAMIC, cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE,
-        bind = "bindDistributionTrigger", unbind = "unbindDistributionTrigger")
-@Property(name = "webconsole.configurationFactory.nameHint", value = "Agent name: {name}")
+@Designate(ocd=SyncDistributionAgentFactory.Config.class, factory = true)
 public class SyncDistributionAgentFactory extends AbstractDistributionAgentFactory<SyncDistributionAgentMBean> {
+    
+    @ObjectClassDefinition(name="Apache Sling Distribution Agent - Sync Agents Factory",
+            description = "OSGi configuration factory for syncing agents")
+    public @interface Config {
+        @AttributeDefinition(name = "Name", description = "The name of the agent." )
+        String name() default "";
+        @AttributeDefinition(name="Title", description="The display friendly title of the agent.")
+        String title() default "";
+        @AttributeDefinition(name="Details",description = "The display friendly details of the agent.")
+        String details() default "";
+        @AttributeDefinition(name="Enabled", description = "Whether or not to start the distribution agent.")
+        boolean enabled() default true;
+        
+        @AttributeDefinition(name="Service Name", description = "The name of the service used to access the repository. " +
+                "If not set, the calling user ResourceResolver will be used" )
+        String serviceName() default "";
+            
+        @AttributeDefinition(name="Log Level", description = "The log level recorded in the transient log accessible via http.",
+                options = {
+                        @Option(label="debug", value="debug"),
+                        @Option(label="info", value="info"),
+                        @Option(label="warn", value="warn"),
+                        @Option(label="error", value="error")
+        })
+        String log_level() default "info";
+        
+        @AttributeDefinition(name="Queue Processing Enabled", description = "Whether or not the distribution agent should process packages in the queues.")
+        boolean queue_processing_enabled() default true;
+        
 
-    @Property(label = "Name", description = "The name of the agent.")
+        
+        @AttributeDefinition(cardinality=100,name="passive queues", description = "List of queues that should be disabled." +
+                "These queues will gather all the packages until they are removed explicitly.")
+        String[] passiveQueues();
+        
+        @AttributeDefinition(cardinality=100, name="Exporter Endpoints", description = "List of endpoints to which packages are sent (imported). " +
+                "The list can be given as a map in case a queue should be configured for each endpoint, e.g. queueName=http://...")
+        String[] packageExporter_endpoints();
+        
+        @AttributeDefinition(cardinality=100, name="Importer Endpoints", description = "List of endpoints from which packages are received (exported)")
+        String[] packageImporter_endpoints();
+        
+        @AttributeDefinition(name="Retry Strategy", description = "The strategy to apply after a certain number of failed retries.",
+                options= {
+                        @Option(label="none",value="none"),
+                        @Option(label="errorQueue", value="errorQueue")
+                })
+        String retry_strategy() default "none";
+        
+        @AttributeDefinition(name="Retry attempts", description = "The number of times to retry until the retry strategy is applied.")
+        int retry_attempts() default 100;
+        
+        @AttributeDefinition(name="Pull items", description = "Number of subsequent pull requests to make.")
+        int pull_items() default 100;
+        
+        @AttributeDefinition(name="HTTP connection timeout", description = "The connection timeout for HTTP requests (in seconds).")
+        int http_conn_timeout() default 10;
+        
+        @AttributeDefinition(name="Request Authorization Strategy", description = "The target reference for the DistributionRequestAuthorizationStrategy used to authorize the access to distribution process," +
+                "e.g. use target=(name=...) to bind to services by name.")
+        String requestAuthorizationStrategy_target() default SettingsUtils.COMPONENT_NAME_DEFAULT;
+        
+        @AttributeDefinition(name="Transport Secret Provider", description = "The target reference for the DistributionTransportSecretProvider used to obtain the credentials used for accessing the remote endpoints, " +
+                "e.g. use target=(name=...) to bind to services by name.")
+        String transportSecretProvider_target() default SettingsUtils.COMPONENT_NAME_DEFAULT;
+        
+        @AttributeDefinition(name="Package Builder", description = "The target reference for the DistributionPackageBuilder used to create distribution packages, " +
+                "e.g. use target=(name=...) to bind to services by name.")
+        String packageBuilder_target() default SettingsUtils.COMPONENT_NAME_DEFAULT;
+        
+        @AttributeDefinition(name="Triggers",description = "The target reference for DistributionTrigger used to trigger distribution, " +
+                "e.g. use target=(name=...) to bind to services by name.")
+        String triggers_target() default DEFAULT_TRIGGER_TARGET;
+    }
+
     public static final String NAME = DistributionComponentConstants.PN_NAME;
-
-    @Property(label = "Title", description = "The display friendly title of the agent.")
     public static final String TITLE = "title";
-
-    @Property(label = "Details", description = "The display friendly details of the agent.")
     public static final String DETAILS = "details";
-
-    @Property(boolValue = true, label = "Enabled", description = "Whether or not to start the distribution agent.")
-    private static final String ENABLED = "enabled";
-
-
-    @Property(label = "Service Name", description = "The name of the service used to access the repository. " +
-            "If not set, the calling user ResourceResolver will be used")
     private static final String SERVICE_NAME = "serviceName";
-
-    @Property(options = {
-            @PropertyOption(name = "debug", value = "debug"), @PropertyOption(name = "info", value = "info"), @PropertyOption(name = "warn", value = "warn"),
-            @PropertyOption(name = "error", value = "error")},
-            value = "info",
-            label = "Log Level", description = "The log level recorded in the transient log accessible via http."
-    )
-    public static final String LOG_LEVEL = AbstractDistributionAgentFactory.LOG_LEVEL;
-
-
-    @Property(boolValue = true, label = "Queue Processing Enabled", description = "Whether or not the distribution agent should process packages in the queues.")
     private static final String QUEUE_PROCESSING_ENABLED = "queue.processing.enabled";
-
-    @Property(cardinality = 100, label = "Passive queues", description = "List of queues that should be disabled." +
-            "These queues will gather all the packages until they are removed explicitly.")
-    private static final String PASSIVE_QUEUES = "passiveQueues";
-
-    /**
-     * endpoints property
-     */
-    @Property(cardinality = 100, label = "Exporter Endpoints", description = "List of endpoints from which packages are received (exported)")
     private static final String EXPORTER_ENDPOINTS = "packageExporter.endpoints";
-
-    /**
-     * endpoints property
-     */
-    @Property(cardinality = 100, label = "Importer Endpoints", description = "List of endpoints to which packages are sent (imported). " +
-            "The list can be given as a map in case a queue should be configured for each endpoint, e.g. queueName=http://...")
     private static final String IMPORTER_ENDPOINTS = "packageImporter.endpoints";
-
-    @Property(options = {
-            @PropertyOption(name = "none", value = "none"), @PropertyOption(name = "errorQueue", value = "errorQueue")},
-            value = "none",
-            label = "Retry Strategy", description = "The strategy to apply after a certain number of failed retries."
-    )
-    private static final String RETRY_STRATEGY = "retry.strategy";
-
-    @Property(intValue = 100, label = "Retry attempts", description = "The number of times to retry until the retry strategy is applied.")
-    private static final String RETRY_ATTEMPTS = "retry.attempts";
-
-    /**
-     * no. of items to poll property
-     */
-    @Property(intValue = 100, label = "Pull Items", description = "Number of subsequent pull requests to make.")
     private static final String PULL_ITEMS = "pull.items";
-
-    /**
-     * timeout for HTTP requests
-     */
-    @Property(label = "HTTP connection timeout", intValue = 10, description = "The connection timeout for HTTP requests (in seconds).")
     public static final String HTTP = "http.conn.timeout";
+    public static final String TRIGGERS_TARGET = "triggers.target";
+    public static final String RETRY_ATTEMPTS = "retry.attempts";
+    public static final String RETRY_STRATEGY = "retry.strategy";
+    public static final String PASSIVE_QUEUES = "passiveQueues";
+
 
     @Reference
     private Packaging packaging;
 
-    @Property(name = "requestAuthorizationStrategy.target", label = "Request Authorization Strategy", description = "The target reference for the DistributionRequestAuthorizationStrategy used to authorize the access to distribution process," +
-            "e.g. use target=(name=...) to bind to services by name.", value = SettingsUtils.COMPONENT_NAME_DEFAULT)
     @Reference(name = "requestAuthorizationStrategy")
     private DistributionRequestAuthorizationStrategy requestAuthorizationStrategy;
 
-
-    @Property(name = "transportSecretProvider.target", label = "Transport Secret Provider", description = "The target reference for the DistributionTransportSecretProvider used to obtain the credentials used for accessing the remote endpoints, " +
-            "e.g. use target=(name=...) to bind to services by name.", value = SettingsUtils.COMPONENT_NAME_DEFAULT)
     @Reference(name = "transportSecretProvider")
     private DistributionTransportSecretProvider transportSecretProvider;
 
-    @Property(name = "packageBuilder.target", label = "Package Builder", description = "The target reference for the DistributionPackageBuilder used to create distribution packages, " +
-            "e.g. use target=(name=...) to bind to services by name.", value = SettingsUtils.COMPONENT_NAME_DEFAULT)
     @Reference(name = "packageBuilder")
     private DistributionPackageBuilder packageBuilder;
-
-    @Property(value = DEFAULT_TRIGGER_TARGET, label = "Triggers", description = "The target reference for DistributionTrigger used to trigger distribution, " +
-            "e.g. use target=(name=...) to bind to services by name.")
-    public static final String TRIGGERS_TARGET = "triggers.target";
 
     @Reference
     private DistributionEventFactory distributionEventFactory;
@@ -184,6 +200,9 @@ public class SyncDistributionAgentFactory extends AbstractDistributionAgentFacto
         super.activate(context, config);
     }
 
+    @Reference(name = "triggers",
+            policy = ReferencePolicy.DYNAMIC, cardinality = ReferenceCardinality.MULTIPLE,
+            bind = "bindDistributionTrigger", unbind = "unbindDistributionTrigger")
     protected void bindDistributionTrigger(DistributionTrigger distributionTrigger, Map<String, Object> config) {
         super.bindDistributionTrigger(distributionTrigger, config);
 
