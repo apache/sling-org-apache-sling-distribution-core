@@ -19,44 +19,46 @@
 package org.apache.sling.distribution.packaging.impl.importer;
 
 import java.io.InputStream;
-import java.util.Map;
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.ConfigurationPolicy;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
+
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.commons.osgi.PropertiesUtil;
-import org.apache.sling.distribution.component.impl.DistributionComponentConstants;
+import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.component.impl.SettingsUtils;
 import org.apache.sling.distribution.event.impl.DistributionEventFactory;
-import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.packaging.DistributionPackage;
-import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
-import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
+import org.apache.sling.distribution.packaging.DistributionPackageInfo;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
 import org.jetbrains.annotations.NotNull;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 /**
  * OSGi configuration factory for {@link LocalDistributionPackageImporter}s.
  */
-@Component(label = "Apache Sling Distribution Importer - Local Package Importer Factory",
-        metatype = true,
-        configurationFactory = true,
-        specVersion = "1.1",
-        policy = ConfigurationPolicy.REQUIRE)
-@Service(value = DistributionPackageImporter.class)
-@Property(name="webconsole.configurationFactory.nameHint", value="Importer name: {name}")
+@Component(service=DistributionPackageImporter.class,
+        configurationPolicy = ConfigurationPolicy.REQUIRE,
+        properties = {
+                "webconsole.configurationFactory.nameHint=Importer name: {name}"
+        })
+@Designate(ocd=LocalDistributionPackageImporterFactory.Config.class, factory = true)
 public class LocalDistributionPackageImporterFactory implements DistributionPackageImporter {
-    /**
-     * name of this importer.
-     */
-    @Property(label = "Name", description = "The name of the importer.")
-    private static final String NAME = DistributionComponentConstants.PN_NAME;
+    
+    @ObjectClassDefinition(name="Apache Sling Distribution Importer - Local Package Importer Factory")
+    public @interface Config {
+        @AttributeDefinition(name="Name", description = "THe name of the importer.")
+        String name();
+        
+        @AttributeDefinition(name="Package Builder", description = "The target reference for the DistributionPackageBuilder used to create distribution packages, " +
+            "e.g. use target=(name=...) to bind to services by name.")
+        String packageBuilder_target() default SettingsUtils.COMPONENT_NAME_DEFAULT;
+        
+    }
 
-    @Property(name = "packageBuilder.target", label = "Package Builder", description = "The target reference for the DistributionPackageBuilder used to create distribution packages, " +
-            "e.g. use target=(name=...) to bind to services by name.", value = SettingsUtils.COMPONENT_NAME_DEFAULT)
     @Reference(name = "packageBuilder")
     private DistributionPackageBuilder packageBuilder;
 
@@ -66,8 +68,8 @@ public class LocalDistributionPackageImporterFactory implements DistributionPack
     private DistributionPackageImporter importer;
 
     @Activate
-    public void activate(Map<String, Object> config) {
-        String name = PropertiesUtil.toString(config.get(NAME), null);
+    public void activate(Config conf) {
+        String name = conf.name();
         importer = new LocalDistributionPackageImporter(name, eventFactory, packageBuilder);
     }
 
