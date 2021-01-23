@@ -36,6 +36,7 @@ import java.util.NavigableMap;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 import java.util.zip.Deflater;
 
 import org.apache.commons.io.FileUtils;
@@ -418,7 +419,8 @@ public class VltUtils {
                 } else if (DistributionRequestType.ADD.equals(requestType)) {
                     String newPath = VltUtils.findParent(path, "rep:policy") + "/rep:policy";
                     paths.add(newPath);
-                    deepPaths.add(newPath);
+                    String pattern = "^" + Pattern.quote(path);
+                    deepPaths.add(pattern);
                     log.debug("changed distribution path {} to deep path {}", path, newPath);
                 }
             } else if (request.isDeep(path)) {
