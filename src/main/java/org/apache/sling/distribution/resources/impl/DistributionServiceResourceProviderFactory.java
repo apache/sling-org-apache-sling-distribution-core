@@ -33,6 +33,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
@@ -45,9 +46,11 @@ import org.slf4j.LoggerFactory;
 @Component(
         configurationPolicy = ConfigurationPolicy.REQUIRE,
         service=ResourceProvider.class,
-        properties= {
+        enabled = true,
+        properties = {
                 "webconsole.configurationFactory.nameHint=Resource kind: {kind}",
-                ResourceProvider.OWNS_ROOTS + "=true"
+                ResourceProvider.OWNS_ROOTS + ":Boolean=true",
+                "service.vendor=The Apache Software Foundation"
         })
 @Designate(ocd=DistributionServiceResourceProviderFactory.Config.class, factory=true)
 public class DistributionServiceResourceProviderFactory implements ResourceProvider {
@@ -56,7 +59,7 @@ public class DistributionServiceResourceProviderFactory implements ResourceProvi
             description = "Distribution Service Resource Provider Factory")
     public @interface Config {
         @AttributeDefinition()
-        String roots();
+        String provider_roots();
         @AttributeDefinition()
         String kind();
     }
@@ -75,7 +78,7 @@ public class DistributionServiceResourceProviderFactory implements ResourceProvi
         log.debug("activating resource provider with config {}", conf);
 
         String kind = conf.kind();
-        String resourceRoot = conf.roots();
+        String resourceRoot = conf.provider_roots();
 
         resourceProvider = new ExtendedDistributionServiceResourceProvider(kind,
                 componentProvider,

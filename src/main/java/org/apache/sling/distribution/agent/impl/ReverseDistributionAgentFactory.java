@@ -106,9 +106,9 @@ public class ReverseDistributionAgentFactory extends AbstractDistributionAgentFa
         
         @AttributeDefinition(cardinality=100, name="Importer Endpoints", description = "List of endpoints to which packages are sent (imported). " +
                 "The list can be given as a map in case a queue should be configured for each endpoint, e.g. queueName=http://...")
-        String[] packageImporter_endpoints();
+        String[] packageExporter_endpoints();
         
-        @AttributeDefinition(name="Pull items", description = "Number of subsequent pull requests to make.")
+        @AttributeDefinition(name="Pull Items", description = "Number of subsequent pull requests to make.")
         int pull_items() default 100;
         
         @AttributeDefinition(name="HTTP connection timeout", description = "The connection timeout for HTTP requests (in seconds).")
