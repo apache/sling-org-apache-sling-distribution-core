@@ -36,6 +36,7 @@ import java.util.NavigableMap;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 import java.util.zip.Deflater;
 
 import org.apache.commons.io.FileUtils;
@@ -89,7 +90,7 @@ public class VltUtils {
             boolean deep = distributionRequest.isDeep(path);
             PathFilterSet nodeFilterSet = new PathFilterSet(path);
             if (!deep) {
-                nodeFilterSet.addInclude(new DefaultPathFilter(path));
+                nodeFilterSet.addInclude(new DefaultPathFilter(Pattern.quote(path)));
             }
             initFilterSet(nodeFilterSet, nodeFilters, patterns);
 
