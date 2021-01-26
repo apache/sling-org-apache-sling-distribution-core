@@ -29,6 +29,7 @@ import org.apache.jackrabbit.vault.fs.api.PathFilterSet;
 import org.apache.jackrabbit.vault.fs.api.WorkspaceFilter;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.SimpleDistributionRequest;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import static org.apache.sling.distribution.DistributionRequestType.*;
@@ -113,4 +114,25 @@ public class VltUtilsTest {
         assertEquals("-.*/foo", filtersForSomePath.get(0));
         assertEquals("-.*/bar", filtersForSomePath.get(1));
     }
+    
+    @Test
+    public void testCreateFilterWithParenthesis() {
+        DistributionRequest request = new SimpleDistributionRequest(ADD, false, "/nodewith(shouldwork");
+        NavigableMap<String, List<String>> nodeFilters = new TreeMap<String, List<String>>();
+        NavigableMap<String, List<String>> propFilters = new TreeMap<String, List<String>>();
+        VltUtils.createFilter(request, nodeFilters, propFilters);
+    }
+    
+    @Test
+    public void testSanitizeWithPolicyNodeIsConvertedToDeepPath() {
+        String pathWithPolicy = "/nodewith(shouldwork/rep:policy";
+        String pathWithoutPolicy = "/nodewith(shouldwork";
+        DistributionRequest request = new SimpleDistributionRequest(ADD, false, pathWithPolicy, pathWithoutPolicy);
+        assertThat(request.isDeep(pathWithPolicy), Matchers.equalTo(false));
+        assertThat(request.isDeep(pathWithoutPolicy), Matchers.equalTo(false));
+        DistributionRequest sanitizedRequest = VltUtils.sanitizeRequest(request);
+        assertThat(sanitizedRequest.isDeep(pathWithPolicy), Matchers.equalTo(true));
+        assertThat(sanitizedRequest.isDeep(pathWithoutPolicy), Matchers.equalTo(false));
+    }
+    
 }
