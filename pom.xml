@@ -34,7 +34,6 @@
     <artifactId>org.apache.sling.distribution.core</artifactId>
 
     <version>0.4.5-SNAPSHOT</version>
-    <packaging>bundle</packaging>
 
     <name>Apache Sling Distribution Core</name>
     <description>
