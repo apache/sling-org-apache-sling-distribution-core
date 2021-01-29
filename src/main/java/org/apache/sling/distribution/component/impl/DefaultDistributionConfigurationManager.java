@@ -74,7 +74,7 @@ public class DefaultDistributionConfigurationManager implements DistributionConf
     private DistributionConfigurationManager osgiManager;
     private DistributionConfigurationManager resourceManager;
 
-    static String resourcePrefix;
+    private String resourcePrefix;
     static final String OSGI_PREFIX = "";
 
     private final Logger log = LoggerFactory.getLogger(getClass());

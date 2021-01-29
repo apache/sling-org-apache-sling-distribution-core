@@ -23,6 +23,7 @@ import java.io.StringWriter;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.json.Json;
@@ -52,7 +53,7 @@ public class QueueItemMapper {
 
         JsonReader reader = Json.createReader(new StringReader(infoString));
         JsonObject jsonObject = reader.readObject();
-        NumberFormat numberFormat = NumberFormat.getInstance();
+        NumberFormat numberFormat = NumberFormat.getInstance(Locale.ENGLISH);
 
         for (Map.Entry<String, JsonValue> entry : jsonObject.entrySet()) {
             if (entry.getValue().getValueType().equals(JsonValue.ValueType.ARRAY)) {

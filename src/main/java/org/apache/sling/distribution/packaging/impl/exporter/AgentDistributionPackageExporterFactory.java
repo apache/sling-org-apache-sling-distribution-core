@@ -78,7 +78,7 @@ public class AgentDistributionPackageExporterFactory implements DistributionPack
 
 
     @Activate
-    public void activate(Config conf) throws Exception {
+    public void activate(Config conf) {
 
         String queueName = conf.queue();
         queueName = SettingsUtils.removeEmptyEntry(queueName);

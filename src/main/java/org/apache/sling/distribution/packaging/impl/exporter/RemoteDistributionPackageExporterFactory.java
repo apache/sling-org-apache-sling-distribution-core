@@ -83,8 +83,8 @@ public class RemoteDistributionPackageExporterFactory implements DistributionPac
     private DistributionPackageExporter exporter;
 
     @Activate
-    protected void activate(Config conf) throws Exception {
-        log.info("activating remote exporter with pb {} and dtsp {}", packageBuilder, transportSecretProvider);
+    protected void activate(Config conf) {
+        log.info("activating remote exporter with packagebuilder {} and transportSecretProvider {}", packageBuilder, transportSecretProvider);
 
         String[] endpoints = conf.endpoints();
         endpoints = SettingsUtils.removeEmptyEntries(endpoints);

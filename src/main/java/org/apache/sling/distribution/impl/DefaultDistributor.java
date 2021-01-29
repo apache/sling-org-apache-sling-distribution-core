@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Default implementation of Distributor interface that dispatches the request to available agents.
  */
-@Component(service=Distributor.class)
+@Component()
 public class DefaultDistributor implements Distributor {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
