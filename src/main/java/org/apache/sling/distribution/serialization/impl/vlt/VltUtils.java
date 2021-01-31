@@ -90,7 +90,7 @@ public class VltUtils {
             boolean deep = distributionRequest.isDeep(path);
             PathFilterSet nodeFilterSet = new PathFilterSet(path);
             if (!deep) {
-                nodeFilterSet.addInclude(new DefaultPathFilter(Pattern.quote(path)));
+                nodeFilterSet.addInclude(new DefaultPathFilter(quote(path)));
             }
             initFilterSet(nodeFilterSet, nodeFilters, patterns);
 
@@ -100,6 +100,8 @@ public class VltUtils {
 
             filter.add(nodeFilterSet, propertyFilterSet);
         }
+
+        log.info("filter: {}", filter);
 
         return filter;
     }
@@ -447,4 +449,19 @@ public class VltUtils {
 
         return result;
     }
+
+    private static String quote(String path) {
+
+        // See SLING-10088, JCRVLT-500
+
+        if (path == null) {
+            return null;
+        } else if (path.startsWith("/")) {
+            return "/" + Pattern.quote(path.substring(1));
+        } else {
+            return Pattern.quote(path);
+        }
+
+    }
+
 }
