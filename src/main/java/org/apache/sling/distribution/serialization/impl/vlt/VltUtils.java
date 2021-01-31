@@ -90,7 +90,7 @@ public class VltUtils {
             boolean deep = distributionRequest.isDeep(path);
             PathFilterSet nodeFilterSet = new PathFilterSet(path);
             if (!deep) {
-                nodeFilterSet.addInclude(new DefaultPathFilter(Pattern.quote(path)));
+                nodeFilterSet.addInclude(new DefaultPathFilter(quote(path)));
             }
             initFilterSet(nodeFilterSet, nodeFilters, patterns);
 
@@ -447,4 +447,24 @@ public class VltUtils {
 
         return result;
     }
+
+    private static String quote(String path) {
+
+        /*
+         * As a workaround for JCRVLT-500,
+         * we escape all but the root slash.
+         *
+         * See also SLING-10088
+         */
+
+        if (path == null) {
+            return null;
+        } else if (path.startsWith("/")) {
+            return "/" + Pattern.quote(path.substring(1));
+        } else {
+            return Pattern.quote(path);
+        }
+
+    }
+
 }
