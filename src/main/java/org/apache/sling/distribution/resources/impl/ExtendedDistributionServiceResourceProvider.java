@@ -210,10 +210,8 @@ public class ExtendedDistributionServiceResourceProvider extends DistributionSer
             result.put("time", status.getEntered().getTime());
             result.put("state", status.getItemState().name());
             if (status.getError() != null) {
-                Map<String, String> error = new HashMap<>();
-                error.put("message", status.getError().getMessage());
-                error.put("stackTrace", status.getError().toString());
-                result.put("error", error);
+                result.put("errorMessage", status.getError().getMessage());
+                result.put("errorTrace", status.getError().toString());
             }
         }
 
