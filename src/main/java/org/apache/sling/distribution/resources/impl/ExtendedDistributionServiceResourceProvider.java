@@ -19,6 +19,8 @@
 
 package org.apache.sling.distribution.resources.impl;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -209,9 +211,12 @@ public class ExtendedDistributionServiceResourceProvider extends DistributionSer
             result.put("attempts", status.getAttempts());
             result.put("time", status.getEntered().getTime());
             result.put("state", status.getItemState().name());
-            if (status.getError() != null) {
-                result.put("errorMessage", status.getError().getMessage());
-                result.put("errorTrace", status.getError().toString());
+            Throwable error = status.getError();
+            if (error != null) {
+                StringWriter trace = new StringWriter();
+                error.printStackTrace(new PrintWriter(trace));
+                result.put("errorTrace", trace.toString());
+                result.put("errorMessage", error.getMessage());
             }
         }
 
