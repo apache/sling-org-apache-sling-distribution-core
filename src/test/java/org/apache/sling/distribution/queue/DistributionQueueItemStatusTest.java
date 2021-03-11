@@ -22,28 +22,27 @@ import java.util.Calendar;
 
 import org.junit.Test;
 
+import static org.apache.sling.distribution.queue.DistributionQueueItemState.ERROR;
+import static org.apache.sling.distribution.queue.DistributionQueueItemState.QUEUED;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 
 public class DistributionQueueItemStatusTest {
 
     @Test
     public void getNoErrorByDefault() {
-        DistributionQueueItemStatus status = new DistributionQueueItemStatus(any(Calendar.class),
-                any(DistributionQueueItemState.class), anyInt(), anyString());
+        DistributionQueueItemStatus status = new DistributionQueueItemStatus(Calendar.getInstance(),
+                QUEUED, 0, "queue-name");
         assertNull(status.getError());
     }
 
     @Test
     public void getErrorByDefault() {
         Throwable cause = mock(Throwable.class);
-        DistributionQueueItemStatus status = new DistributionQueueItemStatus(any(Calendar.class),
-                any(DistributionQueueItemState.class), anyInt(), anyString(), cause);
+        DistributionQueueItemStatus status = new DistributionQueueItemStatus(Calendar.getInstance(),
+                ERROR, 10, "queue-name", cause);
         assertNotNull(status.getError());
         assertEquals(cause, status.getError());
     }
