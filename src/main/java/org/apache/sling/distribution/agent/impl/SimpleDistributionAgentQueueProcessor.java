@@ -147,6 +147,9 @@ class SimpleDistributionAgentQueueProcessor implements DistributionQueueProcesso
                 } catch (RecoverableDistributionException e) {
                     distributionLog.warn("[{}] PACKAGE-FAIL {}: could not deliver {}, {}", queueName, requestId, distributionPackage.getId(), e.getMessage());
                     distributionLog.debug("could not deliver package {}", distributionPackage.getId(), e);
+                    // since there is a recoverable error, it is possible that the same error is observed on the retry
+                    // we should add a linear backoff using random delay before re-attempting to distribute the same item.
+                    addRandomDelay();
                 } catch (Throwable e) {
                     distributionLog.error("[{}] PACKAGE-FAIL {}: could not deliver package {} {}", queueName, requestId, distributionPackage.getId(), e.getMessage(), e);
                     if (errorQueueStrategy != null && queueItemStatus.getAttempts() > retryAttempts) {
@@ -171,6 +174,16 @@ class SimpleDistributionAgentQueueProcessor implements DistributionQueueProcesso
 
         // return true if item should be removed from queue
         return removeItemFromQueue;
+    }
+
+    private void addRandomDelay(){
+        int random = (int)(30 * Math.random() + 0);
+        try {
+            Thread.sleep(random * 1000);
+        } catch (InterruptedException e) {
+            // eat this exception
+            // If there is an exception in Thread.sleep(), we will retry to distribute queueItem immediately.
+        }
     }
 
     private boolean reEnqueuePackage(DistributionPackage distributionPackage) {
