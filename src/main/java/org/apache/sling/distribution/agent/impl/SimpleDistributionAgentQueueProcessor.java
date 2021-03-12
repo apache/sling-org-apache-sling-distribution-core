@@ -149,7 +149,7 @@ class SimpleDistributionAgentQueueProcessor implements DistributionQueueProcesso
                     distributionLog.debug("could not deliver package {}", distributionPackage.getId(), e);
                     // since there is a recoverable error, it is possible that the same error is observed on the retry
                     // we should add a linear backoff using random delay before re-attempting to distribute the same item.
-                    addRandomDelay();
+                    addRandomDelay(queueItemStatus.getAttempts());
                 } catch (Throwable e) {
                     distributionLog.error("[{}] PACKAGE-FAIL {}: could not deliver package {} {}", queueName, requestId, distributionPackage.getId(), e.getMessage(), e);
                     if (errorQueueStrategy != null && queueItemStatus.getAttempts() > retryAttempts) {
@@ -176,11 +176,13 @@ class SimpleDistributionAgentQueueProcessor implements DistributionQueueProcesso
         return removeItemFromQueue;
     }
 
-    private void addRandomDelay(){
-        int random = (int)(30 * Math.random() + 0);
+    private void addRandomDelay(int retryAttempts){
+        int min = 1;
+        int max = Math.min(retryAttempts, 30);
+        int random = (int)(Math.random() *  (max - min + 1) + min);
         try {
             Thread.sleep(random * 1000);
-        } catch (InterruptedException e) {
+        } catch (InterruptedException ign) {
             // eat this exception
             // If there is an exception in Thread.sleep(), we will retry to distribute queueItem immediately.
         }
