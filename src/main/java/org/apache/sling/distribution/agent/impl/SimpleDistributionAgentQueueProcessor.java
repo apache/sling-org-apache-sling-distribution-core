@@ -110,6 +110,13 @@ class SimpleDistributionAgentQueueProcessor implements DistributionQueueProcesso
         DistributionQueueItemStatus queueItemStatus = queueEntry.getStatus();
         try {
 
+            int processingAttempt = queueItemStatus.getAttempts();
+            if (processingAttempt > 0) {
+                // since there is a retry, it is possible that the same error is observed again
+                // we should add a linear backoff using random delay before re-attempting to distribute the same item.
+                addRandomDelay(queueItemStatus.getAttempts());
+            }
+
             String callingUser = queueItem.get(DistributionPackageUtils.PACKAGE_INFO_PROPERTY_REQUEST_USER, String.class);
             String requestId = queueItem.get(DistributionPackageUtils.PACKAGE_INFO_PROPERTY_REQUEST_ID, String.class);
             Long globalStartTime = queueItem.get(DistributionPackageUtils.PACKAGE_INFO_PROPERTY_REQUEST_START_TIME, Long.class);
@@ -147,9 +154,6 @@ class SimpleDistributionAgentQueueProcessor implements DistributionQueueProcesso
                 } catch (RecoverableDistributionException e) {
                     distributionLog.warn("[{}] PACKAGE-FAIL {}: could not deliver {}, {}", queueName, requestId, distributionPackage.getId(), e.getMessage());
                     distributionLog.debug("could not deliver package {}", distributionPackage.getId(), e);
-                    // since there is a recoverable error, it is possible that the same error is observed on the retry
-                    // we should add a linear backoff using random delay before re-attempting to distribute the same item.
-                    addRandomDelay(queueItemStatus.getAttempts());
                 } catch (Throwable e) {
                     distributionLog.error("[{}] PACKAGE-FAIL {}: could not deliver package {} {}", queueName, requestId, distributionPackage.getId(), e.getMessage(), e);
                     if (errorQueueStrategy != null && queueItemStatus.getAttempts() > retryAttempts) {
