@@ -110,6 +110,13 @@ class SimpleDistributionAgentQueueProcessor implements DistributionQueueProcesso
         DistributionQueueItemStatus queueItemStatus = queueEntry.getStatus();
         try {
 
+            int processingAttempt = queueItemStatus.getAttempts();
+            if (processingAttempt > 0) {
+                // since there is a retry, it is possible that the same error is observed again
+                // we should add a linear backoff using random delay before re-attempting to distribute the same item.
+                addRandomDelay(queueItemStatus.getAttempts());
+            }
+
             String callingUser = queueItem.get(DistributionPackageUtils.PACKAGE_INFO_PROPERTY_REQUEST_USER, String.class);
             String requestId = queueItem.get(DistributionPackageUtils.PACKAGE_INFO_PROPERTY_REQUEST_ID, String.class);
             Long globalStartTime = queueItem.get(DistributionPackageUtils.PACKAGE_INFO_PROPERTY_REQUEST_START_TIME, Long.class);
@@ -171,6 +178,18 @@ class SimpleDistributionAgentQueueProcessor implements DistributionQueueProcesso
 
         // return true if item should be removed from queue
         return removeItemFromQueue;
+    }
+
+    private void addRandomDelay(int retryAttempts){
+        int min = 1;
+        int max = Math.min(retryAttempts, 30);
+        int random = (int)(Math.random() *  (max - min + 1) + min);
+        try {
+            Thread.sleep(random * 1000);
+        } catch (InterruptedException ign) {
+            // eat this exception
+            // If there is an exception in Thread.sleep(), we will retry to distribute queueItem immediately.
+        }
     }
 
     private boolean reEnqueuePackage(DistributionPackage distributionPackage) {
