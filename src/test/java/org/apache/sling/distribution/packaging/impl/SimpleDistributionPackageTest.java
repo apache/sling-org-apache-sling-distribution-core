@@ -21,6 +21,7 @@ package org.apache.sling.distribution.packaging.impl;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 
 import org.apache.commons.io.IOUtils;
@@ -30,8 +31,10 @@ import org.apache.sling.distribution.SimpleDistributionRequest;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import static org.apache.commons.io.IOUtils.toInputStream;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -43,6 +46,8 @@ import static org.mockito.Mockito.when;
  * Testcase for {@link SimpleDistributionPackage}
  */
 public class SimpleDistributionPackageTest {
+
+    private static final String TYPE = "testPackageType";
 
     private static final String DSTRPCK_DELETE = "DSTRPCK::DELETE|/abc:/c";
     private static final String DSTRPCK_ITEM_WITH_COMMA_DELETE = "DSTRPCK::DELETE|/ab,c:/c";
@@ -74,6 +79,15 @@ public class SimpleDistributionPackageTest {
         when(stream.read(Mockito.any(byte[].class), Mockito.eq(0), Mockito.anyInt())).thenThrow(new IOException("Expected"));
         SimpleDistributionPackage pkg = SimpleDistributionPackage.fromStream(stream, "ADD");
         assertThat(pkg, nullValue());
+    }
+
+    @Test
+    public void testPackageWithNamespaceInPath() {
+        DistributionRequest req = new SimpleDistributionRequest(DistributionRequestType.ADD, "/a/jcr:content", "/b");
+        SimpleDistributionPackage pkgOut = new SimpleDistributionPackage(req, TYPE);
+        SimpleDistributionPackage pkgIn = SimpleDistributionPackage.fromStream(toInputStream(pkgOut.toString(), Charset.defaultCharset()), TYPE);
+        assertNotNull(pkgIn);
+        assertArrayEquals(pkgOut.getInfo().getPaths(), pkgIn.getInfo().getPaths());
     }
 
     @Test
