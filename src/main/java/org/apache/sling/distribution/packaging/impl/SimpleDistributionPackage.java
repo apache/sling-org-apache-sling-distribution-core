@@ -41,7 +41,7 @@ public class SimpleDistributionPackage extends AbstractDistributionPackage imple
     private final static String PACKAGE_START = "DSTRPCK::";
     private final static String PACKAGE_START_OLD = "DSTRPCK:";
     private final static String DELIM = "|";
-    private final static String PATH_DELIM = ":";
+    private final static String PATH_DELIM = "]";
     private final static String PATH_DELIM_OLD = ",";
     private final long size;
 
