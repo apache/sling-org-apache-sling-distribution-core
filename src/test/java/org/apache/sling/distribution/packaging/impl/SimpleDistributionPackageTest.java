@@ -21,6 +21,7 @@ package org.apache.sling.distribution.packaging.impl;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 
 import org.apache.commons.io.IOUtils;
@@ -30,8 +31,9 @@ import org.apache.sling.distribution.SimpleDistributionRequest;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.apache.commons.io.IOUtils.toInputStream;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -44,8 +46,7 @@ import static org.mockito.Mockito.when;
  */
 public class SimpleDistributionPackageTest {
 
-    private static final String DSTRPCK_DELETE = "DSTRPCK::DELETE|/abc:/c";
-    private static final String DSTRPCK_ITEM_WITH_COMMA_DELETE = "DSTRPCK::DELETE|/ab,c:/c";
+    private static final String TYPE = "testPackageType";
 
     @Test
     public void testInvalid() {
@@ -77,41 +78,21 @@ public class SimpleDistributionPackageTest {
     }
 
     @Test
+    public void testPackageWithNamespaceInPath() {
+        DistributionRequest request = new SimpleDistributionRequest(DistributionRequestType.ADD, "/a/jcr:content", "/b");
+        testPackageSerDeser(request);
+    }
+
+    @Test
     public void testCreatedAndReadPackagesEqualityWithCommaInName() throws Exception {
         DistributionRequest request = new SimpleDistributionRequest(DistributionRequestType.DELETE, "/ab,c", "/c");
-        SimpleDistributionPackage createdPackage = new SimpleDistributionPackage(request, "VOID");
-        assertThat(createdPackage.toString(), equalTo(DSTRPCK_ITEM_WITH_COMMA_DELETE));
-        // Just to run the code
-        createdPackage.acquire();
-        createdPackage.release();
-        createdPackage.close();
-        createdPackage.delete();
-
-        SimpleDistributionPackage readPackage = SimpleDistributionPackage.fromStream(new ByteArrayInputStream(DSTRPCK_ITEM_WITH_COMMA_DELETE.getBytes()), "VOID");
-        assertNotNull(readPackage);
-        assertEquals(Arrays.toString(createdPackage.getInfo().getPaths()), Arrays.toString(readPackage.getInfo().getPaths()));
+        testPackageSerDeser(request);
     }
     
     @Test
     public void testCreatedAndReadPackagesEquality() throws Exception {
         DistributionRequest request = new SimpleDistributionRequest(DistributionRequestType.DELETE, "/abc", "/c");
-        SimpleDistributionPackage createdPackage = new SimpleDistributionPackage(request, "VOID");
-        assertThat(createdPackage.toString(), equalTo(DSTRPCK_DELETE));
-        // Just to run the code
-        createdPackage.acquire();
-        createdPackage.release();
-        createdPackage.close();
-        createdPackage.delete();
-        
-        SimpleDistributionPackage readPackage = SimpleDistributionPackage.fromStream(new ByteArrayInputStream(DSTRPCK_DELETE.getBytes()), "VOID");
-        assertNotNull(readPackage);
-        assertEquals(DSTRPCK_DELETE.length(), readPackage.getSize());
-        assertEquals(createdPackage.getType(), readPackage.getType());
-        assertEquals(createdPackage.getInfo().getRequestType(), readPackage.getInfo().getRequestType());
-        assertEquals(Arrays.toString(createdPackage.getInfo().getPaths()), Arrays.toString(readPackage.getInfo().getPaths()));
-        assertEquals(createdPackage.getId(), readPackage.getId());
-        assertTrue(IOUtils.contentEquals(createdPackage.createInputStream(), readPackage.createInputStream()));
-        
+        testPackageSerDeser(request);
     }
 
     @Test
@@ -125,5 +106,15 @@ public class SimpleDistributionPackageTest {
         assertEquals(Arrays.toString(createdPackage.getInfo().getPaths()), Arrays.toString(readPackage.getInfo().getPaths()));
         assertEquals(createdPackage.getId(), readPackage.getId());
         assertTrue(IOUtils.contentEquals(createdPackage.createInputStream(), readPackage.createInputStream()));
+    }
+
+    private void testPackageSerDeser(DistributionRequest request) {
+        SimpleDistributionPackage pkgOut = new SimpleDistributionPackage(request, TYPE);
+        SimpleDistributionPackage pkgIn = SimpleDistributionPackage.fromStream(toInputStream(pkgOut.toString(), Charset.defaultCharset()), TYPE);
+        assertNotNull(pkgIn);
+        assertArrayEquals(pkgOut.getInfo().getPaths(), pkgIn.getInfo().getPaths());
+        assertEquals(pkgOut.getType(), pkgIn.getType());
+        assertEquals(pkgOut.getId(), pkgIn.getId());
+        assertEquals(pkgOut.getInfo().getRequestType(), pkgIn.getInfo().getRequestType());
     }
 }
