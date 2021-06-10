@@ -61,7 +61,7 @@ public class UserCredentialsDistributionTransportSecretProvider implements
     @Property(label = "User Name", description = "The name of the user used to perform remote actions.")
     private final static String USERNAME = "username";
 
-    @Property(label = "Password", description = "The clear text password to perform authentication. Warning: storing clear text passwords is not safe.")
+    @Property(passwordValue = "", label = "Password", description = "The clear text password to perform authentication. Warning: storing clear text passwords is not safe.")
     private final static String PASSWORD = "password";
 
     private String username;
