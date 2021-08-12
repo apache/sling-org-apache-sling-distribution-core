@@ -40,7 +40,6 @@ import org.apache.jackrabbit.vault.fs.io.ImportOptions;
 import org.apache.jackrabbit.vault.fs.io.Importer;
 import org.apache.jackrabbit.vault.fs.io.ZipStreamArchive;
 import org.apache.jackrabbit.vault.packaging.ExportOptions;
-import org.apache.jackrabbit.vault.packaging.PackageException;
 import org.apache.jackrabbit.vault.packaging.Packaging;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
@@ -133,6 +132,8 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
         try {
             session = getSession(resourceResolver);
             ImportOptions importOptions = VltUtils.getImportOptions(aclHandling, cugHandling, importMode, autosaveThreshold, strict);
+            ErrorListener errorListener = new ErrorListener();
+            importOptions.setListener(errorListener);
             Importer importer = new Importer(importOptions);
             archive = new ZipStreamArchive(inputStream);
             archive.open(false);
@@ -161,7 +162,7 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
             // now import the content
             importer.run(archive, session, "/");
             if (importer.hasErrors() && importOptions.isStrict()) {
-                throw new PackageException("Errors during import.");
+                throw errorListener.getLastError();
             }
             if (session.hasPendingChanges()) {
                 session.save();
