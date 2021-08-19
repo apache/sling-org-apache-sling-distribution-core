@@ -295,7 +295,7 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
             Dictionary<String, Object> props = new Hashtable<String, Object>();
             props.put(Scheduler.PROPERTY_SCHEDULER_CONCURRENT, false);
             props.put(Scheduler.PROPERTY_SCHEDULER_PERIOD, cleanupDelay);
-            props.put(Scheduler.PROPERTY_SCHEDULER_RUN_ON, Scheduler.VALUE_RUN_ON_LEADER);
+            props.put(Scheduler.PROPERTY_SCHEDULER_RUN_ON, Scheduler.VALUE_RUN_ON_SINGLE);
             packageCleanup = context.registerService(Runnable.class, cleanup, props);
             wrapped = resourceDistributionPackageBuilder;
         }
