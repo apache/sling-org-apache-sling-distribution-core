@@ -62,7 +62,7 @@ public final class DistributionQueueItem extends ValueMapDecorator implements Va
     }
 
     /**
-     * get the paths covered by the distribution package proxied by this distribution item
+     * get the paths covered by the distribution package proxied by this queue item
      *
      * @return an array of paths
      */
