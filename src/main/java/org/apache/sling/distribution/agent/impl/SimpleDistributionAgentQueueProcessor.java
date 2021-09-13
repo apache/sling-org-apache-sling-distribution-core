@@ -92,7 +92,7 @@ class SimpleDistributionAgentQueueProcessor implements DistributionQueueProcesso
 
             final long endTime = System.currentTimeMillis();
 
-            distributionLog.debug("[{}] ITEM-PROCESSED item={}, status={}, processingTime={}ms", queueName, queueItem, success, endTime - startTime);
+            distributionLog.info("[{}] ITEM-PROCESSED item={}, status={}, processingTime={}ms", queueName, queueItem, success, endTime - startTime);
 
             return success;
 

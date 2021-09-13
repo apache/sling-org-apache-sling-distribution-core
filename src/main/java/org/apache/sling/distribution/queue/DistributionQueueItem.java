@@ -18,10 +18,12 @@
  */
 package org.apache.sling.distribution.queue;
 
+import java.util.Arrays;
 import java.util.Map;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.wrappers.ValueMapDecorator;
 import org.apache.sling.distribution.packaging.DistributionPackage;
+import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.jetbrains.annotations.NotNull;
 
@@ -44,7 +46,6 @@ public final class DistributionQueueItem extends ValueMapDecorator implements Va
         super(base);
         this.packageId = packageId;
         this.size = size;
-
     }
 
     @NotNull
@@ -60,10 +61,20 @@ public final class DistributionQueueItem extends ValueMapDecorator implements Va
         return size;
     }
 
+    /**
+     * get the paths covered by the distribution package proxied by this distribution item
+     *
+     * @return an array of paths
+     */
+    private String[] getPaths() {
+        return get(DistributionPackageInfo.PROPERTY_REQUEST_PATHS, String[].class);
+    }
+
     @Override
     public String toString() {
         return "DistributionQueueItem{" +
                 "id='" + packageId + '\'' +
+                ", paths='" + Arrays.toString(getPaths()) + '\'' +
                 ", info=" + super.toString() +
                 '}';
     }
