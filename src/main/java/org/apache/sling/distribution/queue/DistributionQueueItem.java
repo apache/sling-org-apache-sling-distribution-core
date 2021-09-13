@@ -37,7 +37,6 @@ public final class DistributionQueueItem extends ValueMapDecorator implements Va
 
     private final String packageId;
     private final long size;
-    private final Map<String, Object> base;
 
     public DistributionQueueItem(@NotNull String packageId, Map<String, Object> base) {
         this(packageId, -1, base);
@@ -47,7 +46,6 @@ public final class DistributionQueueItem extends ValueMapDecorator implements Va
         super(base);
         this.packageId = packageId;
         this.size = size;
-        this.base = base;
     }
 
     @NotNull
@@ -67,25 +65,25 @@ public final class DistributionQueueItem extends ValueMapDecorator implements Va
     public String toString() {
         return "DistributionQueueItem{" +
                 "id='" + packageId + '\'' +
-                ", info={" + queueInfo(base) + '}' +
+                ", info={" + queueInfo() + '}' +
                 '}';
     }
 
     /*
      * convert the map of object values into string form
      */
-    private String queueInfo(Map<String, Object> base) {
-        String queueItem = "";
-        for(String key : base.keySet()) {
-            Object value = base.get(key);
+    private String queueInfo() {
+        String queueItemStr = "";
+        for(String key : super.keySet()) {
+            Object value = super.get(key);
             String valueString = "";
-            if (value instanceof String[]) {
-                valueString = key + "=" + Arrays.toString((String[])value);
+            if (value.getClass().isArray()) {
+                valueString = key + "=" + Arrays.toString((Object[])value);
             } else {
                 valueString = key + "=" + value.toString();
             }
-            queueItem = String.join(",", queueItem, valueString);
+            queueItemStr = String.join(",", queueItemStr, valueString);
         }
-        return queueItem.isEmpty() ? queueItem : queueItem.substring(1);
+        return queueItemStr.isEmpty() ? queueItemStr : queueItemStr.substring(1);
     }
 }
