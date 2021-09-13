@@ -20,10 +20,10 @@ package org.apache.sling.distribution.queue;
 
 import java.util.Arrays;
 import java.util.Map;
+
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.wrappers.ValueMapDecorator;
 import org.apache.sling.distribution.packaging.DistributionPackage;
-import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,6 +37,7 @@ public final class DistributionQueueItem extends ValueMapDecorator implements Va
 
     private final String packageId;
     private final long size;
+    private final Map<String, Object> base;
 
     public DistributionQueueItem(@NotNull String packageId, Map<String, Object> base) {
         this(packageId, -1, base);
@@ -46,6 +47,7 @@ public final class DistributionQueueItem extends ValueMapDecorator implements Va
         super(base);
         this.packageId = packageId;
         this.size = size;
+        this.base = base;
     }
 
     @NotNull
@@ -61,21 +63,29 @@ public final class DistributionQueueItem extends ValueMapDecorator implements Va
         return size;
     }
 
-    /**
-     * get the paths covered by the distribution package proxied by this queue item
-     *
-     * @return an array of paths
-     */
-    private String[] getPaths() {
-        return get(DistributionPackageInfo.PROPERTY_REQUEST_PATHS, String[].class);
-    }
-
     @Override
     public String toString() {
         return "DistributionQueueItem{" +
                 "id='" + packageId + '\'' +
-                ", paths='" + Arrays.toString(getPaths()) + '\'' +
-                ", info=" + super.toString() +
+                ", info={" + queueInfo(base) + '}' +
                 '}';
+    }
+
+    /*
+     * convert the map of object values into string form
+     */
+    private String queueInfo(Map<String, Object> base) {
+        String queueItem = "";
+        for(String key : base.keySet()) {
+            Object value = base.get(key);
+            String valueString = "";
+            if (value instanceof String[]) {
+                valueString = key + "=" + Arrays.toString((String[])value);
+            } else {
+                valueString = key + "=" + value.toString();
+            }
+            queueItem = String.join(",", queueItem, valueString);
+        }
+        return queueItem.isEmpty() ? queueItem : queueItem.substring(1);
     }
 }
