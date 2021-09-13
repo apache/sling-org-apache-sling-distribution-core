@@ -65,14 +65,14 @@ public final class DistributionQueueItem extends ValueMapDecorator implements Va
     public String toString() {
         return "DistributionQueueItem{" +
                 "id='" + packageId + '\'' +
-                ", info={" + queueInfo() + '}' +
+                ", info={" + getQueueInfo() + '}' +
                 '}';
     }
 
     /*
      * convert the map of object values into string form
      */
-    private String queueInfo() {
+    private String getQueueInfo() {
         String queueItemStr = "";
         for(String key : super.keySet()) {
             Object value = super.get(key);
