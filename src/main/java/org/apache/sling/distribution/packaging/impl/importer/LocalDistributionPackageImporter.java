@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.component.impl.DistributionComponentKind;
@@ -30,8 +31,8 @@ import org.apache.sling.distribution.event.DistributionEventTopics;
 import org.apache.sling.distribution.event.impl.DistributionEventFactory;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
-import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
 import org.apache.sling.distribution.packaging.impl.ReferencePackage;
 import org.jetbrains.annotations.NotNull;
@@ -79,7 +80,8 @@ public class LocalDistributionPackageImporter implements DistributionPackageImpo
             log.warn("could not install distribution package {}", distributionPackage.getId());
         }
 
-        eventFactory.generatePackageEvent(DistributionEventTopics.IMPORTER_PACKAGE_IMPORTED, DistributionComponentKind.IMPORTER, name, distributionPackage.getInfo());
+        eventFactory.generatePackageEvent(DistributionEventTopics.IMPORTER_PACKAGE_IMPORTED, DistributionComponentKind.IMPORTER,
+                name, distributionPackage.getInfo(), null);
     }
 
     @Override
@@ -105,7 +107,8 @@ public class LocalDistributionPackageImporter implements DistributionPackageImpo
                         if (packageBuilder.installPackage(resourceResolver, distributionPackage)) {
                             DistributionPackageInfo info = distributionPackage.getInfo();
                             log.info("package installed {}", info);
-                            eventFactory.generatePackageEvent(DistributionEventTopics.IMPORTER_PACKAGE_IMPORTED, DistributionComponentKind.IMPORTER, name, info);
+                            eventFactory.generatePackageEvent(DistributionEventTopics.IMPORTER_PACKAGE_IMPORTED,
+                                    DistributionComponentKind.IMPORTER, name, info, null);
                             return info;
                         } else {
                             throw new DistributionException("could not install package {}" + distributionPackage);
@@ -134,13 +137,15 @@ public class LocalDistributionPackageImporter implements DistributionPackageImpo
                     packageInfo = packageBuilder.installPackage(resourceResolver, stream);
                     log.info("package installed {}", packageInfo);
                 }
-                eventFactory.generatePackageEvent(DistributionEventTopics.IMPORTER_PACKAGE_IMPORTED, DistributionComponentKind.IMPORTER, name, packageInfo);
+                eventFactory.generatePackageEvent(DistributionEventTopics.IMPORTER_PACKAGE_IMPORTED, DistributionComponentKind.IMPORTER,
+                        name, packageInfo, null);
                 return packageInfo;
             }
         } else {
             DistributionPackageInfo packageInfo = packageBuilder.installPackage(resourceResolver, stream);
             log.info("package installed");
-            eventFactory.generatePackageEvent(DistributionEventTopics.IMPORTER_PACKAGE_IMPORTED, DistributionComponentKind.IMPORTER, name, packageInfo);
+            eventFactory.generatePackageEvent(DistributionEventTopics.IMPORTER_PACKAGE_IMPORTED,
+                    DistributionComponentKind.IMPORTER, name, packageInfo, null);
             return packageInfo;
         }
 

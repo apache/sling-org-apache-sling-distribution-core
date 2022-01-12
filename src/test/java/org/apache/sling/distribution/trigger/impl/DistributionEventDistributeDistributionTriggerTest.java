@@ -18,6 +18,13 @@
  */
 package org.apache.sling.distribution.trigger.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.DistributionRequestType;
@@ -31,13 +38,6 @@ import org.apache.sling.testing.mock.osgi.junit.OsgiContext;
 import org.junit.Rule;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
-
-import static org.mockito.Mockito.mock;
-import static org.junit.Assert.*;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Testcase for {@link DistributionEventDistributeDistributionTrigger}
@@ -98,7 +98,7 @@ public class DistributionEventDistributeDistributionTriggerTest {
             public void handle(ResourceResolver resourceResolver, DistributionRequest request) {
                 // we simple fire an event, to cause the loop
                 eventFactory.generatePackageEvent(DistributionEventTopics.AGENT_PACKAGE_DISTRIBUTED,
-                        DistributionComponentKind.AGENT, "test", info);
+                        DistributionComponentKind.AGENT, "test", info, null);
                 handled.addAndGet(1);
             }
         };
@@ -108,7 +108,7 @@ public class DistributionEventDistributeDistributionTriggerTest {
         Thread testExecution = new Thread() {
             @Override public void run() {
                 eventFactory.generatePackageEvent(DistributionEventTopics.AGENT_PACKAGE_DISTRIBUTED, DistributionComponentKind.AGENT,
-                        "origin", info);
+                        "origin", info, null);
             }
         };
 
