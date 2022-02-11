@@ -38,6 +38,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.AttributeType;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
@@ -59,7 +60,8 @@ public class UserCredentialsDistributionTransportSecretProvider implements
         @AttributeDefinition(name="User Name", description = "The name of the user used to perform remote actions.")
         String username();
         
-        @AttributeDefinition(name="Password", description = "The clear text password to perform authentication. Warning: storing clear text passwords is not safe.")
+        @AttributeDefinition(type = AttributeType.PASSWORD, name="Password", 
+                description = "The clear text password to perform authentication. Warning: storing clear text passwords is not safe.")
         String password();
     }
 

@@ -18,7 +18,9 @@
  */
 package org.apache.sling.distribution.queue;
 
+import java.util.Arrays;
 import java.util.Map;
+
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.wrappers.ValueMapDecorator;
 import org.apache.sling.distribution.packaging.DistributionPackage;
@@ -44,7 +46,6 @@ public final class DistributionQueueItem extends ValueMapDecorator implements Va
         super(base);
         this.packageId = packageId;
         this.size = size;
-
     }
 
     @NotNull
@@ -64,7 +65,25 @@ public final class DistributionQueueItem extends ValueMapDecorator implements Va
     public String toString() {
         return "DistributionQueueItem{" +
                 "id='" + packageId + '\'' +
-                ", info=" + super.toString() +
+                ", info={" + getQueueInfo() + '}' +
                 '}';
+    }
+
+    /*
+     * convert the map of object values into string form
+     */
+    private String getQueueInfo() {
+        String queueItemStr = "";
+        for(String key : super.keySet()) {
+            Object value = super.get(key);
+            String valueString = "";
+            if (value.getClass().isArray()) {
+                valueString = key + "=" + Arrays.toString((Object[])value);
+            } else {
+                valueString = key + "=" + value.toString();
+            }
+            queueItemStr = String.join(",", queueItemStr, valueString);
+        }
+        return queueItemStr.isEmpty() ? queueItemStr : queueItemStr.substring(1);
     }
 }
