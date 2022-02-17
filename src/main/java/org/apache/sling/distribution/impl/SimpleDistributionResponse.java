@@ -21,7 +21,10 @@ package org.apache.sling.distribution.impl;
 
 import org.apache.sling.distribution.DistributionRequestState;
 import org.apache.sling.distribution.DistributionResponse;
+import org.apache.sling.distribution.DistributionResponseInfo;
 import org.jetbrains.annotations.NotNull;
+
+import static org.apache.sling.distribution.DistributionResponseInfo.NONE;
 
 /**
  * Simple implementation of {@link DistributionResponse} where success is given by not being in FAILED state.
@@ -31,13 +34,21 @@ public class SimpleDistributionResponse implements DistributionResponse {
 
     private final DistributionRequestState state;
     private final String message;
+    private final DistributionResponseInfo info;
 
-    public SimpleDistributionResponse(DistributionRequestState state, String message) {
-
+    public SimpleDistributionResponse(DistributionRequestState state, String message, DistributionResponseInfo info) {
         this.state = state;
         this.message = message;
+        if (info == null) {
+            info = NONE;
+        }
+        this.info = info;
     }
-
+    
+    public SimpleDistributionResponse(DistributionRequestState state, String message) {
+        this(state, message, NONE);
+    }
+    
     public boolean isSuccessful() {
         return DistributionRequestState.ACCEPTED.equals(state) || DistributionRequestState.DISTRIBUTED.equals(state);
     }
@@ -52,11 +63,17 @@ public class SimpleDistributionResponse implements DistributionResponse {
     }
 
     @Override
+    public DistributionResponseInfo getDistributionInfo() {
+        return info;
+    }
+    
+    @Override
     public String toString() {
-        return "CompositeDistributionResponse{" +
-                "isSuccesful=" + isSuccessful() +
+        return "SimpleDistributionResponse{" +
+                "isSuccessful=" + isSuccessful() +
                 ", state=" + state +
                 ", message=" + message +
+                ", info={id=" + info.getId() + "}" + 
                 '}';
     }
 

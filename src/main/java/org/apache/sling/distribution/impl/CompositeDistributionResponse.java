@@ -20,9 +20,11 @@
 package org.apache.sling.distribution.impl;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.sling.distribution.DistributionRequestState;
 import org.apache.sling.distribution.DistributionResponse;
+import org.apache.sling.distribution.DistributionResponseInfo;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -38,6 +40,8 @@ public class CompositeDistributionResponse extends SimpleDistributionResponse {
     private DistributionRequestState state;
 
     private String message;
+    
+    private DistributionResponseInfo info;
 
     public CompositeDistributionResponse(List<DistributionResponse> distributionResponses, int packagesCount, long packagseSize, long exportTime) {
         super(DistributionRequestState.DISTRIBUTED, null);
@@ -47,6 +51,7 @@ public class CompositeDistributionResponse extends SimpleDistributionResponse {
         this.exportTime = exportTime;
         if (distributionResponses.isEmpty()) {
             state = DistributionRequestState.DROPPED;
+            this.info = DistributionResponseInfo.NONE;
         } else {
             state = DistributionRequestState.DISTRIBUTED;
             StringBuilder messageBuilder = new StringBuilder("[");
@@ -57,6 +62,17 @@ public class CompositeDistributionResponse extends SimpleDistributionResponse {
             int lof = messageBuilder.lastIndexOf(", ");
             messageBuilder.replace(lof, lof + 2, "]");
             message = messageBuilder.toString();
+            this.info = new DistributionResponseInfo() {
+                @NotNull @Override public String getId() {
+                    List<String> ids = new ArrayList<>();
+                    for (DistributionResponse response : distributionResponses) {
+                        if (response.getDistributionInfo() != null) {
+                            ids.add(response.getDistributionInfo().getId());
+                        }
+                    }
+                    return ids.toString();
+                }
+            };
         }
     }
 
@@ -77,12 +93,18 @@ public class CompositeDistributionResponse extends SimpleDistributionResponse {
     }
 
     @Override
+    public DistributionResponseInfo getDistributionInfo() {
+        return info;
+    }
+    
+    @Override
     public String toString() {
         return "CompositeDistributionResponse{" +
-                "isSuccesful=" + isSuccessful() +
+                "isSuccessful=" + isSuccessful() +
                 ", state=" + state +
                 ", message=" + message +
-                '}';
+                ", info={id=" + info.getId() + "}" +
+            '}';
     }
 
 
