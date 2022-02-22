@@ -22,6 +22,9 @@ package org.apache.sling.distribution.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.Nonnull;
+
 import org.apache.sling.distribution.DistributionRequestState;
 import org.apache.sling.distribution.DistributionResponse;
 import org.apache.sling.distribution.DistributionResponseInfo;
@@ -92,6 +95,7 @@ public class CompositeDistributionResponse extends SimpleDistributionResponse {
         return message;
     }
 
+    @Nonnull
     @Override
     public DistributionResponseInfo getDistributionInfo() {
         return info;

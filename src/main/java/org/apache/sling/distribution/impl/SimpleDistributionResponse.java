@@ -19,6 +19,8 @@
 
 package org.apache.sling.distribution.impl;
 
+import javax.annotation.Nonnull;
+
 import org.apache.sling.distribution.DistributionRequestState;
 import org.apache.sling.distribution.DistributionResponse;
 import org.apache.sling.distribution.DistributionResponseInfo;
@@ -62,6 +64,7 @@ public class SimpleDistributionResponse implements DistributionResponse {
         return message;
     }
 
+    @Nonnull
     @Override
     public DistributionResponseInfo getDistributionInfo() {
         return info;
