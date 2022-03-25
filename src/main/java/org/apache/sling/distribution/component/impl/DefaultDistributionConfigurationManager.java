@@ -50,7 +50,7 @@ public class DefaultDistributionConfigurationManager implements DistributionConf
     @ObjectClassDefinition()
     public @interface Config {
         @AttributeDefinition(name="Resource Config enabled",description = "If storing config in resource tree is enabled.")
-        boolean enabled() default false;
+        boolean resource_config_enabled() default false;
         
         @AttributeDefinition(name="Resource Config prefix",description = "The prefix of properties to be stored in content")
         String resourceConfigPrefix() default "etc.";
@@ -81,7 +81,7 @@ public class DefaultDistributionConfigurationManager implements DistributionConf
 
     @Activate
     void activate(ComponentContext ctx, Config conf) {
-        boolean configEnabled = conf.enabled();
+        boolean configEnabled = conf.resource_config_enabled();
 
         String configRoot = SettingsUtils.removeEmptyEntry(conf.resourceConfigRoot());
         resourcePrefix = SettingsUtils.removeEmptyEntry(conf.resourceConfigPrefix());
