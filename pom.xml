@@ -32,7 +32,7 @@
     <!-- P R O J E C T                                                           -->
     <!-- ======================================================================= -->
     <artifactId>org.apache.sling.distribution.core</artifactId>
-    <version>0.5.1-SNAPSHOT</version>
+    <version>0.6.0-SNAPSHOT</version>
 
     <name>Apache Sling Distribution Core</name>
     <description>
@@ -148,15 +148,15 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-        	<groupId>org.osgi</groupId>
-        	<artifactId>org.osgi.service.component.annotations</artifactId>
-        	<scope>provided</scope>
-      	</dependency>
-      	<dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.service.component.annotations</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.service.metatype.annotations</artifactId>
             <scope>provided</scope>
-      	</dependency>
+        </dependency>
         
 
         <!-- need it here as to avoid classpath conflicts with testing mock -->
@@ -232,8 +232,8 @@
             <version>0.6.0</version>
         </dependency>
         <dependency>
-        	<groupId>org.apache.sling</groupId>
-        	<artifactId>org.apache.sling.servlets.annotations</artifactId>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.servlets.annotations</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.sling</groupId>
@@ -313,6 +313,7 @@
             <artifactId>httpasyncclient</artifactId>
             <version>4.0.2</version>
             <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
