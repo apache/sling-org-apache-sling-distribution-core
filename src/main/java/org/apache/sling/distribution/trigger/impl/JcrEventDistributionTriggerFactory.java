@@ -38,7 +38,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 @Component(
         configurationPolicy = ConfigurationPolicy.REQUIRE,
         service=DistributionTrigger.class,
-        properties= {
+        property= {
                 "webconsole.configurationFactory.nameHint=Trigger name: {name} on path {path}"
         })
 @Designate(ocd=JcrEventDistributionTriggerFactory.Config.class, factory = true)

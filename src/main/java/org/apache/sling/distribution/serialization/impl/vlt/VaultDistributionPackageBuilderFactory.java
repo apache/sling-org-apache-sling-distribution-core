@@ -23,11 +23,9 @@ import org.apache.jackrabbit.vault.fs.io.AccessControlHandling;
 import org.apache.jackrabbit.vault.packaging.Packaging;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.apache.sling.commons.scheduler.Scheduler;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.common.DistributionException;
-import org.apache.sling.distribution.component.impl.DistributionComponentConstants;
 import org.apache.sling.distribution.component.impl.SettingsUtils;
 import org.apache.sling.distribution.monitor.impl.MonitoringDistributionPackageBuilder;
 import org.apache.sling.distribution.packaging.DistributionPackage;
@@ -64,7 +62,7 @@ import java.util.Map;
 @Component(
         configurationPolicy = ConfigurationPolicy.REQUIRE,
         service=DistributionPackageBuilder.class,
-        properties= {
+        property= {
                 "webconsole.configurationFactory.nameHint=Builder name: {name}"
         })
 @Designate(ocd=VaultDistributionPackageBuilderFactory.Config.class, factory=true)
@@ -73,7 +71,7 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
     @ObjectClassDefinition(name="pache Sling Distribution Packaging - Vault Package Builder Factory",
             description = "OSGi configuration for vault package builders")
     public @interface Config {
-        @AttributeDefinition(name="Name",description = "The name of the package builder.")
+        @AttributeDefinition(name="name",description = "The name of the package builder.")
         String name();
         @AttributeDefinition(options = {
                 @Option(label = "jcrvlt", value = "jcr packages"),

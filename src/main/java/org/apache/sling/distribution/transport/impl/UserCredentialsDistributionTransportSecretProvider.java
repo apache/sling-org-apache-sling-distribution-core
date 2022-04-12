@@ -45,7 +45,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 @Component(
         configurationPolicy = ConfigurationPolicy.REQUIRE,
         service=DistributionTransportSecretProvider.class,
-        properties= {
+        property= {
                 "webconsole.configurationFactory.nameHint=Secret provider name: {name}"
         })
 @Designate(ocd=UserCredentialsDistributionTransportSecretProvider.Config.class, factory = true)

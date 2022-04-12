@@ -58,7 +58,7 @@ import org.osgi.service.metatype.annotations.Option;
 @Component(
         configurationPolicy = ConfigurationPolicy.REQUIRE,
         service=DistributionPackageBuilder.class,
-        properties= {
+        property= {
                 "webconsole.configurationFactory.nameHint=Builder name: {name}"     
         })
 @Designate(ocd=DistributionPackageBuilderFactory.Config.class, factory=true)
@@ -67,7 +67,7 @@ public class DistributionPackageBuilderFactory implements DistributionPackageBui
     @ObjectClassDefinition(name="Apache Sling Distribution Packaging - Package Builder Factory",
             description = "OSGi configuration for package builders")
     public @interface Config {
-        @AttributeDefinition(name="Name", description = "The name of the package builder.")
+        @AttributeDefinition(name="name", description = "The name of the package builder.")
         String name();
         @AttributeDefinition(name="type",description = "The persistence type used by this package builder",
                 options = {

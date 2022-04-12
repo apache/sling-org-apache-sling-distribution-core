@@ -39,7 +39,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 @Component(
         configurationPolicy = ConfigurationPolicy.REQUIRE,
         service=DistributionTrigger.class,
-        properties= {
+        property= {
                "webconsole.configurationFactory.nameHint=Trigger name: {name}"
         })
 @Designate(ocd=ScheduledDistributionTriggerFactory.Config.class,factory=true)

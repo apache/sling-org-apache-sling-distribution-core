@@ -36,7 +36,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 @Component(
         configurationPolicy = ConfigurationPolicy.REQUIRE,
         service=DistributionQueueProviderFactory.class,
-        properties= {
+        property= {
                 DistributionComponentConstants.PN_NAME + "=resourceQueue" 
         })
 @Designate(ocd=ResourceQueueProviderFactory.Config.class, factory = true)

@@ -18,14 +18,10 @@
  */
 package org.apache.sling.distribution.packaging.impl.exporter;
 
-import java.util.Map;
-
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.agent.spi.DistributionAgent;
 import org.apache.sling.distribution.common.DistributionException;
-import org.apache.sling.distribution.component.impl.DistributionComponentConstants;
 import org.apache.sling.distribution.component.impl.SettingsUtils;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageBuilderProvider;
@@ -47,7 +43,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 @Component(
         configurationPolicy = ConfigurationPolicy.REQUIRE,
         service=DistributionPackageExporter.class,
-        properties = {
+        property = {
                 "webconsole.configurationFactory.nameHint=Exporter name: {name}"
         })
 @Designate(ocd=AgentDistributionPackageExporterFactory.Config.class, factory = true)

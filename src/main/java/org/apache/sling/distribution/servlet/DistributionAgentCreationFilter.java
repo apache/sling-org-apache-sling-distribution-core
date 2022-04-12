@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * {@link Filter} to avoid creation of duplicate agents.
  */
 @Component(immediate = true, service=Filter.class,
-        properties= {
+        property= {
                 "service.description=Duplicate replication agents IDs checking Filter",
                 "service.vendor=The Apache Software Foundation",
                 "sling.filter.scope=request",

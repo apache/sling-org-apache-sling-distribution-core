@@ -37,7 +37,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
         configurationPolicy = ConfigurationPolicy.REQUIRE,
         service=DistributionRequestAuthorizationStrategy.class,
         immediate = true,
-        properties = {
+        property = {
                 "webconsole.configurationFactory.nameHint=Strategy name: {name}"
         }
 )
@@ -48,7 +48,7 @@ public class PrivilegeDistributionRequestAuthorizationStrategyFactory implements
             description = "OSGi configuration for request based authorization strategy based on privileges")
     public @interface Config {
         
-        @AttributeDefinition(name="Name")
+        @AttributeDefinition(name="name")
         String name() default "";
         
         @AttributeDefinition(name="Jcr Privilege", description = "Jcr privilege to check for authorizing distribution requests. The privilege is checked for the calling user session.")

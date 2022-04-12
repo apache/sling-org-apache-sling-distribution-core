@@ -33,7 +33,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ServiceScope;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
@@ -47,7 +46,7 @@ import org.slf4j.LoggerFactory;
         configurationPolicy = ConfigurationPolicy.REQUIRE,
         service=ResourceProvider.class,
         enabled = true,
-        properties = {
+        property = {
                 "webconsole.configurationFactory.nameHint=Resource kind: {kind}",
                 ResourceProvider.OWNS_ROOTS + ":Boolean=true",
                 "service.vendor=The Apache Software Foundation"

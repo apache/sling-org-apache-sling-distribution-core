@@ -26,7 +26,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.apache.felix.hc.api.FormattingResultLog;
 import org.apache.felix.hc.api.HealthCheck;
 import org.apache.felix.hc.api.Result;
-import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.apache.sling.distribution.agent.spi.DistributionAgent;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
@@ -48,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * of times
  */
 @Component(immediate = true, service=HealthCheck.class,
-    properties = {
+    property = {
             HealthCheck.NAME + "=SlingDistributionQueueHC",
             HealthCheck.MBEAN_NAME + "=slingDistributionQueue"
     })

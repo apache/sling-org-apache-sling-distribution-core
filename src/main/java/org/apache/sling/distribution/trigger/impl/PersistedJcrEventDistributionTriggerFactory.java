@@ -18,13 +18,10 @@
  */
 package org.apache.sling.distribution.trigger.impl;
 
-import java.util.Map;
 
 import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.apache.sling.commons.scheduler.Scheduler;
 import org.apache.sling.distribution.common.DistributionException;
-import org.apache.sling.distribution.component.impl.DistributionComponentConstants;
 import org.apache.sling.distribution.component.impl.SettingsUtils;
 import org.apache.sling.distribution.trigger.DistributionRequestHandler;
 import org.apache.sling.distribution.trigger.DistributionTrigger;
@@ -43,7 +40,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 @Component(
         configurationPolicy = ConfigurationPolicy.REQUIRE,
         service=DistributionTrigger.class,
-        properties= {
+        property= {
                 "webconsole.configurationFactory.nameHint=Trigger name: {name}"    
         })
 @Designate(ocd=PersistedJcrEventDistributionTriggerFactory.Config.class, factory = true)

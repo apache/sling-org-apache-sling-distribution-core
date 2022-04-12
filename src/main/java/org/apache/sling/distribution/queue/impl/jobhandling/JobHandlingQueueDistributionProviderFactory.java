@@ -31,7 +31,7 @@ import org.osgi.service.component.annotations.Reference;
 import java.util.Map;
 
 @Component(service=DistributionQueueProviderFactory.class,
-    properties= {
+    property= {
             DistributionComponentConstants.PN_NAME + "=jobQueue"    
     })
 public class JobHandlingQueueDistributionProviderFactory implements DistributionQueueProviderFactory {

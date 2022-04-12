@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 @Component(
         configurationPolicy = ConfigurationPolicy.REQUIRE,
         service=ResourceProviderFactory.class,
-        properties= {
+        property= {
                 "webconsole.configurationFactory.nameHint=Resource kind: {kind}",
                 "provider.ownsRoots=true"
         })

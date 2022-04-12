@@ -42,7 +42,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
  */
 @Component(service=DistributionPackageImporter.class,
         configurationPolicy = ConfigurationPolicy.REQUIRE,
-        properties = {
+        property = {
                 "webconsole.configurationFactory.nameHint=Importer name: {name}"
         })
 @Designate(ocd=LocalDistributionPackageImporterFactory.Config.class, factory = true)

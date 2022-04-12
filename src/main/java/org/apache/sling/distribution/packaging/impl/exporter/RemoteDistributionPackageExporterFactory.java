@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
 @Component(
         configurationPolicy = ConfigurationPolicy.REQUIRE,
         service=DistributionPackageExporter.class,
-        properties= {
+        property= {
                 "webconsole.configurationFactory.nameHint=Exporter name: {name}"
         })
 @Designate(ocd=RemoteDistributionPackageExporterFactory.Config.class, factory=true)
