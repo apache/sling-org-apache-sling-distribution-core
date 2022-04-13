@@ -29,6 +29,7 @@ import static org.ops4j.pax.exam.cm.ConfigurationAdminOptions.newConfiguration;
 
 import org.apache.sling.distribution.agent.impl.PrivilegeDistributionRequestAuthorizationStrategyFactory;
 import org.apache.sling.distribution.agent.impl.QueueDistributionAgentFactory;
+import org.apache.sling.distribution.queue.impl.resource.ResourceQueueProviderFactory;
 import org.apache.sling.distribution.serialization.impl.vlt.VaultDistributionPackageBuilderFactory;
 import org.apache.sling.testing.paxexam.SlingOptions;
 import org.apache.sling.testing.paxexam.TestSupport;
@@ -45,6 +46,8 @@ public class DistributionBaseIT extends TestSupport {
     public Option[] configuration() {
         // Patch versions of features provided by SlingOptions
         SlingOptions.versionResolver.setVersionFromProject("org.apache.sling", "org.apache.sling.distribution.core");
+        SlingOptions.versionResolver.setVersionFromProject("org.apache.sling", "org.apache.sling.distribution.api");
+        SlingOptions.versionResolver.setVersionFromProject("org.apache.jackrabbit.vault","org.apache.jackrabbit.vault");
         return new Option[]{
                 baseConfiguration(),
                 slingQuickstart(),
@@ -95,6 +98,10 @@ public class DistributionBaseIT extends TestSupport {
                         .put("serviceName", "testService")
                         .put("enabled", true)
                         .put("queueProviderFactory.target", "(name=resourceQueue)")
+                        .asOption(),
+
+                factoryConfiguration(ResourceQueueProviderFactory.class.getName())
+                        .put("queue_isActive", true)
                         .asOption(),
 
                 factoryConfiguration(QueueDistributionAgentFactory.class.getName())

@@ -29,11 +29,14 @@ import org.apache.jackrabbit.vault.fs.api.PathFilterSet;
 import org.apache.jackrabbit.vault.fs.api.WorkspaceFilter;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.SimpleDistributionRequest;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import static org.apache.sling.distribution.DistributionRequestType.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class VltUtilsTest {
 
@@ -128,11 +131,11 @@ public class VltUtilsTest {
         String pathWithPolicy = "/nodewith(shouldwork/rep:policy";
         String pathWithoutPolicy = "/nodewith(shouldwork";
         DistributionRequest request = new SimpleDistributionRequest(ADD, false, pathWithPolicy, pathWithoutPolicy);
-        assertThat(request.isDeep(pathWithPolicy), Matchers.equalTo(false));
-        assertThat(request.isDeep(pathWithoutPolicy), Matchers.equalTo(false));
+        assertThat(request.isDeep(pathWithPolicy), equalTo(false));
+        assertThat(request.isDeep(pathWithoutPolicy), equalTo(false));
         DistributionRequest sanitizedRequest = VltUtils.sanitizeRequest(request);
-        assertThat(sanitizedRequest.isDeep(pathWithPolicy), Matchers.equalTo(true));
-        assertThat(sanitizedRequest.isDeep(pathWithoutPolicy), Matchers.equalTo(false));
+        assertThat(sanitizedRequest.isDeep(pathWithPolicy), equalTo(true));
+        assertThat(sanitizedRequest.isDeep(pathWithoutPolicy), equalTo(false));
     }
     
 }
