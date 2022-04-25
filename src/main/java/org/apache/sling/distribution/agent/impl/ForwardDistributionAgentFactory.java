@@ -25,22 +25,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.ConfigurationPolicy;
-import org.apache.felix.scr.annotations.Deactivate;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.PropertyOption;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.ReferenceCardinality;
-import org.apache.felix.scr.annotations.ReferencePolicy;
 import org.apache.jackrabbit.vault.packaging.Packaging;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.apache.sling.commons.scheduler.Scheduler;
 import org.apache.sling.distribution.DistributionRequestType;
 import org.apache.sling.distribution.agent.spi.DistributionAgent;
-import org.apache.sling.distribution.component.impl.DistributionComponentConstants;
 import org.apache.sling.distribution.component.impl.SettingsUtils;
 import org.apache.sling.distribution.event.impl.DistributionEventFactory;
 import org.apache.sling.distribution.log.impl.DefaultDistributionLog;
@@ -52,9 +42,9 @@ import org.apache.sling.distribution.packaging.impl.DistributionPackageExporter;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
 import org.apache.sling.distribution.packaging.impl.exporter.LocalDistributionPackageExporter;
 import org.apache.sling.distribution.packaging.impl.importer.RemoteDistributionPackageImporter;
-import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
 import org.apache.sling.distribution.queue.impl.AsyncDeliveryDispatchingStrategy;
 import org.apache.sling.distribution.queue.impl.DistributionQueueDispatchingStrategy;
+import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
 import org.apache.sling.distribution.queue.impl.ErrorQueueDispatchingStrategy;
 import org.apache.sling.distribution.queue.impl.MultipleQueueDispatchingStrategy;
 import org.apache.sling.distribution.queue.impl.PriorityQueueDispatchingStrategy;
@@ -69,124 +59,51 @@ import org.apache.sling.jcr.api.SlingRepository;
 import org.apache.sling.settings.SlingSettingsService;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.cm.ConfigurationAdmin;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.metatype.annotations.Designate;
+
+
+
 
 /**
  * An OSGi service factory for {@link DistributionAgent}s which references already existing OSGi services.
  */
-@Component(metatype = true,
-        label = "Apache Sling Distribution Agent - Forward Agents Factory",
-        description = "OSGi configuration factory for forward agents",
-        configurationFactory = true,
-        specVersion = "1.1",
-        policy = ConfigurationPolicy.REQUIRE
+@Component(
+        configurationPolicy = ConfigurationPolicy.REQUIRE,
+        property= {"webconsole.configurationFactory.nameHint=Agent name: {name}"}
 )
-@Reference(name = "triggers", referenceInterface = DistributionTrigger.class,
-        policy = ReferencePolicy.DYNAMIC, cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE,
-        bind = "bindDistributionTrigger", unbind = "unbindDistributionTrigger")
-@Property(name = "webconsole.configurationFactory.nameHint", value = "Agent name: {name}")
+@Designate(ocd =ForwardDistributionAgentFactoryConfig.class, factory=true)
 public class ForwardDistributionAgentFactory extends AbstractDistributionAgentFactory<ForwardDistributionAgentMBean> {
-
-    @Property(label = "Name", description = "The name of the agent.")
-    public static final String NAME = DistributionComponentConstants.PN_NAME;
-
-    @Property(label = "Title", description = "The display friendly title of the agent.")
-    public static final String TITLE = "title";
-
-    @Property(label = "Details", description = "The display friendly details of the agent.")
-    public static final String DETAILS = "details";
-
-
-    @Property(boolValue = true, label = "Enabled", description = "Whether or not to start the distribution agent.")
-    private static final String ENABLED = "enabled";
-
-    @Property(label = "Service Name", description = "The name of the service used to access the repository. " +
-            "If not set, the calling user ResourceResolver will be used")
-    private static final String SERVICE_NAME = "serviceName";
-
-    @Property(options = {
-            @PropertyOption(name = "debug", value = "debug"), @PropertyOption(name = "info", value = "info"), @PropertyOption(name = "warn", value = "warn"),
-            @PropertyOption(name = "error", value = "error")},
-            value = "info",
-            label = "Log Level", description = "The log level recorded in the transient log accessible via http."
-    )
-    public static final String LOG_LEVEL = AbstractDistributionAgentFactory.LOG_LEVEL;
-
-
-    @Property(cardinality = 100, label = "Allowed roots", description = "If set the agent will allow only distribution requests under the specified roots.")
-    private static final String ALLOWED_ROOTS = "allowed.roots";
-
-
-    @Property(boolValue = true, label = "Queue Processing Enabled", description = "Whether or not the distribution agent should process packages in the queues.")
-    private static final String QUEUE_PROCESSING_ENABLED = "queue.processing.enabled";
-
-
+    
     /**
-     * endpoints property
+     * Need to keep the constants around so the code below is still working.
      */
-    @Property(cardinality = 100, label = "Importer Endpoints", description = "List of endpoints to which packages are sent (imported). " +
-            "The list can be given as a map in case a queue should be configured for each endpoint, e.g. queueName=http://...")
-    private static final String IMPORTER_ENDPOINTS = "packageImporter.endpoints";
-
-
-    @Property(cardinality = 100, label = "Passive queues", description = "List of queues that should be disabled." +
-            "These queues will gather all the packages until they are removed explicitly.")
+    private static final String ALLOWED_ROOTS = "allowed.roots";
+    private static final String SERVICE_NAME = "serviceName";
+    private static final Object QUEUE_PROCESSING_ENABLED = "queue.processing.enabled";
     private static final String PASSIVE_QUEUES = "passiveQueues";
-
-    @Property(cardinality = 100, label = "Priority queues", description = "List of priority queues that should used for specific paths." +
-            "The selector format is  {queuePrefix}[|{mainQueueMatcher}]={pathMatcher}, e.g. french=/content/fr.*")
     private static final String PRIORITY_QUEUES = "priorityQueues";
+    private static final String QUEUE_PROVIDER = "queue.provider";
+    private static final String ASYNC_DELIVERY = "async.delivery";
+    private static final String RETRY_STRATEGY = "retry.attempt";
+    private static final String RETRY_ATTEMPTS = "retry.strategy";
+    private static final String IMPORTER_ENDPOINTS = "packageImporter.endpoints";
+    private static final String HTTP = "http.conn.timeout";
 
-    @Property(options = {
-            @PropertyOption(name = "none", value = "none"), @PropertyOption(name = "errorQueue", value = "errorQueue")},
-            value = "none",
-            label = "Retry Strategy", description = "The strategy to apply after a certain number of failed retries."
-    )
-    private static final String RETRY_STRATEGY = "retry.strategy";
-
-    @Property(intValue = 100, label = "Retry attempts", description = "The number of times to retry until the retry strategy is applied.")
-    private static final String RETRY_ATTEMPTS = "retry.attempts";
-
-
-    @Property(name = "requestAuthorizationStrategy.target", label = "Request Authorization Strategy", description = "The target reference for the DistributionRequestAuthorizationStrategy used to authorize the access to distribution process," +
-            "e.g. use target=(name=...) to bind to services by name.", value = SettingsUtils.COMPONENT_NAME_DEFAULT)
     @Reference(name = "requestAuthorizationStrategy")
     private DistributionRequestAuthorizationStrategy requestAuthorizationStrategy;
 
-
-    @Property(name = "transportSecretProvider.target", label = "Transport Secret Provider", description = "The target reference for the DistributionTransportSecretProvider used to obtain the credentials used for accessing the remote endpoints, " +
-            "e.g. use target=(name=...) to bind to services by name.", value = SettingsUtils.COMPONENT_NAME_DEFAULT)
     @Reference(name = "transportSecretProvider")
-    private
-    DistributionTransportSecretProvider transportSecretProvider;
+    private DistributionTransportSecretProvider transportSecretProvider;
 
-
-    @Property(name = "packageBuilder.target", label = "Package Builder", description = "The target reference for the DistributionPackageBuilder used to create distribution packages, " +
-            "e.g. use target=(name=...) to bind to services by name.", value = SettingsUtils.COMPONENT_NAME_DEFAULT)
     @Reference(name = "packageBuilder")
     private DistributionPackageBuilder packageBuilder;
-
-    @Property(value = DEFAULT_TRIGGER_TARGET, label = "Triggers", description = "The target reference for DistributionTrigger used to trigger distribution, " +
-            "e.g. use target=(name=...) to bind to services by name.")
-    public static final String TRIGGERS_TARGET = "triggers.target";
-
-    @Property(options = {
-            @PropertyOption(name = JobHandlingDistributionQueueProvider.TYPE, value = "Sling Jobs"),
-            @PropertyOption(name = ResourceQueueProvider.TYPE, value = "Resource Backed"),
-            @PropertyOption(name = SimpleDistributionQueueProvider.TYPE, value = "In-memory"),
-            @PropertyOption(name = SimpleDistributionQueueProvider.TYPE_CHECKPOINT, value = "In-file")},
-            value = "jobs",
-            label = "Queue provider", description = "The queue provider implementation."
-    )
-    public static final String QUEUE_PROVIDER = "queue.provider";
-
-    @Property(boolValue = false, label = "Async delivery", description = "Whether or not to use a separate delivery queue to maximize transport throughput when queue has more than 100 items")
-    public static final String ASYNC_DELIVERY = "async.delivery";
-
-    /**
-     * timeout for HTTP requests
-     */
-    @Property(label = "HTTP connection timeout", intValue = 10, description = "The connection timeout for HTTP requests (in seconds).")
-    public static final String HTTP = "http.conn.timeout";
 
     @Reference
     private Packaging packaging;
@@ -216,17 +133,25 @@ public class ForwardDistributionAgentFactory extends AbstractDistributionAgentFa
         super(ForwardDistributionAgentMBean.class);
     }
 
-    @Activate
-    protected void activate(BundleContext context, Map<String, Object> config) {
-        super.activate(context, config);
-    }
-
+    @Reference(name = "triggers", service = DistributionTrigger.class,
+            policy = ReferencePolicy.DYNAMIC, cardinality = ReferenceCardinality.MULTIPLE,
+            bind = "bindDistributionTrigger", unbind = "unbindDistributionTrigger")
     protected void bindDistributionTrigger(DistributionTrigger distributionTrigger, Map<String, Object> config) {
         super.bindDistributionTrigger(distributionTrigger, config);
     }
 
     protected void unbindDistributionTrigger(DistributionTrigger distributionTrigger, Map<String, Object> config) {
         super.unbindDistributionTrigger(distributionTrigger, config);
+    }
+    
+    /**
+     * In the first round it's not possible to utilize the signature with the above
+     * config class because of the way the configuration is processed ...
+     * 
+     */
+    @Activate
+    protected void activate(BundleContext context, Map<String, Object> config) {
+        super.activate(context, config);
     }
 
     @Deactivate

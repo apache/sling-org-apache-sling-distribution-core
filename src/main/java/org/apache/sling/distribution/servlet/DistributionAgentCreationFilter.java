@@ -18,6 +18,12 @@
  */
 package org.apache.sling.distribution.servlet;
 
+import static java.lang.String.format;
+import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
+
+import java.io.IOException;
+import java.util.Collection;
+
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -25,38 +31,30 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Collection;
 
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.distribution.agent.spi.DistributionAgent;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static java.lang.String.format;
-import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
 
 /**
  * {@link Filter} to avoid creation of duplicate agents.
  */
-@Component(immediate = true, metatype = false)
-@Service(value = Filter.class)
-@Properties({
-        @Property(name = "service.description", value = "Duplicate replication agents IDs checking Filter"),
-        @Property(name = "service.vendor", value = "The Apache Software Foundation"),
-        @Property(name = "sling.filter.scope", value = "request"),
-        @Property(name = "sling.filter.pattern", value = "/libs/sling/distribution/settings/agents/.*"),
-        @Property(name = "osgi.http.whiteboard.filter.regex", value = "/libs/sling/distribution/settings/agents/.*"),
-        @Property(name = "service.ranking", intValue = Integer.MAX_VALUE)
-})
+@Component(immediate = true, service=Filter.class,
+        property= {
+                "service.description=Duplicate replication agents IDs checking Filter",
+                "service.vendor=The Apache Software Foundation",
+                "sling.filter.scope=request",
+                "sling.filter.pattern=/libs/sling/distribution/settings/agents/.*",
+                "osgi.http.whiteboard.filter.regex=/libs/sling/distribution/settings/agents/.*",
+                "service.ranking="+ Integer.MAX_VALUE
+                
+        })
 public final class DistributionAgentCreationFilter implements Filter {
 
     private static final String METHOD_POST = "POST";

@@ -19,50 +19,45 @@
 package org.apache.sling.distribution.packaging.impl.importer;
 
 import java.io.InputStream;
-import java.util.Map;
 
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.ConfigurationPolicy;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.apache.sling.distribution.common.DistributionException;
-import org.apache.sling.distribution.component.impl.DistributionComponentConstants;
 import org.apache.sling.distribution.packaging.DistributionPackage;
-import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
 import org.apache.sling.jcr.api.SlingRepository;
 import org.jetbrains.annotations.NotNull;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 /**
  * OSGi configuration factory for {@link RepositoryDistributionPackageImporter}s.
  */
-@Component(label = "Apache Sling Distribution Importer - Repository Package Importer Factory",
-        metatype = true,
-        configurationFactory = true,
-        specVersion = "1.1",
-        policy = ConfigurationPolicy.REQUIRE)
-@Service(DistributionPackageImporter.class)
-@Property(name="webconsole.configurationFactory.nameHint", value="Importer name: {name}")
+@Component(
+        configurationPolicy = ConfigurationPolicy.REQUIRE,
+        service=DistributionPackageImporter.class,
+        property= {
+                "webconsole.configurationFactory.nameHint=Importer name: {name}"     
+        })
+@Designate(ocd=RepositoryDistributionPackageImporterFactory.Config.class, factory = true)
 public class RepositoryDistributionPackageImporterFactory implements DistributionPackageImporter {
-
-    /**
-     * name of this component.
-     */
-    @Property
-    private static final String NAME = DistributionComponentConstants.PN_NAME;
-
-    @Property(name = "service.name")
-    private static String SERVICE_NAME;
-
-    @Property(name = "path")
-    private static String PATH;
-
-    @Property(name = "privilege.name")
-    private static String PRIVILEGE_NAME;
+    
+    @ObjectClassDefinition(name="Apache Sling Distribution Importer - Repository Package Importer Factory")
+    public @interface Config {
+        @AttributeDefinition(name="Name", description = "The name of the importer.")
+        String name();
+        @AttributeDefinition()
+        String service_name() default "admin";
+        @AttributeDefinition()
+        String path() default "/var/sling/distribution/import";
+        @AttributeDefinition()
+        String privilege_name() default "jcr:read";
+    }
 
     @Reference
     private SlingRepository repository;
@@ -70,12 +65,12 @@ public class RepositoryDistributionPackageImporterFactory implements Distributio
     private RepositoryDistributionPackageImporter importer;
 
     @Activate
-    protected void activate(Map<String, Object> config) {
+    protected void activate(Config conf) {
 
         importer = new RepositoryDistributionPackageImporter(repository,
-                PropertiesUtil.toString(config.get(SERVICE_NAME), "admin"),
-                PropertiesUtil.toString(config.get(PATH), "/var/sling/distribution/import"),
-                PropertiesUtil.toString(config.get(PRIVILEGE_NAME), "jcr:read"));
+                conf.service_name(),
+                conf.path(),
+                conf.privilege_name());
     }
 
     public void importPackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionPackage distributionPackage) throws DistributionException {

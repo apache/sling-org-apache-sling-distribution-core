@@ -18,9 +18,9 @@
  */
 package org.apache.sling.distribution.packaging.impl;
 
-import aQute.bnd.annotation.ProviderType;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.jetbrains.annotations.NotNull;
+import org.osgi.annotation.versioning.ProviderType;
 
 /**
  * A {@link DistributionPackage} that offers basic reference counting.

@@ -19,12 +19,13 @@
 package org.apache.sling.distribution.packaging.impl;
 
 import java.io.InputStream;
-import aQute.bnd.annotation.ConsumerType;
+
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.jetbrains.annotations.NotNull;
+import org.osgi.annotation.versioning.ConsumerType;
 
 /**
  * A {@link DistributionPackageImporter} is responsible for importing {@link DistributionPackage}s into either a local

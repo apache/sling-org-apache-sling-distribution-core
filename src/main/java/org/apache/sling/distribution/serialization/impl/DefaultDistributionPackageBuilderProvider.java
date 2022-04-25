@@ -20,17 +20,15 @@ package org.apache.sling.distribution.serialization.impl;
 
 import java.util.List;
 
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.distribution.component.impl.DistributionComponent;
 import org.apache.sling.distribution.component.impl.DistributionComponentKind;
 import org.apache.sling.distribution.component.impl.DistributionComponentProvider;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageBuilderProvider;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
-@Component
-@Service(DistributionPackageBuilderProvider.class)
+@Component(service=DistributionPackageBuilderProvider.class)
 public class DefaultDistributionPackageBuilderProvider implements DistributionPackageBuilderProvider {
 
     @Reference

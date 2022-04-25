@@ -18,9 +18,9 @@
  */
 package org.apache.sling.distribution.trigger;
 
-import aQute.bnd.annotation.ConsumerType;
 import org.apache.sling.distribution.common.DistributionException;
 import org.jetbrains.annotations.NotNull;
+import org.osgi.annotation.versioning.ConsumerType;
 
 /**
  * A {@link DistributionTrigger} is responsible to trigger

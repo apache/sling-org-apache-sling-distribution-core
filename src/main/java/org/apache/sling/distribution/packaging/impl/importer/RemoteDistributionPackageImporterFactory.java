@@ -21,53 +21,48 @@ package org.apache.sling.distribution.packaging.impl.importer;
 import java.io.InputStream;
 import java.util.Map;
 
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.ConfigurationPolicy;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.apache.sling.distribution.common.DistributionException;
-import org.apache.sling.distribution.component.impl.DistributionComponentConstants;
 import org.apache.sling.distribution.component.impl.DistributionComponentKind;
 import org.apache.sling.distribution.component.impl.SettingsUtils;
 import org.apache.sling.distribution.log.impl.DefaultDistributionLog;
 import org.apache.sling.distribution.packaging.DistributionPackage;
-import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
 import org.apache.sling.distribution.transport.DistributionTransportSecretProvider;
 import org.apache.sling.distribution.transport.impl.HttpConfiguration;
 import org.jetbrains.annotations.NotNull;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 /**
  * OSGi configuration factory for {@link RemoteDistributionPackageImporter}s.
  */
-@Component(label = "Apache Sling Distribution Importer - Remote Package Importer Factory",
-        metatype = true,
-        configurationFactory = true,
-        specVersion = "1.1",
-        policy = ConfigurationPolicy.REQUIRE)
-@Service(value = DistributionPackageImporter.class)
-@Property(name="webconsole.configurationFactory.nameHint", value="Importer name: {name}")
+@Component(
+        configurationPolicy = ConfigurationPolicy.REQUIRE,
+        service=DistributionPackageImporter.class,
+        property= {
+               "webconsole.configurationFactory.nameHint=Importer name: {name}" 
+        })
+@Designate(ocd=RemoteDistributionPackageImporterFactory.Config.class, factory=true)
 public class RemoteDistributionPackageImporterFactory implements DistributionPackageImporter {
-
-    /**
-     * name of this importer.
-     */
-    @Property(label = "Name", description = "The name of the importer.")
-    private static final String NAME = DistributionComponentConstants.PN_NAME;
-
-
-    /**
-     * endpoints property
-     */
-    @Property(cardinality = 100, label = "Endpoints", description = "The list of endpoints to which the packages will be imported.")
-    private static final String ENDPOINTS = "endpoints";
-
-    @Property(name = "transportSecretProvider.target", label = "Transport Secret Provider", description = "The target reference for the DistributionTransportSecretProvider used to obtain the credentials used for accessing the remote endpoints, " +
+    
+    @ObjectClassDefinition(name="Apache Sling Distribution Importer - Remote Package Importer Factory")
+    public @interface Config {
+        @AttributeDefinition(name="Name", description = "The name of the importer.")
+        String name();
+        @AttributeDefinition(cardinality = 100, name="Endpoints", description = "The list of endpoints to which the packages will be imported.")
+        String[] endpoints();
+        @AttributeDefinition(name="Transport Secret Provider", description = "The target reference for the DistributionTransportSecretProvider used to obtain the credentials used for accessing the remote endpoints, " +
             "e.g. use target=(name=...) to bind to services by name.")
+        String transportSecretProvider_target();
+    }
+
     @Reference(name = "transportSecretProvider")
     private
     DistributionTransportSecretProvider transportSecretProvider;
@@ -75,11 +70,10 @@ public class RemoteDistributionPackageImporterFactory implements DistributionPac
     private DistributionPackageImporter importer;
 
     @Activate
-    protected void activate(Map<String, Object> config) {
+    protected void activate(Config conf) {
 
-        Map<String, String> endpoints = SettingsUtils.toUriMap(config.get(ENDPOINTS));
-
-        String importerName = PropertiesUtil.toString(config.get(NAME), null);
+        Map<String, String> endpoints = SettingsUtils.toUriMap(conf.endpoints());
+        String importerName = conf.name();
 
         DefaultDistributionLog distributionLog = new DefaultDistributionLog(DistributionComponentKind.IMPORTER, importerName, RemoteDistributionPackageImporter.class, DefaultDistributionLog.LogLevel.ERROR);
 

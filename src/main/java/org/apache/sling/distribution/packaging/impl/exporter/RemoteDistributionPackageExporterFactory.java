@@ -18,74 +18,64 @@
  */
 package org.apache.sling.distribution.packaging.impl.exporter;
 
-import java.util.Map;
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.ConfigurationPolicy;
-import org.apache.felix.scr.annotations.Deactivate;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.common.DistributionException;
-import org.apache.sling.distribution.component.impl.DistributionComponentConstants;
 import org.apache.sling.distribution.component.impl.DistributionComponentKind;
 import org.apache.sling.distribution.component.impl.SettingsUtils;
 import org.apache.sling.distribution.log.impl.DefaultDistributionLog;
-import org.apache.sling.distribution.packaging.impl.DistributionPackageExporter;
-import org.apache.sling.distribution.packaging.impl.DistributionPackageProcessor;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageExporter;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageProcessor;
 import org.apache.sling.distribution.transport.DistributionTransportSecretProvider;
 import org.apache.sling.distribution.transport.impl.HttpConfiguration;
 import org.jetbrains.annotations.NotNull;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * OSGi configuration factory for {@link RemoteDistributionPackageExporter}s.
  */
-@Component(label = "Apache Sling Distribution Exporter - Remote Package Exporter Factory",
-        metatype = true,
-        configurationFactory = true,
-        specVersion = "1.1",
-        policy = ConfigurationPolicy.REQUIRE
-)
-@Service(value = DistributionPackageExporter.class)
-@Property(name="webconsole.configurationFactory.nameHint", value="Exporter name: {name}")
+@Component(
+        configurationPolicy = ConfigurationPolicy.REQUIRE,
+        service=DistributionPackageExporter.class,
+        property= {
+                "webconsole.configurationFactory.nameHint=Exporter name: {name}"
+        })
+@Designate(ocd=RemoteDistributionPackageExporterFactory.Config.class, factory=true)
 public class RemoteDistributionPackageExporterFactory implements DistributionPackageExporter {
 
+    @ObjectClassDefinition(name="Apache Sling Distribution Exporter - Remote Package Exporter Factory")
+    public @interface Config {
+        @AttributeDefinition(name="Name", description = "The name of the exporter.")
+        String name();
+        @AttributeDefinition(cardinality = 100, name="Endpoints", description = "The list of endpoints from which the packages will be exported.")
+        String[] endpoints();
+        @AttributeDefinition(name="Pull Items", description = "number of subsequent pull requests to make")
+        int pull_items() default Integer.MAX_VALUE;
+        @AttributeDefinition(name="Package Builder", description = "The target reference for the DistributionPackageBuilder used to create distribution packages, " +
+            "e.g. use target=(name=...) to bind to services by name.")
+        String packageBuilder_target() default SettingsUtils.COMPONENT_NAME_DEFAULT;
+        
+        @AttributeDefinition(name="Transport Secret Provider", description = "The target reference for the DistributionTransportSecretProvider used to obtain the credentials used for accessing the remote endpoints, " +
+            "e.g. use target=(name=...) to bind to services by name.")
+        String transportSecretProvider_target() default SettingsUtils.COMPONENT_NAME_DEFAULT;
+    }
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    /**
-     * name of this exporter.
-     */
-    @Property(label = "Name", description = "The name of the exporter.")
-    private static final String NAME = DistributionComponentConstants.PN_NAME;
-
-    /**
-     * endpoints property
-     */
-    @Property(cardinality = 100, label = "Endpoints", description = "The list of endpoints from which the packages will be exported.")
-    private static final String ENDPOINTS = "endpoints";
-
-    /**
-     * no. of items to poll property
-     */
-    @Property(label = "Pull Items", description = "number of subsequent pull requests to make", intValue = 1)
-    private static final String PULL_ITEMS = "pull.items";
-
-    @Property(name = "packageBuilder.target", label = "Package Builder", description = "The target reference for the DistributionPackageBuilder used to create distribution packages, " +
-            "e.g. use target=(name=...) to bind to services by name.", value = SettingsUtils.COMPONENT_NAME_DEFAULT)
     @Reference(name = "packageBuilder")
     private DistributionPackageBuilder packageBuilder;
 
-
-    @Property(name = "transportSecretProvider.target", label = "Transport Secret Provider", description = "The target reference for the DistributionTransportSecretProvider used to obtain the credentials used for accessing the remote endpoints, " +
-            "e.g. use target=(name=...) to bind to services by name.", value = SettingsUtils.COMPONENT_NAME_DEFAULT)
     @Reference(name = "transportSecretProvider")
     private
     DistributionTransportSecretProvider transportSecretProvider;
@@ -93,17 +83,13 @@ public class RemoteDistributionPackageExporterFactory implements DistributionPac
     private DistributionPackageExporter exporter;
 
     @Activate
-    protected void activate(Map<String, Object> config) throws Exception {
-        log.info("activating remote exporter with pb {} and dtsp {}", packageBuilder, transportSecretProvider);
+    protected void activate(Config conf) {
+        log.info("activating remote exporter with packagebuilder {} and transportSecretProvider {}", packageBuilder, transportSecretProvider);
 
-        String[] endpoints = PropertiesUtil.toStringArray(config.get(ENDPOINTS), new String[0]);
+        String[] endpoints = conf.endpoints();
         endpoints = SettingsUtils.removeEmptyEntries(endpoints);
-
-        int pollItems = PropertiesUtil.toInteger(config.get(PULL_ITEMS), Integer.MAX_VALUE);
-
-
-
-        String exporterName = PropertiesUtil.toString(config.get(NAME), null);
+        int pollItems = conf.pull_items();
+        String exporterName = conf.name();
 
         DefaultDistributionLog distributionLog = new DefaultDistributionLog(DistributionComponentKind.EXPORTER, exporterName, RemoteDistributionPackageExporter.class, DefaultDistributionLog.LogLevel.ERROR);
 

@@ -18,14 +18,18 @@
  */
 package org.apache.sling.distribution.servlet;
 
-import javax.servlet.ServletException;
+import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.APPENDABLE;
+import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.CLEARABLE;
+import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.REMOVABLE;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.sling.SlingServlet;
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -33,27 +37,29 @@ import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.apache.sling.distribution.agent.spi.DistributionAgent;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.packaging.DistributionPackage;
+import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageBuilderProvider;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
-import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.resources.DistributionResourceTypes;
-import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
-import org.apache.sling.distribution.packaging.impl.DistributionPackageBuilderProvider;
+import org.apache.sling.servlets.annotations.SlingServletResourceTypes;
 import org.jetbrains.annotations.NotNull;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.REMOVABLE;
-import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.CLEARABLE;
-import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.APPENDABLE;
 
 /**
  * Servlet to retrieve a {@link DistributionQueue} status.
  */
 @SuppressWarnings("serial")
-@SlingServlet(resourceTypes = DistributionResourceTypes.AGENT_QUEUE_RESOURCE_TYPE, methods = {"POST"})
+@Component(service=Servlet.class)
+@SlingServletResourceTypes(
+        methods = {"POST"},
+        resourceTypes = {DistributionResourceTypes.AGENT_QUEUE_RESOURCE_TYPE})
 public class DistributionAgentQueueServlet extends SlingAllMethodsServlet {
 
     private final Logger log = LoggerFactory.getLogger(getClass());

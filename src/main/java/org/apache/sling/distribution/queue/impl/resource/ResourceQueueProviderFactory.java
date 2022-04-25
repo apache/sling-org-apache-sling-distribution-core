@@ -19,38 +19,35 @@
 
 package org.apache.sling.distribution.queue.impl.resource;
 
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.ConfigurationPolicy;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.apache.sling.commons.scheduler.Scheduler;
 import org.apache.sling.distribution.component.impl.DistributionComponentConstants;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProviderFactory;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-import java.util.Map;
-
-@Component(metatype = true,
-            label = "Apache Sling Resource Queue Provider Factory",
-            description = "OSGi configuration factory for Resource-backed queues",
-            configurationFactory = true,
-            policy = ConfigurationPolicy.REQUIRE)
-@Service(DistributionQueueProviderFactory.class)
-@Properties({
-        @Property(name = DistributionComponentConstants.PN_NAME, value = "resourceQueue"),
-        @Property(name = ResourceQueueProviderFactory.PN_IS_ACTIVE,
-                label = "Should the Resource-backed queue created with a Queue Processor (i.e., ACTIVE)",
-                boolValue = {false})
-})
+@Component(
+        configurationPolicy = ConfigurationPolicy.REQUIRE,
+        service=DistributionQueueProviderFactory.class,
+        property= {
+                DistributionComponentConstants.PN_NAME + "=resourceQueue" 
+        })
+@Designate(ocd=ResourceQueueProviderFactory.Config.class, factory = true)
 public class ResourceQueueProviderFactory implements DistributionQueueProviderFactory {
-
-    static final String PN_IS_ACTIVE = "queue.isActive";
+    
+    @ObjectClassDefinition(name="Apache Sling Resource Queue Provider Factory",
+            description="OSGi configuration factory for Resource-backed queues")
+    public @interface Config {
+        @AttributeDefinition(name="Should the Resource-backed queue created with a Queue Processor (i.e., ACTIVE)")
+        boolean queue_isActive() default false;
+    }
 
     @Reference
     ResourceResolverFactory resourceResolverFactory;
@@ -62,9 +59,8 @@ public class ResourceQueueProviderFactory implements DistributionQueueProviderFa
     private boolean isActive;
 
     @Activate
-    protected void activate(BundleContext context, Map<String, Object> config)
-    {
-        this.isActive = PropertiesUtil.toBoolean(PN_IS_ACTIVE, false);
+    protected void activate(BundleContext context, Config conf) {
+        this.isActive = conf.queue_isActive();
         this.context = context;
     }
 

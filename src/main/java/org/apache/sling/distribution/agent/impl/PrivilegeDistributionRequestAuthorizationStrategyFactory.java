@@ -18,69 +18,58 @@
  */
 package org.apache.sling.distribution.agent.impl;
 
-import java.util.Map;
-
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.ConfigurationPolicy;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.apache.sling.distribution.DistributionRequest;
-import org.apache.sling.distribution.component.impl.DistributionComponentConstants;
 import org.apache.sling.distribution.common.DistributionException;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 /**
  * OSGi configuration factory for {@link PrivilegeDistributionRequestAuthorizationStrategy}
  */
-@Component(metatype = true,
-        label = "Apache Sling Distribution Request Authorization - Privilege Request Authorization Strategy",
-        description = "OSGi configuration for request based authorization strategy based on privileges",
-        configurationFactory = true,
-        specVersion = "1.1",
-        policy = ConfigurationPolicy.REQUIRE,
-        immediate = true
+@Component(
+        configurationPolicy = ConfigurationPolicy.REQUIRE,
+        service=DistributionRequestAuthorizationStrategy.class,
+        immediate = true,
+        property = {
+                "webconsole.configurationFactory.nameHint=Strategy name: {name}"
+        }
 )
-@Service(DistributionRequestAuthorizationStrategy.class)
-@Property(name="webconsole.configurationFactory.nameHint", value="Strategy name: {name}")
+@Designate(ocd = PrivilegeDistributionRequestAuthorizationStrategyFactory.Config.class, factory = true)
 public class PrivilegeDistributionRequestAuthorizationStrategyFactory implements DistributionRequestAuthorizationStrategy {
-
-    /**
-     * name of this strategy.
-     */
-    @Property(label = "Name")
-    public static final String NAME = DistributionComponentConstants.PN_NAME;
-
-    /**
-     * privilege request authorization strategy jcr privilege property
-     */
-    @Property(label = "Jcr Privilege", description = "Jcr privilege to check for authorizing distribution requests. The privilege is checked for the calling user session.")
-    private static final String JCR_PRIVILEGE = "jcrPrivilege";
-
-    /**
-     * privilege ADD request authorization strategy jcr privilege property
-     */
-    @Property(cardinality = 100, label = "Additional Jcr Privileges for Add", description = "Additional Jcr privileges to check for authorizing ADD distribution requests. " +
-            "The privilege is checked for the calling user session.", value = "jcr:read")
-    private static final String JCR_ADD_PRIVILEGES = "additionalJcrPrivilegesForAdd";
-
-    /**
-     * privilege DELETE request authorization strategy jcr privilege property
-     */
-    @Property(cardinality = 100, label = "Additional Jcr Privileges for Delete", description = "Additional Jcr privileges to check for authorizing DELETE distribution requests. " +
-             "The privilege is checked for the calling user session.", value = "jcr:removeNode")
-    private static final String JCR_DELETE_PRIVILEGES = "additionalJcrPrivilegesForDelete";
+    
+    @ObjectClassDefinition(name = "Apache Sling Distribution Request Authorization - Privilege Request Authorization Strategy",
+            description = "OSGi configuration for request based authorization strategy based on privileges")
+    public @interface Config {
+        
+        @AttributeDefinition(name="name")
+        String name() default "";
+        
+        @AttributeDefinition(name="Jcr Privilege", description = "Jcr privilege to check for authorizing distribution requests. The privilege is checked for the calling user session.")
+        String jcrPrivilege() default "";
+        
+        @AttributeDefinition(cardinality = 100, name="Additional Jcr Privileges for Add",description = "Additional Jcr privileges to check for authorizing ADD distribution requests. " +
+            "The privilege is checked for the calling user session.")
+        String[] additionalJcrPrivilegesForAdd() default "jcr:read";
+        
+        @AttributeDefinition(cardinality = 100, name="Additional Jcr Privileges for Delete", description = "Additional Jcr privileges to check for authorizing ADD distribution requests. " +
+            "The privilege is checked for the calling user session.")
+        String[] additionalJcrPrivilegesForDelete() default "jcr:removeNode";
+    }
 
     private DistributionRequestAuthorizationStrategy authorizationStrategy;
 
     @Activate
-    public void activate(BundleContext context, Map<String, Object> config) {
-        String jcrPrivilege = PropertiesUtil.toString(config.get(JCR_PRIVILEGE), null);
-        String[] jcrAddPrivileges = PropertiesUtil.toStringArray(config.get(JCR_ADD_PRIVILEGES));
-        String[] jcrDeletePrivileges = PropertiesUtil.toStringArray(config.get(JCR_DELETE_PRIVILEGES));
+    public void activate(BundleContext context, Config conf) {
+        String jcrPrivilege = conf.jcrPrivilege();
+        String[] jcrAddPrivileges = conf.additionalJcrPrivilegesForAdd();
+        String[] jcrDeletePrivileges = conf.additionalJcrPrivilegesForDelete();
         authorizationStrategy = new PrivilegeDistributionRequestAuthorizationStrategy(jcrPrivilege, jcrAddPrivileges, jcrDeletePrivileges);
     }
 

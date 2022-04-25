@@ -18,6 +18,7 @@
  */
 package org.apache.sling.distribution.servlet;
 
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,7 +26,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.felix.scr.annotations.sling.SlingServlet;
 import org.apache.http.entity.ContentType;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
@@ -40,6 +40,8 @@ import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageExporter;
 import org.apache.sling.distribution.resources.DistributionResourceTypes;
 import org.apache.sling.distribution.util.RequestUtils;
+import org.apache.sling.servlets.annotations.SlingServletResourceTypes;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +49,10 @@ import org.slf4j.LoggerFactory;
  * Servlet to handle fetching of distribution content.
  */
 @SuppressWarnings("serial")
-@SlingServlet(resourceTypes = DistributionResourceTypes.EXPORTER_RESOURCE_TYPE, methods = "POST")
+@Component(service=Servlet.class)
+@SlingServletResourceTypes(
+        methods = {"POST"},
+        resourceTypes = {DistributionResourceTypes.EXPORTER_RESOURCE_TYPE})
 public class DistributionPackageExporterServlet extends SlingAllMethodsServlet {
 
     private final Logger log = LoggerFactory.getLogger(getClass());

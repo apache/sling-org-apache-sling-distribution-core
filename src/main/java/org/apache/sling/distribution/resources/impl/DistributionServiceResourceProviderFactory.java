@@ -19,50 +19,51 @@
 
 package org.apache.sling.distribution.resources.impl;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Iterator;
-import java.util.Map;
 
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.ConfigurationPolicy;
-import org.apache.felix.scr.annotations.Deactivate;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceProvider;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.commons.osgi.PropertiesUtil;
-import org.apache.sling.distribution.component.impl.DistributionComponentConstants;
 import org.apache.sling.distribution.component.impl.DistributionComponentProvider;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * A {@link org.apache.sling.api.resource.ResourceProviderFactory} for resources backing distribution services.
  */
-@Component(metatype = true,
-        label = "Apache Sling Distribution Resources - Service Resource Provider Factory",
-        description = "Distribution Service Resource Provider Factory",
-        configurationFactory = true,
-        specVersion = "1.1",
-        policy = ConfigurationPolicy.REQUIRE)
-@Service(value = ResourceProvider.class)
-@Properties({
-        @Property(name = ResourceProvider.ROOTS),
-        @Property(name = ResourceProvider.OWNS_ROOTS, boolValue = true, propertyPrivate = true)
-})
-@Property(name="webconsole.configurationFactory.nameHint", value="Resource kind: {kind}")
+@Component(
+        configurationPolicy = ConfigurationPolicy.REQUIRE,
+        service=ResourceProvider.class,
+        enabled = true,
+        property = {
+                "webconsole.configurationFactory.nameHint=Resource kind: {kind}",
+                ResourceProvider.OWNS_ROOTS + ":Boolean=true",
+                "service.vendor=The Apache Software Foundation"
+        })
+@Designate(ocd=DistributionServiceResourceProviderFactory.Config.class, factory=true)
 public class DistributionServiceResourceProviderFactory implements ResourceProvider {
+    
+    @ObjectClassDefinition(name="Apache Sling Distribution Resources - Service Resource Provider Factory",
+            description = "Distribution Service Resource Provider Factory")
+    public @interface Config {
+        @AttributeDefinition()
+        String provider_roots();
+        @AttributeDefinition()
+        String kind();
+    }
 
     private final Logger log = LoggerFactory.getLogger(getClass());
-
-
-    @Property
-    private final static String KIND = DistributionComponentConstants.PN_KIND;
 
     @Reference
     private
@@ -71,12 +72,12 @@ public class DistributionServiceResourceProviderFactory implements ResourceProvi
     private ResourceProvider resourceProvider;
 
     @Activate
-    public void activate(BundleContext context, Map<String, Object> properties) {
+    public void activate(BundleContext context, Config conf) {
 
-        log.debug("activating resource provider with config {}", properties);
+        log.debug("activating resource provider with config {}", conf);
 
-        String kind = PropertiesUtil.toString(properties.get(KIND), null);
-        String resourceRoot = PropertiesUtil.toString(properties.get(ResourceProvider.ROOTS), null);
+        String kind = conf.kind();
+        String resourceRoot = conf.provider_roots();
 
         resourceProvider = new ExtendedDistributionServiceResourceProvider(kind,
                 componentProvider,

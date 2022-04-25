@@ -20,42 +20,42 @@ package org.apache.sling.distribution.packaging.impl.exporter;
 
 import java.util.Map;
 
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.ConfigurationPolicy;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.common.DistributionException;
-import org.apache.sling.distribution.component.impl.DistributionComponentConstants;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageExporter;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageProcessor;
 import org.jetbrains.annotations.NotNull;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 /**
  * OSGi configuration factory for {@link LocalDistributionPackageExporter}s.
  */
-@Component(label = "Apache Sling Distribution Exporter - Local Package Exporter Factory",
-        metatype = true,
-        configurationFactory = true,
-        specVersion = "1.1",
-        policy = ConfigurationPolicy.REQUIRE)
-@Service(value = DistributionPackageExporter.class)
-@Property(name="webconsole.configurationFactory.nameHint", value="Exporter name: {name}")
+@Component(service=DistributionPackageExporter.class,
+        configurationPolicy = ConfigurationPolicy.REQUIRE,
+        property = {
+                "webconsole.configurationFactory.nameHint=Exporter name: {name}" 
+        })
+@Designate(ocd=LocalDistributionPackageExporterFactory.Config.class, factory=true)
 public class LocalDistributionPackageExporterFactory implements DistributionPackageExporter {
-
-    /**
-     * name of this exporter.
-     */
-    @Property(label = "Name", description = "The name of the exporter.")
-    public static final String NAME = DistributionComponentConstants.PN_NAME;
-
-    @Property(name = "packageBuilder.target", label = "Package Builder", description = "The target reference for the DistributionPackageBuilder used to create distribution packages, " +
+    
+    @ObjectClassDefinition(name="Apache Sling Distribution Exporter - Local Package Exporter Factory")
+    public @interface Config {
+        @AttributeDefinition(name="Name", description = "The name of the exporter.")
+        String name();
+        @AttributeDefinition(name="Package Builder", description = "The target reference for the DistributionPackageBuilder used to create distribution packages, " +
             "e.g. use target=(name=...) to bind to services by name.")
+        String packageBuilder_target();
+    }
+    
     @Reference(name = "packageBuilder")
     private DistributionPackageBuilder packageBuilder;
 

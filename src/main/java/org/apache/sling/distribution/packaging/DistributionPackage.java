@@ -20,9 +20,9 @@ package org.apache.sling.distribution.packaging;
 
 import java.io.IOException;
 import java.io.InputStream;
-import aQute.bnd.annotation.ProviderType;
 
 import org.jetbrains.annotations.NotNull;
+import org.osgi.annotation.versioning.ProviderType;
 
 /**
  * A distribution package

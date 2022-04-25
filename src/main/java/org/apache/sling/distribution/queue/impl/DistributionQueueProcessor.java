@@ -18,11 +18,11 @@
  */
 package org.apache.sling.distribution.queue.impl;
 
-import aQute.bnd.annotation.ProviderType;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.jetbrains.annotations.NotNull;
+import org.osgi.annotation.versioning.ProviderType;
 
 /**
  * Processor of {@link DistributionQueueItem}s

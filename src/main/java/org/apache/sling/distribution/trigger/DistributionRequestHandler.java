@@ -18,12 +18,12 @@
  */
 package org.apache.sling.distribution.trigger;
 
-import aQute.bnd.annotation.ConsumerType;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.component.impl.DistributionComponentKind;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.osgi.annotation.versioning.ConsumerType;
 
 /**
  * An handler for {@link org.apache.sling.distribution.DistributionRequest}s passed to a

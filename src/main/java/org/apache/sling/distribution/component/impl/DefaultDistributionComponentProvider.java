@@ -23,13 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.ReferenceCardinality;
-import org.apache.felix.scr.annotations.ReferencePolicy;
-import org.apache.felix.scr.annotations.References;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.apache.sling.distribution.agent.spi.DistributionAgent;
 import org.apache.sling.distribution.agent.impl.DistributionRequestAuthorizationStrategy;
@@ -40,24 +33,17 @@ import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
 import org.apache.sling.distribution.queue.impl.DistributionQueueDispatchingStrategy;
 import org.apache.sling.distribution.transport.DistributionTransportSecretProvider;
 import org.apache.sling.distribution.trigger.DistributionTrigger;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
 /**
  * {@link DistributionComponentProvider} OSGi service.
  */
-@Component
-@Property(name = "name", value = "default")
-@References({
-        @Reference(name = "distributionAgent", referenceInterface = DistributionAgent.class, cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE, policy = ReferencePolicy.DYNAMIC),
-        @Reference(name = "distributionPackageImporter", referenceInterface = DistributionPackageImporter.class, cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE, policy = ReferencePolicy.DYNAMIC),
-        @Reference(name = "distributionPackageExporter", referenceInterface = DistributionPackageExporter.class, cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE, policy = ReferencePolicy.DYNAMIC),
-        @Reference(name = "distributionQueueProvider", referenceInterface = DistributionQueueProvider.class, cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE, policy = ReferencePolicy.DYNAMIC),
-        @Reference(name = "distributionQueueDistributionStrategy", referenceInterface = DistributionQueueDispatchingStrategy.class, cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE, policy = ReferencePolicy.DYNAMIC),
-        @Reference(name = "distributionTransportSecretProvider", referenceInterface = DistributionTransportSecretProvider.class, cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE, policy = ReferencePolicy.DYNAMIC),
-        @Reference(name = "distributionTrigger", referenceInterface = DistributionTrigger.class, cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE, policy = ReferencePolicy.DYNAMIC),
-        @Reference(name = "distributionRequestAuthorizationStrategy", referenceInterface = DistributionRequestAuthorizationStrategy.class, cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE, policy = ReferencePolicy.DYNAMIC),
-        @Reference(name = "distributionPackageBuilder", referenceInterface = DistributionPackageBuilder.class, cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE, policy = ReferencePolicy.DYNAMIC)
+@Component ( property = {
+        "name=default"
 })
-@Service(DistributionComponentProvider.class)
 public class DefaultDistributionComponentProvider implements DistributionComponentProvider {
 
     private static final String NAME = DistributionComponentConstants.PN_NAME;
@@ -133,6 +119,9 @@ public class DefaultDistributionComponentProvider implements DistributionCompone
 
     // (un)binding methods
 
+    @Reference(name = "distributionQueueProvider",  
+            cardinality = ReferenceCardinality.MULTIPLE, 
+            policy = ReferencePolicy.DYNAMIC)
     public void bindDistributionQueueProvider(DistributionQueueProvider distributionQueueProvider, Map<String, Object> config) {
         put(DistributionQueueProvider.class, distributionQueueProvider, config);
     }
@@ -141,6 +130,9 @@ public class DefaultDistributionComponentProvider implements DistributionCompone
         remove(DistributionQueueProvider.class, distributionQueueProvider, config);
     }
 
+    @Reference(name = "distributionQueueDistributionStrategy", 
+            cardinality = ReferenceCardinality.MULTIPLE, 
+            policy = ReferencePolicy.DYNAMIC)
     public void bindDistributionQueueDistributionStrategy(DistributionQueueDispatchingStrategy distributionQueueDispatchingStrategy, Map<String, Object> config) {
         put(DistributionQueueDispatchingStrategy.class, distributionQueueDispatchingStrategy, config);
     }
@@ -149,6 +141,9 @@ public class DefaultDistributionComponentProvider implements DistributionCompone
         remove(DistributionQueueDispatchingStrategy.class, distributionQueueDispatchingStrategy, config);
     }
 
+    @Reference(name = "distributionTransportSecretProvider",  
+            cardinality = ReferenceCardinality.MULTIPLE, 
+            policy = ReferencePolicy.DYNAMIC)
     public void bindDistributionTransportSecretProvider(DistributionTransportSecretProvider distributionTransportSecretProvider, Map<String, Object> config) {
         put(DistributionTransportSecretProvider.class, distributionTransportSecretProvider, config);
     }
@@ -157,6 +152,9 @@ public class DefaultDistributionComponentProvider implements DistributionCompone
         remove(DistributionTransportSecretProvider.class, distributionTransportSecretProvider, config);
     }
 
+    @Reference(name = "distributionPackageImporter", 
+            cardinality = ReferenceCardinality.MULTIPLE, 
+            policy = ReferencePolicy.DYNAMIC)
     public void bindDistributionPackageImporter(DistributionPackageImporter distributionPackageImporter, Map<String, Object> config) {
         put(DistributionPackageImporter.class, distributionPackageImporter, config);
     }
@@ -165,6 +163,9 @@ public class DefaultDistributionComponentProvider implements DistributionCompone
         remove(DistributionPackageImporter.class, distributionPackageImporter, config);
     }
 
+    @Reference(name = "distributionPackageExporter", 
+            cardinality = ReferenceCardinality.MULTIPLE, 
+            policy = ReferencePolicy.DYNAMIC)
     public void bindDistributionPackageExporter(DistributionPackageExporter distributionPackageExporter, Map<String, Object> config) {
         put(DistributionPackageExporter.class, distributionPackageExporter, config);
     }
@@ -173,6 +174,9 @@ public class DefaultDistributionComponentProvider implements DistributionCompone
         remove(DistributionPackageExporter.class, distributionPackageExporter, config);
     }
 
+    @Reference(name = "distributionAgent", 
+            cardinality = ReferenceCardinality.MULTIPLE, 
+            policy = ReferencePolicy.DYNAMIC)
     public void bindDistributionAgent(DistributionAgent distributionAgent, Map<String, Object> config) {
         put(DistributionAgent.class, distributionAgent, config);
     }
@@ -181,6 +185,9 @@ public class DefaultDistributionComponentProvider implements DistributionCompone
         remove(DistributionAgent.class, distributionAgent, config);
     }
 
+    @Reference(name = "distributionPackageBuilder", 
+            cardinality = ReferenceCardinality.MULTIPLE, 
+            policy = ReferencePolicy.DYNAMIC)
     public void bindDistributionPackageBuilder(DistributionPackageBuilder distributionPackageBuilder, Map<String, Object> config) {
         put(DistributionPackageBuilder.class, distributionPackageBuilder, config);
     }
@@ -189,6 +196,9 @@ public class DefaultDistributionComponentProvider implements DistributionCompone
         remove(DistributionPackageBuilder.class, distributionPackageBuilder, config);
     }
 
+    @Reference(name = "distributionTrigger", 
+            cardinality = ReferenceCardinality.MULTIPLE, 
+            policy = ReferencePolicy.DYNAMIC)
     public void bindDistributionTrigger(DistributionTrigger distributionTrigger, Map<String, Object> config) {
         put(DistributionTrigger.class, distributionTrigger, config);
     }
@@ -197,6 +207,9 @@ public class DefaultDistributionComponentProvider implements DistributionCompone
         remove(DistributionTrigger.class, distributionTrigger, config);
     }
 
+    @Reference(name = "distributionRequestAuthorizationStrategy", 
+            cardinality = ReferenceCardinality.MULTIPLE, 
+            policy = ReferencePolicy.DYNAMIC)
     public void bindDistributionRequestAuthorizationStrategy(DistributionRequestAuthorizationStrategy distributionRequestAuthorizationStrategy, Map<String, Object> config) {
         put(DistributionRequestAuthorizationStrategy.class, distributionRequestAuthorizationStrategy, config);
     }

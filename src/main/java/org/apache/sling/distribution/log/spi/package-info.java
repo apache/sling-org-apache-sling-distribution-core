@@ -20,5 +20,4 @@
 @Version("0.0.0")
 package org.apache.sling.distribution.log.spi;
 
-import aQute.bnd.annotation.Version;
-
+import org.osgi.annotation.versioning.Version;

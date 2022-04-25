@@ -24,16 +24,15 @@
     <!-- ======================================================================= -->
     <parent>
         <groupId>org.apache.sling</groupId>
-        <artifactId>sling</artifactId>
-        <version>28</version>
+        <artifactId>sling-bundle-parent</artifactId>
+        <version>47</version>
     </parent>
 
     <!-- ======================================================================= -->
     <!-- P R O J E C T                                                           -->
     <!-- ======================================================================= -->
     <artifactId>org.apache.sling.distribution.core</artifactId>
-    <version>0.5.1-SNAPSHOT</version>
-    <packaging>bundle</packaging>
+    <version>0.6.0-SNAPSHOT</version>
 
     <name>Apache Sling Distribution Core</name>
     <description>
@@ -51,6 +50,7 @@
     <properties>
         <exam.version>4.11.0</exam.version>
         <sling.java.version>8</sling.java.version>
+        <project.build.outputTimestamp>10</project.build.outputTimestamp>
     </properties>
 
     <!-- ======================================================================= -->
@@ -59,42 +59,8 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-scr-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.sling</groupId>
-                <artifactId>maven-sling-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>org.apache.sling.distribution.core</Bundle-SymbolicName>
-                        <Export-Package>
-                            org.apache.sling.distribution.util,
-                            org.apache.sling.distribution.common,
-                            org.apache.sling.distribution.serialization,
-                            org.apache.sling.distribution.queue.spi,
-                            org.apache.sling.distribution.queue,
-                            org.apache.sling.distribution.log.spi,
-                            org.apache.sling.distribution.agent,
-                            org.apache.sling.distribution.agent.spi,
-                            org.apache.sling.distribution.packaging
-                        </Export-Package>
-                        <Import-Package>
-                            org.apache.http.nio.*;resolution:=optional,
-                            org.apache.http.impl.nio.client.*;resolution:=optional,
-                            org.apache.felix.hc.api;resolution:=optional,
-                            org.apache.sling.event.jobs;version="[1.5.0,3.0)",
-                            org.apache.sling.event.jobs.consumer;version="[1.1,2)",
-                            org.apache.sling.jcr.api;version="2.2.0",
-                            *
-                        </Import-Package>
-                    </instructions>
-                </configuration>
+                <groupId>biz.aQute.bnd</groupId>
+                <artifactId>bnd-maven-plugin</artifactId>
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -159,21 +125,39 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.service.cm</artifactId>
-            <version>1.6.0</version>
            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.service.component</artifactId>
-            <version>1.4.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.service.event</artifactId>
-            <version>1.4.0</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.annotation.versioning</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.annotation.bundle</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.service.component.annotations</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.service.metatype.annotations</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
 
         <!-- need it here as to avoid classpath conflicts with testing mock -->
         <dependency>
@@ -214,7 +198,7 @@
         <!-- Sling Mock -->
         <dependency>
             <groupId>org.apache.sling</groupId>
-            <artifactId>org.apache.sling.testing.osgi-mock</artifactId>
+            <artifactId>org.apache.sling.testing.osgi-mock.junit4</artifactId>
             <version>2.4.10</version>
             <scope>test</scope>
         </dependency>
@@ -246,6 +230,10 @@
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.distribution.api</artifactId>
             <version>0.6.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.servlets.annotations</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.sling</groupId>
@@ -325,6 +313,7 @@
             <artifactId>httpasyncclient</artifactId>
             <version>4.0.2</version>
             <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>

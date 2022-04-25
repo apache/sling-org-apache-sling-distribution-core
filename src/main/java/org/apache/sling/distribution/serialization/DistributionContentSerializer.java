@@ -21,9 +21,9 @@ package org.apache.sling.distribution.serialization;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import aQute.bnd.annotation.ConsumerType;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.common.DistributionException;
+import org.osgi.annotation.versioning.ConsumerType;
 
 /**
  * A content serializer used to convert distribution payloads to and from binary streams.

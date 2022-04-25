@@ -19,12 +19,12 @@
 package org.apache.sling.distribution.packaging;
 
 import java.io.InputStream;
-import aQute.bnd.annotation.ProviderType;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.common.DistributionException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.osgi.annotation.versioning.ProviderType;
 
 /**
  * A builder for {@link DistributionPackage}s

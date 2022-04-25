@@ -26,22 +26,19 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.apache.felix.hc.api.FormattingResultLog;
 import org.apache.felix.hc.api.HealthCheck;
 import org.apache.felix.hc.api.Result;
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Deactivate;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.PropertyUnbounded;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.ReferenceCardinality;
-import org.apache.felix.scr.annotations.ReferencePolicy;
-import org.apache.felix.scr.annotations.References;
-import org.apache.felix.scr.annotations.Service;
-import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.apache.sling.distribution.agent.spi.DistributionAgent;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,23 +46,19 @@ import org.slf4j.LoggerFactory;
  * {@link HealthCheck} that checks if distribution queues' first item has been retried more than a configurable amount
  * of times
  */
-@Component(immediate = true,
-        metatype = true,
-        label = "Apache Sling Distribution Queue Health Check")
-@Properties({
-        @Property(name = HealthCheck.NAME, value = "SlingDistributionQueueHC", description = "Health Check name", label = "Name"),
-        @Property(name = HealthCheck.TAGS, unbounded = PropertyUnbounded.ARRAY, description = "Health Check tags", label = "Tags"),
-        @Property(name = HealthCheck.MBEAN_NAME, value = "slingDistributionQueue", description = "Health Check MBean name", label = "MBean name")
-})
-@References({
-        @Reference(name = "distributionAgent",
-                referenceInterface = DistributionAgent.class,
-                cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE,
-                policy = ReferencePolicy.DYNAMIC)
-})
-
-@Service(value = HealthCheck.class)
+@Component(immediate = true, service=HealthCheck.class,
+    property = {
+            HealthCheck.NAME + "=SlingDistributionQueueHC",
+            HealthCheck.MBEAN_NAME + "=slingDistributionQueue"
+    })
+@Designate(ocd=DistributionQueueHealthCheck.Config.class)
 public class DistributionQueueHealthCheck implements HealthCheck {
+    
+    @ObjectClassDefinition(name="Apache Sling Distribution Queue Health Check")
+    public @interface Config {
+        @AttributeDefinition(name="Allowed retries", description = "Number of allowed retries")
+        int numberOfRetriesAllowed() default DEFAULT_NUMBER_OF_RETRIES_ALLOWED;
+    }
 
     private static final Logger log = LoggerFactory.getLogger(DistributionQueueHealthCheck.class);
 
@@ -73,14 +66,12 @@ public class DistributionQueueHealthCheck implements HealthCheck {
 
     private int numberOfRetriesAllowed;
 
-    @Property(intValue = DEFAULT_NUMBER_OF_RETRIES_ALLOWED, description = "Number of allowed retries", label = "Allowed retries")
-    private static final String NUMBER_OF_RETRIES_ALLOWED = "numberOfRetriesAllowed";
 
     private final List<DistributionAgent> distributionAgents = new CopyOnWriteArrayList<DistributionAgent>();
 
     @Activate
-    public void activate(final Map<String, Object> properties) {
-        numberOfRetriesAllowed = PropertiesUtil.toInteger(properties.get(NUMBER_OF_RETRIES_ALLOWED), DEFAULT_NUMBER_OF_RETRIES_ALLOWED);
+    public void activate(final Config conf) {
+        numberOfRetriesAllowed = conf.numberOfRetriesAllowed();
         log.info("Activated, numberOfRetriesAllowed={}", numberOfRetriesAllowed);
     }
 
@@ -89,6 +80,9 @@ public class DistributionQueueHealthCheck implements HealthCheck {
         distributionAgents.clear();
     }
 
+    @Reference(name = "distributionAgent",
+            cardinality = ReferenceCardinality.MULTIPLE,
+            policy = ReferencePolicy.DYNAMIC)
     void bindDistributionAgent(final DistributionAgent distributionAgent) {
         distributionAgents.add(distributionAgent);
 

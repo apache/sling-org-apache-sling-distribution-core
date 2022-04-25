@@ -27,10 +27,12 @@ import java.util.List;
 import org.apache.sling.distribution.agent.spi.DistributionAgent;
 import org.apache.sling.distribution.queue.DistributionQueueItemState;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
+import org.apache.sling.testing.mock.osgi.junit.OsgiContext;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
 import org.apache.felix.hc.api.Result;
+import org.junit.Rule;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -45,11 +47,14 @@ import static org.mockito.Mockito.when;
  * Testcase for {@link DistributionQueueHealthCheck}
  */
 public class DistributionQueueHealthCheckTest {
+    
+    @Rule
+    public final OsgiContext context = new OsgiContext();
 
     @Test
     public void testWithNoDistributionQueueProvider() throws Exception {
         DistributionQueueHealthCheck distributionQueueHealthCheck = new DistributionQueueHealthCheck();
-        distributionQueueHealthCheck.activate(Collections.<String, Object>emptyMap());
+        context.registerInjectActivateService(distributionQueueHealthCheck);
         Result result = distributionQueueHealthCheck.execute();
         assertNotNull(result);
         assertTrue(result.isOk());
@@ -59,7 +64,7 @@ public class DistributionQueueHealthCheckTest {
     public void testWithNoItemInTheQueue() throws Exception {
         DistributionQueueHealthCheck distributionQueueHealthCheck = new DistributionQueueHealthCheck();
 
-        distributionQueueHealthCheck.activate(Collections.<String, Object>emptyMap());
+        context.registerInjectActivateService(distributionQueueHealthCheck);
         DistributionQueue queue = mock(DistributionQueue.class);
         when(queue.getHead()).thenReturn(null);
         DistributionAgent distributionAgent = mock(DistributionAgent.class);
@@ -79,7 +84,7 @@ public class DistributionQueueHealthCheckTest {
     public void testWithOneOkItemInTheQueue() throws Exception {
         DistributionQueueHealthCheck distributionQueueHealthCheck = new DistributionQueueHealthCheck();
 
-        distributionQueueHealthCheck.activate(Collections.<String, Object>emptyMap());
+        context.registerInjectActivateService(distributionQueueHealthCheck);
         DistributionQueue queue = mock(DistributionQueue.class);
         DistributionQueueItem item = new DistributionQueueItem("packageId", new HashMap<String, Object>());
         DistributionQueueItemStatus status = new DistributionQueueItemStatus(Calendar.getInstance(), DistributionQueueItemState.QUEUED, 1, "queueName");
@@ -103,7 +108,7 @@ public class DistributionQueueHealthCheckTest {
     public void testWithNotOkItemInTheQueue() throws Exception {
         DistributionQueueHealthCheck distributionQueueHealthCheck = new DistributionQueueHealthCheck();
 
-        distributionQueueHealthCheck.activate(Collections.<String, Object>emptyMap());
+        context.registerInjectActivateService(distributionQueueHealthCheck);
         DistributionQueue queue = mock(DistributionQueue.class);
         DistributionQueueItem item = new DistributionQueueItem("packageId", new HashMap<String, Object>());
         DistributionQueueItemStatus status = new DistributionQueueItemStatus(Calendar.getInstance(), DistributionQueueItemState.QUEUED, 10, "queueName");

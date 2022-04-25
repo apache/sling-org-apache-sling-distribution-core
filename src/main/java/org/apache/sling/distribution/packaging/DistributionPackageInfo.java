@@ -21,12 +21,12 @@ package org.apache.sling.distribution.packaging;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import aQute.bnd.annotation.ProviderType;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.wrappers.ValueMapDecorator;
 import org.apache.sling.distribution.DistributionRequestType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.osgi.annotation.versioning.ProviderType;
 
 /**
  * Additional information about a package.

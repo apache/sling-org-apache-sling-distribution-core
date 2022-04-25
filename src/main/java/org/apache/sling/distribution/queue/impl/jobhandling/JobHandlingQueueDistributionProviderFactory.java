@@ -19,22 +19,21 @@
 
 package org.apache.sling.distribution.queue.impl.jobhandling;
 
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.distribution.component.impl.DistributionComponentConstants;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProviderFactory;
 import org.apache.sling.event.jobs.JobManager;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 import java.util.Map;
 
-@Component
-@Service(DistributionQueueProviderFactory.class)
-@Property(name = DistributionComponentConstants.PN_NAME, value = "jobQueue")
+@Component(service=DistributionQueueProviderFactory.class,
+    property= {
+            DistributionComponentConstants.PN_NAME + "=jobQueue"    
+    })
 public class JobHandlingQueueDistributionProviderFactory implements DistributionQueueProviderFactory {
 
     @Reference

@@ -20,7 +20,6 @@ package org.apache.sling.distribution.queue.spi;
 
 import java.util.Set;
 
-import aQute.bnd.annotation.ConsumerType;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
@@ -28,6 +27,7 @@ import org.apache.sling.distribution.queue.DistributionQueueStatus;
 import org.apache.sling.distribution.queue.DistributionQueueType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.osgi.annotation.versioning.ConsumerType;
 
 /**
  * Holds the {@link DistributionQueueItem} queue items in a sequential queue.
