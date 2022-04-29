@@ -77,7 +77,7 @@ public interface DistributionPackageBuilder {
      * @param resourceResolver   the resource resolver used to install the packaged resources
      * @param distributionPackage the distribution package to install
      * @return <code>true</code> if the package was installed successfully
-     * @throws DistributionException
+     * @throws DistributionException when installation fails
      */
     boolean installPackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionPackage distributionPackage) throws DistributionException;
 

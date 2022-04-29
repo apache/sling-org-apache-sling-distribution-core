@@ -61,6 +61,7 @@ public final class DistributionPackageInfo extends ValueMapDecorator implements 
      * Creates a new wrapper around a given map.
      *
      * @param base wrapped object
+     * @param packageType type of package
      */
     public DistributionPackageInfo(String packageType, Map<String, Object> base) {
         super(base);
@@ -74,7 +75,8 @@ public final class DistributionPackageInfo extends ValueMapDecorator implements 
 
     /**
      * Creates a new wrapper around an empty map.
-     *
+     * 
+     * @param packageType type of package
      */
     public DistributionPackageInfo(String packageType) {
         this(packageType, new HashMap<String, Object>());

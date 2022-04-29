@@ -51,7 +51,7 @@ public interface DistributionPackage {
      * a new stream is created for each call and it is the caller's obligation to close the stream.
      *
      * @return an {@link InputStream}
-     * @throws IOException
+     * @throws IOException if stream create fails
      */
     @NotNull
     InputStream createInputStream() throws IOException;

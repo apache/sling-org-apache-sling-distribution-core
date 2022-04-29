@@ -50,11 +50,11 @@ import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.
 
 /**
  * A simple implementation of a {@link DistributionQueue}.
- * <p/>
+ *
  * Note that, at the moment, this is a transient in memory queue not persisted on the repository and
  * therefore not usable for production.
  *
- * Note: potentially the Queue could contain the ordered package ids, with a sidecar map id->item;
+ * Note: potentially the Queue could contain the ordered package ids, with a sidecar map id,item;
  * that way removal could be faster.
  */
 public class SimpleDistributionQueue implements DistributionQueue {
