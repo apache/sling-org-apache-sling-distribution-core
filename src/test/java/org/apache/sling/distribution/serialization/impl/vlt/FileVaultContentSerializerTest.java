@@ -64,6 +64,7 @@ public class FileVaultContentSerializerTest {
                 .resource(".sameLevel")
                 .resource("/apps").p("foo", "baa");
         helper.commit();
+        
         // register sling node types
         Session session = context.resourceResolver().adaptTo(Session.class);
         RepositoryUtil.registerSlingNodeTypes(session);

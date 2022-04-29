@@ -35,6 +35,7 @@ import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.testing.mock.osgi.MockOsgi;
 import org.apache.sling.testing.mock.sling.MockSling;
 import org.apache.sling.testing.mock.sling.ResourceResolverType;
+import org.apache.sling.testing.mock.sling.junit.SlingContext;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -61,6 +62,7 @@ public class ResourceQueueProcessingTest {
 
     public static final Logger log = LoggerFactory.getLogger(ResourceQueueProcessingTest.class);
 
+    protected static SlingContext slingContext;
     protected static final String PACKAGE_ID = "testPackageId";
     protected static BundleContext bundleContext = null;
     protected static ResourceResolverFactory rrf = null;
@@ -238,14 +240,17 @@ public class ResourceQueueProcessingTest {
 
     @BeforeClass
     public static void setUp() throws LoginException {
-        bundleContext = MockOsgi.newBundleContext();
-        MockSling.setAdapterManagerBundleContext(bundleContext);
-        rrf = MockSling.newResourceResolverFactory(ResourceResolverType.JCR_OAK, bundleContext);
+        slingContext = new SlingContext(ResourceResolverType.RESOURCERESOLVER_MOCK);
+        
+        bundleContext = slingContext.bundleContext();
+        slingContext.resourceResolver();
+        rrf = slingContext.getService(ResourceResolverFactory.class);
+        mockScheduler();
+    }
+
+    private static void mockScheduler() {
         scheduler = mock(Scheduler.class);
-        ScheduleOptions mockScheduleOptions = mock(ScheduleOptions.class);
-        when(mockScheduleOptions.canRunConcurrently(Matchers.anyBoolean())).thenReturn(mockScheduleOptions);
-        when(mockScheduleOptions.onSingleInstanceOnly(Matchers.anyBoolean())).thenReturn(mockScheduleOptions);
-        when(mockScheduleOptions.name(Matchers.anyString())).thenReturn(mockScheduleOptions);
+        ScheduleOptions mockScheduleOptions = scheduleOptions();
         executorService = Executors.newSingleThreadScheduledExecutor();
         when(scheduler.NOW(Matchers.anyInt(), Matchers.anyLong())).thenReturn(mockScheduleOptions);
         when(scheduler.schedule(Matchers.any(Runnable.class), Matchers.any(ScheduleOptions.class)))
@@ -258,6 +263,14 @@ public class ResourceQueueProcessingTest {
                 }
             });
         when(scheduler.unschedule(Matchers.anyString())).thenReturn(true);
+    }
+
+    private static ScheduleOptions scheduleOptions() {
+        ScheduleOptions mockScheduleOptions = mock(ScheduleOptions.class);
+        when(mockScheduleOptions.canRunConcurrently(Matchers.anyBoolean())).thenReturn(mockScheduleOptions);
+        when(mockScheduleOptions.onSingleInstanceOnly(Matchers.anyBoolean())).thenReturn(mockScheduleOptions);
+        when(mockScheduleOptions.name(Matchers.anyString())).thenReturn(mockScheduleOptions);
+        return mockScheduleOptions;
     }
 
     @AfterClass
