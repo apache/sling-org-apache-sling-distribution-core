@@ -62,7 +62,7 @@ public class SingleQueueDistributionStrategyTest {
         assertNotNull(iterator.next());
     }
 
-    @Ignore // Find reason for NPE
+    @Ignore("Find reason for NPE")
     @Test
     public void testPackageAdditionWithFailingItemDelivery() throws Exception {
         SingleQueueDispatchingStrategy singleQueueDistributionStrategy = new SingleQueueDispatchingStrategy();
