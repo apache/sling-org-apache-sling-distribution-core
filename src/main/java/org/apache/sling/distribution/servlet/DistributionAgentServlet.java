@@ -21,6 +21,8 @@ package org.apache.sling.distribution.servlet;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
@@ -70,8 +72,12 @@ public class DistributionAgentServlet extends SlingAllMethodsServlet {
 
                 log.debug("distribution response : {}", distributionResponse);
             } catch (Throwable e) {
-                log.error("an unexpected error has occurred", e);
-                ServletJsonUtils.writeJson(response, 503, "an unexpected error has occurred", null);
+                String msg = "an unexpected error has occurred";
+                Map<String, String> metadata = new HashMap<String, String>();
+                metadata.put("details", e.getMessage());
+
+                log.error(msg, e);
+                ServletJsonUtils.writeJson(response, 503, msg, metadata);
             }
         } else {
             ServletJsonUtils.writeJson(response, 404, "agent not found", null);
