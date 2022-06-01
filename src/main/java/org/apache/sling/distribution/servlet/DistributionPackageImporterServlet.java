@@ -18,6 +18,7 @@
  */
 package org.apache.sling.distribution.servlet;
 
+import static java.lang.String.format;
 import static javax.servlet.http.HttpServletResponse.*;
 import static org.apache.sling.distribution.util.impl.DigestUtils.openDigestInputStream;
 import static org.apache.sling.distribution.util.impl.DigestUtils.readDigestMessage;
@@ -126,12 +127,10 @@ public class DistributionPackageImporterServlet extends SlingAllMethodsServlet {
             ServletJsonUtils.writeJson(response, SC_OK, "package imported successfully", null);
 
         } catch (final Throwable e) {
-            String msg = "an unexpected error has occurred during distribution import";
-            Map<String, String> metadata = new HashMap<String, String>();
-            metadata.put("details", e.getMessage());
-
+            String msg = format("an unexpected error has occurred during distribution import. Error:%s",
+                    e.getMessage());
             log.error(msg, e);
-            ServletJsonUtils.writeJson(response, SC_INTERNAL_SERVER_ERROR, msg, metadata);
+            ServletJsonUtils.writeJson(response, SC_INTERNAL_SERVER_ERROR, msg, null);
         } finally {
             long end = System.currentTimeMillis();
             log.debug("Processed package import request in {} ms", end - start);

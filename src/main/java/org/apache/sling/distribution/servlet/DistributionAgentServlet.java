@@ -72,12 +72,8 @@ public class DistributionAgentServlet extends SlingAllMethodsServlet {
 
                 log.debug("distribution response : {}", distributionResponse);
             } catch (Throwable e) {
-                String msg = "an unexpected error has occurred";
-                Map<String, String> metadata = new HashMap<String, String>();
-                metadata.put("details", e.getMessage());
-
-                log.error(msg, e);
-                ServletJsonUtils.writeJson(response, 503, msg, metadata);
+                log.error("an unexpected error has occurred", e);
+                ServletJsonUtils.writeJson(response, 503, e.getMessage(), null);
             }
         } else {
             ServletJsonUtils.writeJson(response, 404, "agent not found", null);
