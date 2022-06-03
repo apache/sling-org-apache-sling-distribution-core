@@ -18,8 +18,6 @@
  */
 package org.apache.sling.distribution.common;
 
-import org.apache.sling.distribution.common.error.ErrorCode;
-
 /**
  * Generic checked exception for distribution
  */

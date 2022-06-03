@@ -1,7 +1,5 @@
 package org.apache.sling.distribution.common;
 
-import org.apache.sling.distribution.common.error.ErrorCode;
-
 /**
  * A type of exception that contains additional error metadata that link to external
  * documentation and allows for distributed tracing, through specific ERROR_CODES.

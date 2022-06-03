@@ -1,4 +1,4 @@
-package org.apache.sling.distribution.common.error;
+package org.apache.sling.distribution.common;
 
 /**
  * This class defines specific system error codes which allow for easier propagation of exception
