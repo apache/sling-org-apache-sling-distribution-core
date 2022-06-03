@@ -18,6 +18,7 @@
  */
 package org.apache.sling.distribution.servlet;
 
+import static java.lang.String.format;
 import static javax.servlet.http.HttpServletResponse.*;
 import static org.apache.sling.distribution.util.impl.DigestUtils.openDigestInputStream;
 import static org.apache.sling.distribution.util.impl.DigestUtils.readDigestMessage;
@@ -112,7 +113,7 @@ public class DistributionPackageImporterServlet extends SlingAllMethodsServlet {
                 String receivedDigestMessage = readDigestMessage((DigestInputStream) stream);
                 if (!digestMessage.equalsIgnoreCase(receivedDigestMessage)) {
                     log.error("Error during distribution import: received distribution package is corrupted, expected [{}] but received [{}]",
-                              digestMessage, receivedDigestMessage);
+                            digestMessage, receivedDigestMessage);
                     Map<String, String> kv = new HashMap<String, String>();
                     kv.put("digestAlgorithm", digestAlgorithm);
                     kv.put("expected", digestMessage);
@@ -126,8 +127,11 @@ public class DistributionPackageImporterServlet extends SlingAllMethodsServlet {
             ServletJsonUtils.writeJson(response, SC_OK, "package imported successfully", null);
 
         } catch (final Throwable e) {
-            ServletJsonUtils.writeJson(response, SC_INTERNAL_SERVER_ERROR, "an unexpected error has occurred during distribution import", null);
-            log.error("Error during distribution import", e);
+            String msg = format("an unexpected error has occurred during distribution import. " +
+                            "Error: %s",
+                    e.getMessage());
+            log.error(msg, e);
+            ServletJsonUtils.writeJson(response, SC_INTERNAL_SERVER_ERROR, msg, null);
         } finally {
             long end = System.currentTimeMillis();
             log.debug("Processed package import request in {} ms", end - start);
