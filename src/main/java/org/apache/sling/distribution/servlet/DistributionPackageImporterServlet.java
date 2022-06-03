@@ -127,7 +127,8 @@ public class DistributionPackageImporterServlet extends SlingAllMethodsServlet {
             ServletJsonUtils.writeJson(response, SC_OK, "package imported successfully", null);
 
         } catch (final Throwable e) {
-            String msg = format("an unexpected error has occurred during distribution import. Error:%s",
+            String msg = format("an unexpected error has occurred during distribution import. " +
+                            "Error: %s",
                     e.getMessage());
             log.error(msg, e);
             ServletJsonUtils.writeJson(response, SC_INTERNAL_SERVER_ERROR, msg, null);
