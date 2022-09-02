@@ -324,7 +324,7 @@
         <dependency>
             <groupId>org.apache.jackrabbit.vault</groupId>
             <artifactId>org.apache.jackrabbit.vault</artifactId>
-            <version>3.4.0</version>
+            <version>3.6.1-T20220805092633-0b8a2641</version>
         </dependency>
         <!-- HTTP -->
         <dependency>

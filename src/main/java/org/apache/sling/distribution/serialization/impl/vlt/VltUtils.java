@@ -41,9 +41,11 @@ import java.util.zip.Deflater;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.jackrabbit.vault.fs.api.IdConflictPolicy;
 import org.apache.jackrabbit.vault.fs.api.ImportMode;
 import org.apache.jackrabbit.vault.fs.api.PathFilterSet;
 import org.apache.jackrabbit.vault.fs.api.WorkspaceFilter;
+import org.apache.jackrabbit.vault.fs.config.ConfigurationException;
 import org.apache.jackrabbit.vault.fs.config.DefaultMetaInf;
 import org.apache.jackrabbit.vault.fs.config.DefaultWorkspaceFilter;
 import org.apache.jackrabbit.vault.fs.config.MetaInf;
@@ -79,7 +81,7 @@ public class VltUtils {
     private static final String MAPPING_DELIMITER = ";";
 
     public static WorkspaceFilter createFilter(DistributionRequest distributionRequest, NavigableMap<String, List<String>> nodeFilters,
-                                               NavigableMap<String, List<String>> propertyFilters) {
+                                               NavigableMap<String, List<String>> propertyFilters) throws ConfigurationException {
         DefaultWorkspaceFilter filter = new DefaultWorkspaceFilter();
 
         for (String path : distributionRequest.getPaths()) {
@@ -122,7 +124,7 @@ public class VltUtils {
         return paths;
     }
 
-    private static void initFilterSet(PathFilterSet filterSet, NavigableMap<String, List<String>> globalFilters, List<String> patterns) {
+    private static void initFilterSet(PathFilterSet filterSet, NavigableMap<String, List<String>> globalFilters, List<String> patterns) throws ConfigurationException {
 
         // add the most specific filter rules
         String root = filterSet.getRoot();
@@ -227,7 +229,7 @@ public class VltUtils {
         return packageRoot;
     }
 
-    public static ImportOptions getImportOptions(AccessControlHandling aclHandling, AccessControlHandling cugHandling, ImportMode importMode, int autosaveThreshold, boolean strict) {
+    public static ImportOptions getImportOptions(AccessControlHandling aclHandling, AccessControlHandling cugHandling, ImportMode importMode, IdConflictPolicy idConflictPolicy, int autosaveThreshold, boolean strict) {
         ImportOptions opts = new ImportOptions();
         if (aclHandling != null) {
             opts.setAccessControlHandling(aclHandling);
@@ -246,6 +248,12 @@ public class VltUtils {
         } else {
             // default to update
             opts.setImportMode(ImportMode.UPDATE);
+        }
+        if (idConflictPolicy != null) {
+            opts.setIdConflictPolicy(idConflictPolicy);
+        } else {
+            // default to legacy
+            opts.setIdConflictPolicy(IdConflictPolicy.LEGACY);
         }
 
         opts.setPatchKeepInRepo(false);
@@ -435,7 +443,7 @@ public class VltUtils {
         return new SimpleDistributionRequest(requestType, paths.toArray(new String[paths.size()]), deepPaths, filters);
     }
 
-    private static PathFilterSet.Entry<DefaultPathFilter> extractPathPattern(String pattern) {
+    private static PathFilterSet.Entry<DefaultPathFilter> extractPathPattern(String pattern) throws ConfigurationException {
         PathFilterSet.Entry<DefaultPathFilter> result;
         if (pattern.startsWith("+")) {
             result = new PathFilterSet.Entry<DefaultPathFilter>(new DefaultPathFilter(pattern.substring(1)), true);

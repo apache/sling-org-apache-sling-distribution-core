@@ -27,6 +27,7 @@ import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 
+import org.apache.jackrabbit.vault.fs.api.IdConflictPolicy;
 import org.apache.jackrabbit.vault.fs.api.ImportMode;
 import org.apache.jackrabbit.vault.fs.io.AccessControlHandling;
 import org.apache.jackrabbit.vault.packaging.ExportOptions;
@@ -76,14 +77,15 @@ public class FileVaultContentSerializerTest {
 
         ImportMode importMode = ImportMode.REPLACE;
         AccessControlHandling aclHandling = AccessControlHandling.IGNORE;
+        IdConflictPolicy conflictPolicy = IdConflictPolicy.LEGACY;
 
         String[] packageRoots = new String[]{"/etc/packages"};
         String[] nodeFilters = new String[0];
         String[] propertyFilters = new String[0];
         boolean useReferences = false;
         int threshold = 1024;
-        FileVaultContentSerializer fileVaultContentSerializer = new FileVaultContentSerializer("vlt", packaging, importMode,
-                aclHandling, aclHandling, packageRoots, nodeFilters, propertyFilters, useReferences, threshold, new HashMap<String, String>(), false);
+        FileVaultContentSerializer fileVaultContentSerializer = new FileVaultContentSerializer("vlt", packaging, importMode, aclHandling, aclHandling,
+                conflictPolicy, packageRoots, nodeFilters, propertyFilters, useReferences, threshold, new HashMap<String, String>(), false);
 
         ResourceResolver sessionResolver = mock(ResourceResolver.class);
         Session session = mock(Session.class);
@@ -118,14 +120,15 @@ public class FileVaultContentSerializerTest {
         Packaging packaging = mock(Packaging.class);
         ImportMode importMode = ImportMode.REPLACE;
         AccessControlHandling aclHandling = AccessControlHandling.IGNORE;
+        IdConflictPolicy conflictPolicy = IdConflictPolicy.LEGACY;
 
         String[] packageRoots = new String[]{"/"};
         String[] nodeFilters = new String[0];
         String[] propertyFilters = new String[0];
         boolean useReferences = false;
         int thershold = 1024;
-        FileVaultContentSerializer fileVaultContentSerializer = new FileVaultContentSerializer("vlt", packaging, importMode,
-                aclHandling, aclHandling, packageRoots, nodeFilters, propertyFilters, useReferences, thershold, new HashMap<String, String>(), true);
+        FileVaultContentSerializer fileVaultContentSerializer = new FileVaultContentSerializer("vlt", packaging, importMode, aclHandling, aclHandling,
+                conflictPolicy, packageRoots, nodeFilters, propertyFilters, useReferences, thershold, new HashMap<String, String>(), true);
 
         File file = new File(getClass().getResource("/vlt/dp.vlt").getFile());
 
