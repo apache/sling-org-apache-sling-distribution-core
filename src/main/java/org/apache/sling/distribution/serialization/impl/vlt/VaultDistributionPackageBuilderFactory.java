@@ -68,15 +68,15 @@ import java.util.Map;
 @Designate(ocd=VaultDistributionPackageBuilderFactory.Config.class, factory=true)
 public class VaultDistributionPackageBuilderFactory implements DistributionPackageBuilder {
     
-    @ObjectClassDefinition(name="pache Sling Distribution Packaging - Vault Package Builder Factory",
+    @ObjectClassDefinition(name="Apache Sling Distribution Packaging - Vault Package Builder Factory",
             description = "OSGi configuration for vault package builders")
     public @interface Config {
         @AttributeDefinition(name="name",description = "The name of the package builder.")
         String name();
         @AttributeDefinition(options = {
-                @Option(label = "jcrvlt", value = "jcr packages"),
-                @Option(label = "filevlt",value = "file packages"),
-                @Option(label = "inmemory",value = "in memory packages")},
+                @Option(label = "jcr packages", value = "jcrvlt"),
+                @Option(label = "file packages",value = "filevlt"),
+                @Option(label = "in memory packages",value = "inmemory")},
                 name = "type", description = "The type of this package builder")
         String type() default "jcrvlt";
         @AttributeDefinition(name="Import Mode", description = "The vlt import mode for created packages.")
