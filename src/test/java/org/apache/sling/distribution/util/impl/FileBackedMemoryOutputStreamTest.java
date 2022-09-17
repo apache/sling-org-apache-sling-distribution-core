@@ -158,11 +158,12 @@ public class FileBackedMemoryOutputStreamTest {
     }
 
     private void verifyWrittenData(FileBackedMemoryOutputStream writtenData, byte... expecteds) throws IOException {
-        InputStream input = writtenData.openWrittenDataInputStream();
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        copy(input, output);
-        byte[] actuals = output.toByteArray();
-        assertArrayEquals(expecteds, actuals);
+        try (InputStream input = writtenData.openWrittenDataInputStream()) {
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            copy(input, output);
+            byte[] actuals = output.toByteArray();
+            assertArrayEquals(expecteds, actuals);
+        }
     }
 
 }
