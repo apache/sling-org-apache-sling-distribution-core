@@ -18,6 +18,7 @@
  */
 package org.apache.sling.distribution.serialization.impl.vlt;
 
+import org.apache.jackrabbit.vault.fs.api.IdConflictPolicy;
 import org.apache.jackrabbit.vault.fs.api.ImportMode;
 import org.apache.jackrabbit.vault.fs.io.AccessControlHandling;
 import org.apache.jackrabbit.vault.packaging.Packaging;
@@ -85,6 +86,8 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
         String aclHandling();
         @AttributeDefinition(name="Cug Handling", description = "The vlt cug handling mode for created packages.")
         String cugHandling();
+        @AttributeDefinition(name="Id Conflict Policy", description = "The conflict policy for created packages.")
+        String conflictPolicy();
         @AttributeDefinition(name="Package Roots", description = "The package roots to be used for created packages. "
                 + "(this is useful for assembling packages with an user that cannot read above the package root)")
         String[] package_roots();
@@ -195,6 +198,7 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
         String importModeString = SettingsUtils.removeEmptyEntry(conf.importMode());
         String aclHandlingString = SettingsUtils.removeEmptyEntry(conf.aclHandling());
         String cugHandlingString = SettingsUtils.removeEmptyEntry(conf.cugHandling());
+        String conflictPolicyString = SettingsUtils.removeEmptyEntry(conf.conflictPolicy());
 
         String[] packageRoots = SettingsUtils.removeEmptyEntries(conf.package_roots());
         String[] packageNodeFilters = SettingsUtils.removeEmptyEntries(conf.package_filters());
@@ -226,13 +230,18 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
             cugHandling = AccessControlHandling.valueOf(cugHandlingString.trim());
         }
 
+        IdConflictPolicy conflictPolicy = null;
+        if (conflictPolicyString != null) {
+            conflictPolicy = IdConflictPolicy.valueOf(conflictPolicyString.trim());
+        }
+
         // check the mount path patterns, if any
         Map<String, String> pathsMapping = toMap(conf.pathsMapping(), new String[0]);
         pathsMapping = SettingsUtils.removeEmptyEntries(pathsMapping);
 
         boolean strictImport = conf.strictImport();
 
-        DistributionContentSerializer contentSerializer = new FileVaultContentSerializer(name, packaging, importMode, aclHandling, cugHandling,
+        DistributionContentSerializer contentSerializer = new FileVaultContentSerializer(name, packaging, importMode, aclHandling, cugHandling, conflictPolicy,
                 packageRoots, packageNodeFilters, packagePropertyFilters, useBinaryReferences, autosaveThreshold, pathsMapping, strictImport);
 
         DistributionPackageBuilder wrapped;

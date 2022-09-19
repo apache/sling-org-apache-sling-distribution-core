@@ -27,6 +27,7 @@ import java.util.TreeMap;
 import org.apache.jackrabbit.vault.fs.api.PathFilter;
 import org.apache.jackrabbit.vault.fs.api.PathFilterSet;
 import org.apache.jackrabbit.vault.fs.api.WorkspaceFilter;
+import org.apache.jackrabbit.vault.fs.config.ConfigurationException;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.SimpleDistributionRequest;
 import org.junit.Test;
@@ -119,7 +120,7 @@ public class VltUtilsTest {
     }
     
     @Test
-    public void testCreateFilterWithParenthesis() {
+    public void testCreateFilterWithParenthesis() throws ConfigurationException {
         DistributionRequest request = new SimpleDistributionRequest(ADD, false, "/nodewith(shouldwork");
         NavigableMap<String, List<String>> nodeFilters = new TreeMap<String, List<String>>();
         NavigableMap<String, List<String>> propFilters = new TreeMap<String, List<String>>();

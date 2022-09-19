@@ -30,6 +30,7 @@ import java.util.UUID;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.apache.jackrabbit.vault.fs.api.IdConflictPolicy;
 import org.apache.jackrabbit.vault.fs.api.ImportMode;
 import org.apache.jackrabbit.vault.fs.api.RegexpPathMapping;
 import org.apache.jackrabbit.vault.fs.api.WorkspaceFilter;
@@ -74,6 +75,7 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
     private final ImportMode importMode;
     private final AccessControlHandling aclHandling;
     private final AccessControlHandling cugHandling;
+    private final IdConflictPolicy idConflictPolicy;
     private final String[] packageRoots;
     private final int autosaveThreshold;
     private final TreeMap<String, List<String>> nodeFilters;
@@ -83,15 +85,15 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
     private final Map<String, String> exportPathMapping;
     private final boolean strict;
 
-    public FileVaultContentSerializer(String name, Packaging packaging, ImportMode importMode, AccessControlHandling aclHandling, AccessControlHandling cugHandling, String[] packageRoots,
-                                      String[] nodeFilters, String[] propertyFilters, boolean useBinaryReferences, int autosaveThreshold,
-                                      Map<String, String> exportPathMapping,
-                                      boolean strict) {
+    public FileVaultContentSerializer(String name, Packaging packaging, ImportMode importMode, AccessControlHandling aclHandling, AccessControlHandling cugHandling,
+                                      IdConflictPolicy idConflictPolicy, String[] packageRoots, String[] nodeFilters, String[] propertyFilters, boolean useBinaryReferences,
+                                      int autosaveThreshold, Map<String, String> exportPathMapping, boolean strict) {
         this.name = name;
         this.packaging = packaging;
         this.importMode = importMode;
         this.aclHandling = aclHandling;
         this.cugHandling = cugHandling;
+        this.idConflictPolicy = idConflictPolicy;
         this.packageRoots = packageRoots;
         this.autosaveThreshold = autosaveThreshold;
         this.nodeFilters = VltUtils.parseFilters(nodeFilters);
@@ -131,7 +133,7 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
         Archive archive = null;
         try {
             session = getSession(resourceResolver);
-            ImportOptions importOptions = VltUtils.getImportOptions(aclHandling, cugHandling, importMode, autosaveThreshold, strict);
+            ImportOptions importOptions = VltUtils.getImportOptions(aclHandling, cugHandling, importMode, idConflictPolicy, autosaveThreshold, strict);
             ErrorListener errorListener = new ErrorListener();
             importOptions.setListener(errorListener);
             Importer importer = new Importer(importOptions);
