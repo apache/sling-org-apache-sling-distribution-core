@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -125,8 +126,8 @@ public class SimpleDistributionQueueProvider implements DistributionQueueProvide
                 };
                 for (File qf : checkpointDirectory.listFiles(filenameFilter)) {
                     log.info("recovering from checkpoint {}", qf);
-                    try {
-                        LineIterator lineIterator = IOUtils.lineIterator(new FileReader(qf));
+                    try (FileReader fr = new FileReader(qf)) {
+                        LineIterator lineIterator = IOUtils.lineIterator(fr);
                         while (lineIterator.hasNext()) {
                             String line = lineIterator.nextLine();
                             DistributionQueueItem item = mapper.readQueueItem(line);
@@ -137,6 +138,8 @@ public class SimpleDistributionQueueProvider implements DistributionQueueProvide
                         log.warn("could not read checkpoint file {}", qf.getAbsolutePath());
                     } catch (JsonException e) {
                         log.warn("could not parse info from checkpoint file {}", qf.getAbsolutePath());
+                    } catch (IOException e) {
+                        log.warn("IO error on checkpoint file {}", qf.getAbsolutePath());
                     }
                 }
             }
