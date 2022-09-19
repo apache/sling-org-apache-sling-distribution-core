@@ -18,6 +18,7 @@
  */
 package org.apache.sling.distribution.serialization.impl.vlt;
 
+import org.apache.jackrabbit.vault.fs.api.IdConflictPolicy;
 import org.apache.jackrabbit.vault.fs.api.ImportMode;
 import org.apache.jackrabbit.vault.fs.io.AccessControlHandling;
 import org.apache.jackrabbit.vault.packaging.Packaging;
@@ -165,8 +166,14 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
                 name = "Install a content package in a strict mode",
                 description = "Flag to mark an error response will be thrown, if a content package will incorrectly installed")
         boolean strictImport() default DEFAULT_STRICT_IMPORT_SETTINGS;
+
+        @AttributeDefinition(
+                name = "ID Conflict Policy",
+                description = "Node id conflict policy to use during import")
+        IdConflictPolicy idConflictPolicy() default IdConflictPolicy.FAIL;
+
     }
-    
+
     private static final long DEFAULT_PACKAGE_CLEANUP_DELAY = 60L;
     // 1M
     private static final int DEFAULT_FILE_THRESHOLD_VALUE = 1;
@@ -175,7 +182,6 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
     private static final String DEFAULT_DIGEST_ALGORITHM = "NONE";
     private static final int DEFAULT_MONITORING_QUEUE_SIZE = 0;
     private static final boolean DEFAULT_STRICT_IMPORT_SETTINGS = true;
-
 
     @Reference
     private Packaging packaging;
@@ -232,8 +238,11 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
 
         boolean strictImport = conf.strictImport();
 
+        IdConflictPolicy idConflictPolicy = conf.idConflictPolicy();
+
         DistributionContentSerializer contentSerializer = new FileVaultContentSerializer(name, packaging, importMode, aclHandling, cugHandling,
-                packageRoots, packageNodeFilters, packagePropertyFilters, useBinaryReferences, autosaveThreshold, pathsMapping, strictImport);
+                packageRoots, packageNodeFilters, packagePropertyFilters, useBinaryReferences, autosaveThreshold,
+                pathsMapping, strictImport, idConflictPolicy);
 
         DistributionPackageBuilder wrapped;
         if ("filevlt".equals(type)) {
@@ -301,7 +310,7 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
     * (taken and adjusted from PropertiesUtil, because the handy toMap() function is not available as
     * part of the metatype functionality
     * 
-    * @param propValue The object to convert.
+    * @param values The path mappings.
     * @param defaultArray The default array converted to map.
     * @return Map value
     */

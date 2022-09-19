@@ -27,6 +27,7 @@ import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 
+import org.apache.jackrabbit.vault.fs.api.IdConflictPolicy;
 import org.apache.jackrabbit.vault.fs.api.ImportMode;
 import org.apache.jackrabbit.vault.fs.io.AccessControlHandling;
 import org.apache.jackrabbit.vault.packaging.ExportOptions;
@@ -83,7 +84,8 @@ public class FileVaultContentSerializerTest {
         boolean useReferences = false;
         int threshold = 1024;
         FileVaultContentSerializer fileVaultContentSerializer = new FileVaultContentSerializer("vlt", packaging, importMode,
-                aclHandling, aclHandling, packageRoots, nodeFilters, propertyFilters, useReferences, threshold, new HashMap<String, String>(), false);
+                aclHandling, aclHandling, packageRoots, nodeFilters, propertyFilters, useReferences, threshold,
+                new HashMap<String, String>(), false, IdConflictPolicy.FAIL);
 
         ResourceResolver sessionResolver = mock(ResourceResolver.class);
         Session session = mock(Session.class);
@@ -125,7 +127,8 @@ public class FileVaultContentSerializerTest {
         boolean useReferences = false;
         int thershold = 1024;
         FileVaultContentSerializer fileVaultContentSerializer = new FileVaultContentSerializer("vlt", packaging, importMode,
-                aclHandling, aclHandling, packageRoots, nodeFilters, propertyFilters, useReferences, thershold, new HashMap<String, String>(), true);
+                aclHandling, aclHandling, packageRoots, nodeFilters, propertyFilters, useReferences, thershold,
+                new HashMap<String, String>(), true, IdConflictPolicy.FAIL);
 
         File file = new File(getClass().getResource("/vlt/dp.vlt").getFile());
 

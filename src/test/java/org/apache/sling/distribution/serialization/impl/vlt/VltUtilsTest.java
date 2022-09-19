@@ -119,7 +119,7 @@ public class VltUtilsTest {
     }
     
     @Test
-    public void testCreateFilterWithParenthesis() {
+    public void testCreateFilterWithParenthesis() throws Exception {
         DistributionRequest request = new SimpleDistributionRequest(ADD, false, "/nodewith(shouldwork");
         NavigableMap<String, List<String>> nodeFilters = new TreeMap<String, List<String>>();
         NavigableMap<String, List<String>> propFilters = new TreeMap<String, List<String>>();

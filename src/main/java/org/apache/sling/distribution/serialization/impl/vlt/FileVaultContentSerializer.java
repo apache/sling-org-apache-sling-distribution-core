@@ -30,6 +30,7 @@ import java.util.UUID;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.apache.jackrabbit.vault.fs.api.IdConflictPolicy;
 import org.apache.jackrabbit.vault.fs.api.ImportMode;
 import org.apache.jackrabbit.vault.fs.api.RegexpPathMapping;
 import org.apache.jackrabbit.vault.fs.api.WorkspaceFilter;
@@ -82,11 +83,11 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
     private final String name;
     private final Map<String, String> exportPathMapping;
     private final boolean strict;
+    private final IdConflictPolicy idConflictPolicy;
 
     public FileVaultContentSerializer(String name, Packaging packaging, ImportMode importMode, AccessControlHandling aclHandling, AccessControlHandling cugHandling, String[] packageRoots,
                                       String[] nodeFilters, String[] propertyFilters, boolean useBinaryReferences, int autosaveThreshold,
-                                      Map<String, String> exportPathMapping,
-                                      boolean strict) {
+                                      Map<String, String> exportPathMapping, boolean strict, IdConflictPolicy idConflictPolicy) {
         this.name = name;
         this.packaging = packaging;
         this.importMode = importMode;
@@ -99,6 +100,7 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
         this.useBinaryReferences = useBinaryReferences;
         this.exportPathMapping = exportPathMapping;
         this.strict = strict;
+        this.idConflictPolicy = idConflictPolicy;
     }
 
     @Override
@@ -131,7 +133,7 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
         Archive archive = null;
         try {
             session = getSession(resourceResolver);
-            ImportOptions importOptions = VltUtils.getImportOptions(aclHandling, cugHandling, importMode, autosaveThreshold, strict);
+            ImportOptions importOptions = VltUtils.getImportOptions(aclHandling, cugHandling, importMode, autosaveThreshold, strict, idConflictPolicy);
             ErrorListener errorListener = new ErrorListener();
             importOptions.setListener(errorListener);
             Importer importer = new Importer(importOptions);

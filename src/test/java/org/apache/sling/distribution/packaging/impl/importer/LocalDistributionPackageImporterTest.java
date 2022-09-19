@@ -19,6 +19,7 @@
 package org.apache.sling.distribution.packaging.impl.importer;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jackrabbit.vault.fs.api.IdConflictPolicy;
 import org.apache.jackrabbit.vault.fs.api.ImportMode;
 import org.apache.jackrabbit.vault.fs.io.AccessControlHandling;
 import org.apache.jackrabbit.vault.packaging.impl.PackagingImpl;
@@ -90,7 +91,8 @@ public class LocalDistributionPackageImporterTest {
                 false,
                 -1,
                 null,
-                false
+                false,
+                IdConflictPolicy.FAIL
         );
 
         DistributionPackageBuilder builder =
