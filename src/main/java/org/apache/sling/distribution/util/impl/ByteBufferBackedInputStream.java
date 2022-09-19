@@ -43,6 +43,7 @@ final class ByteBufferBackedInputStream extends InputStream {
         }
     }
 
+    @Override
     public int read() throws IOException {
         if (!memory.hasRemaining()) {
             if (fileInputStream != null) {
@@ -54,6 +55,7 @@ final class ByteBufferBackedInputStream extends InputStream {
         return memory.get() & 0xFF;
     }
 
+    @Override
     public int read(@NotNull byte[] bytes, int off, int len) throws IOException {
         if (!memory.hasRemaining()) {
             if (fileInputStream != null) {
@@ -68,4 +70,10 @@ final class ByteBufferBackedInputStream extends InputStream {
         return len;
     }
 
+    @Override
+    public void close() throws IOException {
+        if (fileInputStream != null) {
+            fileInputStream.close();
+        }
+    }
 }
