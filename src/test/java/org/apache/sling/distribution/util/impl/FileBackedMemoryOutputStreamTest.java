@@ -47,7 +47,7 @@ public class FileBackedMemoryOutputStreamTest {
         FileBackedMemoryOutputStream os = new FileBackedMemoryOutputStream(-1,
             MemoryUnit.BYTES,
             false,
-            new File("/tmp"), "FileBackedMemoryOutputStreamTest.justKeepDataInMemory", ".tmp");
+            new File(System.getProperty("java.io.tmpdir")), "FileBackedMemoryOutputStreamTest.justKeepDataInMemory", ".tmp");
         os.close();
     }
 
@@ -56,7 +56,7 @@ public class FileBackedMemoryOutputStreamTest {
         FileBackedMemoryOutputStream output = new FileBackedMemoryOutputStream(10,
                                                                                MemoryUnit.BYTES,
                                                                                false,
-                                                                               new File("/tmp"),
+                                                                               new File(System.getProperty("java.io.tmpdir")),
                                                                                "FileBackedMemoryOutputStreamTest.justKeepDataInMemory",
                                                                                ".tmp");
         byte[] data = newDataArray(2);
@@ -75,7 +75,7 @@ public class FileBackedMemoryOutputStreamTest {
         FileBackedMemoryOutputStream output = new FileBackedMemoryOutputStream(10,
                                                                                MemoryUnit.BYTES,
                                                                                true,
-                                                                               new File("/tmp"),
+                                                                               new File(System.getProperty("java.io.tmpdir")),
                                                                                "FileBackedMemoryOutputStreamTest.backedToFile",
                                                                                ".tmp");
         byte[] data = newDataArray(100);
@@ -99,7 +99,7 @@ public class FileBackedMemoryOutputStreamTest {
         FileBackedMemoryOutputStream output = new FileBackedMemoryOutputStream(10,
                 MemoryUnit.BYTES,
                 false,
-                new File("/tmp"),
+                new File(System.getProperty("java.io.tmpdir")),
                 "FileBackedMemoryOutputStreamTest.backedToFile",
                 ".tmp");
         byte[] data = newDataArray(100);
@@ -126,7 +126,7 @@ public class FileBackedMemoryOutputStreamTest {
 
         for (byte[] data : datum) {
             FileBackedMemoryOutputStream output = new FileBackedMemoryOutputStream(10,
-                    MemoryUnit.BYTES,false, new File("/tmp"),
+                    MemoryUnit.BYTES,false, new File(System.getProperty("java.io.tmpdir")),
                     "FileBackedMemoryOutputStreamTest.multiTest-" + data.length, ".tmp");
             output.write(data);
             output.close();
@@ -140,7 +140,7 @@ public class FileBackedMemoryOutputStreamTest {
         FileBackedMemoryOutputStream output = new FileBackedMemoryOutputStream(1,
                 MemoryUnit.BYTES,
                 false,
-                new File("/tmp"),
+                new File(System.getProperty("java.io.tmpdir")),
                 "FileBackedMemoryOutputStreamTest.singleByteBackedToFile",
                 ".tmp");
         byte[] data = {0x0F, 0x0D};
