@@ -172,6 +172,8 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
                 description = "Node id conflict policy to use during import")
         IdConflictPolicy idConflictPolicy() default IdConflictPolicy.FAIL;
 
+        @AttributeDefinition(name = "Legacy Folder Primary Type Mode", description = "Whether to overwrite the primary type of folders during imports")
+        boolean overwritePrimaryTypesOfFolders() default true;
     }
 
     private static final long DEFAULT_PACKAGE_CLEANUP_DELAY = 60L;
@@ -236,13 +238,14 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
         Map<String, String> pathsMapping = toMap(conf.pathsMapping(), new String[0]);
         pathsMapping = SettingsUtils.removeEmptyEntries(pathsMapping);
 
+        // import settings
         boolean strictImport = conf.strictImport();
-
+        boolean overwritePrimaryTypesOfFolders = conf.overwritePrimaryTypesOfFolders();
         IdConflictPolicy idConflictPolicy = conf.idConflictPolicy();
 
         DistributionContentSerializer contentSerializer = new FileVaultContentSerializer(name, packaging, importMode, aclHandling, cugHandling,
                 packageRoots, packageNodeFilters, packagePropertyFilters, useBinaryReferences, autosaveThreshold,
-                pathsMapping, strictImport, idConflictPolicy);
+                pathsMapping, strictImport, idConflictPolicy, overwritePrimaryTypesOfFolders);
 
         DistributionPackageBuilder wrapped;
         if ("filevlt".equals(type)) {

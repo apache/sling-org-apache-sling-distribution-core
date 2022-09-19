@@ -230,8 +230,8 @@ public class VltUtils {
         return packageRoot;
     }
 
-    public static ImportOptions getImportOptions(AccessControlHandling aclHandling, AccessControlHandling cugHandling, ImportMode importMode,
-                                                 int autosaveThreshold, boolean strict, IdConflictPolicy idConflictPolicy) {
+    public static ImportOptions getImportOptions(AccessControlHandling aclHandling, AccessControlHandling cugHandling, ImportMode importMode, int autosaveThreshold,
+                                                 boolean strict, IdConflictPolicy idConflictPolicy, boolean overwritePrimaryTypesOfFolders) {
         ImportOptions opts = new ImportOptions();
         if (aclHandling != null) {
             opts.setAccessControlHandling(aclHandling);
@@ -261,6 +261,8 @@ public class VltUtils {
         opts.setStrict(strict);
 
         opts.setIdConflictPolicy(idConflictPolicy);
+
+        opts.setOverwritePrimaryTypesOfFolders(overwritePrimaryTypesOfFolders);
 
         return opts;
     }

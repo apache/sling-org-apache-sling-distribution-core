@@ -92,7 +92,8 @@ public class LocalDistributionPackageImporterTest {
                 -1,
                 null,
                 false,
-                IdConflictPolicy.FAIL
+                IdConflictPolicy.FAIL,
+                true
         );
 
         DistributionPackageBuilder builder =

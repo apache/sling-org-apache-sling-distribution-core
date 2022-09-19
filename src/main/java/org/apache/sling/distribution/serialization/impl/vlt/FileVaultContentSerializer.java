@@ -84,10 +84,11 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
     private final Map<String, String> exportPathMapping;
     private final boolean strict;
     private final IdConflictPolicy idConflictPolicy;
+    private final boolean overwritePrimaryTypesOfFolders;
 
     public FileVaultContentSerializer(String name, Packaging packaging, ImportMode importMode, AccessControlHandling aclHandling, AccessControlHandling cugHandling, String[] packageRoots,
-                                      String[] nodeFilters, String[] propertyFilters, boolean useBinaryReferences, int autosaveThreshold,
-                                      Map<String, String> exportPathMapping, boolean strict, IdConflictPolicy idConflictPolicy) {
+                                      String[] nodeFilters, String[] propertyFilters, boolean useBinaryReferences, int autosaveThreshold, Map<String, String> exportPathMapping,
+                                      boolean strict, IdConflictPolicy idConflictPolicy, boolean overwritePrimaryTypesOfFolders) {
         this.name = name;
         this.packaging = packaging;
         this.importMode = importMode;
@@ -101,6 +102,7 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
         this.exportPathMapping = exportPathMapping;
         this.strict = strict;
         this.idConflictPolicy = idConflictPolicy;
+        this.overwritePrimaryTypesOfFolders = overwritePrimaryTypesOfFolders;
     }
 
     @Override
@@ -133,7 +135,8 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
         Archive archive = null;
         try {
             session = getSession(resourceResolver);
-            ImportOptions importOptions = VltUtils.getImportOptions(aclHandling, cugHandling, importMode, autosaveThreshold, strict, idConflictPolicy);
+            ImportOptions importOptions = VltUtils.getImportOptions(aclHandling, cugHandling, importMode,
+                    autosaveThreshold, strict, idConflictPolicy, overwritePrimaryTypesOfFolders);
             ErrorListener errorListener = new ErrorListener();
             importOptions.setListener(errorListener);
             Importer importer = new Importer(importOptions);
