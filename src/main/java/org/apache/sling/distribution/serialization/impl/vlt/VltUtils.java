@@ -41,7 +41,6 @@ import java.util.zip.Deflater;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.jackrabbit.vault.fs.api.IdConflictPolicy;
 import org.apache.jackrabbit.vault.fs.api.ImportMode;
 import org.apache.jackrabbit.vault.fs.api.PathFilterSet;
 import org.apache.jackrabbit.vault.fs.api.WorkspaceFilter;
@@ -87,8 +86,7 @@ public class VltUtils {
         for (String path : distributionRequest.getPaths()) {
 
             // Set node path filters
-            List<String> patterns = new ArrayList<String>();
-            patterns.addAll(Arrays.asList(distributionRequest.getFilters(path)));
+            List<String> patterns = new ArrayList<String>(Arrays.asList(distributionRequest.getFilters(path)));
             boolean deep = distributionRequest.isDeep(path);
             PathFilterSet nodeFilterSet = new PathFilterSet(path);
             if (!deep) {

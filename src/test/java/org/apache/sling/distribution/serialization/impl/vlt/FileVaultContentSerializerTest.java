@@ -74,15 +74,8 @@ public class FileVaultContentSerializerTest {
     @Test
     public void testExportToStream() throws Exception {
         Packaging packaging = mock(Packaging.class);
-        ImportSettings importSettings = ImportSettings.builder()
-                .importMode(ImportMode.REPLACE)
-                .aclHandling(AccessControlHandling.IGNORE)
-                .cugHandling(AccessControlHandling.IGNORE)
-                .autosaveThreshold(1024)
-                .strict(false)
-                .idConflictPolicy(IdConflictPolicy.FAIL)
-                .overwritePrimaryTypesOfFolders(true)
-                .build();
+        ImportSettings importSettings = new ImportSettings(ImportMode.REPLACE, AccessControlHandling.IGNORE,
+                AccessControlHandling.IGNORE, 1024, false, false, IdConflictPolicy.FAIL);
 
         String[] packageRoots = new String[]{"/etc/packages"};
         String[] nodeFilters = new String[0];
@@ -123,15 +116,8 @@ public class FileVaultContentSerializerTest {
     @Test
     public void testImportFromStream() throws Exception {
         Packaging packaging = mock(Packaging.class);
-        ImportSettings importSettings = ImportSettings.builder()
-                .importMode(ImportMode.REPLACE)
-                .aclHandling(AccessControlHandling.IGNORE)
-                .cugHandling(AccessControlHandling.IGNORE)
-                .autosaveThreshold(1024)
-                .strict(true)
-                .idConflictPolicy(IdConflictPolicy.FAIL)
-                .overwritePrimaryTypesOfFolders(true)
-                .build();
+        ImportSettings importSettings = new ImportSettings(ImportMode.REPLACE, AccessControlHandling.IGNORE,
+                AccessControlHandling.IGNORE, 1024, true, true, IdConflictPolicy.FAIL);
 
         String[] packageRoots = new String[]{"/"};
         String[] nodeFilters = new String[0];

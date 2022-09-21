@@ -80,15 +80,8 @@ public class LocalDistributionPackageImporterTest {
         LocalDistributionPackageImporter localdistributionPackageImporter =
                 new LocalDistributionPackageImporter("mockImporter", distributionEventFactory, packageBuilder);
 
-        ImportSettings importSettings = ImportSettings.builder()
-                .importMode(ImportMode.UPDATE)
-                .aclHandling(AccessControlHandling.IGNORE)
-                .cugHandling(AccessControlHandling.IGNORE)
-                .autosaveThreshold(-1)
-                .strict(false)
-                .idConflictPolicy(IdConflictPolicy.FAIL)
-                .overwritePrimaryTypesOfFolders(false)
-                .build();
+        ImportSettings importSettings = new ImportSettings(ImportMode.UPDATE, AccessControlHandling.IGNORE,
+                AccessControlHandling.IGNORE, -1, false, false, IdConflictPolicy.FAIL);
 
         FileVaultContentSerializer vaultSerializer = new FileVaultContentSerializer(
                 "importPackageWithLargeHeader",

@@ -42,8 +42,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
@@ -53,13 +51,9 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.osgi.service.metatype.annotations.Option;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Dictionary;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -167,6 +161,21 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
                 description = "List of paths that require be mapped." +
                 "The format is {sourcePattern}={destinationPattern}, e.g. /etc/(.*)=/var/$1/some or simply /data=/bak")
         String[] pathsMapping();
+
+        @AttributeDefinition(
+                name = "Install a content package in a strict mode",
+                description = "Whether an error will be thrown, if a content package is incorrectly installed")
+        boolean strictImport() default DEFAULT_IS_STRICT;
+
+        @AttributeDefinition(
+                name = "Legacy Folder Primary Type Mode",
+                description = "Whether to overwrite the primary type of folders during imports")
+        boolean overwritePrimaryTypesOfFolders() default DEFAULT_OVERWRITE_PRIMARY_TYPES_OF_FOLDER;
+
+        @AttributeDefinition(
+                name = "ID Conflict Policy",
+                description = "Node id conflict policy to be used during import")
+        IdConflictPolicy idConflictPolicy() default IdConflictPolicy.FAIL;
     }
 
     private static final long DEFAULT_PACKAGE_CLEANUP_DELAY = 60L;
@@ -176,26 +185,15 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
     private static final boolean DEFAULT_USE_OFF_HEAP_MEMORY = false;
     private static final String DEFAULT_DIGEST_ALGORITHM = "NONE";
     private static final int DEFAULT_MONITORING_QUEUE_SIZE = 0;
-
-    // importer setting constants, can be removed once JCRVLT-656 is implemented
-    private static final String PACKAGING_CONFIGURATION_PID = "org.apache.jackrabbit.vault.packaging.impl.PackagingImpl";
-    private static final String PROPERTY_IS_STRICT = "isStrict";
-    private static final String PROPERTY_DEFAULT_ID_CONFLICT_POLICY = "defaultIdConflictPolicy";
-    private static final String PROPERTY_OVERWRITE_PRIMARY_TYPES_OF_FOLDER = "overwritePrimaryTypesOfFolders";
+    // importer setting constants
     private static final boolean DEFAULT_IS_STRICT = true;
     private static final boolean DEFAULT_OVERWRITE_PRIMARY_TYPES_OF_FOLDER = true;
-    private static final IdConflictPolicy DEFAULT_ID_CONFLICT_POLICY = IdConflictPolicy.FAIL;
-
-    private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Reference
     private Packaging packaging;
 
     @Reference
     private ResourceResolverFactory resolverFactory;
-
-    @Reference
-    private ConfigurationAdmin configurationAdmin;
 
     private ServiceRegistration<Runnable> packageCleanup = null;
 
@@ -229,36 +227,31 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
         pathsMapping = SettingsUtils.removeEmptyEntries(pathsMapping);
 
         // import settings
-        ImportSettings importSettings = ImportSettings.builder().build();
-        importSettings.setAutosaveThreshold(conf.autoSaveThreshold());
+        int autosaveThreshold = conf.autoSaveThreshold();
 
+        ImportMode importMode = null;
         if (importModeString != null) {
-            importSettings.setImportMode(ImportMode.valueOf(importModeString.trim()));
+            importMode = ImportMode.valueOf(importModeString.trim());
         }
 
+        AccessControlHandling aclHandling = null;
         if (aclHandlingString != null) {
-            importSettings.setAclHandling(AccessControlHandling.valueOf(aclHandlingString.trim()));
+            aclHandling = AccessControlHandling.valueOf(aclHandlingString.trim());
         }
 
+        AccessControlHandling cugHandling = null;
         if (cugHandlingString != null) {
-            importSettings.setCugHandling(AccessControlHandling.valueOf(cugHandlingString.trim()));
+            cugHandling = AccessControlHandling.valueOf(cugHandlingString.trim());
         }
 
-        // read settings from Packaging configuration
-        importSettings.setStrict(DEFAULT_IS_STRICT);
-        importSettings.setOverwritePrimaryTypesOfFolders(DEFAULT_OVERWRITE_PRIMARY_TYPES_OF_FOLDER);
-        importSettings.setIdConflictPolicy(DEFAULT_ID_CONFLICT_POLICY);
-        try {
-            Configuration packagingConfig = configurationAdmin.getConfiguration(PACKAGING_CONFIGURATION_PID);
-            Dictionary<String, Object> properties = packagingConfig.getProperties();
-            if (properties != null) {
-                importSettings.setStrict((Boolean) properties.get(PROPERTY_IS_STRICT));
-                importSettings.setOverwritePrimaryTypesOfFolders((Boolean) properties.get(PROPERTY_OVERWRITE_PRIMARY_TYPES_OF_FOLDER));
-                importSettings.setIdConflictPolicy((IdConflictPolicy) properties.get(PROPERTY_DEFAULT_ID_CONFLICT_POLICY));
-            }
-        } catch (IOException e) {
-            log.warn("Could not read the OSGi configuration {}, falling back on default values.", PACKAGING_CONFIGURATION_PID);
-        }
+        boolean strictImport = conf.strictImport();
+
+        boolean overwritePrimaryTypesOfFolders = conf.overwritePrimaryTypesOfFolders();
+
+        IdConflictPolicy idConflictPolicy = conf.idConflictPolicy();
+
+        ImportSettings importSettings = new ImportSettings(importMode, aclHandling, cugHandling, autosaveThreshold, strictImport,
+                overwritePrimaryTypesOfFolders, idConflictPolicy);
 
         DistributionContentSerializer contentSerializer = new FileVaultContentSerializer(name, packaging, packageRoots, packageNodeFilters,
                 packagePropertyFilters, useBinaryReferences, pathsMapping, importSettings);

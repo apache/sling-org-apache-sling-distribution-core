@@ -18,20 +18,44 @@
  */
 package org.apache.sling.distribution.serialization.impl.vlt;
 
-import lombok.Builder;
-import lombok.Data;
 import org.apache.jackrabbit.vault.fs.api.IdConflictPolicy;
 import org.apache.jackrabbit.vault.fs.api.ImportMode;
 import org.apache.jackrabbit.vault.fs.io.AccessControlHandling;
 
-@Data
-@Builder
+/**
+ * Settings that control the package import.
+ */
 public class ImportSettings {
-    private ImportMode importMode;
-    private AccessControlHandling aclHandling;
-    private AccessControlHandling cugHandling;
-    private int autosaveThreshold;
-    private boolean strict;
-    private IdConflictPolicy idConflictPolicy;
-    private boolean overwritePrimaryTypesOfFolders;
+    private final ImportMode importMode;
+    private final AccessControlHandling aclHandling;
+    private final AccessControlHandling cugHandling;
+    private final int autosaveThreshold;
+    private final boolean isStrict;
+    private final boolean overwritePrimaryTypesOfFolders;
+    private final IdConflictPolicy idConflictPolicy;
+
+    public ImportSettings(ImportMode importMode, AccessControlHandling aclHandling, AccessControlHandling cugHandling, int autosaveThreshold,
+                          boolean isStrict, boolean overwritePrimaryTypesOfFolders, IdConflictPolicy idConflictPolicy) {
+        this.importMode = importMode;
+        this.aclHandling = aclHandling;
+        this.cugHandling = cugHandling;
+        this.autosaveThreshold = autosaveThreshold;
+        this.isStrict = isStrict;
+        this.overwritePrimaryTypesOfFolders = overwritePrimaryTypesOfFolders;
+        this.idConflictPolicy = idConflictPolicy;
+    }
+
+    public ImportMode getImportMode() { return importMode; }
+
+    public AccessControlHandling getAclHandling() { return aclHandling; }
+
+    public AccessControlHandling getCugHandling() { return cugHandling; }
+
+    public int getAutosaveThreshold() { return autosaveThreshold; }
+
+    public boolean isStrict() { return isStrict; }
+
+    public boolean isOverwritePrimaryTypesOfFolders() { return overwritePrimaryTypesOfFolders; }
+
+    public IdConflictPolicy getIdConflictPolicy() { return idConflictPolicy; }
 }
