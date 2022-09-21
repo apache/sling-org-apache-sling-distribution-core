@@ -175,7 +175,7 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
         @AttributeDefinition(
                 name = "ID Conflict Policy",
                 description = "Node id conflict policy to be used during import")
-        IdConflictPolicy idConflictPolicy() default IdConflictPolicy.FAIL;
+        IdConflictPolicy idConflictPolicy() default IdConflictPolicy.LEGACY;
     }
 
     private static final long DEFAULT_PACKAGE_CLEANUP_DELAY = 60L;

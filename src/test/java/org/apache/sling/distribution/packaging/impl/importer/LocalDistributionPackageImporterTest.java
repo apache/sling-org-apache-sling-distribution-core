@@ -81,7 +81,7 @@ public class LocalDistributionPackageImporterTest {
                 new LocalDistributionPackageImporter("mockImporter", distributionEventFactory, packageBuilder);
 
         ImportSettings importSettings = new ImportSettings(ImportMode.UPDATE, AccessControlHandling.IGNORE,
-                AccessControlHandling.IGNORE, -1, false, false, IdConflictPolicy.FAIL);
+                AccessControlHandling.IGNORE, -1, false, false, IdConflictPolicy.LEGACY);
 
         FileVaultContentSerializer vaultSerializer = new FileVaultContentSerializer(
                 "importPackageWithLargeHeader",

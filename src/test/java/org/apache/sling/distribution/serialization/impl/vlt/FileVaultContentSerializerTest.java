@@ -75,7 +75,7 @@ public class FileVaultContentSerializerTest {
     public void testExportToStream() throws Exception {
         Packaging packaging = mock(Packaging.class);
         ImportSettings importSettings = new ImportSettings(ImportMode.REPLACE, AccessControlHandling.IGNORE,
-                AccessControlHandling.IGNORE, 1024, false, false, IdConflictPolicy.FAIL);
+                AccessControlHandling.IGNORE, 1024, false, false, IdConflictPolicy.LEGACY);
 
         String[] packageRoots = new String[]{"/etc/packages"};
         String[] nodeFilters = new String[0];
@@ -117,7 +117,7 @@ public class FileVaultContentSerializerTest {
     public void testImportFromStream() throws Exception {
         Packaging packaging = mock(Packaging.class);
         ImportSettings importSettings = new ImportSettings(ImportMode.REPLACE, AccessControlHandling.IGNORE,
-                AccessControlHandling.IGNORE, 1024, true, true, IdConflictPolicy.FAIL);
+                AccessControlHandling.IGNORE, 1024, true, true, IdConflictPolicy.LEGACY);
 
         String[] packageRoots = new String[]{"/"};
         String[] nodeFilters = new String[0];
