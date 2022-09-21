@@ -326,6 +326,13 @@
             <artifactId>org.apache.jackrabbit.vault</artifactId>
             <version>3.6.4</version>
         </dependency>
+        <!-- LOMBOK -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.22</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- HTTP -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>

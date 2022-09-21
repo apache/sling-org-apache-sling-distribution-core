@@ -30,12 +30,9 @@ import java.util.UUID;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.apache.jackrabbit.vault.fs.api.IdConflictPolicy;
-import org.apache.jackrabbit.vault.fs.api.ImportMode;
 import org.apache.jackrabbit.vault.fs.api.RegexpPathMapping;
 import org.apache.jackrabbit.vault.fs.api.WorkspaceFilter;
 import org.apache.jackrabbit.vault.fs.config.MetaInf;
-import org.apache.jackrabbit.vault.fs.io.AccessControlHandling;
 import org.apache.jackrabbit.vault.fs.io.Archive;
 import org.apache.jackrabbit.vault.fs.io.ImportOptions;
 import org.apache.jackrabbit.vault.fs.io.Importer;
@@ -72,37 +69,24 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
     private static final String MAPPING_DELIMITER = ";";
 
     private final Packaging packaging;
-    private final ImportMode importMode;
-    private final AccessControlHandling aclHandling;
-    private final AccessControlHandling cugHandling;
     private final String[] packageRoots;
-    private final int autosaveThreshold;
     private final TreeMap<String, List<String>> nodeFilters;
     private final TreeMap<String, List<String>> propertyFilters;
     private final boolean useBinaryReferences;
     private final String name;
     private final Map<String, String> exportPathMapping;
-    private final boolean strict;
-    private final IdConflictPolicy idConflictPolicy;
-    private final boolean overwritePrimaryTypesOfFolders;
+    private final ImportSettings importSettings;
 
-    public FileVaultContentSerializer(String name, Packaging packaging, ImportMode importMode, AccessControlHandling aclHandling, AccessControlHandling cugHandling, String[] packageRoots,
-                                      String[] nodeFilters, String[] propertyFilters, boolean useBinaryReferences, int autosaveThreshold, Map<String, String> exportPathMapping,
-                                      boolean strict, IdConflictPolicy idConflictPolicy, boolean overwritePrimaryTypesOfFolders) {
+    public FileVaultContentSerializer(String name, Packaging packaging, String[] packageRoots, String[] nodeFilters, String[] propertyFilters,
+                                      boolean useBinaryReferences, Map<String, String> exportPathMapping, ImportSettings importSettings) {
         this.name = name;
         this.packaging = packaging;
-        this.importMode = importMode;
-        this.aclHandling = aclHandling;
-        this.cugHandling = cugHandling;
         this.packageRoots = packageRoots;
-        this.autosaveThreshold = autosaveThreshold;
         this.nodeFilters = VltUtils.parseFilters(nodeFilters);
         this.propertyFilters = VltUtils.parseFilters(propertyFilters);
         this.useBinaryReferences = useBinaryReferences;
         this.exportPathMapping = exportPathMapping;
-        this.strict = strict;
-        this.idConflictPolicy = idConflictPolicy;
-        this.overwritePrimaryTypesOfFolders = overwritePrimaryTypesOfFolders;
+        this.importSettings = importSettings;
     }
 
     @Override
@@ -135,8 +119,7 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
         Archive archive = null;
         try {
             session = getSession(resourceResolver);
-            ImportOptions importOptions = VltUtils.getImportOptions(aclHandling, cugHandling, importMode,
-                    autosaveThreshold, strict, idConflictPolicy, overwritePrimaryTypesOfFolders);
+            ImportOptions importOptions = VltUtils.getImportOptions(importSettings);
             ErrorListener errorListener = new ErrorListener();
             importOptions.setListener(errorListener);
             Importer importer = new Importer(importOptions);

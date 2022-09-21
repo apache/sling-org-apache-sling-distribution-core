@@ -36,6 +36,7 @@ import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
 import org.apache.sling.distribution.packaging.impl.FileDistributionPackageBuilder;
 import org.apache.sling.distribution.serialization.impl.vlt.FileVaultContentSerializer;
+import org.apache.sling.distribution.serialization.impl.vlt.ImportSettings;
 import org.apache.sling.testing.mock.sling.ResourceResolverType;
 import org.apache.sling.testing.mock.sling.junit.SlingContext;
 import org.junit.Rule;
@@ -79,21 +80,25 @@ public class LocalDistributionPackageImporterTest {
         LocalDistributionPackageImporter localdistributionPackageImporter =
                 new LocalDistributionPackageImporter("mockImporter", distributionEventFactory, packageBuilder);
 
+        ImportSettings importSettings = ImportSettings.builder()
+                .importMode(ImportMode.UPDATE)
+                .aclHandling(AccessControlHandling.IGNORE)
+                .cugHandling(AccessControlHandling.IGNORE)
+                .autosaveThreshold(-1)
+                .strict(false)
+                .idConflictPolicy(IdConflictPolicy.FAIL)
+                .overwritePrimaryTypesOfFolders(false)
+                .build();
+
         FileVaultContentSerializer vaultSerializer = new FileVaultContentSerializer(
                 "importPackageWithLargeHeader",
                 new PackagingImpl(),
-                ImportMode.UPDATE,
-                AccessControlHandling.IGNORE,
-                AccessControlHandling.IGNORE,
                 new String[0],
                 new String[0],
                 new String[0],
                 false,
-                -1,
                 null,
-                false,
-                IdConflictPolicy.FAIL,
-                true
+                importSettings
         );
 
         DistributionPackageBuilder builder =

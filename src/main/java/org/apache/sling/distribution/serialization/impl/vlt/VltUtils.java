@@ -230,23 +230,22 @@ public class VltUtils {
         return packageRoot;
     }
 
-    public static ImportOptions getImportOptions(AccessControlHandling aclHandling, AccessControlHandling cugHandling, ImportMode importMode, int autosaveThreshold,
-                                                 boolean strict, IdConflictPolicy idConflictPolicy, boolean overwritePrimaryTypesOfFolders) {
+    public static ImportOptions getImportOptions(ImportSettings importSettings) {
         ImportOptions opts = new ImportOptions();
-        if (aclHandling != null) {
-            opts.setAccessControlHandling(aclHandling);
+        if (importSettings.getAclHandling() != null) {
+            opts.setAccessControlHandling(importSettings.getAclHandling());
         } else {
             // default to overwrite
             opts.setAccessControlHandling(AccessControlHandling.OVERWRITE);
         }
-        if (cugHandling != null) {
-            opts.setCugHandling(cugHandling);
+        if (importSettings.getCugHandling() != null) {
+            opts.setCugHandling(importSettings.getCugHandling());
         } else {
             // default to overwrite
             opts.setCugHandling(AccessControlHandling.OVERWRITE);
         }
-        if (importMode != null) {
-            opts.setImportMode(importMode);
+        if (importSettings.getImportMode() != null) {
+            opts.setImportMode(importSettings.getImportMode());
         } else {
             // default to update
             opts.setImportMode(ImportMode.UPDATE);
@@ -254,15 +253,15 @@ public class VltUtils {
 
         opts.setPatchKeepInRepo(false);
 
-        if (autosaveThreshold >= 0) {
-            opts.setAutoSaveThreshold(autosaveThreshold);
+        if (importSettings.getAutosaveThreshold() >= 0) {
+            opts.setAutoSaveThreshold(importSettings.getAutosaveThreshold());
         }
 
-        opts.setStrict(strict);
+        opts.setStrict(importSettings.isStrict());
 
-        opts.setIdConflictPolicy(idConflictPolicy);
+        opts.setIdConflictPolicy(importSettings.getIdConflictPolicy());
 
-        opts.setOverwritePrimaryTypesOfFolders(overwritePrimaryTypesOfFolders);
+        opts.setOverwritePrimaryTypesOfFolders(importSettings.isOverwritePrimaryTypesOfFolders());
 
         return opts;
     }
