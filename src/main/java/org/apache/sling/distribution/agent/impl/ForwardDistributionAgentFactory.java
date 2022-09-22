@@ -91,8 +91,8 @@ public class ForwardDistributionAgentFactory extends AbstractDistributionAgentFa
     private static final String PRIORITY_QUEUES = "priorityQueues";
     private static final String QUEUE_PROVIDER = "queue.provider";
     private static final String ASYNC_DELIVERY = "async.delivery";
-    private static final String RETRY_STRATEGY = "retry.attempt";
-    private static final String RETRY_ATTEMPTS = "retry.strategy";
+    private static final String RETRY_STRATEGY = "retry.strategy";
+    private static final String RETRY_ATTEMPTS = "retry.attempts";
     private static final String IMPORTER_ENDPOINTS = "packageImporter.endpoints";
     private static final String HTTP = "http.conn.timeout";
 
