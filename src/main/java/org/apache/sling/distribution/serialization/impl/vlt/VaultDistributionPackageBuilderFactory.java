@@ -18,6 +18,7 @@
  */
 package org.apache.sling.distribution.serialization.impl.vlt;
 
+import org.apache.jackrabbit.vault.fs.api.IdConflictPolicy;
 import org.apache.jackrabbit.vault.fs.api.ImportMode;
 import org.apache.jackrabbit.vault.fs.io.AccessControlHandling;
 import org.apache.jackrabbit.vault.packaging.Packaging;
@@ -160,13 +161,23 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
                 description = "List of paths that require be mapped." +
                 "The format is {sourcePattern}={destinationPattern}, e.g. /etc/(.*)=/var/$1/some or simply /data=/bak")
         String[] pathsMapping();
-        
+
         @AttributeDefinition(
                 name = "Install a content package in a strict mode",
-                description = "Flag to mark an error response will be thrown, if a content package will incorrectly installed")
-        boolean strictImport() default DEFAULT_STRICT_IMPORT_SETTINGS;
+                description = "Whether an error will be thrown, if a content package is incorrectly installed")
+        boolean strictImport() default DEFAULT_IS_STRICT;
+
+        @AttributeDefinition(
+                name = "Legacy Folder Primary Type Mode",
+                description = "Whether to overwrite the primary type of folders during imports")
+        boolean overwritePrimaryTypesOfFolders() default DEFAULT_OVERWRITE_PRIMARY_TYPES_OF_FOLDER;
+
+        @AttributeDefinition(
+                name = "ID Conflict Policy",
+                description = "Node id conflict policy to be used during import")
+        IdConflictPolicy idConflictPolicy() default IdConflictPolicy.LEGACY;
     }
-    
+
     private static final long DEFAULT_PACKAGE_CLEANUP_DELAY = 60L;
     // 1M
     private static final int DEFAULT_FILE_THRESHOLD_VALUE = 1;
@@ -174,8 +185,9 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
     private static final boolean DEFAULT_USE_OFF_HEAP_MEMORY = false;
     private static final String DEFAULT_DIGEST_ALGORITHM = "NONE";
     private static final int DEFAULT_MONITORING_QUEUE_SIZE = 0;
-    private static final boolean DEFAULT_STRICT_IMPORT_SETTINGS = true;
-
+    // importer setting constants
+    private static final boolean DEFAULT_IS_STRICT = true;
+    private static final boolean DEFAULT_OVERWRITE_PRIMARY_TYPES_OF_FOLDER = true;
 
     @Reference
     private Packaging packaging;
@@ -204,12 +216,18 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
 
         String tempFsFolder = SettingsUtils.removeEmptyEntry(conf.tempFsFolder());
         boolean useBinaryReferences = conf.useBinaryReferences();
-        int autosaveThreshold = conf.autoSaveThreshold();
 
         String digestAlgorithm = conf.digestAlgorithm();
         if (DEFAULT_DIGEST_ALGORITHM.equals(digestAlgorithm)) {
             digestAlgorithm = null;
         }
+
+        // check the mount path patterns, if any
+        Map<String, String> pathsMapping = toMap(conf.pathsMapping(), new String[0]);
+        pathsMapping = SettingsUtils.removeEmptyEntries(pathsMapping);
+
+        // import settings
+        int autosaveThreshold = conf.autoSaveThreshold();
 
         ImportMode importMode = null;
         if (importModeString != null) {
@@ -226,14 +244,17 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
             cugHandling = AccessControlHandling.valueOf(cugHandlingString.trim());
         }
 
-        // check the mount path patterns, if any
-        Map<String, String> pathsMapping = toMap(conf.pathsMapping(), new String[0]);
-        pathsMapping = SettingsUtils.removeEmptyEntries(pathsMapping);
-
         boolean strictImport = conf.strictImport();
 
-        DistributionContentSerializer contentSerializer = new FileVaultContentSerializer(name, packaging, importMode, aclHandling, cugHandling,
-                packageRoots, packageNodeFilters, packagePropertyFilters, useBinaryReferences, autosaveThreshold, pathsMapping, strictImport);
+        boolean overwritePrimaryTypesOfFolders = conf.overwritePrimaryTypesOfFolders();
+
+        IdConflictPolicy idConflictPolicy = conf.idConflictPolicy();
+
+        ImportSettings importSettings = new ImportSettings(importMode, aclHandling, cugHandling, autosaveThreshold, strictImport,
+                overwritePrimaryTypesOfFolders, idConflictPolicy);
+
+        DistributionContentSerializer contentSerializer = new FileVaultContentSerializer(name, packaging, packageRoots, packageNodeFilters,
+                packagePropertyFilters, useBinaryReferences, pathsMapping, importSettings);
 
         DistributionPackageBuilder wrapped;
         if ("filevlt".equals(type)) {
@@ -301,7 +322,7 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
     * (taken and adjusted from PropertiesUtil, because the handy toMap() function is not available as
     * part of the metatype functionality
     * 
-    * @param propValue The object to convert.
+    * @param values The path mappings.
     * @param defaultArray The default array converted to map.
     * @return Map value
     */

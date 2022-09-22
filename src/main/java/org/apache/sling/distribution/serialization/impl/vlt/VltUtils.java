@@ -44,6 +44,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.jackrabbit.vault.fs.api.ImportMode;
 import org.apache.jackrabbit.vault.fs.api.PathFilterSet;
 import org.apache.jackrabbit.vault.fs.api.WorkspaceFilter;
+import org.apache.jackrabbit.vault.fs.config.ConfigurationException;
 import org.apache.jackrabbit.vault.fs.config.DefaultMetaInf;
 import org.apache.jackrabbit.vault.fs.config.DefaultWorkspaceFilter;
 import org.apache.jackrabbit.vault.fs.config.MetaInf;
@@ -79,14 +80,13 @@ public class VltUtils {
     private static final String MAPPING_DELIMITER = ";";
 
     public static WorkspaceFilter createFilter(DistributionRequest distributionRequest, NavigableMap<String, List<String>> nodeFilters,
-                                               NavigableMap<String, List<String>> propertyFilters) {
+                                               NavigableMap<String, List<String>> propertyFilters) throws ConfigurationException {
         DefaultWorkspaceFilter filter = new DefaultWorkspaceFilter();
 
         for (String path : distributionRequest.getPaths()) {
 
             // Set node path filters
-            List<String> patterns = new ArrayList<String>();
-            patterns.addAll(Arrays.asList(distributionRequest.getFilters(path)));
+            List<String> patterns = new ArrayList<String>(Arrays.asList(distributionRequest.getFilters(path)));
             boolean deep = distributionRequest.isDeep(path);
             PathFilterSet nodeFilterSet = new PathFilterSet(path);
             if (!deep) {
@@ -122,7 +122,8 @@ public class VltUtils {
         return paths;
     }
 
-    private static void initFilterSet(PathFilterSet filterSet, NavigableMap<String, List<String>> globalFilters, List<String> patterns) {
+    private static void initFilterSet(PathFilterSet filterSet, NavigableMap<String, List<String>> globalFilters,
+                                      List<String> patterns) throws ConfigurationException {
 
         // add the most specific filter rules
         String root = filterSet.getRoot();
@@ -227,22 +228,22 @@ public class VltUtils {
         return packageRoot;
     }
 
-    public static ImportOptions getImportOptions(AccessControlHandling aclHandling, AccessControlHandling cugHandling, ImportMode importMode, int autosaveThreshold, boolean strict) {
+    public static ImportOptions getImportOptions(ImportSettings importSettings) {
         ImportOptions opts = new ImportOptions();
-        if (aclHandling != null) {
-            opts.setAccessControlHandling(aclHandling);
+        if (importSettings.getAclHandling() != null) {
+            opts.setAccessControlHandling(importSettings.getAclHandling());
         } else {
             // default to overwrite
             opts.setAccessControlHandling(AccessControlHandling.OVERWRITE);
         }
-        if (cugHandling != null) {
-            opts.setCugHandling(cugHandling);
+        if (importSettings.getCugHandling() != null) {
+            opts.setCugHandling(importSettings.getCugHandling());
         } else {
             // default to overwrite
             opts.setCugHandling(AccessControlHandling.OVERWRITE);
         }
-        if (importMode != null) {
-            opts.setImportMode(importMode);
+        if (importSettings.getImportMode() != null) {
+            opts.setImportMode(importSettings.getImportMode());
         } else {
             // default to update
             opts.setImportMode(ImportMode.UPDATE);
@@ -250,11 +251,15 @@ public class VltUtils {
 
         opts.setPatchKeepInRepo(false);
 
-        if (autosaveThreshold >= 0) {
-            opts.setAutoSaveThreshold(autosaveThreshold);
+        if (importSettings.getAutosaveThreshold() >= 0) {
+            opts.setAutoSaveThreshold(importSettings.getAutosaveThreshold());
         }
 
-        opts.setStrict(strict);
+        opts.setStrict(importSettings.isStrict());
+
+        opts.setIdConflictPolicy(importSettings.getIdConflictPolicy());
+
+        opts.setOverwritePrimaryTypesOfFolders(importSettings.isOverwritePrimaryTypesOfFolders());
 
         return opts;
     }
@@ -435,7 +440,7 @@ public class VltUtils {
         return new SimpleDistributionRequest(requestType, paths.toArray(new String[paths.size()]), deepPaths, filters);
     }
 
-    private static PathFilterSet.Entry<DefaultPathFilter> extractPathPattern(String pattern) {
+    private static PathFilterSet.Entry<DefaultPathFilter> extractPathPattern(String pattern) throws ConfigurationException {
         PathFilterSet.Entry<DefaultPathFilter> result;
         if (pattern.startsWith("+")) {
             result = new PathFilterSet.Entry<DefaultPathFilter>(new DefaultPathFilter(pattern.substring(1)), true);

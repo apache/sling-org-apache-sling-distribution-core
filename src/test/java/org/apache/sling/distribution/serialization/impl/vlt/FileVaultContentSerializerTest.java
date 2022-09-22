@@ -27,6 +27,7 @@ import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 
+import org.apache.jackrabbit.vault.fs.api.IdConflictPolicy;
 import org.apache.jackrabbit.vault.fs.api.ImportMode;
 import org.apache.jackrabbit.vault.fs.io.AccessControlHandling;
 import org.apache.jackrabbit.vault.packaging.ExportOptions;
@@ -73,17 +74,16 @@ public class FileVaultContentSerializerTest {
     @Test
     public void testExportToStream() throws Exception {
         Packaging packaging = mock(Packaging.class);
-
-        ImportMode importMode = ImportMode.REPLACE;
-        AccessControlHandling aclHandling = AccessControlHandling.IGNORE;
+        ImportSettings importSettings = new ImportSettings(ImportMode.REPLACE, AccessControlHandling.IGNORE,
+                AccessControlHandling.IGNORE, 1024, false, false, IdConflictPolicy.LEGACY);
 
         String[] packageRoots = new String[]{"/etc/packages"};
         String[] nodeFilters = new String[0];
         String[] propertyFilters = new String[0];
         boolean useReferences = false;
         int threshold = 1024;
-        FileVaultContentSerializer fileVaultContentSerializer = new FileVaultContentSerializer("vlt", packaging, importMode,
-                aclHandling, aclHandling, packageRoots, nodeFilters, propertyFilters, useReferences, threshold, new HashMap<String, String>(), false);
+        FileVaultContentSerializer fileVaultContentSerializer = new FileVaultContentSerializer("vlt", packaging, packageRoots, nodeFilters,
+                propertyFilters, useReferences, new HashMap<String, String>(), importSettings);
 
         ResourceResolver sessionResolver = mock(ResourceResolver.class);
         Session session = mock(Session.class);
@@ -116,16 +116,15 @@ public class FileVaultContentSerializerTest {
     @Test
     public void testImportFromStream() throws Exception {
         Packaging packaging = mock(Packaging.class);
-        ImportMode importMode = ImportMode.REPLACE;
-        AccessControlHandling aclHandling = AccessControlHandling.IGNORE;
+        ImportSettings importSettings = new ImportSettings(ImportMode.REPLACE, AccessControlHandling.IGNORE,
+                AccessControlHandling.IGNORE, 1024, true, true, IdConflictPolicy.LEGACY);
 
         String[] packageRoots = new String[]{"/"};
         String[] nodeFilters = new String[0];
         String[] propertyFilters = new String[0];
         boolean useReferences = false;
-        int thershold = 1024;
-        FileVaultContentSerializer fileVaultContentSerializer = new FileVaultContentSerializer("vlt", packaging, importMode,
-                aclHandling, aclHandling, packageRoots, nodeFilters, propertyFilters, useReferences, thershold, new HashMap<String, String>(), true);
+        FileVaultContentSerializer fileVaultContentSerializer = new FileVaultContentSerializer("vlt", packaging, packageRoots, nodeFilters,
+                propertyFilters, useReferences, new HashMap<String, String>(), importSettings);
 
         File file = new File(getClass().getResource("/vlt/dp.vlt").getFile());
 

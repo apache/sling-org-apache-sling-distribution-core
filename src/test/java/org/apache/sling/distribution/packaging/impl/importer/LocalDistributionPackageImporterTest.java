@@ -19,6 +19,7 @@
 package org.apache.sling.distribution.packaging.impl.importer;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jackrabbit.vault.fs.api.IdConflictPolicy;
 import org.apache.jackrabbit.vault.fs.api.ImportMode;
 import org.apache.jackrabbit.vault.fs.io.AccessControlHandling;
 import org.apache.jackrabbit.vault.packaging.impl.PackagingImpl;
@@ -35,6 +36,7 @@ import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
 import org.apache.sling.distribution.packaging.impl.FileDistributionPackageBuilder;
 import org.apache.sling.distribution.serialization.impl.vlt.FileVaultContentSerializer;
+import org.apache.sling.distribution.serialization.impl.vlt.ImportSettings;
 import org.apache.sling.testing.mock.sling.ResourceResolverType;
 import org.apache.sling.testing.mock.sling.junit.SlingContext;
 import org.junit.Rule;
@@ -78,19 +80,18 @@ public class LocalDistributionPackageImporterTest {
         LocalDistributionPackageImporter localdistributionPackageImporter =
                 new LocalDistributionPackageImporter("mockImporter", distributionEventFactory, packageBuilder);
 
+        ImportSettings importSettings = new ImportSettings(ImportMode.UPDATE, AccessControlHandling.IGNORE,
+                AccessControlHandling.IGNORE, -1, false, false, IdConflictPolicy.LEGACY);
+
         FileVaultContentSerializer vaultSerializer = new FileVaultContentSerializer(
                 "importPackageWithLargeHeader",
                 new PackagingImpl(),
-                ImportMode.UPDATE,
-                AccessControlHandling.IGNORE,
-                AccessControlHandling.IGNORE,
                 new String[0],
                 new String[0],
                 new String[0],
                 false,
-                -1,
                 null,
-                false
+                importSettings
         );
 
         DistributionPackageBuilder builder =
