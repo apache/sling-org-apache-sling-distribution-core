@@ -125,10 +125,10 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
                 name = "The memory unit for the file threshold",
                 description = "The memory unit for the file threshold, Megabytes by default",
                 options = {
-                        @Option(label = "BYTES", value = "Bytes"),
-                        @Option(label = "KILO_BYTES", value = "Kilobytes"),
-                        @Option(label = "MEGA_BYTES", value = "Megabytes"),
-                        @Option(label = "GIGA_BYTES", value = "Gigabytes")
+                        @Option(label = "Bytes", value = "BYTES"),
+                        @Option(label = "Kilobytes", value = "KILO_BYTES"),
+                        @Option(label = "Megabytes", value = "MEGA_BYTES"),
+                        @Option(label = "Gigabytes", value = "GIGA_BYTES")
                 })
         String MEGA_BYTES() default DEFAULT_MEMORY_UNIT;
         
