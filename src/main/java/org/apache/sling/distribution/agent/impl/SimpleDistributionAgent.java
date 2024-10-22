@@ -62,6 +62,7 @@ public class SimpleDistributionAgent implements DistributionAgent {
     final static String DEFAULT_AGENT_SERVICE = "defaultAgentService";
 
     private final DistributionQueueProvider queueProvider;
+    private final DistributionQueueProvider errorQueueProvider;
     private final DistributionPackageImporter distributionPackageImporter;
     private final DistributionPackageExporter distributionPackageExporter;
     private final DistributionQueueDispatchingStrategy scheduleQueueStrategy;
@@ -92,6 +93,7 @@ public class SimpleDistributionAgent implements DistributionAgent {
                                    DistributionQueueProvider queueProvider,
                                    DistributionQueueDispatchingStrategy scheduleQueueStrategy,
                                    DistributionQueueDispatchingStrategy errorQueueStrategy,
+                                   DistributionQueueProvider errorQueueProvider,
                                    DistributionEventFactory distributionEventFactory,
                                    ResourceResolverFactory resourceResolverFactory,
                                    SlingRepository slingRepository,
@@ -113,6 +115,7 @@ public class SimpleDistributionAgent implements DistributionAgent {
         this.distributionPackageExporter = distributionPackageExporter;
         this.queueProvider = queueProvider;
         this.scheduleQueueStrategy = scheduleQueueStrategy;
+        this.errorQueueProvider = errorQueueProvider;
         this.errorQueueStrategy = errorQueueStrategy;
         this.distributionEventFactory = distributionEventFactory;
         this.agentAuthenticationInfo = new SimpleDistributionAgentAuthenticationInfo(slingRepository, DEFAULT_AGENT_SERVICE, resourceResolverFactory, subServiceName);
@@ -229,26 +232,41 @@ public class SimpleDistributionAgent implements DistributionAgent {
         return new CompositeDistributionResponse(distributionResponses, packagesCount, packagesSize, endTime - startTime);
     }
 
-    @NotNull
-    public Set<String> getQueueNames() {
+    private Set<String> getScheduledQueueNames() {
         Set<String> queueNames = new TreeSet<String>();
         queueNames.addAll(scheduleQueueStrategy.getQueueNames());
+        return queueNames;
+    }
+
+    private Set<String> getErrorQueueNames() {
+        Set<String> queueNames = new TreeSet<String>();
         if (errorQueueStrategy != null) {
             queueNames.addAll(errorQueueStrategy.getQueueNames());
         }
         return queueNames;
     }
 
+    @NotNull
+    public Set<String> getQueueNames() {
+        Set<String> queueNames = getScheduledQueueNames();
+        queueNames.addAll(getErrorQueueNames());
+        return queueNames;
+    }
+
     public DistributionQueue getQueue(@NotNull final String queueName) {
-        Set<String> queues = getQueueNames();
-        if (!queues.contains(queueName)) {
+        Set<String> scheduledQueues = getScheduledQueueNames();
+        Set<String> errorQueues = getErrorQueueNames();
+        boolean isErrorQueue = errorQueues.contains(queueName);
+        boolean isScheduledQueue = scheduledQueues.contains(queueName);
+        if (!isErrorQueue && !isScheduledQueue) {
             return null;
         }
 
         DistributionQueue queue = null;
 
         try {
-            queue = queueProvider.getQueue(queueName);
+            queue = isErrorQueue? errorQueueProvider.getQueue(queueName)
+                    : queueProvider.getQueue(queueName);
         } catch (DistributionException e) {
             log.error("cannot get queue", e);
         }
