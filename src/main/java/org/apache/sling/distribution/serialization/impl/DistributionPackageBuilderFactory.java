@@ -186,6 +186,7 @@ public class DistributionPackageBuilderFactory implements DistributionPackageBui
             Dictionary<String, Object> props = new Hashtable<String, Object>();
             props.put(Scheduler.PROPERTY_SCHEDULER_CONCURRENT, false);
             props.put(Scheduler.PROPERTY_SCHEDULER_PERIOD, cleanupDelay);
+            props.put(Scheduler.PROPERTY_SCHEDULER_THREAD_POOL, "content-distribution");
             packageCleanup = context.registerService(Runnable.class, cleanup, props);
             wrapped = resourceDistributionPackageBuilder;
         }
