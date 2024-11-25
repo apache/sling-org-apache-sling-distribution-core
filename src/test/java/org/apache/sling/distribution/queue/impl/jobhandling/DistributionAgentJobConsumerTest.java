@@ -25,8 +25,7 @@ import org.apache.sling.event.jobs.consumer.JobConsumer;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -38,7 +37,7 @@ public class DistributionAgentJobConsumerTest {
     @Test
     public void testJobWithSuccessfulAgent() throws Exception {
         DistributionQueueProcessor queueProcessor = mock(DistributionQueueProcessor.class);
-        when(queueProcessor.process(anyString(), any(DistributionQueueEntry.class))).thenReturn(true);
+        when(queueProcessor.process(any(), any(DistributionQueueEntry.class))).thenReturn(true);
 
         DistributionAgentJobConsumer distributionAgentJobConsumer = new DistributionAgentJobConsumer(queueProcessor);
         Job job = mock(Job.class);
@@ -49,7 +48,7 @@ public class DistributionAgentJobConsumerTest {
     @Test
     public void testJobWithUnsuccessfulAgent() throws Exception {
         DistributionQueueProcessor queueProcessor = mock(DistributionQueueProcessor.class);
-        when(queueProcessor.process(anyString(), any(DistributionQueueEntry.class))).thenReturn(false);
+        when(queueProcessor.process(any(), any(DistributionQueueEntry.class))).thenReturn(false);
 
         DistributionAgentJobConsumer distributionAgentJobConsumer = new DistributionAgentJobConsumer(queueProcessor);
         Job job = mock(Job.class);

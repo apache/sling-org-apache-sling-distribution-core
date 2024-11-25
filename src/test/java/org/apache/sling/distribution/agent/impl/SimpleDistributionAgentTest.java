@@ -21,6 +21,7 @@ package org.apache.sling.distribution.agent.impl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.distribution.DistributionRequest;
@@ -55,7 +56,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -120,7 +121,7 @@ public class SimpleDistributionAgentTest {
                 ((DistributionPackageProcessor) args[2]).process(distributionPackage);
                 return null;
             }
-        }).when(packageExporter).exportPackages(any(ResourceResolver.class), any(DistributionRequest.class), any(DistributionPackageProcessor.class));
+        }).when(packageExporter).exportPackages(any(), any(DistributionRequest.class), any(DistributionPackageProcessor.class));
 
 
         when(queueProvider.getQueue(DistributionQueueDispatchingStrategy.DEFAULT_QUEUE_NAME)).thenReturn(
@@ -162,7 +163,7 @@ public class SimpleDistributionAgentTest {
                 ((DistributionPackageProcessor) args[2]).process(distributionPackage);
                 return null;
             }
-        }).when(packageExporter).exportPackages(any(ResourceResolver.class), any(DistributionRequest.class), any(DistributionPackageProcessor.class));
+        }).when(packageExporter).exportPackages(any(), any(DistributionRequest.class), any(DistributionPackageProcessor.class));
         when(queueProvider.getQueue(DistributionQueueDispatchingStrategy.DEFAULT_QUEUE_NAME)).thenReturn(
                 new SimpleDistributionQueue(name, "name"));
         DistributionResponse response = agent.execute(resourceResolver, request);
@@ -269,7 +270,6 @@ public class SimpleDistributionAgentTest {
         DistributionEventFactory distributionEventFactory = mock(DistributionEventFactory.class);
         ResourceResolverFactory resolverFactory = mock(ResourceResolverFactory.class);
 
-
         when(queueDistributionStrategy.add(any(DistributionPackage.class), any(DistributionQueueProvider.class))).thenReturn(Collections.singletonList(
                 new DistributionQueueItemStatus(DistributionQueueItemState.QUEUED, "default")
         ));
@@ -293,10 +293,12 @@ public class SimpleDistributionAgentTest {
             @Override
             public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
                 Object[] args = invocationOnMock.getArguments();
-                ((DistributionPackageProcessor) args[2]).process(distributionPackage);
+                DistributionPackageProcessor packageProcessor = ((DistributionPackageProcessor) args[2]);
+                packageProcessor.process(distributionPackage);
                 return null;
             }
-        }).when(packageExporter).exportPackages(any(ResourceResolver.class), any(DistributionRequest.class), any(DistributionPackageProcessor.class));        when(queueProvider.getQueue(DistributionQueueDispatchingStrategy.DEFAULT_QUEUE_NAME)).thenReturn(
+        }).when(packageExporter).exportPackages(any(), any(DistributionRequest.class), any(DistributionPackageProcessor.class));
+        when(queueProvider.getQueue(DistributionQueueDispatchingStrategy.DEFAULT_QUEUE_NAME)).thenReturn(
                 new SimpleDistributionQueue(name, "name"));
 
         DistributionResponse response = agent.execute(resourceResolver, request);
