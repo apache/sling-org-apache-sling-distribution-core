@@ -19,19 +19,23 @@
 package org.apache.sling.distribution.transport.impl;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
+import org.apache.http.conn.HttpHostConnectException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.DistributionRequestType;
 import org.apache.sling.distribution.SimpleDistributionRequest;
+import org.apache.sling.distribution.common.RecoverableDistributionException;
 import org.apache.sling.distribution.log.impl.DefaultDistributionLog;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
+import org.apache.sling.distribution.packaging.impl.InMemoryDistributionPackage;
 import org.apache.sling.distribution.transport.DistributionTransportSecret;
 import org.apache.sling.distribution.transport.DistributionTransportSecretProvider;
 import org.junit.Test;
@@ -42,6 +46,8 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
@@ -147,5 +153,35 @@ public class SimpleHttpDistributionTransportTest {
 
         RemoteDistributionPackage retrievedPackage = simpleHttpDistributionTransport.retrievePackage(resourceResolver, distributionRequest, distributionContext);
         assertNotNull(retrievedPackage);
+    }
+    
+    @Test
+    public void testSetupTransport() throws Exception {
+        System.setProperty("http.proxyHost", "10.0.0.100");
+        System.setProperty("http.proxyPort", "8800");
+        
+        DistributionTransportSecret secret = mock(DistributionTransportSecret.class);
+        Map<String, String> credentialsMap = new HashMap<String, String>();
+        credentialsMap.put("username", "foo");
+        credentialsMap.put("password", "foo");
+        when(secret.asCredentialsMap()).thenReturn(credentialsMap);
+        DistributionTransportSecretProvider secretProvider = mock(DistributionTransportSecretProvider.class);
+        when(secretProvider.getSecret(any(URI.class))).thenReturn(secret);
+        
+        DistributionEndpoint endpoint = new DistributionEndpoint("http://127.0.0.1:8080/some/resource");
+        DistributionPackageBuilder packageBuilder = mock(DistributionPackageBuilder.class);
+        DistributionPackage distributionPackage = new InMemoryDistributionPackage("myid", "type", new byte[] {}, new HashMap<String, Object>());
+        ResourceResolver resourceResolver = mock(ResourceResolver.class);
+        
+        SimpleHttpDistributionTransport transport = new SimpleHttpDistributionTransport(mock(DefaultDistributionLog.class),
+                endpoint, packageBuilder, secretProvider, new HttpConfiguration(1000, 1000));
+        DistributionTransportContext context = new DistributionTransportContext();
+        try {
+            transport.deliverPackage(resourceResolver, distributionPackage, context);
+        } catch (RecoverableDistributionException e) {
+            HttpHostConnectException cause = (HttpHostConnectException)e.getCause();
+            HttpHost host = cause.getHost();
+            assertThat(host.getHostName(), equalTo("127.0.0.1"));
+        }
     }
 }

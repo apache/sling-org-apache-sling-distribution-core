@@ -31,6 +31,8 @@ import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.entity.ContentType;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -118,7 +120,6 @@ public class SimpleHttpDistributionTransport implements DistributionTransport {
 
             try {
                 Executor executor = getExecutor(distributionContext);
-
                 Request req = Request.Post(distributionEndpoint.getUri())
                         .connectTimeout(httpConfiguration.getConnectTimeout())
                         .socketTimeout(httpConfiguration.getSocketTimeout())
@@ -215,24 +216,23 @@ public class SimpleHttpDistributionTransport implements DistributionTransport {
         return executor;
     }
 
-    private Executor buildAuthExecutor(String username, String password) {
-        URI uri = distributionEndpoint.getUri();
-        Executor executor = Executor.newInstance()
-                .auth(new HttpHost(uri.getHost(), uri.getPort(), uri.getScheme()), username, password)
-                .authPreemptive(new HttpHost(uri.getHost(), uri.getPort(), uri.getScheme()));
-        log.debug("authenticate user={}, endpoint={}", username, uri);
-        return executor;
-    }
-
-    private Executor buildAuthExecutor(Map<String, String> credentialsMap) {
-        return (null != credentialsMap && !credentialsMap.containsKey(AUTHORIZATION))
-                ? buildAuthExecutor(credentialsMap.get(USERNAME), credentialsMap.get(PASSWORD))
-                : Executor.newInstance();
-    }
-
     private Executor buildExecutor() {
+        CloseableHttpClient client = HttpClients.createSystem();
         Map<String, String> credentialsMap = getCredentialsMap();
-        return buildAuthExecutor(credentialsMap);
+        if (needsAuthentication(credentialsMap)) {
+            String username = credentialsMap.get(USERNAME);
+            String password = credentialsMap.get(PASSWORD);
+            URI uri = distributionEndpoint.getUri();
+            HttpHost host = new HttpHost(uri.getHost(), uri.getPort(), uri.getScheme());
+            log.debug("authenticate user={}, endpoint={}", username, uri);
+            return Executor.newInstance(client).auth(host, username, password).authPreemptive(host);
+        } else { 
+            return Executor.newInstance(client);
+        }
+    }
+
+    private boolean needsAuthentication(Map<String, String> credentialsMap) {
+        return null != credentialsMap && !credentialsMap.containsKey(AUTHORIZATION);
     }
 
     private String getAuthSecret() {
