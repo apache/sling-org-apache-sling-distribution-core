@@ -36,8 +36,8 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -75,7 +75,7 @@ public class JobHandlingDistributionQueueTest {
         JobBuilder builder = mock(JobBuilder.class);
         when(builder.properties(any(Map.class))).thenReturn(builder);
         Job job = mock(Job.class);
-        when(job.getId()).thenReturn("id-123");
+        when(job.getId()).thenReturn("dstrpck-id-123");
         when(builder.add()).thenReturn(job);
         String topic = JobHandlingDistributionQueue.DISTRIBUTION_QUEUE_TOPIC + "/aname";
         when(jobManager.createJob(topic)).thenReturn(builder);
