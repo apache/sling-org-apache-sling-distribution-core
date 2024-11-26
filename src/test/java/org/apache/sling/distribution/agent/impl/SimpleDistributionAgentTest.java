@@ -82,7 +82,7 @@ public class SimpleDistributionAgentTest {
         SimpleDistributionAgent agent = new SimpleDistributionAgent(name,
                 false, null, "serviceName", packageImporter,
                 packageExporter, packageExporterStrategy,
-                queueProvider, distributionHandler, null,
+                queueProvider, distributionHandler, null, null,
                 distributionEventFactory, resolverFactory, mock(SlingRepository.class),  mock(DefaultDistributionLog.class), null, null, 0);
 
         TestDistributionTrigger trigger = new TestDistributionTrigger();
@@ -107,7 +107,7 @@ public class SimpleDistributionAgentTest {
         SimpleDistributionAgent agent = new SimpleDistributionAgent(name,
                 false, null, "serviceName", packageImporter,
                 packageExporter, packageExporterStrategy,
-                queueProvider, distributionHandler, null,
+                queueProvider, distributionHandler, null, null,
                 distributionEventFactory, resolverFactory, mock(SlingRepository.class),  mock(DefaultDistributionLog.class), null, null, 0);
         DistributionRequest request = new SimpleDistributionRequest(DistributionRequestType.ADD, "/");
         final DistributionPackage distributionPackage = mock(DistributionPackage.class);
@@ -145,8 +145,8 @@ public class SimpleDistributionAgentTest {
         SimpleDistributionAgent agent = new SimpleDistributionAgent(name,
                 false, null, "subServiceName", packageImporter,
                 packageExporter, packageExporterStrategy,
-                queueProvider,
-                distributionHandler, null, distributionEventFactory, resolverFactory, mock(SlingRepository.class),
+                queueProvider, distributionHandler, null, null,
+                distributionEventFactory, resolverFactory, mock(SlingRepository.class),
                 mock(DefaultDistributionLog.class), null, null, 0);
         DistributionRequest request = new SimpleDistributionRequest(DistributionRequestType.ADD, "/");
         final DistributionPackage distributionPackage = mock(DistributionPackage.class);
@@ -188,7 +188,7 @@ public class SimpleDistributionAgentTest {
         SimpleDistributionAgent agent = new SimpleDistributionAgent(name,
                 false, null, "serviceName", packageImporter,
                 packageExporter, requestAuthorizationStrategy,
-                queueProvider, dispatchingStrategy, null,
+                queueProvider, dispatchingStrategy, null, null,
                 distributionEventFactory, resolverFactory, mock(SlingRepository.class),
                 mock(DefaultDistributionLog.class), null, null, 0);
         DistributionRequest request = new SimpleDistributionRequest(DistributionRequestType.ADD, "/");
@@ -226,7 +226,7 @@ public class SimpleDistributionAgentTest {
         SimpleDistributionAgent agent = new SimpleDistributionAgent(name,
                 false, null, "serviceName", packageImporter,
                 packageExporter, authorizationStrategy,
-                queueProvider, dispatchingStrategy, null,
+                queueProvider, dispatchingStrategy, null, null,
                 distributionEventFactory, resolverFactory, mock(SlingRepository.class),
                 mock(DefaultDistributionLog.class), null, null, 0);
         DistributionQueue queue = mock(DistributionQueue.class);
@@ -249,7 +249,7 @@ public class SimpleDistributionAgentTest {
         SimpleDistributionAgent agent = new SimpleDistributionAgent(name,
                 false, null, "serviceName", packageImporter,
                 packageExporter, packageExporterStrategy,
-                queueProvider, distributionHandler, null,
+                queueProvider, distributionHandler, null, null,
                 distributionEventFactory, resolverFactory, mock(SlingRepository.class),
                 mock(DefaultDistributionLog.class), null, null, 0);
         DistributionQueue queue = mock(DistributionQueue.class);
@@ -277,7 +277,7 @@ public class SimpleDistributionAgentTest {
         SimpleDistributionAgent agent = new SimpleDistributionAgent(name,
                 false, null, "serviceName", packageImporter,
                 packageExporter, packageExporterStrategy,
-                queueProvider, queueDistributionStrategy, null,
+                queueProvider, queueDistributionStrategy, null, null,
                 distributionEventFactory, resolverFactory, mock(SlingRepository.class),
                 mock(DefaultDistributionLog.class), null, new String[] { "/content" }, 0);
 
@@ -325,7 +325,7 @@ public class SimpleDistributionAgentTest {
         SimpleDistributionAgent agent = new SimpleDistributionAgent(name,
                 false, null, "serviceName", packageImporter,
                 packageExporter, packageExporterStrategy,
-                queueProvider, queueDistributionStrategy, null,
+                queueProvider, queueDistributionStrategy, null, null,
                 distributionEventFactory, resolverFactory, mock(SlingRepository.class),
                 mock(DefaultDistributionLog.class), null, new String[] { "/content" }, 0);
 
