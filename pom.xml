@@ -238,7 +238,7 @@
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>oak-jcr</artifactId>
             <version>1.40.0</version>
-            <scope>compile</scope>
+            <scope>test</scope>
         </dependency>
 
 
@@ -252,7 +252,7 @@
         <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.distribution.api</artifactId>
-            <version>0.6.1-SNAPSHOT</version>
+            <version>0.7.2</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
