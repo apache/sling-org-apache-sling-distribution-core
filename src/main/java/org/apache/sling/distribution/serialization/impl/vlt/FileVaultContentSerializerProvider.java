@@ -16,43 +16,35 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.sling.distribution.serialization;
+package org.apache.sling.distribution.serialization.impl.vlt;
 
 import org.apache.jackrabbit.vault.fs.api.IdConflictPolicy;
 import org.apache.jackrabbit.vault.fs.api.ImportMode;
 import org.apache.jackrabbit.vault.fs.io.AccessControlHandling;
-import org.osgi.annotation.versioning.ConsumerType;
+import org.apache.jackrabbit.vault.packaging.Packaging;
+import org.apache.sling.distribution.serialization.DistributionContentSerializer;
+import org.apache.sling.distribution.serialization.DistributionContentSerializerProvider;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 import java.util.Map;
 
 /**
- * A provider for content serializer used to convert
- * distribution payloads to and from binary streams.
+ * Provides {@link DistributionContentSerializer} based on Apache Jackrabbit FileVault
  */
-@ConsumerType
-public interface DistributionContentSerializerProvider {
+@Component(service = DistributionContentSerializerProvider.class)
+public class FileVaultContentSerializerProvider implements DistributionContentSerializerProvider {
 
-    /**
-     * @param name The serializer name
-     * @param importMode The serializer import mode
-     * @param aclHandling The serializer ACL handling mode
-     * @param cugHandling The serializer CUG handling mode
-     * @param packageRoots The serializer package roots
-     * @param nodeFilters The serializer node path filters
-     * @param propertyFilters The serializer property path filters
-     * @param useBinaryReferences {@code true} to pass binaries by reference ;
-     *                            {@code false} to inline binaries
-     * @param autosaveThreshold The number of resources to handle before
-     *                          automatically saving the changes.
-     * @param exportPathMapping The mapping for exported paths
-     * @param strict {@code true} to enforce import constraints;
-     *               {@code false} otherwise
-     * @param overwritePrimaryTypesOfFolders {@code true} to overwrite folder primary types ;
-     *               {@code false} otherwise
-     * @param idConflictPolicy The policy to handle conflicts
-     * @return a distribution content serializer
-     */
-    DistributionContentSerializer build(
+    private final Packaging packaging;
+
+    @Activate
+    public FileVaultContentSerializerProvider (@Reference Packaging packaging) {
+        this.packaging = packaging;
+    }
+
+    @Override
+    public DistributionContentSerializer build(
             String name,
             ImportMode importMode,
             AccessControlHandling aclHandling,
@@ -65,5 +57,9 @@ public interface DistributionContentSerializerProvider {
             Map<String, String> exportPathMapping,
             boolean strict,
             boolean overwritePrimaryTypesOfFolders,
-            IdConflictPolicy idConflictPolicy);
+            IdConflictPolicy idConflictPolicy) {
+        ImportSettings importSettings = new ImportSettings(importMode, aclHandling, cugHandling, autosaveThreshold, strict,
+                overwritePrimaryTypesOfFolders, idConflictPolicy);
+        return new FileVaultContentSerializer(name, packaging, packageRoots, nodeFilters, propertyFilters, useBinaryReferences, exportPathMapping, importSettings);
+    }
 }
