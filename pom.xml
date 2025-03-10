@@ -32,7 +32,7 @@
     <!-- P R O J E C T                                                           -->
     <!-- ======================================================================= -->
     <artifactId>org.apache.sling.distribution.core</artifactId>
-    <version>0.7.0</version>
+    <version>0.7.1-SNAPSHOT</version>
 
     <name>Apache Sling Distribution Core</name>
     <description>
@@ -51,7 +51,7 @@
         <exam.version>4.13.1</exam.version>
         <sling.java.version>8</sling.java.version>
         <jackrabbit.version>2.16.0</jackrabbit.version>
-        <project.build.outputTimestamp>1741614843</project.build.outputTimestamp>
+        <project.build.outputTimestamp>1741615514</project.build.outputTimestamp>
     </properties>
 
     <!-- ======================================================================= -->
