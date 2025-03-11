@@ -34,6 +34,18 @@ public class ImportSettings {
     private final boolean overwritePrimaryTypesOfFolders;
     private final IdConflictPolicy idConflictPolicy;
 
+    /**
+     * 
+     * @param importMode The serializer import mode
+     * @param aclHandling The serializer ACL handling mode
+     * @param cugHandling The serializer CUG handling mode
+     * @param autosaveThreshold The number of resources to handle before automatically saving the changes.
+     * @param isStrict {@code true} to enforce import constraints;
+     *                 {@code false} otherwise
+     * @param overwritePrimaryTypesOfFolders {@code true} to overwrite folder primary types ;
+     *               					     {@code false} otherwise
+     * @param idConflictPolicy The policy to handle conflicts
+     */
     public ImportSettings(ImportMode importMode, AccessControlHandling aclHandling, AccessControlHandling cugHandling, int autosaveThreshold,
                           boolean isStrict, boolean overwritePrimaryTypesOfFolders, IdConflictPolicy idConflictPolicy) {
         this.importMode = importMode;

@@ -30,6 +30,15 @@ public class ExportSettings {
 	private final boolean useBinaryReferences;
 	private final Map<String, String> exportPathMapping;
 	
+	/**
+	 * 
+	 * @param packageRoots The serializer package roots
+	 * @param nodeFilters The serializer node path filters
+	 * @param propertyFilters The serializer property path filters
+	 * @param useBinaryReferences {@code true} to pass binaries by reference ;
+	 *                            {@code false} to inline binaries
+	 * @param exportPathMapping The mapping for exported paths
+	 */
 	public ExportSettings(String[] packageRoots, String[] nodeFilters, String[] propertyFilters,
 			boolean useBinaryReferences, Map<String, String> exportPathMapping) {
 		super();
