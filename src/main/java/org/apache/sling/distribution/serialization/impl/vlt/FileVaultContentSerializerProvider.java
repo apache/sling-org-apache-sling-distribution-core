@@ -27,8 +27,6 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import java.util.Map;
-
 /**
  * Provides {@link DistributionContentSerializer} based on Apache Jackrabbit FileVault
  */
