@@ -18,22 +18,24 @@
  */
 package org.apache.sling.distribution.serialization.impl.vlt;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import org.apache.jackrabbit.vault.fs.api.IdConflictPolicy;
 import org.apache.jackrabbit.vault.fs.api.ImportMode;
 import org.apache.jackrabbit.vault.fs.io.AccessControlHandling;
 import org.apache.jackrabbit.vault.packaging.Packaging;
 import org.apache.sling.distribution.serialization.DistributionContentSerializer;
 import org.apache.sling.distribution.serialization.DistributionContentSerializerProvider;
+import org.apache.sling.distribution.serialization.ExportSettings;
+import org.apache.sling.distribution.serialization.ImportSettings;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link FileVaultContentSerializerProvider}
@@ -65,11 +67,9 @@ public class FileVaultContentSerializerProviderTest {
         boolean strict = false;
         boolean overwritePrimaryTypeFolders = false;
         IdConflictPolicy conflictPolicy = IdConflictPolicy.CREATE_NEW_ID;
-
-        DistributionContentSerializer serializer = provider
-                .build(name, importMode, aclHandling, cugHandling, packageRoots, nodeFilters, propertyFilters,
-                        useBinaryReference, autoSaveThreshold, exportPathMapping, strict, overwritePrimaryTypeFolders,
-                        conflictPolicy);
+        ExportSettings exportSettings = new ExportSettings(packageRoots, nodeFilters, propertyFilters, useBinaryReference, exportPathMapping);
+        ImportSettings importSettings = new ImportSettings(importMode, aclHandling, cugHandling, autoSaveThreshold, strict, overwritePrimaryTypeFolders, conflictPolicy);
+        DistributionContentSerializer serializer = provider.build(name, exportSettings, importSettings);
 
         assertNotNull(serializer);
         assertEquals(name, serializer.getName());

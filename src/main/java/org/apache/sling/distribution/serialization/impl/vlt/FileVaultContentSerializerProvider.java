@@ -18,17 +18,14 @@
  */
 package org.apache.sling.distribution.serialization.impl.vlt;
 
-import org.apache.jackrabbit.vault.fs.api.IdConflictPolicy;
-import org.apache.jackrabbit.vault.fs.api.ImportMode;
-import org.apache.jackrabbit.vault.fs.io.AccessControlHandling;
 import org.apache.jackrabbit.vault.packaging.Packaging;
 import org.apache.sling.distribution.serialization.DistributionContentSerializer;
 import org.apache.sling.distribution.serialization.DistributionContentSerializerProvider;
+import org.apache.sling.distribution.serialization.ExportSettings;
+import org.apache.sling.distribution.serialization.ImportSettings;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-
-import java.util.Map;
 
 /**
  * Provides {@link DistributionContentSerializer} based on Apache Jackrabbit FileVault
@@ -46,20 +43,8 @@ public class FileVaultContentSerializerProvider implements DistributionContentSe
     @Override
     public DistributionContentSerializer build(
             String name,
-            ImportMode importMode,
-            AccessControlHandling aclHandling,
-            AccessControlHandling cugHandling,
-            String[] packageRoots,
-            String[] nodeFilters,
-            String[] propertyFilters,
-            boolean useBinaryReferences,
-            int autosaveThreshold,
-            Map<String, String> exportPathMapping,
-            boolean strict,
-            boolean overwritePrimaryTypesOfFolders,
-            IdConflictPolicy idConflictPolicy) {
-        ImportSettings importSettings = new ImportSettings(importMode, aclHandling, cugHandling, autosaveThreshold, strict,
-                overwritePrimaryTypesOfFolders, idConflictPolicy);
-        return new FileVaultContentSerializer(name, packaging, packageRoots, nodeFilters, propertyFilters, useBinaryReferences, exportPathMapping, importSettings);
+            ExportSettings exportSettings,
+            ImportSettings importSettings) {
+        return new FileVaultContentSerializer(name, packaging, exportSettings, importSettings);
     }
 }
