@@ -38,6 +38,7 @@ import org.apache.sling.commons.testing.jcr.RepositoryUtil;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.serialization.DistributionExportFilter;
 import org.apache.sling.distribution.serialization.DistributionExportOptions;
+import org.apache.sling.distribution.serialization.ImportSettings;
 import org.apache.sling.testing.mock.sling.ResourceResolverType;
 import org.apache.sling.testing.mock.sling.junit.SlingContext;
 import org.apache.sling.testing.resourceresolver.MockHelper;

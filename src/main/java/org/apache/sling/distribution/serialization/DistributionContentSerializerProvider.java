@@ -18,12 +18,7 @@
  */
 package org.apache.sling.distribution.serialization;
 
-import org.apache.jackrabbit.vault.fs.api.IdConflictPolicy;
-import org.apache.jackrabbit.vault.fs.api.ImportMode;
-import org.apache.jackrabbit.vault.fs.io.AccessControlHandling;
 import org.osgi.annotation.versioning.ConsumerType;
-
-import java.util.Map;
 
 /**
  * A provider for content serializer used to convert
@@ -34,36 +29,13 @@ public interface DistributionContentSerializerProvider {
 
     /**
      * @param name The serializer name
-     * @param importMode The serializer import mode
-     * @param aclHandling The serializer ACL handling mode
-     * @param cugHandling The serializer CUG handling mode
-     * @param packageRoots The serializer package roots
-     * @param nodeFilters The serializer node path filters
-     * @param propertyFilters The serializer property path filters
-     * @param useBinaryReferences {@code true} to pass binaries by reference ;
-     *                            {@code false} to inline binaries
-     * @param autosaveThreshold The number of resources to handle before
-     *                          automatically saving the changes.
-     * @param exportPathMapping The mapping for exported paths
-     * @param strict {@code true} to enforce import constraints;
-     *               {@code false} otherwise
-     * @param overwritePrimaryTypesOfFolders {@code true} to overwrite folder primary types ;
-     *               {@code false} otherwise
-     * @param idConflictPolicy The policy to handle conflicts
+     * @param exportSettings settings for export
+     * @param importSettings settings for import
      * @return a distribution content serializer
      */
     DistributionContentSerializer build(
             String name,
-            ImportMode importMode,
-            AccessControlHandling aclHandling,
-            AccessControlHandling cugHandling,
-            String[] packageRoots,
-            String[] nodeFilters,
-            String[] propertyFilters,
-            boolean useBinaryReferences,
-            int autosaveThreshold,
-            Map<String, String> exportPathMapping,
-            boolean strict,
-            boolean overwritePrimaryTypesOfFolders,
-            IdConflictPolicy idConflictPolicy);
+            ExportSettings exportSettings,
+            ImportSettings importSettings);
+    
 }

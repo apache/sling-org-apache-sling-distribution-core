@@ -44,6 +44,8 @@ import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.serialization.DistributionContentSerializer;
 import org.apache.sling.distribution.serialization.DistributionExportOptions;
+import org.apache.sling.distribution.serialization.ExportSettings;
+import org.apache.sling.distribution.serialization.ImportSettings;
 import org.apache.sling.distribution.util.DistributionJcrUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,7 +91,18 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
         this.importSettings = importSettings;
     }
 
-    @Override
+    public FileVaultContentSerializer(String name, Packaging packaging, ExportSettings exportSettings, ImportSettings importSettings) {
+    	this.name = name;
+        this.packaging = packaging;
+        this.packageRoots = exportSettings.getPackageRoots();
+        this.nodeFilters = VltUtils.parseFilters(exportSettings.getNodeFilters());
+        this.propertyFilters = VltUtils.parseFilters(exportSettings.getPropertyFilters());
+        this.useBinaryReferences = exportSettings.isUseBinaryReferences();
+        this.exportPathMapping = exportSettings.getExportPathMapping();
+        this.importSettings = importSettings;
+	}
+
+	@Override
     public void exportToStream(ResourceResolver resourceResolver, DistributionExportOptions exportOptions, OutputStream outputStream) throws DistributionException {
         Session session = null;
         try {

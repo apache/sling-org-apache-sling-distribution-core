@@ -60,6 +60,7 @@ import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.DistributionRequestType;
 import org.apache.sling.distribution.SimpleDistributionRequest;
 import org.apache.sling.distribution.component.impl.SettingsUtils;
+import org.apache.sling.distribution.serialization.ImportSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

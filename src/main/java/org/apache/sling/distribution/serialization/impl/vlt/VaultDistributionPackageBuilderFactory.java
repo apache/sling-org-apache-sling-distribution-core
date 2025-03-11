@@ -37,6 +37,7 @@ import org.apache.sling.distribution.packaging.impl.InMemoryDistributionPackageB
 import org.apache.sling.distribution.packaging.impl.ResourceDistributionPackageBuilder;
 import org.apache.sling.distribution.packaging.impl.ResourceDistributionPackageCleanup;
 import org.apache.sling.distribution.serialization.DistributionContentSerializer;
+import org.apache.sling.distribution.serialization.ImportSettings;
 import org.apache.sling.distribution.util.impl.FileBackedMemoryOutputStream.MemoryUnit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
