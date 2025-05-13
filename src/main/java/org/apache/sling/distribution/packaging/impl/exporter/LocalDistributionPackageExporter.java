@@ -44,7 +44,9 @@ public class LocalDistributionPackageExporter implements DistributionPackageExpo
         DistributionPackage createdPackage = packageBuilder.createPackage(resourceResolver, distributionRequest);
 
         try {
-            packageProcessor.process(createdPackage);
+            if (createdPackage != null) {
+                packageProcessor.process(createdPackage);
+            }
         } finally {
             DistributionPackageUtils.closeSafely(createdPackage);
         }

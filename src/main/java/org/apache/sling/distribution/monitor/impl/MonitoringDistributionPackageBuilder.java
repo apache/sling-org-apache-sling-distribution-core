@@ -33,6 +33,7 @@ import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
@@ -59,12 +60,12 @@ public final class MonitoringDistributionPackageBuilder implements DistributionP
         return wrapped.getType();
     }
 
-    @NotNull
+    @Nullable
     @Override
     public DistributionPackage createPackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest request) throws DistributionException {
         long start = System.currentTimeMillis();
         DistributionPackage distributionPackage = wrapped.createPackage(resourceResolver, request);
-        if (queueCapacity > 0) {
+        if (queueCapacity > 0 && distributionPackage != null) {
             registerDistributionPackageMBean(start, distributionPackage);
         }
         return distributionPackage;
