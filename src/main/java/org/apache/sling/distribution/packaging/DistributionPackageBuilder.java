@@ -46,7 +46,7 @@ public interface DistributionPackageBuilder {
      * @return a {@link DistributionPackage} or <code>null</code> if it could not be created
      * @throws org.apache.sling.distribution.common.DistributionException if any error occurs while creating the package, or if the resource resolver is not authorized to do that
      */
-    @NotNull
+    @Nullable
     DistributionPackage createPackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest request) throws DistributionException;
 
     /**
