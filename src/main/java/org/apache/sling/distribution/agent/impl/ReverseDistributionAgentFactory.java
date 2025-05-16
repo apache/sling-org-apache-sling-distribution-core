@@ -214,8 +214,6 @@ public class ReverseDistributionAgentFactory extends AbstractDistributionAgentFa
         DistributionQueueProvider queueProvider = new MonitoringDistributionQueueProvider(new JobHandlingDistributionQueueProvider(agentName, jobManager, context), context);
 
         DistributionQueueDispatchingStrategy exportQueueStrategy = new SingleQueueDispatchingStrategy();
-        DistributionQueueDispatchingStrategy importQueueStrategy = null;
-
         DistributionRequestType[] allowedRequests = new DistributionRequestType[]{DistributionRequestType.PULL};
         Set<String> processingQueues = new HashSet<String>();
         processingQueues.addAll(exportQueueStrategy.getQueueNames());
@@ -223,7 +221,7 @@ public class ReverseDistributionAgentFactory extends AbstractDistributionAgentFa
 
         return new SimpleDistributionAgent(agentName, queueProcessingEnabled, processingQueues,
                 serviceName, packageImporter, packageExporter, requestAuthorizationStrategy,
-                queueProvider, exportQueueStrategy, importQueueStrategy, distributionEventFactory, resourceResolverFactory, slingRepository, distributionLog, allowedRequests, null, 0);
+                queueProvider, exportQueueStrategy, null, null, distributionEventFactory, resourceResolverFactory, slingRepository, distributionLog, allowedRequests, null, 0);
 
     }
 

@@ -178,19 +178,25 @@ public class ForwardDistributionAgentFactory extends AbstractDistributionAgentFa
 
         DistributionPackageExporter packageExporter = new LocalDistributionPackageExporter(packageBuilder);
 
-        DistributionQueueProvider queueProvider;
+        DistributionQueueProvider queueProvider, errorQueueProvider;
         String queueProviderName = PropertiesUtil.toString(config.get(QUEUE_PROVIDER), JobHandlingDistributionQueueProvider.TYPE);
         if (JobHandlingDistributionQueueProvider.TYPE.equals(queueProviderName)) {
             queueProvider = new JobHandlingDistributionQueueProvider(agentName, jobManager, context, configAdmin);
+            errorQueueProvider = queueProvider;
         } else if (SimpleDistributionQueueProvider.TYPE.equals(queueProviderName)) {
             queueProvider = new SimpleDistributionQueueProvider(scheduler, agentName, false);
+            errorQueueProvider = queueProvider;
         } else if (ResourceQueueProvider.TYPE.equals(queueProviderName)) {
             queueProvider = new ResourceQueueProvider(context,
                     resourceResolverFactory, SimpleDistributionAgent.DEFAULT_AGENT_SERVICE, agentName, scheduler, true);
+            errorQueueProvider = new ResourceQueueProvider(context,
+                    resourceResolverFactory, SimpleDistributionAgent.DEFAULT_AGENT_SERVICE, agentName, scheduler, false);
         } else { // when SimpleDistributionQueueProvider.TYPE_CHECKPOINT is "queueProviderName"
             queueProvider = new SimpleDistributionQueueProvider(scheduler, agentName, true);
+            errorQueueProvider = queueProvider;
         }
         queueProvider = new MonitoringDistributionQueueProvider(queueProvider, context);
+        errorQueueProvider = new MonitoringDistributionQueueProvider(errorQueueProvider, context);
 
         DistributionQueueDispatchingStrategy exportQueueStrategy;
         DistributionQueueDispatchingStrategy errorQueueStrategy = null;
@@ -242,12 +248,14 @@ public class ForwardDistributionAgentFactory extends AbstractDistributionAgentFa
         int retryAttepts = PropertiesUtil.toInteger(config.get(RETRY_ATTEMPTS), 100);
 
         if ("errorQueue".equals(retryStrategy)) {
-            errorQueueStrategy = new ErrorQueueDispatchingStrategy(processingQueues.toArray(new String[processingQueues.size()]));
+            errorQueueStrategy = new ErrorQueueDispatchingStrategy(processingQueues.toArray(new String[processingQueues.size()]),
+                    errorQueueProvider);
         }
 
         return new SimpleDistributionAgent(agentName, queueProcessingEnabled, processingQueues,
                 serviceName, packageImporter, packageExporter, requestAuthorizationStrategy,
-                queueProvider, exportQueueStrategy, errorQueueStrategy, distributionEventFactory, resourceResolverFactory, slingRepository,
+                queueProvider, exportQueueStrategy, errorQueueStrategy, errorQueueProvider,
+                distributionEventFactory, resourceResolverFactory, slingRepository,
                 distributionLog, allowedRequests, allowedRoots, retryAttepts);
 
 
