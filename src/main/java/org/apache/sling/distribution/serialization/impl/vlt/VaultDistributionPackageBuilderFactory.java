@@ -273,6 +273,7 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
             props.put(Scheduler.PROPERTY_SCHEDULER_CONCURRENT, false);
             props.put(Scheduler.PROPERTY_SCHEDULER_PERIOD, cleanupDelay);
             props.put(Scheduler.PROPERTY_SCHEDULER_RUN_ON, Scheduler.VALUE_RUN_ON_SINGLE);
+            props.put(Scheduler.PROPERTY_SCHEDULER_THREAD_POOL, "org-apache-sling-distribution");
             packageCleanup = context.registerService(Runnable.class, cleanup, props);
             wrapped = resourceDistributionPackageBuilder;
         }

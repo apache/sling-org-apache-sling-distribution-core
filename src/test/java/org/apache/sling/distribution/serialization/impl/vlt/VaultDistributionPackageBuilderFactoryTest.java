@@ -1,0 +1,68 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+package org.apache.sling.distribution.serialization.impl.vlt;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.jackrabbit.vault.packaging.Packaging;
+import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.commons.scheduler.Scheduler;
+import org.apache.sling.testing.mock.osgi.MockOsgi;
+import org.junit.Before;
+import org.junit.Test;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+
+public class VaultDistributionPackageBuilderFactoryTest {
+
+    private BundleContext context;
+
+    @Before
+    public void setUp() {
+        context = MockOsgi.newBundleContext();
+    }
+
+    /**
+     * Tests that the cleanup task has a dedicated thread pool.
+     * see SLING-11026
+     */
+    @Test
+    public void testCleanupTaskHasDedicatedThreadPool() {
+        context.registerService(ResourceResolverFactory.class, mock(ResourceResolverFactory.class), null);
+        context.registerService(Packaging.class, mock(Packaging.class), null);
+
+        Map<String, Object> config = new HashMap<>();
+        config.put("name", "test-vault-builder");
+        config.put("type", "jcrvlt"); 
+
+        VaultDistributionPackageBuilderFactory factory = new VaultDistributionPackageBuilderFactory();
+        MockOsgi.injectServices(factory, context);
+        MockOsgi.activate(factory, context, config);
+
+        ServiceReference<Runnable> ref = context.getServiceReference(Runnable.class);
+        assertNotNull("Cleanup task should be registered", ref);
+
+        assertEquals("org-apache-sling-distribution", ref.getProperty(Scheduler.PROPERTY_SCHEDULER_THREAD_POOL));
+    }
+}
