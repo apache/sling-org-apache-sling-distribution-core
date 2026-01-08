@@ -38,5 +38,10 @@ public class DistributionComponentConstants {
      * Property representing component name
      */
     public static final String PN_NAME = "name";
+    
+    /**
+     * Common thread pool name for distribution components.
+     */
+    public static final String THREAD_POOL_NAME = "org-apache-sling-distribution";
 
 }

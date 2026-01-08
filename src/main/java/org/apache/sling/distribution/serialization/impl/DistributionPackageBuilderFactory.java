@@ -27,6 +27,7 @@ import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.commons.scheduler.Scheduler;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.common.DistributionException;
+import org.apache.sling.distribution.component.impl.DistributionComponentConstants;
 import org.apache.sling.distribution.component.impl.SettingsUtils;
 import org.apache.sling.distribution.monitor.impl.MonitoringDistributionPackageBuilder;
 import org.apache.sling.distribution.packaging.DistributionPackage;
@@ -186,7 +187,7 @@ public class DistributionPackageBuilderFactory implements DistributionPackageBui
             Dictionary<String, Object> props = new Hashtable<String, Object>();
             props.put(Scheduler.PROPERTY_SCHEDULER_CONCURRENT, false);
             props.put(Scheduler.PROPERTY_SCHEDULER_PERIOD, cleanupDelay);
-            props.put(Scheduler.PROPERTY_SCHEDULER_THREAD_POOL, "org-apache-sling-distribution");
+            props.put(Scheduler.PROPERTY_SCHEDULER_THREAD_POOL, DistributionComponentConstants.THREAD_POOL_NAME);
             packageCleanup = context.registerService(Runnable.class, cleanup, props);
             wrapped = resourceDistributionPackageBuilder;
         }

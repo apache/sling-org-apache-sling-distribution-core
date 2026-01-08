@@ -22,47 +22,33 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.jackrabbit.vault.packaging.Packaging;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.commons.scheduler.Scheduler;
-import org.apache.sling.testing.mock.osgi.MockOsgi;
-import org.junit.Before;
+import org.apache.sling.distribution.component.impl.DistributionComponentConstants;
+import org.apache.sling.testing.mock.osgi.junit.OsgiContext;
+import org.junit.Rule;
 import org.junit.Test;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class VaultDistributionPackageBuilderFactoryTest {
 
-    private BundleContext context;
+    @Rule
+    public final OsgiContext context = new OsgiContext();
 
-    @Before
-    public void setUp() {
-        context = MockOsgi.newBundleContext();
-    }
-
-    /**
-     * Tests that the cleanup task has a dedicated thread pool.
-     * see SLING-11026
-     */
     @Test
     public void testCleanupTaskHasDedicatedThreadPool() {
-        context.registerService(ResourceResolverFactory.class, mock(ResourceResolverFactory.class), null);
-        context.registerService(Packaging.class, mock(Packaging.class), null);
-
-        Map<String, Object> config = new HashMap<>();
-        config.put("name", "test-vault-builder");
-        config.put("type", "jcrvlt"); 
+        context.registerService(ResourceResolverFactory.class, mock(ResourceResolverFactory.class));
+        context.registerService(Packaging.class, mock(Packaging.class));
 
         VaultDistributionPackageBuilderFactory factory = new VaultDistributionPackageBuilderFactory();
-        MockOsgi.injectServices(factory, context);
-        MockOsgi.activate(factory, context, config);
+        context.registerInjectActivateService(factory,
+                "name", "test-builder",
+                "type", "jcrvlt");
 
-        ServiceReference<Runnable> ref = context.getServiceReference(Runnable.class);
+        ServiceReference<Runnable> ref = context.bundleContext().getServiceReference(Runnable.class);
         assertNotNull("Cleanup task should be registered", ref);
 
-        assertEquals("org-apache-sling-distribution", ref.getProperty(Scheduler.PROPERTY_SCHEDULER_THREAD_POOL));
+        assertEquals(DistributionComponentConstants.THREAD_POOL_NAME, ref.getProperty(Scheduler.PROPERTY_SCHEDULER_THREAD_POOL));
     }
 }

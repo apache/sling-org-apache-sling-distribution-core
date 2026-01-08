@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -21,53 +21,35 @@ package org.apache.sling.distribution.serialization.impl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
-
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
+import static org.mockito.Mockito.when;
 
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.commons.scheduler.Scheduler;
+import org.apache.sling.distribution.component.impl.DistributionComponentConstants;
 import org.apache.sling.distribution.serialization.DistributionContentSerializer;
-import org.apache.sling.testing.mock.osgi.MockOsgi;
-import org.junit.Before;
+import org.apache.sling.testing.mock.osgi.junit.OsgiContext;
+import org.junit.Rule;
 import org.junit.Test;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+
 public class DistributionPackageBuilderFactoryTest {
 
-    private BundleContext context;
+    @Rule
+    public final OsgiContext context = new OsgiContext();
 
-    @Before
-    public void setUp() {
-        context = MockOsgi.newBundleContext();
-    }
-
-    /**
-     * Tests that the cleanup task has a dedicated thread pool.
-     * see SLING-11026
-     */
     @Test
     public void testCleanupTaskHasDedicatedThreadPool() {
-        context.registerService(ResourceResolverFactory.class, mock(ResourceResolverFactory.class), null);
-        
+        context.registerService(ResourceResolverFactory.class, mock(ResourceResolverFactory.class));
         DistributionContentSerializer contentSerializer = mock(DistributionContentSerializer.class);
-        Map<String, Object> serializerProps = new Hashtable<>();
-        serializerProps.put("name", "test-format");
-        context.registerService(DistributionContentSerializer.class, contentSerializer, (java.util.Dictionary) serializerProps);
-
-        Map<String, Object> config = new HashMap<>();
-        config.put("name", "test-builder");
-        config.put("type", "resource");
-        config.put("format.target", "(name=test-format)");
-
+        when(contentSerializer.getName()).thenReturn("test-format");
+        context.registerService(DistributionContentSerializer.class, contentSerializer, "name", "test-format");
         DistributionPackageBuilderFactory factory = new DistributionPackageBuilderFactory();
-        MockOsgi.injectServices(factory, context);
-        MockOsgi.activate(factory, context, config);
-
-        ServiceReference<Runnable> ref = context.getServiceReference(Runnable.class);
-        assertNotNull("Cleanup task should be registered", ref);
-        
-        assertEquals("org-apache-sling-distribution", ref.getProperty(Scheduler.PROPERTY_SCHEDULER_THREAD_POOL));
+        context.registerInjectActivateService(factory,
+                "name", "test-builder",
+                "type", "resource",
+                "format.target", "(name=test-format)");
+        ServiceReference<Runnable> ref = context.bundleContext().getServiceReference(Runnable.class);
+        assertNotNull("Cleanup task should be registered", ref);        
+        assertEquals(DistributionComponentConstants.THREAD_POOL_NAME, ref.getProperty(Scheduler.PROPERTY_SCHEDULER_THREAD_POOL));
     }
 }
