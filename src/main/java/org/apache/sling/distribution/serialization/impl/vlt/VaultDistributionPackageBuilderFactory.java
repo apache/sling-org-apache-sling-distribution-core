@@ -27,6 +27,7 @@ import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.commons.scheduler.Scheduler;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.common.DistributionException;
+import org.apache.sling.distribution.component.impl.DistributionComponentConstants;
 import org.apache.sling.distribution.component.impl.SettingsUtils;
 import org.apache.sling.distribution.monitor.impl.MonitoringDistributionPackageBuilder;
 import org.apache.sling.distribution.packaging.DistributionPackage;
@@ -273,6 +274,7 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
             props.put(Scheduler.PROPERTY_SCHEDULER_CONCURRENT, false);
             props.put(Scheduler.PROPERTY_SCHEDULER_PERIOD, cleanupDelay);
             props.put(Scheduler.PROPERTY_SCHEDULER_RUN_ON, Scheduler.VALUE_RUN_ON_SINGLE);
+            props.put(Scheduler.PROPERTY_SCHEDULER_THREAD_POOL, DistributionComponentConstants.THREAD_POOL_NAME);
             packageCleanup = context.registerService(Runnable.class, cleanup, props);
             wrapped = resourceDistributionPackageBuilder;
         }

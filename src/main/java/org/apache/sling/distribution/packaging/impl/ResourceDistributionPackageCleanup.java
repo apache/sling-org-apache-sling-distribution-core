@@ -32,7 +32,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This runnable removes unreferenced {@link ResourceDistributionPackage} packages.
- * It is meant to be run periodically. See SLING-6503.
+ * It is meant to be run periodically on a dedicated thread pool.
+ * See SLING-6503 and SLING-11026.
  */
 public class ResourceDistributionPackageCleanup implements Runnable {
 
