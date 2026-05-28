@@ -31,9 +31,11 @@ public class SimpleModifiableResource extends SimpleReadableResource {
 
     private final AbstractModifyingResourceProvider resourceProvider;
 
-    public SimpleModifiableResource(ResourceResolver resourceResolver, AbstractModifyingResourceProvider resourceProvider,
-                                    String resourcePath,
-                                    Map<String, Object> properties) {
+    public SimpleModifiableResource(
+            ResourceResolver resourceResolver,
+            AbstractModifyingResourceProvider resourceProvider,
+            String resourcePath,
+            Map<String, Object> properties) {
         super(resourceResolver, resourcePath, properties);
         this.resourceProvider = resourceProvider;
     }

@@ -21,6 +21,7 @@ package org.apache.sling.distribution.trigger.impl;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
@@ -42,8 +43,7 @@ import org.slf4j.LoggerFactory;
  * {@link DistributionAgent}
  */
 public class ScheduledDistributionTrigger implements DistributionTrigger {
-    private final static String SCHEDULE_NAME = "scheduledEventTrigger";
-
+    private static final String SCHEDULE_NAME = "scheduledEventTrigger";
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -57,8 +57,13 @@ public class ScheduledDistributionTrigger implements DistributionTrigger {
 
     private final Set<String> registeredJobs = Collections.synchronizedSet(new HashSet<String>());
 
-
-    public ScheduledDistributionTrigger(String distributionActionName, String path, int secondsInterval, String serviceName, Scheduler scheduler, ResourceResolverFactory resourceResolverFactory) {
+    public ScheduledDistributionTrigger(
+            String distributionActionName,
+            String path,
+            int secondsInterval,
+            String serviceName,
+            Scheduler scheduler,
+            ResourceResolverFactory resourceResolverFactory) {
         this.serviceName = serviceName;
         this.resourceResolverFactory = resourceResolverFactory;
         this.distributionAction = DistributionRequestType.fromName(distributionActionName);
@@ -70,8 +75,8 @@ public class ScheduledDistributionTrigger implements DistributionTrigger {
             throw new IllegalArgumentException("unsupported action " + distributionActionName);
         }
 
-        if (path == null &&
-                (DistributionRequestType.ADD.equals(distributionAction)
+        if (path == null
+                && (DistributionRequestType.ADD.equals(distributionAction)
                         || DistributionRequestType.DELETE.equals(distributionAction))) {
 
             throw new IllegalArgumentException("path is required for action " + distributionActionName);
@@ -90,7 +95,6 @@ public class ScheduledDistributionTrigger implements DistributionTrigger {
 
             if (success) {
                 registeredJobs.add(jobName);
-
             }
             log.info("handler registered {} {}", jobName, success);
 
@@ -108,15 +112,12 @@ public class ScheduledDistributionTrigger implements DistributionTrigger {
             registeredJobs.remove(jobName);
         }
         log.info("handler unregistered {} {}", jobName, success);
-
-
     }
 
     public void disable() {
         for (String jobName : registeredJobs) {
             boolean result = scheduler.unschedule(jobName);
             log.info("handler unregistered {} {}", jobName, result);
-
         }
     }
 

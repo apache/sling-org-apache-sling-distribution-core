@@ -16,14 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.impl;
 
+import javax.annotation.Nonnull;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.annotation.Nonnull;
 
 import org.apache.sling.distribution.DistributionRequestState;
 import org.apache.sling.distribution.DistributionResponse;
@@ -43,10 +41,11 @@ public class CompositeDistributionResponse extends SimpleDistributionResponse {
     private DistributionRequestState state;
 
     private String message;
-    
+
     private DistributionResponseInfo info;
 
-    public CompositeDistributionResponse(List<DistributionResponse> distributionResponses, int packagesCount, long packagseSize, long exportTime) {
+    public CompositeDistributionResponse(
+            List<DistributionResponse> distributionResponses, int packagesCount, long packagseSize, long exportTime) {
         super(DistributionRequestState.DISTRIBUTED, null);
         this.packagesCount = packagesCount;
         this.packagseSize = packagseSize;
@@ -66,7 +65,9 @@ public class CompositeDistributionResponse extends SimpleDistributionResponse {
             messageBuilder.replace(lof, lof + 2, "]");
             message = messageBuilder.toString();
             this.info = new DistributionResponseInfo() {
-                @NotNull @Override public String getId() {
+                @NotNull
+                @Override
+                public String getId() {
                     List<String> ids = new ArrayList<>();
                     for (DistributionResponse response : distributionResponses) {
                         if (response.getDistributionInfo() != null) {
@@ -100,17 +101,15 @@ public class CompositeDistributionResponse extends SimpleDistributionResponse {
     public DistributionResponseInfo getDistributionInfo() {
         return info;
     }
-    
+
     @Override
     public String toString() {
-        return "CompositeDistributionResponse{" +
-                "isSuccessful=" + isSuccessful() +
-                ", state=" + state +
-                ", message=" + message +
-                ", info={id=" + info.getId() + "}" +
-            '}';
+        return "CompositeDistributionResponse{" + "isSuccessful="
+                + isSuccessful() + ", state="
+                + state + ", message="
+                + message + ", info={id="
+                + info.getId() + "}" + '}';
     }
-
 
     /* Provide the aggregated state of two {@link org.apache.sling.distribution.DistributionRequestState}s */
     private DistributionRequestState aggregatedState(DistributionRequestState first, DistributionRequestState second) {

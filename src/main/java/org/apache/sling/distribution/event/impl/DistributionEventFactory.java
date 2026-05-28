@@ -32,7 +32,9 @@ public interface DistributionEventFactory {
      *
      * @param distributionEventType the type of event to be generated
      */
-    void generatePackageEvent(@NotNull String distributionEventType, @NotNull DistributionComponentKind kind,
-                              @NotNull String name, @NotNull DistributionPackageInfo info);
-
+    void generatePackageEvent(
+            @NotNull String distributionEventType,
+            @NotNull DistributionComponentKind kind,
+            @NotNull String name,
+            @NotNull DistributionPackageInfo info);
 }

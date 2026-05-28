@@ -18,6 +18,16 @@
  */
 package org.apache.sling.distribution.component.impl;
 
+import org.apache.sling.distribution.agent.impl.DistributionRequestAuthorizationStrategy;
+import org.apache.sling.distribution.agent.spi.DistributionAgent;
+import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageExporter;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
+import org.apache.sling.distribution.queue.impl.DistributionQueueDispatchingStrategy;
+import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
+import org.apache.sling.distribution.transport.DistributionTransportSecretProvider;
+import org.apache.sling.distribution.trigger.DistributionTrigger;
+
 import static org.apache.sling.distribution.resources.DistributionResourceTypes.AGENT_LIST_RESOURCE_TYPE;
 import static org.apache.sling.distribution.resources.DistributionResourceTypes.AGENT_RESOURCE_TYPE;
 import static org.apache.sling.distribution.resources.DistributionResourceTypes.DEFAULT_SERVICE_RESOURCE_TYPE;
@@ -28,36 +38,45 @@ import static org.apache.sling.distribution.resources.DistributionResourceTypes.
 import static org.apache.sling.distribution.resources.DistributionResourceTypes.TRIGGER_LIST_RESOURCE_TYPE;
 import static org.apache.sling.distribution.resources.DistributionResourceTypes.TRIGGER_RESOURCE_TYPE;
 
-import org.apache.sling.distribution.agent.spi.DistributionAgent;
-import org.apache.sling.distribution.agent.impl.DistributionRequestAuthorizationStrategy;
-import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
-import org.apache.sling.distribution.packaging.impl.DistributionPackageExporter;
-import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
-import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
-import org.apache.sling.distribution.queue.impl.DistributionQueueDispatchingStrategy;
-import org.apache.sling.distribution.transport.DistributionTransportSecretProvider;
-import org.apache.sling.distribution.trigger.DistributionTrigger;
-
 /**
  * Enum that represents the main distribution component kinds that can be configured for distribution.
  */
 public enum DistributionComponentKind {
-
     AGENT("agent", AGENT_RESOURCE_TYPE, AGENT_LIST_RESOURCE_TYPE, DistributionAgent.class),
 
     IMPORTER("importer", IMPORTER_RESOURCE_TYPE, IMPORTER_LIST_RESOURCE_TYPE, DistributionPackageImporter.class),
 
     EXPORTER("exporter", EXPORTER_RESOURCE_TYPE, EXPORTER_LIST_RESOURCE_TYPE, DistributionPackageExporter.class),
 
-    QUEUE_PROVIDER("queueProvider", DEFAULT_SERVICE_RESOURCE_TYPE, DEFAULT_SERVICE_RESOURCE_TYPE, DistributionQueueProvider.class),
+    QUEUE_PROVIDER(
+            "queueProvider",
+            DEFAULT_SERVICE_RESOURCE_TYPE,
+            DEFAULT_SERVICE_RESOURCE_TYPE,
+            DistributionQueueProvider.class),
 
-    QUEUE_STRATEGY("queueStrategy", DEFAULT_SERVICE_RESOURCE_TYPE, DEFAULT_SERVICE_RESOURCE_TYPE, DistributionQueueDispatchingStrategy.class),
+    QUEUE_STRATEGY(
+            "queueStrategy",
+            DEFAULT_SERVICE_RESOURCE_TYPE,
+            DEFAULT_SERVICE_RESOURCE_TYPE,
+            DistributionQueueDispatchingStrategy.class),
 
-    TRANSPORT_SECRET_PROVIDER("transportSecretProvider", DEFAULT_SERVICE_RESOURCE_TYPE, DEFAULT_SERVICE_RESOURCE_TYPE, DistributionTransportSecretProvider.class),
+    TRANSPORT_SECRET_PROVIDER(
+            "transportSecretProvider",
+            DEFAULT_SERVICE_RESOURCE_TYPE,
+            DEFAULT_SERVICE_RESOURCE_TYPE,
+            DistributionTransportSecretProvider.class),
 
-    PACKAGE_BUILDER("packageBuilder", DEFAULT_SERVICE_RESOURCE_TYPE, DEFAULT_SERVICE_RESOURCE_TYPE, DistributionPackageBuilder.class),
+    PACKAGE_BUILDER(
+            "packageBuilder",
+            DEFAULT_SERVICE_RESOURCE_TYPE,
+            DEFAULT_SERVICE_RESOURCE_TYPE,
+            DistributionPackageBuilder.class),
 
-    REQUEST_AUTHORIZATION("requestAuthorization", DEFAULT_SERVICE_RESOURCE_TYPE, DEFAULT_SERVICE_RESOURCE_TYPE, DistributionRequestAuthorizationStrategy.class),
+    REQUEST_AUTHORIZATION(
+            "requestAuthorization",
+            DEFAULT_SERVICE_RESOURCE_TYPE,
+            DEFAULT_SERVICE_RESOURCE_TYPE,
+            DistributionRequestAuthorizationStrategy.class),
 
     TRIGGER("trigger", TRIGGER_RESOURCE_TYPE, TRIGGER_LIST_RESOURCE_TYPE, DistributionTrigger.class);
 
@@ -69,10 +88,7 @@ public enum DistributionComponentKind {
 
     private final Class<?> type;
 
-    DistributionComponentKind(String name,
-                              String resourceType,
-                              String rootResourceType,
-                              Class<?> type) {
+    DistributionComponentKind(String name, String resourceType, String rootResourceType, Class<?> type) {
         this.name = name;
         this.resourceType = resourceType;
         this.rootResourceType = rootResourceType;
@@ -117,5 +133,4 @@ public enum DistributionComponentKind {
     public String getRootResourceType() {
         return rootResourceType;
     }
-
 }

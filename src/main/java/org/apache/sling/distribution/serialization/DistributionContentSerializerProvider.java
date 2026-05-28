@@ -33,9 +33,5 @@ public interface DistributionContentSerializerProvider {
      * @param importSettings settings for import
      * @return a distribution content serializer
      */
-    DistributionContentSerializer build(
-            String name,
-            ExportSettings exportSettings,
-            ImportSettings importSettings);
-    
+    DistributionContentSerializer build(String name, ExportSettings exportSettings, ImportSettings importSettings);
 }

@@ -16,10 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.packaging.impl;
-
-import static java.util.UUID.randomUUID;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
@@ -46,6 +44,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.util.UUID.randomUUID;
 import static org.apache.sling.distribution.util.impl.DigestUtils.openDigestOutputStream;
 import static org.apache.sling.distribution.util.impl.DigestUtils.readDigestMessage;
 
@@ -61,11 +60,13 @@ public class FileDistributionPackageBuilder extends AbstractDistributionPackageB
     private final NavigableMap<String, List<String>> nodeFilters;
     private final NavigableMap<String, List<String>> propertyFilters;
 
-    public FileDistributionPackageBuilder(String type,
-                                          DistributionContentSerializer distributionContentSerializer,
-                                          String tempFilesFolder,
-                                          String digestAlgorithm, String[] nodeFilters,
-                                          String[] propertyFilters) {
+    public FileDistributionPackageBuilder(
+            String type,
+            DistributionContentSerializer distributionContentSerializer,
+            String tempFilesFolder,
+            String digestAlgorithm,
+            String[] nodeFilters,
+            String[] propertyFilters) {
         super(type);
         this.distributionContentSerializer = distributionContentSerializer;
         this.nodeFilters = VltUtils.parseFilters(nodeFilters);
@@ -82,7 +83,9 @@ public class FileDistributionPackageBuilder extends AbstractDistributionPackageB
     }
 
     @Override
-    protected DistributionPackage createPackageForAdd(@NotNull ResourceResolver resourceResolver, @NotNull final DistributionRequest request) throws DistributionException {
+    protected DistributionPackage createPackageForAdd(
+            @NotNull ResourceResolver resourceResolver, @NotNull final DistributionRequest request)
+            throws DistributionException {
         DistributionPackage distributionPackage;
         OutputStream outputStream = null;
         String digestMessage = null;
@@ -97,7 +100,9 @@ public class FileDistributionPackageBuilder extends AbstractDistributionPackageB
                 outputStream = new FileOutputStream(file);
             }
 
-            final DistributionExportFilter filter = distributionContentSerializer.isRequestFiltering() ? null : DistributionExportFilter.createFilter(request, nodeFilters, propertyFilters);
+            final DistributionExportFilter filter = distributionContentSerializer.isRequestFiltering()
+                    ? null
+                    : DistributionExportFilter.createFilter(request, nodeFilters, propertyFilters);
             DistributionExportOptions distributionExportOptions = new DistributionExportOptions(request, filter);
             distributionContentSerializer.exportToStream(resourceResolver, distributionExportOptions, outputStream);
             outputStream.flush();
@@ -107,8 +112,7 @@ public class FileDistributionPackageBuilder extends AbstractDistributionPackageB
             }
             DistributionPackageInfo info = new DistributionPackageInfo(getType());
             DistributionPackageUtils.fillInfo(info, request);
-            distributionPackage = new FileDistributionPackage(file, getType(), digestAlgorithm, digestMessage,
-                    info);
+            distributionPackage = new FileDistributionPackage(file, getType(), digestAlgorithm, digestMessage, info);
         } catch (IOException e) {
             throw new DistributionException(e);
         } finally {
@@ -119,8 +123,8 @@ public class FileDistributionPackageBuilder extends AbstractDistributionPackageB
     }
 
     @Override
-    protected DistributionPackage readPackageInternal(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream)
-            throws DistributionException {
+    protected DistributionPackage readPackageInternal(
+            @NotNull ResourceResolver resourceResolver, @NotNull InputStream stream) throws DistributionException {
         DistributionPackage distributionPackage;
         final File file;
         DigestOutputStream outputStream = null;
@@ -155,8 +159,8 @@ public class FileDistributionPackageBuilder extends AbstractDistributionPackageB
     }
 
     @Override
-    protected boolean installPackageInternal(@NotNull ResourceResolver resourceResolver, @NotNull InputStream inputStream)
-            throws DistributionException {
+    protected boolean installPackageInternal(
+            @NotNull ResourceResolver resourceResolver, @NotNull InputStream inputStream) throws DistributionException {
         try {
             distributionContentSerializer.importFromStream(resourceResolver, inputStream);
             return true;

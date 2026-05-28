@@ -21,13 +21,14 @@ package org.apache.sling.distribution.packaging.impl.importer;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.log.impl.DefaultDistributionLog;
-import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
 import org.apache.sling.distribution.packaging.DistributionPackage;
-import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
 import org.apache.sling.distribution.transport.DistributionTransportSecretProvider;
 import org.apache.sling.distribution.transport.impl.*;
 import org.jetbrains.annotations.NotNull;
@@ -40,8 +41,11 @@ public class RemoteDistributionPackageImporter implements DistributionPackageImp
     private final Map<String, DistributionTransport> transportHandlers = new HashMap<String, DistributionTransport>();
     private final DistributionTransportContext distributionContext = new DistributionTransportContext();
 
-    public RemoteDistributionPackageImporter(DefaultDistributionLog log, DistributionTransportSecretProvider distributionTransportSecretProvider,
-                                             Map<String, String> endpointsMap, HttpConfiguration httpConfiguration) {
+    public RemoteDistributionPackageImporter(
+            DefaultDistributionLog log,
+            DistributionTransportSecretProvider distributionTransportSecretProvider,
+            Map<String, String> endpointsMap,
+            HttpConfiguration httpConfiguration) {
         if (distributionTransportSecretProvider == null) {
             throw new IllegalArgumentException("distributionTransportSecretProvider is required");
         }
@@ -50,13 +54,21 @@ public class RemoteDistributionPackageImporter implements DistributionPackageImp
             String endpointKey = entry.getKey();
             String endpoint = entry.getValue();
             if (endpoint != null && endpoint.length() > 0) {
-                transportHandlers.put(endpointKey, new SimpleHttpDistributionTransport(log, new DistributionEndpoint(endpoint),
-                        null, distributionTransportSecretProvider, httpConfiguration));
+                transportHandlers.put(
+                        endpointKey,
+                        new SimpleHttpDistributionTransport(
+                                log,
+                                new DistributionEndpoint(endpoint),
+                                null,
+                                distributionTransportSecretProvider,
+                                httpConfiguration));
             }
         }
     }
 
-    public void importPackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionPackage distributionPackage) throws DistributionException {
+    public void importPackage(
+            @NotNull ResourceResolver resourceResolver, @NotNull DistributionPackage distributionPackage)
+            throws DistributionException {
         DistributionPackageInfo info = distributionPackage.getInfo();
         String queueName = DistributionPackageUtils.getQueueName(info);
 
@@ -65,15 +77,15 @@ public class RemoteDistributionPackageImporter implements DistributionPackageImp
         if (distributionTransport != null) {
             distributionTransport.deliverPackage(resourceResolver, distributionPackage, distributionContext);
         } else {
-            for(DistributionTransport transportHandler: transportHandlers.values()) {
+            for (DistributionTransport transportHandler : transportHandlers.values()) {
                 transportHandler.deliverPackage(resourceResolver, distributionPackage, distributionContext);
             }
         }
     }
 
     @NotNull
-    public DistributionPackageInfo importStream(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream) throws DistributionException {
+    public DistributionPackageInfo importStream(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream)
+            throws DistributionException {
         throw new DistributionException("not supported");
     }
-
 }

@@ -16,8 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.queue.impl.resource;
+
+import java.util.Collections;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.PersistenceException;
@@ -55,11 +59,6 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
 public class ResourceQueueProcessingTest {
 
     public static final Logger log = LoggerFactory.getLogger(ResourceQueueProcessingTest.class);
@@ -77,8 +76,8 @@ public class ResourceQueueProcessingTest {
         final String QUEUE_NAME = "testActiveQueue";
         final int MAX_ENTRIES = 32;
 
-        DistributionQueueProvider resourceQueueProvider = new ResourceQueueProvider(bundleContext,
-                rrf, "test", "testAgent", scheduler, true);
+        DistributionQueueProvider resourceQueueProvider =
+                new ResourceQueueProvider(bundleContext, rrf, "test", "testAgent", scheduler, true);
         DistributionQueueProcessor mockResourceQueueProcessor = mock(DistributionQueueProcessor.class);
 
         DistributionQueue resourceQueue = resourceQueueProvider.getQueue(QUEUE_NAME);
@@ -86,17 +85,19 @@ public class ResourceQueueProcessingTest {
         try {
             populateDistributionQueue(resourceQueue, MAX_ENTRIES);
 
-            assertTrue("Resource Queue state is not RUNNING",
+            assertTrue(
+                    "Resource Queue state is not RUNNING",
                     resourceQueue.getStatus().getState().equals(DistributionQueueState.RUNNING));
             assertEquals(MAX_ENTRIES, resourceQueue.getStatus().getItemsCount());
 
             when(mockResourceQueueProcessor.process(eq(QUEUE_NAME), any(DistributionQueueEntry.class)))
-                .thenReturn(false, true);
+                    .thenReturn(false, true);
 
             resourceQueueProvider.enableQueueProcessing(mockResourceQueueProcessor, QUEUE_NAME);
             while (!resourceQueue.getStatus().getState().equals(DistributionQueueState.IDLE)) {
                 // do nothing, wait for processing to finish
-                log.info("Processing Resource Queue. Items remaining: {}",
+                log.info(
+                        "Processing Resource Queue. Items remaining: {}",
                         resourceQueue.getStatus().getItemsCount());
             }
 
@@ -114,14 +115,15 @@ public class ResourceQueueProcessingTest {
         Scheduler tempScheduler = mock(Scheduler.class);
         when(tempScheduler.unschedule(anyString())).thenReturn(false);
 
-        DistributionQueueProvider resourceQueueProvider = new ResourceQueueProvider(bundleContext,
-                rrf, "test", "testAgent", tempScheduler, true);
+        DistributionQueueProvider resourceQueueProvider =
+                new ResourceQueueProvider(bundleContext, rrf, "test", "testAgent", tempScheduler, true);
         DistributionQueue resourceQueue = resourceQueueProvider.getQueue(QUEUE_NAME);
 
         try {
             populateDistributionQueue(resourceQueue, MAX_ENTRIES);
 
-            assertTrue("Resource Queue state is not RUNNING",
+            assertTrue(
+                    "Resource Queue state is not RUNNING",
                     resourceQueue.getStatus().getState().equals(DistributionQueueState.RUNNING));
             assertEquals(MAX_ENTRIES, resourceQueue.getStatus().getItemsCount());
         } finally {
@@ -136,22 +138,22 @@ public class ResourceQueueProcessingTest {
     public void testPassiveResourceQueueEnableProcessing() throws DistributionException {
         final String QUEUE_NAME = "testPassiveQueue_1";
         final int MAX_ENTRIES = 4;
-        DistributionQueueProviderFactory resQueueProviderFactory= new ResourceQueueProviderFactory();
+        DistributionQueueProviderFactory resQueueProviderFactory = new ResourceQueueProviderFactory();
         // TODO Replace as not available anymore in Mockito 4
-        //Whitebox.setInternalState(resQueueProviderFactory, "isActive", false);
-        //Whitebox.setInternalState(resQueueProviderFactory, "resourceResolverFactory", rrf);
-        //Whitebox.setInternalState(resQueueProviderFactory, "scheduler", scheduler);
+        // Whitebox.setInternalState(resQueueProviderFactory, "isActive", false);
+        // Whitebox.setInternalState(resQueueProviderFactory, "resourceResolverFactory", rrf);
+        // Whitebox.setInternalState(resQueueProviderFactory, "scheduler", scheduler);
         MockOsgi.activate(resQueueProviderFactory, bundleContext);
 
-        DistributionQueueProvider resourceQueueProvider = resQueueProviderFactory
-                .getProvider("test", "testAgent");
+        DistributionQueueProvider resourceQueueProvider = resQueueProviderFactory.getProvider("test", "testAgent");
 
         DistributionQueue resourceQueue = resourceQueueProvider.getQueue(QUEUE_NAME, null);
 
         try {
             populateDistributionQueue(resourceQueue, MAX_ENTRIES);
 
-            assertTrue("Resource Queue state is PASSIVE",
+            assertTrue(
+                    "Resource Queue state is PASSIVE",
                     resourceQueue.getStatus().getState().equals(DistributionQueueState.PASSIVE));
             assertEquals(MAX_ENTRIES, resourceQueue.getStatus().getItemsCount());
 
@@ -165,15 +167,16 @@ public class ResourceQueueProcessingTest {
     public void testPassiveResourceQueueDisableProcessing() throws DistributionException {
         final String QUEUE_NAME = "testPassiveQueue_2";
         final int MAX_ENTRIES = 2;
-        DistributionQueueProvider resourceQueueProvider = new ResourceQueueProvider(bundleContext,
-                rrf, "test", "testAgent", null, false);
+        DistributionQueueProvider resourceQueueProvider =
+                new ResourceQueueProvider(bundleContext, rrf, "test", "testAgent", null, false);
 
         DistributionQueue resourceQueue = resourceQueueProvider.getQueue(QUEUE_NAME, null);
 
         try {
             populateDistributionQueue(resourceQueue, MAX_ENTRIES);
 
-            assertTrue("Resource Queue state is PASSIVE",
+            assertTrue(
+                    "Resource Queue state is PASSIVE",
                     resourceQueue.getStatus().getState().equals(DistributionQueueState.PASSIVE));
             assertEquals(MAX_ENTRIES, resourceQueue.getStatus().getItemsCount());
         } finally {
@@ -214,23 +217,18 @@ public class ResourceQueueProcessingTest {
     }
 
     private ResourceQueueProvider constructIllegalResourceQueueProvider(IllegalQueueProviderType type) {
-        switch(type) {
-        case MISSING_BUNDLE_CONTEXT:
-            return new ResourceQueueProvider(null,
-                    rrf, "test", "testAgent", scheduler, true);
-        case MISSING_RESOLVER_FACTORY:
-            return new ResourceQueueProvider(bundleContext,
-                    null, "test", "testAgent", scheduler, true);
-        case MISSING_SERVICENAME:
-            return new ResourceQueueProvider(bundleContext,
-                    rrf, null, "testAgent", scheduler, true);
-        case MISSING_AGENTNAME:
-            return new ResourceQueueProvider(bundleContext,
-                    rrf, "test", null, scheduler, true);
-        case MISSING_SCHEDULER_WHEN_ACTIVE:
-        default:
-            return new ResourceQueueProvider(bundleContext,
-                    rrf, "test", "testAgent", null, true);
+        switch (type) {
+            case MISSING_BUNDLE_CONTEXT:
+                return new ResourceQueueProvider(null, rrf, "test", "testAgent", scheduler, true);
+            case MISSING_RESOLVER_FACTORY:
+                return new ResourceQueueProvider(bundleContext, null, "test", "testAgent", scheduler, true);
+            case MISSING_SERVICENAME:
+                return new ResourceQueueProvider(bundleContext, rrf, null, "testAgent", scheduler, true);
+            case MISSING_AGENTNAME:
+                return new ResourceQueueProvider(bundleContext, rrf, "test", null, scheduler, true);
+            case MISSING_SCHEDULER_WHEN_ACTIVE:
+            default:
+                return new ResourceQueueProvider(bundleContext, rrf, "test", "testAgent", null, true);
         }
     }
 
@@ -245,7 +243,7 @@ public class ResourceQueueProcessingTest {
     @BeforeClass
     public static void setUp() throws LoginException {
         slingContext = new SlingContext(ResourceResolverType.RESOURCERESOLVER_MOCK);
-        
+
         bundleContext = slingContext.bundleContext();
         slingContext.resourceResolver();
         rrf = slingContext.getService(ResourceResolverFactory.class);
@@ -256,23 +254,26 @@ public class ResourceQueueProcessingTest {
         scheduler = mock(Scheduler.class);
         ScheduleOptions mockScheduleOptions = scheduleOptions();
         executorService = Executors.newSingleThreadScheduledExecutor();
-        when(scheduler.NOW(ArgumentMatchers.anyInt(), ArgumentMatchers.anyLong())).thenReturn(mockScheduleOptions);
+        when(scheduler.NOW(ArgumentMatchers.anyInt(), ArgumentMatchers.anyLong()))
+                .thenReturn(mockScheduleOptions);
         when(scheduler.schedule(any(Runnable.class), any(ScheduleOptions.class)))
-            .thenAnswer(new Answer<Boolean>() {
-                @Override
-                public Boolean answer(InvocationOnMock invocation) throws Throwable {
-                    Runnable task = (Runnable) invocation.getArguments()[0];
-                    executorService.scheduleAtFixedRate(task, 0L, 1L, TimeUnit.SECONDS);
-                    return true;
-                }
-            });
+                .thenAnswer(new Answer<Boolean>() {
+                    @Override
+                    public Boolean answer(InvocationOnMock invocation) throws Throwable {
+                        Runnable task = (Runnable) invocation.getArguments()[0];
+                        executorService.scheduleAtFixedRate(task, 0L, 1L, TimeUnit.SECONDS);
+                        return true;
+                    }
+                });
         when(scheduler.unschedule(anyString())).thenReturn(true);
     }
 
     private static ScheduleOptions scheduleOptions() {
         ScheduleOptions mockScheduleOptions = mock(ScheduleOptions.class);
-        when(mockScheduleOptions.canRunConcurrently(ArgumentMatchers.anyBoolean())).thenReturn(mockScheduleOptions);
-        when(mockScheduleOptions.onSingleInstanceOnly(ArgumentMatchers.anyBoolean())).thenReturn(mockScheduleOptions);
+        when(mockScheduleOptions.canRunConcurrently(ArgumentMatchers.anyBoolean()))
+                .thenReturn(mockScheduleOptions);
+        when(mockScheduleOptions.onSingleInstanceOnly(ArgumentMatchers.anyBoolean()))
+                .thenReturn(mockScheduleOptions);
         when(mockScheduleOptions.name(ArgumentMatchers.anyString())).thenReturn(mockScheduleOptions);
         return mockScheduleOptions;
     }

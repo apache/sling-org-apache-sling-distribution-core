@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.component.impl;
 
 import java.io.IOException;
@@ -50,12 +49,14 @@ public class OsgiConfigurationManager implements DistributionConfigurationManage
 
     private final DistributionComponentFactoryMap componentFactoryMap;
 
-    public OsgiConfigurationManager(ConfigurationAdmin configurationAdmin, DistributionComponentFactoryMap componentFactoryMap, ServiceReference<?> ref) {
+    public OsgiConfigurationManager(
+            ConfigurationAdmin configurationAdmin,
+            DistributionComponentFactoryMap componentFactoryMap,
+            ServiceReference<?> ref) {
         this.ref = ref;
         this.configurationAdmin = configurationAdmin;
         this.componentFactoryMap = componentFactoryMap;
     }
-
 
     public List<DistributionConfiguration> getConfigs(ResourceResolver resolver, DistributionComponentKind kind) {
         List<Configuration> configurations = getOsgiConfigurations(kind, null);
@@ -65,7 +66,6 @@ public class OsgiConfigurationManager implements DistributionConfigurationManage
             return result;
         }
 
-
         for (Configuration configuration : configurations) {
             Dictionary<String, Object> propertiesDict = configuration.getProcessedProperties(ref);
             Map<String, Object> properties = OsgiUtils.fromDictionary(propertiesDict);
@@ -73,7 +73,6 @@ public class OsgiConfigurationManager implements DistributionConfigurationManage
             properties = filterBeforeRead(properties);
             String name = PropertiesUtil.toString(properties.get(DistributionComponentConstants.PN_NAME), null);
             result.add(new DistributionConfiguration(kind, name, properties));
-
         }
 
         return result;
@@ -87,8 +86,7 @@ public class OsgiConfigurationManager implements DistributionConfigurationManage
         }
 
         if (configurations.size() > 1) {
-            log.warn("Found more than one configuration of kind: {} and with name: {}",
-                    kind.getName(), name);
+            log.warn("Found more than one configuration of kind: {} and with name: {}", kind.getName(), name);
         }
 
         Configuration configuration = configurations.get(0);
@@ -124,7 +122,7 @@ public class OsgiConfigurationManager implements DistributionConfigurationManage
             // SLING-5872 - Management of agent configurations must identify configurations by name
             // Remove the agents with the same name wich are not bind to the same factory.
             List<Configuration> configs = getOsgiConfigurations(componentKind, componentName);
-            for (Iterator<Configuration> iter = configs.iterator() ; iter.hasNext() ; ) {
+            for (Iterator<Configuration> iter = configs.iterator(); iter.hasNext(); ) {
                 Configuration conf = iter.next();
                 if (factoryPid.equals(conf.getFactoryPid())) {
                     iter.remove();
@@ -135,7 +133,6 @@ public class OsgiConfigurationManager implements DistributionConfigurationManage
             properties.put(DistributionComponentConstants.PN_NAME, componentName);
             saveOsgiConfig(factoryPid, componentName, properties);
         }
-
     }
 
     public void deleteConfig(ResourceResolver resolver, DistributionComponentKind kind, String name) {
@@ -144,9 +141,7 @@ public class OsgiConfigurationManager implements DistributionConfigurationManage
         deleteOsgiConfigs(configs);
 
         log.info("Delete component {}", name);
-
     }
-
 
     private void deleteOsgiConfigs(List<Configuration> configurations) {
         for (Configuration configuration : configurations) {
@@ -172,7 +167,6 @@ public class OsgiConfigurationManager implements DistributionConfigurationManage
 
         return allConfigurations;
     }
-
 
     private Configuration saveOsgiConfig(String factoryPid, String componentName, Map<String, Object> properties) {
         try {
@@ -228,7 +222,6 @@ public class OsgiConfigurationManager implements DistributionConfigurationManage
             } else {
                 result.put(entry.getKey(), entry.getValue());
             }
-
         }
 
         result = OsgiUtils.sanitize(result);
@@ -248,13 +241,11 @@ public class OsgiConfigurationManager implements DistributionConfigurationManage
             } else {
                 result.put(entry.getKey(), entry.getValue());
             }
-
         }
 
         result = OsgiUtils.sanitize(result);
         return result;
     }
-
 
     private String unpackOsgiFilter(String propertyValue) {
 

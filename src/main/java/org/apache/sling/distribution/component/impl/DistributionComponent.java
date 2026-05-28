@@ -18,7 +18,6 @@
  */
 package org.apache.sling.distribution.component.impl;
 
-
 import java.util.Map;
 
 /**
@@ -32,7 +31,8 @@ public class DistributionComponent<ServiceType> {
     private final ServiceType service;
     private final Map<String, Object> properties;
 
-    public DistributionComponent(DistributionComponentKind kind, String name, ServiceType service, Map<String, Object> properties) {
+    public DistributionComponent(
+            DistributionComponentKind kind, String name, ServiceType service, Map<String, Object> properties) {
         this.kind = kind;
         this.name = name;
 

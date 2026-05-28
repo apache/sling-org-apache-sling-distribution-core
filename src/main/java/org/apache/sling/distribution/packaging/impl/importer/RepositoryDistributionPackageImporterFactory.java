@@ -40,21 +40,22 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
  */
 @Component(
         configurationPolicy = ConfigurationPolicy.REQUIRE,
-        service=DistributionPackageImporter.class,
-        property= {
-                "webconsole.configurationFactory.nameHint=Importer name: {name}"     
-        })
-@Designate(ocd=RepositoryDistributionPackageImporterFactory.Config.class, factory = true)
+        service = DistributionPackageImporter.class,
+        property = {"webconsole.configurationFactory.nameHint=Importer name: {name}"})
+@Designate(ocd = RepositoryDistributionPackageImporterFactory.Config.class, factory = true)
 public class RepositoryDistributionPackageImporterFactory implements DistributionPackageImporter {
-    
-    @ObjectClassDefinition(name="Apache Sling Distribution Importer - Repository Package Importer Factory")
+
+    @ObjectClassDefinition(name = "Apache Sling Distribution Importer - Repository Package Importer Factory")
     public @interface Config {
-        @AttributeDefinition(name="Name", description = "The name of the importer.")
+        @AttributeDefinition(name = "Name", description = "The name of the importer.")
         String name();
+
         @AttributeDefinition()
         String service_name() default "admin";
+
         @AttributeDefinition()
         String path() default "/var/sling/distribution/import";
+
         @AttributeDefinition()
         String privilege_name() default "jcr:read";
     }
@@ -67,19 +68,19 @@ public class RepositoryDistributionPackageImporterFactory implements Distributio
     @Activate
     protected void activate(Config conf) {
 
-        importer = new RepositoryDistributionPackageImporter(repository,
-                conf.service_name(),
-                conf.path(),
-                conf.privilege_name());
+        importer = new RepositoryDistributionPackageImporter(
+                repository, conf.service_name(), conf.path(), conf.privilege_name());
     }
 
-    public void importPackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionPackage distributionPackage) throws DistributionException {
+    public void importPackage(
+            @NotNull ResourceResolver resourceResolver, @NotNull DistributionPackage distributionPackage)
+            throws DistributionException {
         importer.importPackage(resourceResolver, distributionPackage);
-
     }
 
     @NotNull
-    public DistributionPackageInfo importStream(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream) throws DistributionException {
+    public DistributionPackageInfo importStream(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream)
+            throws DistributionException {
         return importer.importStream(resourceResolver, stream);
     }
 }

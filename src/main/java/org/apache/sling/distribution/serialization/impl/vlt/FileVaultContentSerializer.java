@@ -18,6 +18,9 @@
  */
 package org.apache.sling.distribution.serialization.impl.vlt;
 
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
@@ -26,9 +29,6 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.UUID;
-
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 
 import org.apache.jackrabbit.vault.fs.api.RegexpPathMapping;
 import org.apache.jackrabbit.vault.fs.api.WorkspaceFilter;
@@ -79,8 +79,15 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
     private final Map<String, String> exportPathMapping;
     private final ImportSettings importSettings;
 
-    public FileVaultContentSerializer(String name, Packaging packaging, String[] packageRoots, String[] nodeFilters, String[] propertyFilters,
-                                      boolean useBinaryReferences, Map<String, String> exportPathMapping, ImportSettings importSettings) {
+    public FileVaultContentSerializer(
+            String name,
+            Packaging packaging,
+            String[] packageRoots,
+            String[] nodeFilters,
+            String[] propertyFilters,
+            boolean useBinaryReferences,
+            Map<String, String> exportPathMapping,
+            ImportSettings importSettings) {
         this.name = name;
         this.packaging = packaging;
         this.packageRoots = packageRoots;
@@ -91,8 +98,9 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
         this.importSettings = importSettings;
     }
 
-    public FileVaultContentSerializer(String name, Packaging packaging, ExportSettings exportSettings, ImportSettings importSettings) {
-    	this.name = name;
+    public FileVaultContentSerializer(
+            String name, Packaging packaging, ExportSettings exportSettings, ImportSettings importSettings) {
+        this.name = name;
         this.packaging = packaging;
         this.packageRoots = exportSettings.getPackageRoots();
         this.nodeFilters = VltUtils.parseFilters(exportSettings.getNodeFilters());
@@ -100,10 +108,12 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
         this.useBinaryReferences = exportSettings.isUseBinaryReferences();
         this.exportPathMapping = exportSettings.getExportPathMapping();
         this.importSettings = importSettings;
-	}
+    }
 
-	@Override
-    public void exportToStream(ResourceResolver resourceResolver, DistributionExportOptions exportOptions, OutputStream outputStream) throws DistributionException {
+    @Override
+    public void exportToStream(
+            ResourceResolver resourceResolver, DistributionExportOptions exportOptions, OutputStream outputStream)
+            throws DistributionException {
         Session session = null;
         try {
             DistributionRequest request = VltUtils.sanitizeRequest(exportOptions.getRequest());
@@ -113,9 +123,13 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
             String packageName = TYPE + "_" + System.currentTimeMillis() + "_" + UUID.randomUUID();
 
             WorkspaceFilter filter = VltUtils.createFilter(request, nodeFilters, propertyFilters);
-            ExportOptions opts = VltUtils.getExportOptions(filter, packageRoots, packageGroup, packageName, VERSION, useBinaryReferences, exportPathMapping);
+            ExportOptions opts = VltUtils.getExportOptions(
+                    filter, packageRoots, packageGroup, packageName, VERSION, useBinaryReferences, exportPathMapping);
 
-            log.debug("assembling package {} user {}", packageGroup + '/' + packageName + "-" + VERSION, resourceResolver.getUserID());
+            log.debug(
+                    "assembling package {} user {}",
+                    packageGroup + '/' + packageName + "-" + VERSION,
+                    resourceResolver.getUserID());
 
             packaging.getPackageManager().assemble(session, opts, outputStream);
         } catch (Exception e) {
@@ -123,11 +137,11 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
         } finally {
             ungetSession(session);
         }
-
     }
 
     @Override
-    public void importFromStream(ResourceResolver resourceResolver, InputStream inputStream) throws DistributionException {
+    public void importFromStream(ResourceResolver resourceResolver, InputStream inputStream)
+            throws DistributionException {
         Session session = null;
         Archive archive = null;
         try {
@@ -149,9 +163,11 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
                     if (pathsMappingProperty != null && !pathsMappingProperty.isEmpty()) {
                         RegexpPathMapping pathMapping = new RegexpPathMapping();
 
-                        StringTokenizer pathsMappingTokenizer = new StringTokenizer(pathsMappingProperty, MAPPING_DELIMITER);
+                        StringTokenizer pathsMappingTokenizer =
+                                new StringTokenizer(pathsMappingProperty, MAPPING_DELIMITER);
                         while (pathsMappingTokenizer.hasMoreTokens()) {
-                            String[] pathMappingHeader = pathsMappingTokenizer.nextToken().split(MAPPING_SEPARATOR);
+                            String[] pathMappingHeader =
+                                    pathsMappingTokenizer.nextToken().split(MAPPING_SEPARATOR);
                             pathMapping.addMapping(pathMappingHeader[0], pathMappingHeader[1]);
                         }
 
@@ -176,7 +192,6 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
                 archive.close();
             }
         }
-
     }
 
     private Session getSession(ResourceResolver resourceResolver) throws RepositoryException {
@@ -184,7 +199,8 @@ public class FileVaultContentSerializer implements DistributionContentSerializer
         if (session != null) {
             DistributionJcrUtils.setDoNotDistribute(session);
         } else {
-            throw new RepositoryException("could not obtain a session from calling user " + resourceResolver.getUserID());
+            throw new RepositoryException(
+                    "could not obtain a session from calling user " + resourceResolver.getUserID());
         }
         return session;
     }

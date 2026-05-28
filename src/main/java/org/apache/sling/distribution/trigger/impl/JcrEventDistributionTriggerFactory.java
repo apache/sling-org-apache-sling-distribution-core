@@ -37,31 +37,37 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @Component(
         configurationPolicy = ConfigurationPolicy.REQUIRE,
-        service=DistributionTrigger.class,
-        property= {
-                "webconsole.configurationFactory.nameHint=Trigger name: {name} on path {path}"
-        })
-@Designate(ocd=JcrEventDistributionTriggerFactory.Config.class, factory = true)
+        service = DistributionTrigger.class,
+        property = {"webconsole.configurationFactory.nameHint=Trigger name: {name} on path {path}"})
+@Designate(ocd = JcrEventDistributionTriggerFactory.Config.class, factory = true)
 public class JcrEventDistributionTriggerFactory implements DistributionTrigger {
 
-    @ObjectClassDefinition(name="Apache Sling Distribution Trigger - Jcr Event Triggers Factory",
-            description = "Triggers a distribution request ('ADD', 'DELETE') " +
-                    "for the given path (path) whenever the JCR node at the given path is modified (added, resp. removed).")
+    @ObjectClassDefinition(
+            name = "Apache Sling Distribution Trigger - Jcr Event Triggers Factory",
+            description =
+                    "Triggers a distribution request ('ADD', 'DELETE') "
+                            + "for the given path (path) whenever the JCR node at the given path is modified (added, resp. removed).")
     public @interface Config {
-        @AttributeDefinition(name="Name", description = "The name of the trigger.")
+        @AttributeDefinition(name = "Name", description = "The name of the trigger.")
         String name();
-        @AttributeDefinition(name="Name", description = "The path for which changes are distributed.")
+
+        @AttributeDefinition(name = "Name", description = "The path for which changes are distributed.")
         String path();
-        @AttributeDefinition(cardinality = 100, 
-                name = "Ignored Paths Patterns", 
+
+        @AttributeDefinition(
+                cardinality = 100,
+                name = "Ignored Paths Patterns",
                 description = "The paths matching one of these patterns will be ignored.")
         String[] ignoredPathsPatterns();
-        @AttributeDefinition(name="Service Name", description = "The service used to listen for jcr events")
+
+        @AttributeDefinition(name = "Service Name", description = "The service used to listen for jcr events")
         String serviceName();
-        @AttributeDefinition(name="Use deep distribution", description = "Distribute entire subtree of the event node path. Default is 'false'.")
+
+        @AttributeDefinition(
+                name = "Use deep distribution",
+                description = "Distribute entire subtree of the event node path. Default is 'false'.")
         boolean deep() default false;
     }
-
 
     private JcrEventDistributionTrigger trigger;
 
@@ -74,7 +80,6 @@ public class JcrEventDistributionTriggerFactory implements DistributionTrigger {
     @Reference
     private ResourceResolverFactory resolverFactory;
 
-
     @Activate
     public void activate(Config conf) {
         String path = conf.path();
@@ -83,7 +88,8 @@ public class JcrEventDistributionTriggerFactory implements DistributionTrigger {
         ignoredPathsPatterns = SettingsUtils.removeEmptyEntries(ignoredPathsPatterns);
         boolean deep = conf.deep();
 
-        trigger = new JcrEventDistributionTrigger(repository, scheduler, resolverFactory, path, deep, serviceName, ignoredPathsPatterns);
+        trigger = new JcrEventDistributionTrigger(
+                repository, scheduler, resolverFactory, path, deep, serviceName, ignoredPathsPatterns);
         trigger.enable();
     }
 

@@ -34,14 +34,16 @@ import static org.mockito.Mockito.when;
  */
 public class ResourceEventDistributionTriggerTest {
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void testRegister() throws Exception {
         String path = "/some/path";
         BundleContext bundleContext = mock(BundleContext.class);
         ServiceRegistration registration = mock(ServiceRegistration.class);
-        when(bundleContext.registerService(any(Class.class), any(Object.class), any(Dictionary.class))).thenReturn(registration);
-        ResourceEventDistributionTrigger resourceEventdistributionTrigger = new ResourceEventDistributionTrigger(path, bundleContext);
+        when(bundleContext.registerService(any(Class.class), any(Object.class), any(Dictionary.class)))
+                .thenReturn(registration);
+        ResourceEventDistributionTrigger resourceEventdistributionTrigger =
+                new ResourceEventDistributionTrigger(path, bundleContext);
         DistributionRequestHandler handler = mock(DistributionRequestHandler.class);
         resourceEventdistributionTrigger.register(handler);
     }
@@ -50,7 +52,8 @@ public class ResourceEventDistributionTriggerTest {
     public void testUnregister() throws Exception {
         String path = "/some/path";
         BundleContext bundleContext = mock(BundleContext.class);
-        ResourceEventDistributionTrigger resourceEventdistributionTrigger = new ResourceEventDistributionTrigger(path, bundleContext);
+        ResourceEventDistributionTrigger resourceEventdistributionTrigger =
+                new ResourceEventDistributionTrigger(path, bundleContext);
         DistributionRequestHandler handler = mock(DistributionRequestHandler.class);
         resourceEventdistributionTrigger.unregister(handler);
     }
@@ -59,7 +62,8 @@ public class ResourceEventDistributionTriggerTest {
     public void testEnable() throws Exception {
         String path = "/some/path";
         BundleContext bundleContext = mock(BundleContext.class);
-        ResourceEventDistributionTrigger resourceEventdistributionTrigger = new ResourceEventDistributionTrigger(path, bundleContext);
+        ResourceEventDistributionTrigger resourceEventdistributionTrigger =
+                new ResourceEventDistributionTrigger(path, bundleContext);
         resourceEventdistributionTrigger.enable();
     }
 
@@ -67,7 +71,8 @@ public class ResourceEventDistributionTriggerTest {
     public void testDisable() throws Exception {
         String path = "/some/path";
         BundleContext bundleContext = mock(BundleContext.class);
-        ResourceEventDistributionTrigger resourceEventdistributionTrigger = new ResourceEventDistributionTrigger(path, bundleContext);
+        ResourceEventDistributionTrigger resourceEventdistributionTrigger =
+                new ResourceEventDistributionTrigger(path, bundleContext);
         resourceEventdistributionTrigger.disable();
     }
 }

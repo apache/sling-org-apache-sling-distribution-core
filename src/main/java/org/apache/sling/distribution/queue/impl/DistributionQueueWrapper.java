@@ -23,21 +23,20 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueStatus;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.jetbrains.annotations.NotNull;
 
 import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.APPENDABLE;
-import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.REMOVABLE;
 import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.CLEARABLE;
+import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.REMOVABLE;
 
 public abstract class DistributionQueueWrapper implements DistributionQueue {
 
-    private static final Set<String> CAPABILITIES = Collections.unmodifiableSet(
-            new HashSet<String>(Arrays.asList(APPENDABLE, REMOVABLE, CLEARABLE)));
-
+    private static final Set<String> CAPABILITIES =
+            Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(APPENDABLE, REMOVABLE, CLEARABLE)));
 
     final DistributionQueue wrappedQueue;
 

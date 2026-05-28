@@ -21,6 +21,7 @@ package org.apache.sling.distribution.queue.impl.jobhandling;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueItemState;
@@ -31,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class JobHandlingUtils {
-    private final static Logger log = LoggerFactory.getLogger(JobHandlingUtils.class);
+    private static final Logger log = LoggerFactory.getLogger(JobHandlingUtils.class);
 
     private static final String ID_START = "dstrpck-";
 
@@ -91,7 +92,6 @@ class JobHandlingUtils {
 
         String queue = topic.substring(JobHandlingDistributionQueue.DISTRIBUTION_QUEUE_TOPIC.length() + 1);
 
-
         int idx = queue.lastIndexOf("/");
 
         if (idx < 0) return "";
@@ -103,9 +103,11 @@ class JobHandlingUtils {
         String queueName = getQueueName(job);
         int attempts = job.getRetryCount();
 
-        return new DistributionQueueItemStatus(job.getCreated(),
+        return new DistributionQueueItemStatus(
+                job.getCreated(),
                 attempts > 0 ? DistributionQueueItemState.ERROR : DistributionQueueItemState.QUEUED,
-                attempts, queueName);
+                attempts,
+                queueName);
     }
 
     @Nullable
@@ -121,7 +123,7 @@ class JobHandlingUtils {
     }
 
     private static String escapeId(String jobId) {
-        //return id;
+        // return id;
         if (jobId == null) {
             return null;
         }
@@ -138,6 +140,4 @@ class JobHandlingUtils {
 
         return itemId.replace(ID_START, "").replace("--", "/");
     }
-
-
 }

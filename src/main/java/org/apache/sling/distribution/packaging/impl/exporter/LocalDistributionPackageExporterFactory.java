@@ -29,9 +29,9 @@ import org.apache.sling.distribution.packaging.impl.DistributionPackageExporter;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageProcessor;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
@@ -39,23 +39,26 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 /**
  * OSGi configuration factory for {@link LocalDistributionPackageExporter}s.
  */
-@Component(service=DistributionPackageExporter.class,
+@Component(
+        service = DistributionPackageExporter.class,
         configurationPolicy = ConfigurationPolicy.REQUIRE,
-        property = {
-                "webconsole.configurationFactory.nameHint=Exporter name: {name}" 
-        })
-@Designate(ocd=LocalDistributionPackageExporterFactory.Config.class, factory=true)
+        property = {"webconsole.configurationFactory.nameHint=Exporter name: {name}"})
+@Designate(ocd = LocalDistributionPackageExporterFactory.Config.class, factory = true)
 public class LocalDistributionPackageExporterFactory implements DistributionPackageExporter {
-    
-    @ObjectClassDefinition(name="Apache Sling Distribution Exporter - Local Package Exporter Factory")
+
+    @ObjectClassDefinition(name = "Apache Sling Distribution Exporter - Local Package Exporter Factory")
     public @interface Config {
-        @AttributeDefinition(name="Name", description = "The name of the exporter.")
+        @AttributeDefinition(name = "Name", description = "The name of the exporter.")
         String name();
-        @AttributeDefinition(name="Package Builder", description = "The target reference for the DistributionPackageBuilder used to create distribution packages, " +
-            "e.g. use target=(name=...) to bind to services by name.")
+
+        @AttributeDefinition(
+                name = "Package Builder",
+                description =
+                        "The target reference for the DistributionPackageBuilder used to create distribution packages, "
+                                + "e.g. use target=(name=...) to bind to services by name.")
         String packageBuilder_target();
     }
-    
+
     @Reference(name = "packageBuilder")
     private DistributionPackageBuilder packageBuilder;
 
@@ -66,11 +69,17 @@ public class LocalDistributionPackageExporterFactory implements DistributionPack
         exporter = new LocalDistributionPackageExporter(packageBuilder);
     }
 
-    public void exportPackages(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest, @NotNull DistributionPackageProcessor packageProcessor) throws DistributionException {
+    public void exportPackages(
+            @NotNull ResourceResolver resourceResolver,
+            @NotNull DistributionRequest distributionRequest,
+            @NotNull DistributionPackageProcessor packageProcessor)
+            throws DistributionException {
         exporter.exportPackages(resourceResolver, distributionRequest, packageProcessor);
     }
 
-    public DistributionPackage getPackage(@NotNull ResourceResolver resourceResolver, @NotNull String distributionPackageId) throws DistributionException {
+    public DistributionPackage getPackage(
+            @NotNull ResourceResolver resourceResolver, @NotNull String distributionPackageId)
+            throws DistributionException {
         return exporter.getPackage(resourceResolver, distributionPackageId);
     }
 }

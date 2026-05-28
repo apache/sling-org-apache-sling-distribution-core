@@ -18,7 +18,6 @@
  */
 package org.apache.sling.distribution.resources.impl;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +40,8 @@ import org.apache.sling.distribution.resources.impl.common.SimplePathInfo;
  * All CRUD operations are supported for the underlying resources.
  * The accepted path is resourceRoot/{friendlyNameProperty}/childResourceName.
  */
-public class DistributionConfigurationResourceProvider extends AbstractModifyingResourceProvider implements ResourceProvider, ModifyingResourceProvider {
+public class DistributionConfigurationResourceProvider extends AbstractModifyingResourceProvider
+        implements ResourceProvider, ModifyingResourceProvider {
 
     private static final String SETTINGS_RESOURCE_TYPE = DistributionResourceTypes.DEFAULT_SETTING_RESOURCE_TYPE;
 
@@ -49,15 +49,19 @@ public class DistributionConfigurationResourceProvider extends AbstractModifying
 
     private final DistributionComponentKind kind;
 
-    public DistributionConfigurationResourceProvider(DistributionConfigurationManager configurationManager, String kind, String resourceRoot) {
+    public DistributionConfigurationResourceProvider(
+            DistributionConfigurationManager configurationManager, String kind, String resourceRoot) {
         super(resourceRoot);
         this.configurationManager = configurationManager;
         this.kind = DistributionComponentKind.fromName(kind);
     }
 
     @Override
-    protected void saveInternalResources(ResourceResolver resourceResolver, Map<String, Map<String, Object>> changedResources,
-                                         Set<String> deletedResources) throws PersistenceException {
+    protected void saveInternalResources(
+            ResourceResolver resourceResolver,
+            Map<String, Map<String, Object>> changedResources,
+            Set<String> deletedResources)
+            throws PersistenceException {
         for (Map.Entry<String, Map<String, Object>> entry : changedResources.entrySet()) {
             String resourceName = entry.getKey();
             Map<String, Object> properties = entry.getValue();
@@ -134,7 +138,6 @@ public class DistributionConfigurationResourceProvider extends AbstractModifying
         return result;
     }
 
-
     private Map<String, Object> getResourceProperties(ResourceResolver resolver, String resourceName) {
 
         String componentName = getConfigName(resourceName);
@@ -155,7 +158,6 @@ public class DistributionConfigurationResourceProvider extends AbstractModifying
         return null;
     }
 
-
     private String getConfigName(String configName) {
         return configName;
     }
@@ -167,6 +169,4 @@ public class DistributionConfigurationResourceProvider extends AbstractModifying
     private String getRootResourceType(DistributionComponentKind kind) {
         return SETTINGS_RESOURCE_TYPE;
     }
-
-
 }

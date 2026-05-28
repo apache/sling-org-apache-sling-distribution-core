@@ -18,14 +18,6 @@
  */
 package org.apache.sling.distribution.util.impl;
 
-import static org.apache.commons.io.IOUtils.copy;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -37,6 +29,14 @@ import java.util.Random;
 import org.apache.sling.distribution.util.impl.FileBackedMemoryOutputStream.MemoryUnit;
 import org.junit.Test;
 
+import static org.apache.commons.io.IOUtils.copy;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Tests for {@link org.apache.sling.distribution.util.impl.FileBackedMemoryOutputStream}
  */
@@ -44,21 +44,25 @@ public class FileBackedMemoryOutputStreamTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void thresholdMustBePositive() throws IOException {
-        FileBackedMemoryOutputStream os = new FileBackedMemoryOutputStream(-1,
-            MemoryUnit.BYTES,
-            false,
-            new File(System.getProperty("java.io.tmpdir")), "FileBackedMemoryOutputStreamTest.justKeepDataInMemory", ".tmp");
+        FileBackedMemoryOutputStream os = new FileBackedMemoryOutputStream(
+                -1,
+                MemoryUnit.BYTES,
+                false,
+                new File(System.getProperty("java.io.tmpdir")),
+                "FileBackedMemoryOutputStreamTest.justKeepDataInMemory",
+                ".tmp");
         os.close();
     }
 
     @Test
     public void justKeepDataInMemory() throws IOException {
-        FileBackedMemoryOutputStream output = new FileBackedMemoryOutputStream(10,
-                                                                               MemoryUnit.BYTES,
-                                                                               false,
-                                                                               new File(System.getProperty("java.io.tmpdir")),
-                                                                               "FileBackedMemoryOutputStreamTest.justKeepDataInMemory",
-                                                                               ".tmp");
+        FileBackedMemoryOutputStream output = new FileBackedMemoryOutputStream(
+                10,
+                MemoryUnit.BYTES,
+                false,
+                new File(System.getProperty("java.io.tmpdir")),
+                "FileBackedMemoryOutputStreamTest.justKeepDataInMemory",
+                ".tmp");
         byte[] data = newDataArray(2);
 
         output.write(data);
@@ -72,12 +76,13 @@ public class FileBackedMemoryOutputStreamTest {
 
     @Test
     public void backedOnlyToFile() throws IOException {
-        FileBackedMemoryOutputStream output = new FileBackedMemoryOutputStream(10,
-                                                                               MemoryUnit.BYTES,
-                                                                               true,
-                                                                               new File(System.getProperty("java.io.tmpdir")),
-                                                                               "FileBackedMemoryOutputStreamTest.backedToFile",
-                                                                               ".tmp");
+        FileBackedMemoryOutputStream output = new FileBackedMemoryOutputStream(
+                10,
+                MemoryUnit.BYTES,
+                true,
+                new File(System.getProperty("java.io.tmpdir")),
+                "FileBackedMemoryOutputStreamTest.backedToFile",
+                ".tmp");
         byte[] data = newDataArray(100);
 
         output.write(data);
@@ -96,7 +101,8 @@ public class FileBackedMemoryOutputStreamTest {
 
     @Test
     public void backedToFile() throws IOException {
-        FileBackedMemoryOutputStream output = new FileBackedMemoryOutputStream(10,
+        FileBackedMemoryOutputStream output = new FileBackedMemoryOutputStream(
+                10,
                 MemoryUnit.BYTES,
                 false,
                 new File(System.getProperty("java.io.tmpdir")),
@@ -121,13 +127,23 @@ public class FileBackedMemoryOutputStreamTest {
     @Test
     public void multiBackedToFileTest() throws IOException {
 
-        List<byte[]> datum = Arrays.asList(newDataArray(0), newDataArray(1), newDataArray(9),
-                newDataArray(10), newDataArray(11), newDataArray(100), newDataArray(1000));
+        List<byte[]> datum = Arrays.asList(
+                newDataArray(0),
+                newDataArray(1),
+                newDataArray(9),
+                newDataArray(10),
+                newDataArray(11),
+                newDataArray(100),
+                newDataArray(1000));
 
         for (byte[] data : datum) {
-            FileBackedMemoryOutputStream output = new FileBackedMemoryOutputStream(10,
-                    MemoryUnit.BYTES,false, new File(System.getProperty("java.io.tmpdir")),
-                    "FileBackedMemoryOutputStreamTest.multiTest-" + data.length, ".tmp");
+            FileBackedMemoryOutputStream output = new FileBackedMemoryOutputStream(
+                    10,
+                    MemoryUnit.BYTES,
+                    false,
+                    new File(System.getProperty("java.io.tmpdir")),
+                    "FileBackedMemoryOutputStreamTest.multiTest-" + data.length,
+                    ".tmp");
             output.write(data);
             output.close();
             assertEquals(data.length, output.size());
@@ -137,7 +153,8 @@ public class FileBackedMemoryOutputStreamTest {
 
     @Test
     public void singleByteWritesBackedToFile() throws IOException {
-        FileBackedMemoryOutputStream output = new FileBackedMemoryOutputStream(1,
+        FileBackedMemoryOutputStream output = new FileBackedMemoryOutputStream(
+                1,
                 MemoryUnit.BYTES,
                 false,
                 new File(System.getProperty("java.io.tmpdir")),
@@ -165,5 +182,4 @@ public class FileBackedMemoryOutputStreamTest {
             assertArrayEquals(expecteds, actuals);
         }
     }
-
 }

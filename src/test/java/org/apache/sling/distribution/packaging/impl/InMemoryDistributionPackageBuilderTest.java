@@ -21,6 +21,7 @@ package org.apache.sling.distribution.packaging.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequestType;
@@ -38,17 +39,19 @@ public class InMemoryDistributionPackageBuilderTest {
 
     @Test
     public void testCreatePackage() throws Exception {
-        InMemoryDistributionPackageBuilder builder = new InMemoryDistributionPackageBuilder("name", new InMemDistributionContentSerializer(), new String[0], new String[0]);
-        DistributionPackage createdPkg = builder.createPackageForAdd(mock(ResourceResolver.class), new SimpleDistributionRequest(DistributionRequestType.ADD, false, "/test"));
+        InMemoryDistributionPackageBuilder builder = new InMemoryDistributionPackageBuilder(
+                "name", new InMemDistributionContentSerializer(), new String[0], new String[0]);
+        DistributionPackage createdPkg = builder.createPackageForAdd(
+                mock(ResourceResolver.class),
+                new SimpleDistributionRequest(DistributionRequestType.ADD, false, "/test"));
         assertNotNull(createdPkg.createInputStream());
     }
 
     private final class InMemDistributionContentSerializer implements DistributionContentSerializer {
 
         @Override
-        public void exportToStream(ResourceResolver resourceResolver,
-                                   DistributionExportOptions exportOptions,
-                                   OutputStream outputStream)
+        public void exportToStream(
+                ResourceResolver resourceResolver, DistributionExportOptions exportOptions, OutputStream outputStream)
                 throws DistributionException {
             try {
                 IOUtils.write("test", outputStream, "UTF8");
@@ -58,11 +61,8 @@ public class InMemoryDistributionPackageBuilderTest {
         }
 
         @Override
-        public void importFromStream(ResourceResolver resourceResolver,
-                                     InputStream inputStream)
-                throws DistributionException {
-
-        }
+        public void importFromStream(ResourceResolver resourceResolver, InputStream inputStream)
+                throws DistributionException {}
 
         @Override
         public String getName() {
@@ -74,5 +74,4 @@ public class InMemoryDistributionPackageBuilderTest {
             return false;
         }
     }
-
 }

@@ -84,5 +84,4 @@ public interface SimpleDistributionAgentMBean {
      * @see org.apache.sling.distribution.agent.DistributionAgentState
      */
     String getStatus();
-
 }

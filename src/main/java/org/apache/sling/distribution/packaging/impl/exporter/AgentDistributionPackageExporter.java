@@ -23,20 +23,20 @@ import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.DistributionRequestType;
 import org.apache.sling.distribution.agent.spi.DistributionAgent;
 import org.apache.sling.distribution.common.DistributionException;
-import org.apache.sling.distribution.log.spi.DistributionLog;
 import org.apache.sling.distribution.log.impl.DefaultDistributionLog;
-import org.apache.sling.distribution.packaging.impl.DistributionPackageProcessor;
+import org.apache.sling.distribution.log.spi.DistributionLog;
 import org.apache.sling.distribution.packaging.DistributionPackage;
-import org.apache.sling.distribution.packaging.impl.DistributionPackageExporter;
-import org.apache.sling.distribution.packaging.DistributionPackageInfo;
-import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
-import org.apache.sling.distribution.queue.spi.DistributionQueue;
-import org.apache.sling.distribution.queue.DistributionQueueEntry;
-import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
+import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageBuilderProvider;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageExporter;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageProcessor;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageWrapper;
 import org.apache.sling.distribution.packaging.impl.SimpleDistributionPackage;
+import org.apache.sling.distribution.queue.DistributionQueueEntry;
+import org.apache.sling.distribution.queue.DistributionQueueItem;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,12 +51,17 @@ public class AgentDistributionPackageExporter implements DistributionPackageExpo
     private final String name;
     private boolean dropInvalidItems;
 
-    private final static String PACKAGE_TYPE = "agentexporter";
+    private static final String PACKAGE_TYPE = "agentexporter";
 
     private DistributionAgent agent;
     private String queueName;
 
-    public AgentDistributionPackageExporter(String queueName, DistributionAgent agent, DistributionPackageBuilderProvider packageBuilderProvider, String name, boolean dropInvalidItems) {
+    public AgentDistributionPackageExporter(
+            String queueName,
+            DistributionAgent agent,
+            DistributionPackageBuilderProvider packageBuilderProvider,
+            String name,
+            boolean dropInvalidItems) {
         this.packageBuilderProvider = packageBuilderProvider;
         this.name = name;
         this.dropInvalidItems = dropInvalidItems;
@@ -68,7 +73,11 @@ public class AgentDistributionPackageExporter implements DistributionPackageExpo
         this.agent = agent;
     }
 
-    public void exportPackages(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest, @NotNull DistributionPackageProcessor packageProcessor) throws DistributionException {
+    public void exportPackages(
+            @NotNull ResourceResolver resourceResolver,
+            @NotNull DistributionRequest distributionRequest,
+            @NotNull DistributionPackageProcessor packageProcessor)
+            throws DistributionException {
 
         if (DistributionRequestType.TEST.equals(distributionRequest.getRequestType())) {
             packageProcessor.process(new SimpleDistributionPackage(distributionRequest, PACKAGE_TYPE));
@@ -98,7 +107,8 @@ public class AgentDistributionPackageExporter implements DistributionPackageExpo
 
                         log.debug("item {} fetched from the queue", info);
 
-                        packageProcessor.process(new AgentDistributionPackage(distributionPackage, queue, entry.getId()));
+                        packageProcessor.process(
+                                new AgentDistributionPackage(distributionPackage, queue, entry.getId()));
                     } else {
                         if (dropInvalidItems) {
                             queue.remove(entry.getId());
@@ -117,7 +127,8 @@ public class AgentDistributionPackageExporter implements DistributionPackageExpo
         }
     }
 
-    public DistributionPackage getPackage(@NotNull ResourceResolver resourceResolver, @NotNull String distributionPackageId) {
+    public DistributionPackage getPackage(
+            @NotNull ResourceResolver resourceResolver, @NotNull String distributionPackageId) {
 
         try {
             log.debug("getting package from queue {}", queueName);
@@ -143,7 +154,6 @@ public class AgentDistributionPackageExporter implements DistributionPackageExpo
                 } else {
                     log.warn("cannot find package builder with type {}", info.getType());
                 }
-
             }
 
         } catch (Exception ex) {
@@ -170,7 +180,9 @@ public class AgentDistributionPackageExporter implements DistributionPackageExpo
         public void delete() {
             queue.remove(itemId);
             DistributionPackageUtils.releaseOrDelete(distributionPackage, queue.getName());
-            agentLog("exported package {} with info {} from queue {} by exporter {}", new Object[] {itemId, distributionPackage.getInfo(), queue.getName(), name});
+            agentLog(
+                    "exported package {} with info {} from queue {} by exporter {}",
+                    new Object[] {itemId, distributionPackage.getInfo(), queue.getName(), name});
         }
 
         @NotNull
@@ -189,8 +201,7 @@ public class AgentDistributionPackageExporter implements DistributionPackageExpo
     }
 
     @NotNull
-    private DistributionQueue getQueueOrThrow(@NotNull String queueName)
-            throws DistributionException {
+    private DistributionQueue getQueueOrThrow(@NotNull String queueName) throws DistributionException {
         DistributionQueue queue = agent.getQueue(queueName);
         if (queue == null) {
             throw new DistributionException(String.format("Could not find queue %s", queueName));

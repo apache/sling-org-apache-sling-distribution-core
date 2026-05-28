@@ -18,14 +18,6 @@
  */
 package org.apache.sling.distribution.queue.impl.simple;
 
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -33,6 +25,14 @@ import javax.json.JsonReader;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 import javax.json.stream.JsonGenerator;
+
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 
@@ -104,7 +104,7 @@ public class QueueItemMapper {
                 jsonWriter.write(key, (Integer) value);
             } else if (value instanceof Float) {
                 jsonWriter.write(key, (Float) value);
-            }else if (value instanceof Double) {
+            } else if (value instanceof Double) {
                 jsonWriter.write(key, (Double) value);
             } else if (value instanceof Long) {
                 jsonWriter.write(key, (Long) value);

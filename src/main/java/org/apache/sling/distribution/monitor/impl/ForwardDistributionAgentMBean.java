@@ -140,5 +140,4 @@ public interface ForwardDistributionAgentMBean {
      * @see org.apache.sling.distribution.agent.DistributionAgentState
      */
     String getStatus();
-
 }

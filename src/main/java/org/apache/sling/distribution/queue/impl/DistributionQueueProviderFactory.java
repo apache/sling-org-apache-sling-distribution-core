@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.queue.impl;
 
 public interface DistributionQueueProviderFactory {
@@ -24,5 +23,4 @@ public interface DistributionQueueProviderFactory {
     DistributionQueueProvider getProvider(String agentName, String serviceName);
 
     void releaseProvider(DistributionQueueProvider queueProvider);
-
 }

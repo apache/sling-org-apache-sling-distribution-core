@@ -20,6 +20,7 @@ package org.apache.sling.distribution.servlet;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -34,10 +35,10 @@ import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.DistributionResponse;
 import org.apache.sling.distribution.common.DistributionException;
-import org.apache.sling.distribution.packaging.impl.DistributionPackageProcessor;
-import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageExporter;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageProcessor;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
 import org.apache.sling.distribution.resources.DistributionResourceTypes;
 import org.apache.sling.distribution.util.RequestUtils;
 import org.apache.sling.servlets.annotations.SlingServletResourceTypes;
@@ -49,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * Servlet to handle fetching of distribution content.
  */
 @SuppressWarnings("serial")
-@Component(service=Servlet.class)
+@Component(service = Servlet.class)
 @SlingServletResourceTypes(
         methods = {"POST"},
         resourceTypes = {DistributionResourceTypes.EXPORTER_RESOURCE_TYPE})
@@ -83,12 +84,12 @@ public class DistributionPackageExporterServlet extends SlingAllMethodsServlet {
         }
     }
 
-    private void exportOnePackage(final SlingHttpServletRequest request, final SlingHttpServletResponse response, final boolean delete)
+    private void exportOnePackage(
+            final SlingHttpServletRequest request, final SlingHttpServletResponse response, final boolean delete)
             throws ServletException, IOException {
 
-        DistributionPackageExporter distributionPackageExporter = request
-                .getResource()
-                .adaptTo(DistributionPackageExporter.class);
+        DistributionPackageExporter distributionPackageExporter =
+                request.getResource().adaptTo(DistributionPackageExporter.class);
 
         final long start = System.currentTimeMillis();
 
@@ -100,50 +101,54 @@ public class DistributionPackageExporterServlet extends SlingAllMethodsServlet {
         final AtomicInteger fetched = new AtomicInteger(0);
         try {
             // get all items
-            distributionPackageExporter.exportPackages(resourceResolver, distributionRequest, new DistributionPackageProcessor() {
-                @Override
-                public void process(DistributionPackage distributionPackage) {
-                    fetched.incrementAndGet();
+            distributionPackageExporter.exportPackages(
+                    resourceResolver, distributionRequest, new DistributionPackageProcessor() {
+                        @Override
+                        public void process(DistributionPackage distributionPackage) {
+                            fetched.incrementAndGet();
 
-                    InputStream inputStream = null;
-                    int bytesCopied = -1;
-                    try {
-                        inputStream = DistributionPackageUtils.createStreamWithHeader(distributionPackage);
+                            InputStream inputStream = null;
+                            int bytesCopied = -1;
+                            try {
+                                inputStream = DistributionPackageUtils.createStreamWithHeader(distributionPackage);
 
-                        bytesCopied = IOUtils.copy(inputStream, response.getOutputStream());
-                    } catch (IOException e) {
-                        throw new RuntimeException("cannot process package", e);
-                    } finally {
-                        IOUtils.closeQuietly(inputStream);
-                    }
+                                bytesCopied = IOUtils.copy(inputStream, response.getOutputStream());
+                            } catch (IOException e) {
+                                throw new RuntimeException("cannot process package", e);
+                            } finally {
+                                IOUtils.closeQuietly(inputStream);
+                            }
 
-                    String packageId = distributionPackage.getId();
-                    if (delete) {
-                        // delete the package permanently
-                        distributionPackage.delete();
-                    }
+                            String packageId = distributionPackage.getId();
+                            if (delete) {
+                                // delete the package permanently
+                                distributionPackage.delete();
+                            }
 
+                            // everything ok
+                            response.setStatus(200);
+                            log.debug(
+                                    "exported package {} was sent (and deleted={}), bytes written {}",
+                                    packageId,
+                                    delete,
+                                    bytesCopied);
+                        }
 
-                    // everything ok
-                    response.setStatus(200);
-                    log.debug("exported package {} was sent (and deleted={}), bytes written {}", packageId, delete, bytesCopied);
-                }
+                        @Override
+                        public List<DistributionResponse> getAllResponses() {
+                            return null;
+                        }
 
-                @Override
-                public List<DistributionResponse> getAllResponses() {
-                    return null;
-                }
+                        @Override
+                        public int getPackagesCount() {
+                            return 0;
+                        }
 
-                @Override
-                public int getPackagesCount() {
-                    return 0;
-                }
-
-                @Override
-                public long getPackagesSize() {
-                    return 0;
-                }
-            });
+                        @Override
+                        public long getPackagesSize() {
+                            return 0;
+                        }
+                    });
 
             if (fetched.get() > 0) {
                 long end = System.currentTimeMillis();
@@ -159,13 +164,12 @@ public class DistributionPackageExporterServlet extends SlingAllMethodsServlet {
         }
     }
 
-    private void deletePackage(final SlingHttpServletRequest request, final SlingHttpServletResponse response) throws DistributionException {
-        DistributionPackageExporter distributionPackageExporter = request
-                .getResource()
-                .adaptTo(DistributionPackageExporter.class);
+    private void deletePackage(final SlingHttpServletRequest request, final SlingHttpServletResponse response)
+            throws DistributionException {
+        DistributionPackageExporter distributionPackageExporter =
+                request.getResource().adaptTo(DistributionPackageExporter.class);
 
         ResourceResolver resourceResolver = request.getResourceResolver();
-
 
         String id = request.getParameter("id");
 
@@ -181,5 +185,4 @@ public class DistributionPackageExporterServlet extends SlingAllMethodsServlet {
             log.debug("nothing to delete {}", id);
         }
     }
-
 }

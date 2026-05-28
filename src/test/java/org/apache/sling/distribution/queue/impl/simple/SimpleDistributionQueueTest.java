@@ -20,10 +20,10 @@ package org.apache.sling.distribution.queue.impl.simple;
 
 import java.util.HashMap;
 
-import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -69,7 +69,7 @@ public class SimpleDistributionQueueTest {
         assertNotNull(status);
         assertEquals(0, status.getAttempts());
 
-        ((SimpleDistributionQueue)queue).recordProcessingAttempt(entry);
+        ((SimpleDistributionQueue) queue).recordProcessingAttempt(entry);
 
         assertEquals(pkg, entry.getItem());
         assertFalse(queue.getStatus().isEmpty());
@@ -80,5 +80,4 @@ public class SimpleDistributionQueueTest {
         assertNotNull(status);
         assertEquals(1, status.getAttempts());
     }
-
 }

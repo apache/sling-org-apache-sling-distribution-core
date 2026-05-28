@@ -18,13 +18,13 @@
  */
 package org.apache.sling.distribution.agent.impl;
 
+import javax.management.ObjectName;
+
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import javax.management.ObjectName;
 
 import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.apache.sling.distribution.agent.spi.DistributionAgent;
@@ -77,10 +77,10 @@ abstract class AbstractDistributionAgentFactory<DistributionAgentMBeanType> {
         Dictionary<String, Object> props = new Hashtable<String, Object>();
 
         boolean enabled = PropertiesUtil.toBoolean(config.get(ENABLED), true);
-        String triggersTarget = SettingsUtils.removeEmptyEntry(PropertiesUtil.toString(config.get(TRIGGERS_TARGET), null));
+        String triggersTarget =
+                SettingsUtils.removeEmptyEntry(PropertiesUtil.toString(config.get(TRIGGERS_TARGET), null));
         triggersEnabled = triggersTarget != null && triggersTarget.trim().length() > 0;
         agentName = PropertiesUtil.toString(config.get(NAME), null);
-
 
         if (enabled && agentName != null) {
 
@@ -91,7 +91,6 @@ abstract class AbstractDistributionAgentFactory<DistributionAgentMBeanType> {
                 }
 
                 props.put(entry.getKey(), entry.getValue());
-
             }
 
             if (componentReg == null) {
@@ -99,14 +98,16 @@ abstract class AbstractDistributionAgentFactory<DistributionAgentMBeanType> {
                 DefaultDistributionLog distributionLog = null;
                 try {
 
-                    String logLevel = PropertiesUtil.toString(config.get(LOG_LEVEL), DefaultDistributionLog.LogLevel.INFO.name());
-                    DefaultDistributionLog.LogLevel level = DefaultDistributionLog.LogLevel.valueOf(logLevel.trim().toUpperCase());
+                    String logLevel =
+                            PropertiesUtil.toString(config.get(LOG_LEVEL), DefaultDistributionLog.LogLevel.INFO.name());
+                    DefaultDistributionLog.LogLevel level = DefaultDistributionLog.LogLevel.valueOf(
+                            logLevel.trim().toUpperCase());
                     if (level == null) {
                         level = DefaultDistributionLog.LogLevel.INFO;
                     }
 
-
-                    distributionLog = new DefaultDistributionLog(DistributionComponentKind.AGENT, agentName, SimpleDistributionAgent.class, level);
+                    distributionLog = new DefaultDistributionLog(
+                            DistributionComponentKind.AGENT, agentName, SimpleDistributionAgent.class, level);
 
                     agent = createAgent(agentName, context, config, distributionLog);
                 } catch (Throwable t) {
@@ -116,13 +117,11 @@ abstract class AbstractDistributionAgentFactory<DistributionAgentMBeanType> {
                     log.error("Cannot create agent {}", OsgiUtils.osgiPropertyMapToString(config), t);
                 }
 
-
                 if (agent != null) {
 
                     // register agent service
                     componentReg = context.registerService(DistributionAgent.class, agent, props);
                     agent.enable();
-
 
                     if (triggersEnabled) {
                         for (DistributionTrigger trigger : triggers) {
@@ -131,15 +130,15 @@ abstract class AbstractDistributionAgentFactory<DistributionAgentMBeanType> {
                     }
 
                     Dictionary<String, String> mbeanProps = new Hashtable<String, String>();
-                    mbeanProps.put("jmx.objectname", "org.apache.sling.distribution:type=agent,id=" + ObjectName.quote(agentName));
+                    mbeanProps.put(
+                            "jmx.objectname",
+                            "org.apache.sling.distribution:type=agent,id=" + ObjectName.quote(agentName));
 
                     DistributionAgentMBeanType mbean = createMBeanAgent(agent, config);
                     mbeanServiceRegistration = context.registerService(distributionAgentMBeanType, mbean, mbeanProps);
-
                 }
 
                 log.info("activated agent {}", agentName);
-
             }
         }
     }
@@ -149,7 +148,6 @@ abstract class AbstractDistributionAgentFactory<DistributionAgentMBeanType> {
         if (agent != null && triggersEnabled) {
             agent.enableTrigger(distributionTrigger);
         }
-
     }
 
     synchronized void unbindDistributionTrigger(DistributionTrigger distributionTrigger, Map<String, Object> config) {
@@ -159,7 +157,6 @@ abstract class AbstractDistributionAgentFactory<DistributionAgentMBeanType> {
             agent.disableTrigger(distributionTrigger);
         }
     }
-
 
     void deactivate(BundleContext context) {
         if (componentReg != null) {
@@ -196,8 +193,12 @@ abstract class AbstractDistributionAgentFactory<DistributionAgentMBeanType> {
         return false;
     }
 
-    protected abstract SimpleDistributionAgent createAgent(String agentName, BundleContext context, Map<String, Object> config, DefaultDistributionLog distributionLog);
+    protected abstract SimpleDistributionAgent createAgent(
+            String agentName,
+            BundleContext context,
+            Map<String, Object> config,
+            DefaultDistributionLog distributionLog);
 
-    protected abstract DistributionAgentMBeanType createMBeanAgent(DistributionAgent agent, Map<String, Object> osgiConfiguration);
-
+    protected abstract DistributionAgentMBeanType createMBeanAgent(
+            DistributionAgent agent, Map<String, Object> osgiConfiguration);
 }

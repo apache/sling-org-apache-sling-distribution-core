@@ -30,7 +30,6 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueItemState;
@@ -39,14 +38,15 @@ import org.apache.sling.distribution.queue.DistributionQueueState;
 import org.apache.sling.distribution.queue.DistributionQueueStatus;
 import org.apache.sling.distribution.queue.DistributionQueueType;
 import org.apache.sling.distribution.queue.impl.DistributionQueueUtils;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.APPENDABLE;
-import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.REMOVABLE;
 import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.CLEARABLE;
+import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.REMOVABLE;
 
 /**
  * A simple implementation of a {@link DistributionQueue}.
@@ -61,8 +61,8 @@ public class SimpleDistributionQueue implements DistributionQueue {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private static final Set<String> CAPABILITIES = Collections.unmodifiableSet(
-            new HashSet<String>(Arrays.asList(APPENDABLE, REMOVABLE, CLEARABLE)));
+    private static final Set<String> CAPABILITIES =
+            Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(APPENDABLE, REMOVABLE, CLEARABLE)));
 
     private final String name;
 
@@ -101,7 +101,6 @@ public class SimpleDistributionQueue implements DistributionQueue {
         return null;
     }
 
-
     @Nullable
     public DistributionQueueEntry getHead() {
         DistributionQueueItem element = queue.peek();
@@ -136,7 +135,6 @@ public class SimpleDistributionQueue implements DistributionQueue {
     public boolean hasCapability(@NotNull String capability) {
         return CAPABILITIES.contains(capability);
     }
-
 
     @NotNull
     public Iterable<DistributionQueueEntry> getEntries(int skip, int limit) {
@@ -190,9 +188,7 @@ public class SimpleDistributionQueue implements DistributionQueue {
 
     @Override
     public String toString() {
-        return "SimpleDistributionQueue{" +
-                "name='" + name + '\'' +
-                '}';
+        return "SimpleDistributionQueue{" + "name='" + name + '\'' + '}';
     }
 
     @NotNull
@@ -210,8 +206,8 @@ public class SimpleDistributionQueue implements DistributionQueue {
 
     public void recordProcessingAttempt(@NotNull DistributionQueueEntry entry) {
         statusMap.computeIfPresent(entry.getItem(), (item, status) -> {
-            return new DistributionQueueItemStatus(status.getEntered(),
-                    status.getItemState(), status.getAttempts() + 1, status.getQueueName());
+            return new DistributionQueueItemStatus(
+                    status.getEntered(), status.getItemState(), status.getAttempts() + 1, status.getQueueName());
         });
     }
 }

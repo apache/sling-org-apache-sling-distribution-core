@@ -54,32 +54,34 @@ public class SimpleDistributionPackageTest {
         SimpleDistributionPackage pkg = SimpleDistributionPackage.fromIdString(id, "");
         assertThat(pkg, nullValue());
     }
-    
+
     @Test
     public void testInvalid2() {
         String id = "DSTRPCK:";
         SimpleDistributionPackage pkg = SimpleDistributionPackage.fromIdString(id, "");
         assertThat(pkg, nullValue());
     }
-    
+
     @Test
     public void testInvalid3() {
         String id = "DSTRPCK:a|b|c";
         SimpleDistributionPackage pkg = SimpleDistributionPackage.fromIdString(id, "");
         assertThat(pkg, nullValue());
     }
-    
+
     @Test
     public void testFromStreamError() throws IOException {
         InputStream stream = mock(InputStream.class);
-        when(stream.read(Mockito.any(byte[].class), Mockito.eq(0), Mockito.anyInt())).thenThrow(new IOException("Expected"));
+        when(stream.read(Mockito.any(byte[].class), Mockito.eq(0), Mockito.anyInt()))
+                .thenThrow(new IOException("Expected"));
         SimpleDistributionPackage pkg = SimpleDistributionPackage.fromStream(stream, "ADD");
         assertThat(pkg, nullValue());
     }
 
     @Test
     public void testPackageWithNamespaceInPath() {
-        DistributionRequest request = new SimpleDistributionRequest(DistributionRequestType.ADD, "/a/jcr:content", "/b");
+        DistributionRequest request =
+                new SimpleDistributionRequest(DistributionRequestType.ADD, "/a/jcr:content", "/b");
         testPackageSerDeser(request);
     }
 
@@ -88,7 +90,7 @@ public class SimpleDistributionPackageTest {
         DistributionRequest request = new SimpleDistributionRequest(DistributionRequestType.DELETE, "/ab,c", "/c");
         testPackageSerDeser(request);
     }
-    
+
     @Test
     public void testCreatedAndReadPackagesEquality() throws Exception {
         DistributionRequest request = new SimpleDistributionRequest(DistributionRequestType.DELETE, "/abc", "/c");
@@ -99,18 +101,23 @@ public class SimpleDistributionPackageTest {
     public void testSimplePackageFromTest() throws Exception {
         DistributionRequest distributionRequest = new SimpleDistributionRequest(DistributionRequestType.TEST);
         SimpleDistributionPackage createdPackage = new SimpleDistributionPackage(distributionRequest, "VOID");
-        SimpleDistributionPackage readPackage = SimpleDistributionPackage.fromStream(new ByteArrayInputStream(("DSTRPCK::TEST|").getBytes()), "VOID");
+        SimpleDistributionPackage readPackage =
+                SimpleDistributionPackage.fromStream(new ByteArrayInputStream(("DSTRPCK::TEST|").getBytes()), "VOID");
         assertNotNull(readPackage);
         assertEquals(createdPackage.getType(), readPackage.getType());
-        assertEquals(createdPackage.getInfo().getRequestType(), readPackage.getInfo().getRequestType());
-        assertEquals(Arrays.toString(createdPackage.getInfo().getPaths()), Arrays.toString(readPackage.getInfo().getPaths()));
+        assertEquals(
+                createdPackage.getInfo().getRequestType(), readPackage.getInfo().getRequestType());
+        assertEquals(
+                Arrays.toString(createdPackage.getInfo().getPaths()),
+                Arrays.toString(readPackage.getInfo().getPaths()));
         assertEquals(createdPackage.getId(), readPackage.getId());
         assertTrue(IOUtils.contentEquals(createdPackage.createInputStream(), readPackage.createInputStream()));
     }
 
     private void testPackageSerDeser(DistributionRequest request) {
         SimpleDistributionPackage pkgOut = new SimpleDistributionPackage(request, TYPE);
-        SimpleDistributionPackage pkgIn = SimpleDistributionPackage.fromStream(toInputStream(pkgOut.toString(), Charset.defaultCharset()), TYPE);
+        SimpleDistributionPackage pkgIn =
+                SimpleDistributionPackage.fromStream(toInputStream(pkgOut.toString(), Charset.defaultCharset()), TYPE);
         assertNotNull(pkgIn);
         assertArrayEquals(pkgOut.getInfo().getPaths(), pkgIn.getInfo().getPaths());
         assertEquals(pkgOut.getType(), pkgIn.getType());

@@ -18,13 +18,13 @@
  */
 package org.apache.sling.distribution.monitor.impl;
 
+import javax.management.ObjectName;
+
 import java.io.InputStream;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingDeque;
-
-import javax.management.ObjectName;
 
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
@@ -47,7 +47,8 @@ public final class MonitoringDistributionPackageBuilder implements DistributionP
 
     private final Queue<ServiceRegistration<DistributionPackageMBean>> mBeans;
 
-    public MonitoringDistributionPackageBuilder(int queueCapacity, DistributionPackageBuilder wrapped, BundleContext context) {
+    public MonitoringDistributionPackageBuilder(
+            int queueCapacity, DistributionPackageBuilder wrapped, BundleContext context) {
         this.wrapped = wrapped;
         this.context = context;
         this.queueCapacity = queueCapacity;
@@ -62,7 +63,9 @@ public final class MonitoringDistributionPackageBuilder implements DistributionP
 
     @Nullable
     @Override
-    public DistributionPackage createPackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest request) throws DistributionException {
+    public DistributionPackage createPackage(
+            @NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest request)
+            throws DistributionException {
         long start = System.currentTimeMillis();
         DistributionPackage distributionPackage = wrapped.createPackage(resourceResolver, request);
         if (queueCapacity > 0 && distributionPackage != null) {
@@ -73,38 +76,45 @@ public final class MonitoringDistributionPackageBuilder implements DistributionP
 
     @NotNull
     @Override
-    public DistributionPackage readPackage(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream) throws DistributionException {
+    public DistributionPackage readPackage(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream)
+            throws DistributionException {
         return wrapped.readPackage(resourceResolver, stream);
     }
 
     @Override
-    public DistributionPackage getPackage(@NotNull ResourceResolver resourceResolver, @NotNull String id) throws DistributionException {
+    public DistributionPackage getPackage(@NotNull ResourceResolver resourceResolver, @NotNull String id)
+            throws DistributionException {
         return wrapped.getPackage(resourceResolver, id);
     }
 
     @Override
-    public boolean installPackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionPackage distributionPackage) throws DistributionException {
+    public boolean installPackage(
+            @NotNull ResourceResolver resourceResolver, @NotNull DistributionPackage distributionPackage)
+            throws DistributionException {
         return wrapped.installPackage(resourceResolver, distributionPackage);
     }
 
     @NotNull
     @Override
-    public DistributionPackageInfo installPackage(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream) throws DistributionException {
+    public DistributionPackageInfo installPackage(
+            @NotNull ResourceResolver resourceResolver, @NotNull InputStream stream) throws DistributionException {
         return wrapped.installPackage(resourceResolver, stream);
     }
 
     private void registerDistributionPackageMBean(long start, DistributionPackage distributionPackage) {
         long processingTime = System.currentTimeMillis() - start;
 
-        DistributionPackageMBean mBean = new DistributionPackageMBeanImpl(distributionPackage,
-                                                                          wrapped.getType(),
-                                                                          processingTime);
+        DistributionPackageMBean mBean =
+                new DistributionPackageMBeanImpl(distributionPackage, wrapped.getType(), processingTime);
 
         Dictionary<String, String> mbeanProps = new Hashtable<String, String>();
-        mbeanProps.put("jmx.objectname", "org.apache.sling.distribution:type=distributionpackage,id="
-                                         + ObjectName.quote(distributionPackage.getId()));
+        mbeanProps.put(
+                "jmx.objectname",
+                "org.apache.sling.distribution:type=distributionpackage,id="
+                        + ObjectName.quote(distributionPackage.getId()));
 
-        ServiceRegistration<DistributionPackageMBean> mBeanRegistration = context.registerService(DistributionPackageMBean.class, mBean, mbeanProps);
+        ServiceRegistration<DistributionPackageMBean> mBeanRegistration =
+                context.registerService(DistributionPackageMBean.class, mBean, mbeanProps);
 
         if (queueCapacity == mBeans.size()) {
             ServiceRegistration<DistributionPackageMBean> toBeRemoved = mBeans.poll();
@@ -126,5 +136,4 @@ public final class MonitoringDistributionPackageBuilder implements DistributionP
             serviceRegistration.unregister();
         }
     }
-
 }

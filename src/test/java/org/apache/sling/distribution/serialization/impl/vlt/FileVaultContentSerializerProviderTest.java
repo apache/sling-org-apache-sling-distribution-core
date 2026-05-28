@@ -18,9 +18,6 @@
  */
 package org.apache.sling.distribution.serialization.impl.vlt;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -36,6 +33,9 @@ import org.apache.sling.distribution.serialization.ImportSettings;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link FileVaultContentSerializerProvider}
@@ -63,16 +63,23 @@ public class FileVaultContentSerializerProviderTest {
         String[] propertyFilters = {""};
         boolean useBinaryReference = false;
         int autoSaveThreshold = 100;
-        Map<String,String> exportPathMapping = new HashMap<>();
+        Map<String, String> exportPathMapping = new HashMap<>();
         boolean strict = false;
         boolean overwritePrimaryTypeFolders = false;
         IdConflictPolicy conflictPolicy = IdConflictPolicy.CREATE_NEW_ID;
-        ExportSettings exportSettings = new ExportSettings(packageRoots, nodeFilters, propertyFilters, useBinaryReference, exportPathMapping);
-        ImportSettings importSettings = new ImportSettings(importMode, aclHandling, cugHandling, autoSaveThreshold, strict, overwritePrimaryTypeFolders, conflictPolicy);
+        ExportSettings exportSettings =
+                new ExportSettings(packageRoots, nodeFilters, propertyFilters, useBinaryReference, exportPathMapping);
+        ImportSettings importSettings = new ImportSettings(
+                importMode,
+                aclHandling,
+                cugHandling,
+                autoSaveThreshold,
+                strict,
+                overwritePrimaryTypeFolders,
+                conflictPolicy);
         DistributionContentSerializer serializer = provider.build(name, exportSettings, importSettings);
 
         assertNotNull(serializer);
         assertEquals(name, serializer.getName());
     }
-
 }

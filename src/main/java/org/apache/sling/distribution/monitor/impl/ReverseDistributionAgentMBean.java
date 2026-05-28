@@ -98,5 +98,4 @@ public interface ReverseDistributionAgentMBean {
      * @see org.apache.sling.distribution.agent.DistributionAgentState
      */
     String getStatus();
-
 }

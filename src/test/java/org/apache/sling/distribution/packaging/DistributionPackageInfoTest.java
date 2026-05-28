@@ -16,16 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.packaging;
 
 import org.junit.Test;
 
 public class DistributionPackageInfoTest {
 
-
     @Test(expected = IllegalArgumentException.class)
-    public void testInvalid(){
+    public void testInvalid() {
         new DistributionPackageInfo(null);
     }
 }

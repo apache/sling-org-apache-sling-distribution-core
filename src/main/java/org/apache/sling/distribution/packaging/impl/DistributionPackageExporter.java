@@ -32,7 +32,7 @@ import org.osgi.annotation.versioning.ConsumerType;
  * Sling instance.
  * Such packages are usually imported by a {@link DistributionPackageImporter } or put inside
  * {@link DistributionQueue }s for others to consume them.
- DistributionPackageExporter* Exporting a {@link DistributionPackage} means obtaining that package by e.g. directly creating it by bundling local
+ * DistributionPackageExporter* Exporting a {@link DistributionPackage} means obtaining that package by e.g. directly creating it by bundling local
  * Sling resources, retrieving it from a remote endpoint (by executing an HTTP POST request on another Sling
  * instance exposing packages ina queue).
  */
@@ -50,8 +50,11 @@ public interface DistributionPackageExporter {
      * @param distributionRequest the request containing the needed information for content to be exported
      * @param packageProcessor    a callback to process the exported package
      */
-    void exportPackages(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest,
-                        @NotNull DistributionPackageProcessor packageProcessor) throws DistributionException;
+    void exportPackages(
+            @NotNull ResourceResolver resourceResolver,
+            @NotNull DistributionRequest distributionRequest,
+            @NotNull DistributionPackageProcessor packageProcessor)
+            throws DistributionException;
 
     /**
      * Retrieves a {@link DistributionPackage} given its identifier, if it already exists.
@@ -63,5 +66,6 @@ public interface DistributionPackageExporter {
      * @return a {@link DistributionPackage} if available, {@code null} otherwise
      */
     @Nullable
-    DistributionPackage getPackage(@NotNull ResourceResolver resourceResolver, @NotNull String distributionPackageId) throws DistributionException;
+    DistributionPackage getPackage(@NotNull ResourceResolver resourceResolver, @NotNull String distributionPackageId)
+            throws DistributionException;
 }

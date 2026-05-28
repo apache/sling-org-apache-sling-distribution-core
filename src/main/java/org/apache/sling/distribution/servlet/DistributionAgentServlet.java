@@ -20,9 +20,8 @@ package org.apache.sling.distribution.servlet;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
+
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
@@ -42,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * Servlet to ask {@link DistributionAgent}s to distribute (via HTTP POST).
  */
 @SuppressWarnings("serial")
-@Component(service=Servlet.class)
+@Component(service = Servlet.class)
 @SlingServletResourceTypes(
         methods = {"POST"},
         resourceTypes = {DistributionResourceTypes.AGENT_RESOURCE_TYPE})
@@ -79,5 +78,4 @@ public class DistributionAgentServlet extends SlingAllMethodsServlet {
             ServletJsonUtils.writeJson(response, 404, "agent not found", null);
         }
     }
-
 }

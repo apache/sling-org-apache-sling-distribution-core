@@ -126,5 +126,4 @@ public interface SyncDistributionAgentMBean {
      * @see org.apache.sling.distribution.agent.DistributionAgentState
      */
     String getStatus();
-
 }

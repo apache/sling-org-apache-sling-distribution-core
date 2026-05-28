@@ -18,6 +18,10 @@
  */
 package org.apache.sling.distribution.trigger.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.DistributionRequestType;
@@ -32,12 +36,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
 
-import static org.mockito.Mockito.mock;
 import static org.junit.Assert.*;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import static org.mockito.Mockito.mock;
 
 /**
  * Testcase for {@link DistributionEventDistributeDistributionTrigger}
@@ -51,7 +51,8 @@ public class DistributionEventDistributeDistributionTriggerTest {
     public void testRegister() throws Exception {
         String pathPrefix = "/prefix";
         BundleContext bundleContext = mock(BundleContext.class);
-        DistributionEventDistributeDistributionTrigger chainDistributeDistributionTrigger = new DistributionEventDistributeDistributionTrigger(pathPrefix, bundleContext);
+        DistributionEventDistributeDistributionTrigger chainDistributeDistributionTrigger =
+                new DistributionEventDistributeDistributionTrigger(pathPrefix, bundleContext);
         DistributionRequestHandler handler = mock(DistributionRequestHandler.class);
         chainDistributeDistributionTrigger.register(handler);
     }
@@ -60,17 +61,18 @@ public class DistributionEventDistributeDistributionTriggerTest {
     public void testUnregister() throws Exception {
         String pathPrefix = "/prefix";
         BundleContext bundleContext = mock(BundleContext.class);
-        DistributionEventDistributeDistributionTrigger chainDistributeDistributionTrigger = new DistributionEventDistributeDistributionTrigger(pathPrefix, bundleContext);
+        DistributionEventDistributeDistributionTrigger chainDistributeDistributionTrigger =
+                new DistributionEventDistributeDistributionTrigger(pathPrefix, bundleContext);
         DistributionRequestHandler handler = mock(DistributionRequestHandler.class);
         chainDistributeDistributionTrigger.unregister(handler);
     }
-
 
     @Test
     public void testDisable() throws Exception {
         String pathPrefix = "/prefix";
         BundleContext bundleContext = mock(BundleContext.class);
-        DistributionEventDistributeDistributionTrigger chainDistributeDistributionTrigger = new DistributionEventDistributeDistributionTrigger(pathPrefix, bundleContext);
+        DistributionEventDistributeDistributionTrigger chainDistributeDistributionTrigger =
+                new DistributionEventDistributeDistributionTrigger(pathPrefix, bundleContext);
         chainDistributeDistributionTrigger.disable();
     }
 
@@ -79,11 +81,11 @@ public class DistributionEventDistributeDistributionTriggerTest {
 
         final AtomicInteger handled = new AtomicInteger(0);
         final Map<String, Object> infoData = new HashMap<String, Object>();
-        infoData.put(DistributionPackageInfo.PROPERTY_REQUEST_PATHS, new String[] { "/foo/bar" });
+        infoData.put(DistributionPackageInfo.PROPERTY_REQUEST_PATHS, new String[] {"/foo/bar"});
         infoData.put(DistributionPackageInfo.PROPERTY_REQUEST_TYPE, DistributionRequestType.ADD);
         final DistributionPackageInfo info = new DistributionPackageInfo("any", infoData);
-        final DistributionEventDistributeDistributionTrigger trigger = new DistributionEventDistributeDistributionTrigger("/foo",
-                osgiContext.bundleContext());
+        final DistributionEventDistributeDistributionTrigger trigger =
+                new DistributionEventDistributeDistributionTrigger("/foo", osgiContext.bundleContext());
         final DistributionEventFactory eventFactory = new DefaultDistributionEventFactory();
         osgiContext.registerInjectActivateService(eventFactory);
         DistributionRequestHandler testHandler = new DistributionRequestHandler() {
@@ -97,8 +99,11 @@ public class DistributionEventDistributeDistributionTriggerTest {
 
             public void handle(ResourceResolver resourceResolver, DistributionRequest request) {
                 // we simple fire an event, to cause the loop
-                eventFactory.generatePackageEvent(DistributionEventTopics.AGENT_PACKAGE_DISTRIBUTED,
-                        DistributionComponentKind.AGENT, "test", info);
+                eventFactory.generatePackageEvent(
+                        DistributionEventTopics.AGENT_PACKAGE_DISTRIBUTED,
+                        DistributionComponentKind.AGENT,
+                        "test",
+                        info);
                 handled.addAndGet(1);
             }
         };
@@ -106,9 +111,13 @@ public class DistributionEventDistributeDistributionTriggerTest {
         trigger.register(testHandler);
 
         Thread testExecution = new Thread() {
-            @Override public void run() {
-                eventFactory.generatePackageEvent(DistributionEventTopics.AGENT_PACKAGE_DISTRIBUTED, DistributionComponentKind.AGENT,
-                        "origin", info);
+            @Override
+            public void run() {
+                eventFactory.generatePackageEvent(
+                        DistributionEventTopics.AGENT_PACKAGE_DISTRIBUTED,
+                        DistributionComponentKind.AGENT,
+                        "origin",
+                        info);
             }
         };
 

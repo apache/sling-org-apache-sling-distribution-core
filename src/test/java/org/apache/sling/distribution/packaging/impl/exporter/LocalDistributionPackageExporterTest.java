@@ -26,9 +26,9 @@ import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.DistributionRequestType;
 import org.apache.sling.distribution.DistributionResponse;
 import org.apache.sling.distribution.SimpleDistributionRequest;
-import org.apache.sling.distribution.packaging.impl.DistributionPackageProcessor;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageProcessor;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -45,32 +45,35 @@ public class LocalDistributionPackageExporterTest {
     @Test
     public void testExport() throws Exception {
         DistributionPackageBuilder packageBuilder = mock(DistributionPackageBuilder.class);
-        when(packageBuilder.createPackage(any(ResourceResolver.class), any(DistributionRequest.class))).thenReturn(mock(DistributionPackage.class));
-        LocalDistributionPackageExporter localdistributionPackageExporter = new LocalDistributionPackageExporter(packageBuilder);
+        when(packageBuilder.createPackage(any(ResourceResolver.class), any(DistributionRequest.class)))
+                .thenReturn(mock(DistributionPackage.class));
+        LocalDistributionPackageExporter localdistributionPackageExporter =
+                new LocalDistributionPackageExporter(packageBuilder);
         ResourceResolver resourceResolver = mock(ResourceResolver.class);
         DistributionRequest distributionRequest = new SimpleDistributionRequest(DistributionRequestType.ADD, "/");
         final List<DistributionPackage> distributionPackages = new ArrayList<DistributionPackage>();
-        localdistributionPackageExporter.exportPackages(resourceResolver, distributionRequest, new DistributionPackageProcessor() {
-            @Override
-            public void process(DistributionPackage distributionPackage) {
-                distributionPackages.add(distributionPackage);
-            }
+        localdistributionPackageExporter.exportPackages(
+                resourceResolver, distributionRequest, new DistributionPackageProcessor() {
+                    @Override
+                    public void process(DistributionPackage distributionPackage) {
+                        distributionPackages.add(distributionPackage);
+                    }
 
-            @Override
-            public List<DistributionResponse> getAllResponses() {
-                return null;
-            }
+                    @Override
+                    public List<DistributionResponse> getAllResponses() {
+                        return null;
+                    }
 
-            @Override
-            public int getPackagesCount() {
-                return 0;
-            }
+                    @Override
+                    public int getPackagesCount() {
+                        return 0;
+                    }
 
-            @Override
-            public long getPackagesSize() {
-                return 0;
-            }
-        });
+                    @Override
+                    public long getPackagesSize() {
+                        return 0;
+                    }
+                });
         assertNotNull(distributionPackages);
         assertEquals(1, distributionPackages.size());
     }
@@ -78,8 +81,10 @@ public class LocalDistributionPackageExporterTest {
     @Test
     public void testGetPackage() throws Exception {
         DistributionPackageBuilder packageBuilder = mock(DistributionPackageBuilder.class);
-        when(packageBuilder.getPackage(any(ResourceResolver.class), any(String.class))).thenReturn(mock(DistributionPackage.class));
-        LocalDistributionPackageExporter localdistributionPackageExporter = new LocalDistributionPackageExporter(packageBuilder);
+        when(packageBuilder.getPackage(any(ResourceResolver.class), any(String.class)))
+                .thenReturn(mock(DistributionPackage.class));
+        LocalDistributionPackageExporter localdistributionPackageExporter =
+                new LocalDistributionPackageExporter(packageBuilder);
         ResourceResolver resourceResolver = mock(ResourceResolver.class);
         DistributionPackage distributionPackage = localdistributionPackageExporter.getPackage(resourceResolver, "123");
         assertNotNull(distributionPackage);

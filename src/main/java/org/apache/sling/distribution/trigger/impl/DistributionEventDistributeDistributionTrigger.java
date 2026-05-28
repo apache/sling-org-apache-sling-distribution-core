@@ -22,12 +22,13 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.apache.sling.distribution.DistributionRequestType;
 import org.apache.sling.distribution.SimpleDistributionRequest;
+import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.component.impl.DistributionComponentKind;
 import org.apache.sling.distribution.event.DistributionEventProperties;
 import org.apache.sling.distribution.event.DistributionEventTopics;
-import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.trigger.DistributionRequestHandler;
 import org.apache.sling.distribution.trigger.DistributionTrigger;
 import org.jetbrains.annotations.NotNull;
@@ -50,7 +51,6 @@ public class DistributionEventDistributeDistributionTrigger implements Distribut
     private final BundleContext bundleContext;
     private final Map<String, ServiceRegistration<EventHandler>> registrations = new ConcurrentHashMap<>();
 
-
     public DistributionEventDistributeDistributionTrigger(String pathPrefix, BundleContext bundleContext) {
         if (pathPrefix == null) {
             throw new IllegalArgumentException("path is required");
@@ -60,16 +60,18 @@ public class DistributionEventDistributeDistributionTrigger implements Distribut
     }
 
     public void register(@NotNull DistributionRequestHandler requestHandler) throws DistributionException {
-        // register an event handler on distribution package install (on a certain path) which triggers the chain distribution of that same package
+        // register an event handler on distribution package install (on a certain path) which triggers the chain
+        // distribution of that same package
         Dictionary<String, Object> properties = new Hashtable<String, Object>();
 
-        // TODO : make it possible to configure the type of event handled here, currently 'package-installed' is hardcoded
+        // TODO : make it possible to configure the type of event handled here, currently 'package-installed' is
+        // hardcoded
         properties.put(EventConstants.EVENT_TOPIC, DistributionEventTopics.AGENT_PACKAGE_DISTRIBUTED);
         log.info("handler {} will chain distribute on path '{}'", requestHandler, pathPrefix);
 
         if (bundleContext != null) {
-            ServiceRegistration<EventHandler> triggerPathEventRegistration = bundleContext.registerService(EventHandler.class,
-                    new TriggerAgentEventListener(requestHandler, pathPrefix), properties);
+            ServiceRegistration<EventHandler> triggerPathEventRegistration = bundleContext.registerService(
+                    EventHandler.class, new TriggerAgentEventListener(requestHandler, pathPrefix), properties);
             if (triggerPathEventRegistration != null) {
                 registrations.put(requestHandler.toString(), triggerPathEventRegistration);
             }
@@ -105,8 +107,10 @@ public class DistributionEventDistributeDistributionTrigger implements Distribut
         }
 
         public void handleEvent(Event event) {
-            String originKindName = String.valueOf(event.getProperty(DistributionEventProperties.DISTRIBUTION_COMPONENT_KIND));
-            String originName = String.valueOf(event.getProperty(DistributionEventProperties.DISTRIBUTION_COMPONENT_NAME));
+            String originKindName =
+                    String.valueOf(event.getProperty(DistributionEventProperties.DISTRIBUTION_COMPONENT_KIND));
+            String originName =
+                    String.valueOf(event.getProperty(DistributionEventProperties.DISTRIBUTION_COMPONENT_NAME));
 
             DistributionComponentKind originKind;
             try {
@@ -129,7 +133,8 @@ public class DistributionEventDistributeDistributionTrigger implements Distribut
                     if (p.startsWith(path)) {
                         log.info("triggering chain distribution from event {}", event);
 
-                        DistributionRequestType action = DistributionRequestType.valueOf(String.valueOf(actionProperty));
+                        DistributionRequestType action =
+                                DistributionRequestType.valueOf(String.valueOf(actionProperty));
                         requestHandler.handle(null, new SimpleDistributionRequest(action, paths));
                         break;
                     }

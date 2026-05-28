@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.NavigableMap;
 import java.util.Set;
 import java.util.TreeSet;
+
 import org.apache.sling.distribution.DistributionRequest;
 import org.jetbrains.annotations.NotNull;
 
@@ -59,9 +60,10 @@ public class DistributionExportFilter {
      * @param propertyFilters the property level filters
      * @return a filter
      */
-    public static DistributionExportFilter createFilter(DistributionRequest distributionRequest,
-                                                        NavigableMap<String, List<String>> nodeFilters,
-                                                        NavigableMap<String, List<String>> propertyFilters) {
+    public static DistributionExportFilter createFilter(
+            DistributionRequest distributionRequest,
+            NavigableMap<String, List<String>> nodeFilters,
+            NavigableMap<String, List<String>> propertyFilters) {
         DistributionExportFilter exportFilter = new DistributionExportFilter();
 
         for (String path : distributionRequest.getPaths()) {
@@ -80,7 +82,6 @@ public class DistributionExportFilter {
             initFilter(nodeFilters, treeFilter, patterns);
 
             exportFilter.addNodeFilter(treeFilter);
-
         }
         // Set property path filters
         TreeFilter propertyFilterSet = new TreeFilter("/");
@@ -94,7 +95,8 @@ public class DistributionExportFilter {
         nodeFilters.add(filter);
     }
 
-    private static void initFilter(NavigableMap<String, List<String>> globalFilters, TreeFilter treeFilter, List<String> patterns) {
+    private static void initFilter(
+            NavigableMap<String, List<String>> globalFilters, TreeFilter treeFilter, List<String> patterns) {
         // add the most specific filter rules
         for (String key : globalFilters.descendingKeySet()) {
             if (treeFilter.getPath().startsWith(key)) {
@@ -185,12 +187,11 @@ public class DistributionExportFilter {
 
         @Override
         public String toString() {
-            return "TreeFilter{" +
-                    "path='" + path + '\'' +
-                    ", includes=" + includes +
-                    ", excludes=" + excludes +
-                    ", deepIncludes=" + deepIncludes +
-                    '}';
+            return "TreeFilter{" + "path='"
+                    + path + '\'' + ", includes="
+                    + includes + ", excludes="
+                    + excludes + ", deepIncludes="
+                    + deepIncludes + '}';
         }
 
         private static class Entry {
@@ -214,9 +215,6 @@ public class DistributionExportFilter {
 
     @Override
     public String toString() {
-        return "DistributionExportFilter{" +
-                "nodeFilters=" + nodeFilters +
-                ", propertyFilter=" + propertyFilter +
-                '}';
+        return "DistributionExportFilter{" + "nodeFilters=" + nodeFilters + ", propertyFilter=" + propertyFilter + '}';
     }
 }

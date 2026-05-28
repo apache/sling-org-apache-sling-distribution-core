@@ -16,8 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.transport.impl;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -26,14 +30,10 @@ import org.apache.http.client.fluent.Request;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.protocol.HTTP;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-
 class HttpTransportUtils {
 
-    public static InputStream fetchNextPackage(Executor executor, URI distributionURI, HttpConfiguration httpConfiguration)
+    public static InputStream fetchNextPackage(
+            Executor executor, URI distributionURI, HttpConfiguration httpConfiguration)
             throws URISyntaxException, IOException {
         URI fetchUri = getFetchUri(distributionURI);
         Request fetchReq = Request.Post(fetchUri)
@@ -52,7 +52,8 @@ class HttpTransportUtils {
         return entity.getContent();
     }
 
-    public static boolean deletePackage(Executor executor, URI distributionURI, String remotePackageId) throws URISyntaxException, IOException {
+    public static boolean deletePackage(Executor executor, URI distributionURI, String remotePackageId)
+            throws URISyntaxException, IOException {
 
         URI deleteUri = getDeleteUri(distributionURI, remotePackageId);
         Request deleteReq = Request.Post(deleteUri).useExpectContinue();
@@ -75,5 +76,4 @@ class HttpTransportUtils {
 
         return uriBuilder.build();
     }
-
 }

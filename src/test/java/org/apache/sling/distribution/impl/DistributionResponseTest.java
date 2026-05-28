@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.impl;
 
 import java.util.ArrayList;
@@ -34,7 +33,8 @@ import static org.junit.Assert.assertNotNull;
 public class DistributionResponseTest {
     @Test
     public void nullDistributionResponse() {
-        DistributionResponse res1 = new SimpleDistributionResponse(DistributionRequestState.DISTRIBUTED, "success", null);
+        DistributionResponse res1 =
+                new SimpleDistributionResponse(DistributionRequestState.DISTRIBUTED, "success", null);
 
         assertNotNull(res1.getDistributionInfo());
         assertEquals("", res1.getDistributionInfo().getId());
@@ -45,51 +45,59 @@ public class DistributionResponseTest {
         responses.add(res2);
         CompositeDistributionResponse compositeResponse = new CompositeDistributionResponse(responses, 2, 0, 0);
         assertNotNull(compositeResponse.getDistributionInfo());
-        assertEquals(list("", "").toString(), compositeResponse.getDistributionInfo().getId());
+        assertEquals(
+                list("", "").toString(), compositeResponse.getDistributionInfo().getId());
     }
-    
+
     @Test
     public void emptyDistributionResponse() {
         DistributionResponse res1 = new SimpleDistributionResponse(DistributionRequestState.DISTRIBUTED, "success");
 
         assertNotNull(res1.getDistributionInfo());
         assertEquals("", res1.getDistributionInfo().getId());
-        
+
         DistributionResponse res2 = new SimpleDistributionResponse(DistributionRequestState.ACCEPTED, "success");
         List<DistributionResponse> responses = new ArrayList<>();
         responses.add(res1);
         responses.add(res2);
         CompositeDistributionResponse compositeResponse = new CompositeDistributionResponse(responses, 2, 0, 0);
         assertNotNull(compositeResponse.getDistributionInfo());
-        assertEquals(list("", "").toString(), compositeResponse.getDistributionInfo().getId());
+        assertEquals(
+                list("", "").toString(), compositeResponse.getDistributionInfo().getId());
     }
 
     @Test
     public void nonEmptyDistributionResponse() {
-        DistributionResponse res1 = new SimpleDistributionResponse(DistributionRequestState.DISTRIBUTED, "success", 
-            new DistributionResponseInfo() {
-                @NotNull @Override public String getId() {
-                    return "res1";
-                }
-        });
+        DistributionResponse res1 = new SimpleDistributionResponse(
+                DistributionRequestState.DISTRIBUTED, "success", new DistributionResponseInfo() {
+                    @NotNull
+                    @Override
+                    public String getId() {
+                        return "res1";
+                    }
+                });
 
         assertNotNull(res1.getDistributionInfo());
         assertEquals("res1", res1.getDistributionInfo().getId());
 
-        DistributionResponse res2 = new SimpleDistributionResponse(DistributionRequestState.ACCEPTED, "success",
-            new DistributionResponseInfo() {
-                @NotNull @Override public String getId() {
-                    return "res2";
-                }
-            });
+        DistributionResponse res2 = new SimpleDistributionResponse(
+                DistributionRequestState.ACCEPTED, "success", new DistributionResponseInfo() {
+                    @NotNull
+                    @Override
+                    public String getId() {
+                        return "res2";
+                    }
+                });
         List<DistributionResponse> responses = new ArrayList<>();
         responses.add(res1);
         responses.add(res2);
         CompositeDistributionResponse compositeResponse = new CompositeDistributionResponse(responses, 2, 0, 0);
         assertNotNull(compositeResponse.getDistributionInfo());
-        assertEquals(list("res1", "res2").toString(), compositeResponse.getDistributionInfo().getId());
+        assertEquals(
+                list("res1", "res2").toString(),
+                compositeResponse.getDistributionInfo().getId());
     }
-    
+
     private List<String> list(String str1, String str2) {
         List<String> expectedIds = new ArrayList<>();
         expectedIds.add(str1);

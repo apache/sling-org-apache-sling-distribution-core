@@ -47,27 +47,37 @@ import org.slf4j.LoggerFactory;
  */
 @Component(
         configurationPolicy = ConfigurationPolicy.REQUIRE,
-        service=DistributionPackageExporter.class,
-        property= {
-                "webconsole.configurationFactory.nameHint=Exporter name: {name}"
-        })
-@Designate(ocd=RemoteDistributionPackageExporterFactory.Config.class, factory=true)
+        service = DistributionPackageExporter.class,
+        property = {"webconsole.configurationFactory.nameHint=Exporter name: {name}"})
+@Designate(ocd = RemoteDistributionPackageExporterFactory.Config.class, factory = true)
 public class RemoteDistributionPackageExporterFactory implements DistributionPackageExporter {
 
-    @ObjectClassDefinition(name="Apache Sling Distribution Exporter - Remote Package Exporter Factory")
+    @ObjectClassDefinition(name = "Apache Sling Distribution Exporter - Remote Package Exporter Factory")
     public @interface Config {
-        @AttributeDefinition(name="Name", description = "The name of the exporter.")
+        @AttributeDefinition(name = "Name", description = "The name of the exporter.")
         String name();
-        @AttributeDefinition(cardinality = 100, name="Endpoints", description = "The list of endpoints from which the packages will be exported.")
+
+        @AttributeDefinition(
+                cardinality = 100,
+                name = "Endpoints",
+                description = "The list of endpoints from which the packages will be exported.")
         String[] endpoints();
-        @AttributeDefinition(name="Pull Items", description = "number of subsequent pull requests to make")
+
+        @AttributeDefinition(name = "Pull Items", description = "number of subsequent pull requests to make")
         int pull_items() default Integer.MAX_VALUE;
-        @AttributeDefinition(name="Package Builder", description = "The target reference for the DistributionPackageBuilder used to create distribution packages, " +
-            "e.g. use target=(name=...) to bind to services by name.")
+
+        @AttributeDefinition(
+                name = "Package Builder",
+                description =
+                        "The target reference for the DistributionPackageBuilder used to create distribution packages, "
+                                + "e.g. use target=(name=...) to bind to services by name.")
         String packageBuilder_target() default SettingsUtils.COMPONENT_NAME_DEFAULT;
-        
-        @AttributeDefinition(name="Transport Secret Provider", description = "The target reference for the DistributionTransportSecretProvider used to obtain the credentials used for accessing the remote endpoints, " +
-            "e.g. use target=(name=...) to bind to services by name.")
+
+        @AttributeDefinition(
+                name = "Transport Secret Provider",
+                description =
+                        "The target reference for the DistributionTransportSecretProvider used to obtain the credentials used for accessing the remote endpoints, "
+                                + "e.g. use target=(name=...) to bind to services by name.")
         String transportSecretProvider_target() default SettingsUtils.COMPONENT_NAME_DEFAULT;
     }
 
@@ -77,41 +87,50 @@ public class RemoteDistributionPackageExporterFactory implements DistributionPac
     private DistributionPackageBuilder packageBuilder;
 
     @Reference(name = "transportSecretProvider")
-    private
-    DistributionTransportSecretProvider transportSecretProvider;
+    private DistributionTransportSecretProvider transportSecretProvider;
 
     private DistributionPackageExporter exporter;
 
     @Activate
     protected void activate(Config conf) {
-        log.info("activating remote exporter with packagebuilder {} and transportSecretProvider {}", packageBuilder, transportSecretProvider);
+        log.info(
+                "activating remote exporter with packagebuilder {} and transportSecretProvider {}",
+                packageBuilder,
+                transportSecretProvider);
 
         String[] endpoints = conf.endpoints();
         endpoints = SettingsUtils.removeEmptyEntries(endpoints);
         int pollItems = conf.pull_items();
         String exporterName = conf.name();
 
-        DefaultDistributionLog distributionLog = new DefaultDistributionLog(DistributionComponentKind.EXPORTER, exporterName, RemoteDistributionPackageExporter.class, DefaultDistributionLog.LogLevel.ERROR);
+        DefaultDistributionLog distributionLog = new DefaultDistributionLog(
+                DistributionComponentKind.EXPORTER,
+                exporterName,
+                RemoteDistributionPackageExporter.class,
+                DefaultDistributionLog.LogLevel.ERROR);
 
         // default to 10s, we can expose it if needed
         HttpConfiguration httpConfiguration = new HttpConfiguration(10000);
-        exporter = new RemoteDistributionPackageExporter(distributionLog, packageBuilder, transportSecretProvider,
-                endpoints, pollItems, httpConfiguration);
+        exporter = new RemoteDistributionPackageExporter(
+                distributionLog, packageBuilder, transportSecretProvider, endpoints, pollItems, httpConfiguration);
     }
-
 
     @Deactivate
     protected void deactivate() {
         exporter = null;
     }
 
-    public void exportPackages(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest, @NotNull DistributionPackageProcessor packageProcessor) throws DistributionException {
+    public void exportPackages(
+            @NotNull ResourceResolver resourceResolver,
+            @NotNull DistributionRequest distributionRequest,
+            @NotNull DistributionPackageProcessor packageProcessor)
+            throws DistributionException {
         exporter.exportPackages(resourceResolver, distributionRequest, packageProcessor);
     }
 
-    public DistributionPackage getPackage(@NotNull ResourceResolver resourceResolver, @NotNull String distributionPackageId) throws DistributionException {
+    public DistributionPackage getPackage(
+            @NotNull ResourceResolver resourceResolver, @NotNull String distributionPackageId)
+            throws DistributionException {
         return exporter.getPackage(resourceResolver, distributionPackageId);
     }
-
-
 }

@@ -19,6 +19,7 @@
 package org.apache.sling.distribution.packaging;
 
 import java.io.InputStream;
+
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.common.DistributionException;
@@ -47,7 +48,8 @@ public interface DistributionPackageBuilder {
      * @throws org.apache.sling.distribution.common.DistributionException if any error occurs while creating the package, or if the resource resolver is not authorized to do that
      */
     @Nullable
-    DistributionPackage createPackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest request) throws DistributionException;
+    DistributionPackage createPackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest request)
+            throws DistributionException;
 
     /**
      * reads a stream and tries to convert it to a {@link DistributionPackage} this provider can read and install
@@ -58,7 +60,8 @@ public interface DistributionPackageBuilder {
      * @throws DistributionException when the stream cannot be read as a {@link DistributionPackage}
      */
     @NotNull
-    DistributionPackage readPackage(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream) throws DistributionException;
+    DistributionPackage readPackage(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream)
+            throws DistributionException;
 
     /**
      * get an already created (and saved into the repository) {@link DistributionPackage} by its id
@@ -69,7 +72,8 @@ public interface DistributionPackageBuilder {
      * @throws DistributionException when the stream the package with that id cannot be retrieved
      */
     @Nullable
-    DistributionPackage getPackage(@NotNull ResourceResolver resourceResolver, @NotNull String id) throws DistributionException;
+    DistributionPackage getPackage(@NotNull ResourceResolver resourceResolver, @NotNull String id)
+            throws DistributionException;
 
     /**
      * Installs the given distributionPackage into the repository
@@ -79,8 +83,8 @@ public interface DistributionPackageBuilder {
      * @return <code>true</code> if the package was installed successfully
      * @throws DistributionException when installation fails
      */
-    boolean installPackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionPackage distributionPackage) throws DistributionException;
-
+    boolean installPackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionPackage distributionPackage)
+            throws DistributionException;
 
     /**
      * install a stream and returns the associated to a {@link DistributionPackageInfo} this provider can read and install
@@ -91,6 +95,6 @@ public interface DistributionPackageBuilder {
      * @throws DistributionException when the stream cannot be read as a {@link DistributionPackage}
      */
     @NotNull
-    DistributionPackageInfo installPackage(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream) throws DistributionException;
-
+    DistributionPackageInfo installPackage(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream)
+            throws DistributionException;
 }

@@ -18,7 +18,6 @@
  */
 package org.apache.sling.distribution.trigger.impl;
 
-
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.commons.scheduler.Scheduler;
 import org.apache.sling.distribution.common.DistributionException;
@@ -39,25 +38,29 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @Component(
         configurationPolicy = ConfigurationPolicy.REQUIRE,
-        service=DistributionTrigger.class,
-        property= {
-                "webconsole.configurationFactory.nameHint=Trigger name: {name}"    
-        })
-@Designate(ocd=PersistedJcrEventDistributionTriggerFactory.Config.class, factory = true)
+        service = DistributionTrigger.class,
+        property = {"webconsole.configurationFactory.nameHint=Trigger name: {name}"})
+@Designate(ocd = PersistedJcrEventDistributionTriggerFactory.Config.class, factory = true)
 public class PersistedJcrEventDistributionTriggerFactory implements DistributionTrigger {
 
     @ObjectClassDefinition(name = "Apache Sling Distribution Trigger - Persisted Jcr Event Triggers Factory")
     public @interface Config {
-        @AttributeDefinition(name="Name", description = "The name of the trigger.")
+        @AttributeDefinition(name = "Name", description = "The name of the trigger.")
         String name();
-        @AttributeDefinition(name="Name", description = "The path for which changes are listened and distributed as persisted nugget events.")
+
+        @AttributeDefinition(
+                name = "Name",
+                description = "The path for which changes are listened and distributed as persisted nugget events.")
         String path();
-        @AttributeDefinition(name="Service Name", description = "The service used to listen for jcr events")
+
+        @AttributeDefinition(name = "Service Name", description = "The service used to listen for jcr events")
         String serviceName();
-        @AttributeDefinition(name="Nuggets Path", description = "The location where serialization of jcr events will be stored")
+
+        @AttributeDefinition(
+                name = "Nuggets Path",
+                description = "The location where serialization of jcr events will be stored")
         String nuggetsPath() default PersistedJcrEventDistributionTrigger.DEFAULT_NUGGETS_PATH;
     }
-
 
     private PersistedJcrEventDistributionTrigger trigger;
 
@@ -70,7 +73,6 @@ public class PersistedJcrEventDistributionTriggerFactory implements Distribution
     @Reference
     private ResourceResolverFactory resolverFactory;
 
-
     @Activate
     public void activate(BundleContext bundleContext, Config conf) {
 
@@ -78,7 +80,8 @@ public class PersistedJcrEventDistributionTriggerFactory implements Distribution
         String serviceName = SettingsUtils.removeEmptyEntry(conf.serviceName());
         String nuggetsPath = conf.nuggetsPath();
 
-        trigger = new PersistedJcrEventDistributionTrigger(repository, scheduler, resolverFactory, path, serviceName, nuggetsPath);
+        trigger = new PersistedJcrEventDistributionTrigger(
+                repository, scheduler, resolverFactory, path, serviceName, nuggetsPath);
         trigger.enable();
     }
 

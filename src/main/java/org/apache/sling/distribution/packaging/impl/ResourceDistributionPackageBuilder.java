@@ -16,11 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.packaging.impl;
 
-import static org.apache.sling.distribution.util.impl.DigestUtils.openDigestOutputStream;
-import static org.apache.sling.distribution.util.impl.DigestUtils.readDigestMessage;
+import javax.jcr.RepositoryException;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,8 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.UUID;
-
-import javax.jcr.RepositoryException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.resource.PersistenceException;
@@ -55,6 +51,8 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.apache.sling.distribution.util.impl.DigestUtils.openDigestOutputStream;
+import static org.apache.sling.distribution.util.impl.DigestUtils.readDigestMessage;
 
 public class ResourceDistributionPackageBuilder extends AbstractDistributionPackageBuilder {
     private static final String PREFIX_PATH = "/var/sling/distribution/packages/";
@@ -70,14 +68,16 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
     private final NavigableMap<String, List<String>> nodeFilters;
     private final NavigableMap<String, List<String>> propertyFilters;
 
-    public ResourceDistributionPackageBuilder(String type,
-                                              DistributionContentSerializer distributionContentSerializer,
-                                              String tempFilesFolder,
-                                              int fileThreshold,
-                                              MemoryUnit memoryUnit,
-                                              boolean useOffHeapMemory,
-                                              String digestAlgorithm, String[] nodeFilters,
-                                              String[] propertyFilters) {
+    public ResourceDistributionPackageBuilder(
+            String type,
+            DistributionContentSerializer distributionContentSerializer,
+            String tempFilesFolder,
+            int fileThreshold,
+            MemoryUnit memoryUnit,
+            boolean useOffHeapMemory,
+            String digestAlgorithm,
+            String[] nodeFilters,
+            String[] propertyFilters) {
         super(type);
         this.distributionContentSerializer = distributionContentSerializer;
         this.nodeFilters = VltUtils.parseFilters(nodeFilters);
@@ -91,7 +91,9 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
     }
 
     @Override
-    protected DistributionPackage createPackageForAdd(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest request) throws DistributionException {
+    protected DistributionPackage createPackageForAdd(
+            @NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest request)
+            throws DistributionException {
         DistributionPackage distributionPackage;
 
         try {
@@ -100,7 +102,13 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
             String digestMessage = null;
 
             try {
-                outputStream = new FileBackedMemoryOutputStream(fileThreshold, memoryUnit, useOffHeapMemory, tempDirectory, "distrpck-create-", "." + getType());
+                outputStream = new FileBackedMemoryOutputStream(
+                        fileThreshold,
+                        memoryUnit,
+                        useOffHeapMemory,
+                        tempDirectory,
+                        "distrpck-create-",
+                        "." + getType());
                 if (digestAlgorithm != null) {
                     digestStream = openDigestOutputStream(outputStream, digestAlgorithm);
                     export(resourceResolver, request, digestStream);
@@ -125,15 +133,15 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
             try {
                 inputStream = outputStream.openWrittenDataInputStream();
 
-                packageResource = uploadStream(resourceResolver, packagesRoot, inputStream, outputStream.size(),
-                        request);
+                packageResource =
+                        uploadStream(resourceResolver, packagesRoot, inputStream, outputStream.size(), request);
             } finally {
                 IOUtils.closeQuietly(inputStream);
                 outputStream.clean();
             }
 
-            distributionPackage = new ResourceDistributionPackage(packageResource, getType(), resourceResolver,
-                    digestAlgorithm, digestMessage, null);
+            distributionPackage = new ResourceDistributionPackage(
+                    packageResource, getType(), resourceResolver, digestAlgorithm, digestMessage, null);
         } catch (IOException e) {
             throw new DistributionException(e);
         }
@@ -141,15 +149,21 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
         return distributionPackage;
     }
 
-    private void export(@NotNull ResourceResolver resourceResolver, @NotNull final DistributionRequest request, OutputStream outputStream) throws DistributionException {
-        final DistributionExportFilter filter = distributionContentSerializer.isRequestFiltering() ? null : DistributionExportFilter.createFilter(request, nodeFilters, propertyFilters);
+    private void export(
+            @NotNull ResourceResolver resourceResolver,
+            @NotNull final DistributionRequest request,
+            OutputStream outputStream)
+            throws DistributionException {
+        final DistributionExportFilter filter = distributionContentSerializer.isRequestFiltering()
+                ? null
+                : DistributionExportFilter.createFilter(request, nodeFilters, propertyFilters);
         DistributionExportOptions distributionExportOptions = new DistributionExportOptions(request, filter);
         distributionContentSerializer.exportToStream(resourceResolver, distributionExportOptions, outputStream);
     }
 
     @Override
-    protected DistributionPackage readPackageInternal(@NotNull ResourceResolver resourceResolver, @NotNull InputStream inputStream)
-            throws DistributionException {
+    protected DistributionPackage readPackageInternal(
+            @NotNull ResourceResolver resourceResolver, @NotNull InputStream inputStream) throws DistributionException {
         try {
             Resource packagesRoot = DistributionPackageUtils.getPackagesRoot(resourceResolver, packagesPath);
 
@@ -161,8 +175,8 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
     }
 
     @Override
-    protected boolean installPackageInternal(@NotNull ResourceResolver resourceResolver, @NotNull InputStream inputStream)
-            throws DistributionException {
+    protected boolean installPackageInternal(
+            @NotNull ResourceResolver resourceResolver, @NotNull InputStream inputStream) throws DistributionException {
         try {
             distributionContentSerializer.importFromStream(resourceResolver, inputStream);
             return true;
@@ -186,9 +200,13 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
         }
     }
 
-
-    private Resource uploadStream(ResourceResolver resourceResolver, Resource parent, InputStream stream,
-            long size, DistributionRequest request) throws PersistenceException {
+    private Resource uploadStream(
+            ResourceResolver resourceResolver,
+            Resource parent,
+            InputStream stream,
+            long size,
+            DistributionRequest request)
+            throws PersistenceException {
 
         String name;
         log.debug("uploading stream");
@@ -205,11 +223,13 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
                 }
                 log.debug("preserving remote id {}", name);
             } else {
-                name = "dstrpck-" + System.currentTimeMillis() + "-" + UUID.randomUUID().toString();
+                name = "dstrpck-" + System.currentTimeMillis() + "-"
+                        + UUID.randomUUID().toString();
                 log.debug("generating a new id {}", name);
             }
         } else {
-            name = "dstrpck-" + System.currentTimeMillis() + "-" + UUID.randomUUID().toString();
+            name = "dstrpck-" + System.currentTimeMillis() + "-"
+                    + UUID.randomUUID().toString();
         }
 
         Map<String, Object> props = new HashMap<String, Object>();
@@ -219,7 +239,8 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
             DistributionPackageInfo info = new DistributionPackageInfo(getType());
             DistributionPackageUtils.fillInfo(info, request);
             props.put(DistributionPackageInfo.PROPERTY_REQUEST_PATHS, info.getPaths());
-            props.put(DistributionPackageInfo.PROPERTY_REQUEST_DEEP_PATHS,
+            props.put(
+                    DistributionPackageInfo.PROPERTY_REQUEST_DEEP_PATHS,
                     info.get(DistributionPackageInfo.PROPERTY_REQUEST_DEEP_PATHS));
         }
 
@@ -232,8 +253,8 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
             resourceResolver.delete(r);
         } else {
             // check parent is there at least
-            Resource parentResource = ResourceUtil.getOrCreateResource(resourceResolver, parent.getPath(), "nt:unstructured",
-                    "nt:unstructured", true);
+            Resource parentResource = ResourceUtil.getOrCreateResource(
+                    resourceResolver, parent.getPath(), "nt:unstructured", "nt:unstructured", true);
             log.debug("created parent {}", parentResource.getPath());
         }
 
@@ -268,8 +289,8 @@ public class ResourceDistributionPackageBuilder extends AbstractDistributionPack
 
         final String type;
 
-        private ResourceDistributionPackageIterator(@NotNull Resource packagesRoot, @NotNull ResourceResolver resourceResolver,
-                                            @NotNull String type) {
+        private ResourceDistributionPackageIterator(
+                @NotNull Resource packagesRoot, @NotNull ResourceResolver resourceResolver, @NotNull String type) {
             this.packages = packagesRoot.listChildren();
             this.resourceResolver = resourceResolver;
             this.type = type;

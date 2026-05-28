@@ -52,5 +52,4 @@ public interface DistributionRequestHandler {
      * @param request a distribution request
      */
     void handle(@Nullable ResourceResolver resourceResolver, @NotNull DistributionRequest request);
-
 }

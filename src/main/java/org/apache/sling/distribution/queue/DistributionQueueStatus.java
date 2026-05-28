@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.queue;
 
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
@@ -34,7 +33,6 @@ public final class DistributionQueueStatus {
         this.itemsCount = itemsCount;
         this.queueState = queueState;
     }
-
 
     /**
      * get the no. of items in the queue

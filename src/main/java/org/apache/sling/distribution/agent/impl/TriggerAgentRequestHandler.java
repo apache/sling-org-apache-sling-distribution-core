@@ -38,11 +38,12 @@ class TriggerAgentRequestHandler implements DistributionRequestHandler {
     private final DistributionAgent agent;
     private final String agentName;
 
-    public TriggerAgentRequestHandler(@NotNull DistributionAgent agent,
-                                      @NotNull String agentName,
-                                      @NotNull SimpleDistributionAgentAuthenticationInfo authenticationInfo,
-                                      @NotNull DefaultDistributionLog log,
-                                      boolean active) {
+    public TriggerAgentRequestHandler(
+            @NotNull DistributionAgent agent,
+            @NotNull String agentName,
+            @NotNull SimpleDistributionAgentAuthenticationInfo authenticationInfo,
+            @NotNull DefaultDistributionLog log,
+            boolean active) {
         this.authenticationInfo = authenticationInfo;
         this.log = log;
         this.active = active;
@@ -75,8 +76,11 @@ class TriggerAgentRequestHandler implements DistributionRequestHandler {
             ResourceResolver agentResourceResolver = null;
 
             try {
-                agentResourceResolver = DistributionUtils.getResourceResolver(null, authenticationInfo.getAgentService(),
-                        authenticationInfo.getSlingRepository(), authenticationInfo.getSubServiceName(),
+                agentResourceResolver = DistributionUtils.getResourceResolver(
+                        null,
+                        authenticationInfo.getAgentService(),
+                        authenticationInfo.getSlingRepository(),
+                        authenticationInfo.getSubServiceName(),
                         authenticationInfo.getResourceResolverFactory());
 
                 agent.execute(agentResourceResolver, request);
@@ -86,13 +90,10 @@ class TriggerAgentRequestHandler implements DistributionRequestHandler {
                 DistributionUtils.ungetResourceResolver(agentResourceResolver);
             }
         }
-
     }
 
     @Override
     public String toString() {
-        return "TriggerAgentRequestHandler{" +
-                "agentName='" + agentName+ '\'' +
-                '}';
+        return "TriggerAgentRequestHandler{" + "agentName='" + agentName + '\'' + '}';
     }
 }

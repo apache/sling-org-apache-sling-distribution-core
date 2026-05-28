@@ -22,6 +22,7 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.apache.sling.api.SlingConstants;
 import org.apache.sling.distribution.DistributionRequestType;
 import org.apache.sling.distribution.SimpleDistributionRequest;
@@ -44,13 +45,11 @@ import org.slf4j.LoggerFactory;
  */
 public class ResourceEventDistributionTrigger implements DistributionTrigger {
 
-
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private final BundleContext bundleContext;
     private final String path;
     private final Map<String, ServiceRegistration<EventHandler>> registrations = new ConcurrentHashMap<>();
-
 
     public ResourceEventDistributionTrigger(String path, BundleContext bundleContext) {
         if (bundleContext == null) {
@@ -65,9 +64,7 @@ public class ResourceEventDistributionTrigger implements DistributionTrigger {
         this.path = path;
     }
 
-    public void enable() {
-
-    }
+    public void enable() {}
 
     public void disable() {
         for (ServiceRegistration<EventHandler> serviceRegistration : registrations.values()) {
@@ -80,14 +77,19 @@ public class ResourceEventDistributionTrigger implements DistributionTrigger {
     public void register(@NotNull DistributionRequestHandler requestHandler) throws DistributionException {
         // register an event handler on path which triggers the agent on node / property changes / addition / removals
         Dictionary<String, Object> properties = new Hashtable<String, Object>();
-        properties.put(EventConstants.EVENT_TOPIC, new String[]{SlingConstants.TOPIC_RESOURCE_ADDED,
-                SlingConstants.TOPIC_RESOURCE_CHANGED, SlingConstants.TOPIC_RESOURCE_REMOVED});
+        properties.put(EventConstants.EVENT_TOPIC, new String[] {
+            SlingConstants.TOPIC_RESOURCE_ADDED,
+            SlingConstants.TOPIC_RESOURCE_CHANGED,
+            SlingConstants.TOPIC_RESOURCE_REMOVED
+        });
         log.info("trigger agent {} on path '{}'", requestHandler, path);
 
-        properties.put(EventConstants.EVENT_FILTER, "(&(path=" + path + "/*) (!(" + DEAConstants.PROPERTY_APPLICATION + "=*)))");
+        properties.put(
+                EventConstants.EVENT_FILTER,
+                "(&(path=" + path + "/*) (!(" + DEAConstants.PROPERTY_APPLICATION + "=*)))");
 
-        ServiceRegistration<EventHandler> triggerPathEventRegistration = bundleContext.registerService(EventHandler.class,
-                new TriggerAgentEventListener(requestHandler), properties);
+        ServiceRegistration<EventHandler> triggerPathEventRegistration = bundleContext.registerService(
+                EventHandler.class, new TriggerAgentEventListener(requestHandler), properties);
         if (triggerPathEventRegistration != null) {
             registrations.put(requestHandler.toString(), triggerPathEventRegistration);
         } else {
@@ -111,8 +113,9 @@ public class ResourceEventDistributionTrigger implements DistributionTrigger {
         }
 
         public void handleEvent(Event event) {
-            DistributionRequestType action = SlingConstants.TOPIC_RESOURCE_REMOVED.equals(event.getTopic()) ?
-                    DistributionRequestType.DELETE : DistributionRequestType.ADD;
+            DistributionRequestType action = SlingConstants.TOPIC_RESOURCE_REMOVED.equals(event.getTopic())
+                    ? DistributionRequestType.DELETE
+                    : DistributionRequestType.ADD;
             log.info("triggering distribution from event {}", event);
             for (String pn : event.getPropertyNames()) {
                 log.info("property {} : {}", pn, event.getProperty(pn));

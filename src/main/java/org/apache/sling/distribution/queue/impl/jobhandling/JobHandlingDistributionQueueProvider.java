@@ -26,12 +26,13 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
+
 import org.apache.sling.distribution.common.DistributionException;
-import org.apache.sling.distribution.queue.spi.DistributionQueue;
-import org.apache.sling.distribution.queue.impl.DistributionQueueProcessor;
-import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
 import org.apache.sling.distribution.queue.DistributionQueueType;
 import org.apache.sling.distribution.queue.impl.CachingDistributionQueue;
+import org.apache.sling.distribution.queue.impl.DistributionQueueProcessor;
+import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.event.impl.jobs.config.ConfigurationConstants;
 import org.apache.sling.event.jobs.JobManager;
 import org.apache.sling.event.jobs.QueueConfiguration;
@@ -69,7 +70,8 @@ public class JobHandlingDistributionQueueProvider implements DistributionQueuePr
         this(prefix, jobManager, context, null);
     }
 
-    public JobHandlingDistributionQueueProvider(String prefix, JobManager jobManager, BundleContext context, ConfigurationAdmin configAdmin) {
+    public JobHandlingDistributionQueueProvider(
+            String prefix, JobManager jobManager, BundleContext context, ConfigurationAdmin configAdmin) {
         this.configAdmin = configAdmin;
         if (prefix == null || jobManager == null || context == null) {
             throw new IllegalArgumentException("all arguments are required");
@@ -82,27 +84,35 @@ public class JobHandlingDistributionQueueProvider implements DistributionQueuePr
     @NotNull
     public DistributionQueue getQueue(@NotNull String queueName) {
         String topic = JobHandlingDistributionQueue.DISTRIBUTION_QUEUE_TOPIC + '/' + prefix + "/" + queueName;
-        boolean isActive = jobConsumer != null && (processingQueueNames == null || processingQueueNames.contains(queueName));
+        boolean isActive =
+                jobConsumer != null && (processingQueueNames == null || processingQueueNames.contains(queueName));
 
-        DistributionQueue queue = new JobHandlingDistributionQueue(queueName, topic, jobManager, isActive, DistributionQueueType.ORDERED);
+        DistributionQueue queue =
+                new JobHandlingDistributionQueue(queueName, topic, jobManager, isActive, DistributionQueueType.ORDERED);
         queue = new CachingDistributionQueue(topic, queue);
         return queue;
     }
 
     @Override
     public DistributionQueue getQueue(@NotNull String queueName, @NotNull DistributionQueueType type) {
-        String topic = JobHandlingDistributionQueue.DISTRIBUTION_QUEUE_TOPIC + '/' + type.name().toLowerCase() + '/' + prefix + "/" + queueName;
-        boolean isActive = jobConsumer != null && (processingQueueNames == null || processingQueueNames.contains(queueName));
+        String topic = JobHandlingDistributionQueue.DISTRIBUTION_QUEUE_TOPIC + '/'
+                + type.name().toLowerCase() + '/' + prefix + "/" + queueName;
+        boolean isActive =
+                jobConsumer != null && (processingQueueNames == null || processingQueueNames.contains(queueName));
 
         try {
-            if (configAdmin != null && jobManager.getQueue(queueName) == null && configAdmin.getConfiguration(queueName) == null) {
-                Configuration config = configAdmin.createFactoryConfiguration(
-                        QueueConfiguration.class.getName(), null);
+            if (configAdmin != null
+                    && jobManager.getQueue(queueName) == null
+                    && configAdmin.getConfiguration(queueName) == null) {
+                Configuration config = configAdmin.createFactoryConfiguration(QueueConfiguration.class.getName(), null);
                 Dictionary<String, Object> props = new Hashtable<String, Object>();
                 props.put(ConfigurationConstants.PROP_NAME, queueName);
-                props.put(ConfigurationConstants.PROP_TYPE, DistributionQueueType.PARALLEL.equals(type) ?
-                        QueueConfiguration.Type.UNORDERED.name() : QueueConfiguration.Type.ORDERED.name());
-                props.put(ConfigurationConstants.PROP_TOPICS, new String[]{topic});
+                props.put(
+                        ConfigurationConstants.PROP_TYPE,
+                        DistributionQueueType.PARALLEL.equals(type)
+                                ? QueueConfiguration.Type.UNORDERED.name()
+                                : QueueConfiguration.Type.ORDERED.name());
+                props.put(ConfigurationConstants.PROP_TOPICS, new String[] {topic});
                 props.put(ConfigurationConstants.PROP_RETRIES, -1);
                 props.put(ConfigurationConstants.PROP_RETRY_DELAY, 2000L);
                 props.put(ConfigurationConstants.PROP_KEEP_JOBS, true);
@@ -119,8 +129,8 @@ public class JobHandlingDistributionQueueProvider implements DistributionQueuePr
         return queue;
     }
 
-
-    public void enableQueueProcessing(@NotNull DistributionQueueProcessor queueProcessor, String... queueNames) throws DistributionException {
+    public void enableQueueProcessing(@NotNull DistributionQueueProcessor queueProcessor, String... queueNames)
+            throws DistributionException {
         if (jobConsumer != null) {
             throw new DistributionException("job already registered");
         }
@@ -144,7 +154,8 @@ public class JobHandlingDistributionQueueProvider implements DistributionQueuePr
 
         log.debug("registering job consumer for prefix {}", prefix);
         log.info("qp: {}, jp: {}", queueProcessor, jobProps);
-        jobConsumer = context.registerService(JobConsumer.class, new DistributionAgentJobConsumer(queueProcessor), jobProps);
+        jobConsumer =
+                context.registerService(JobConsumer.class, new DistributionAgentJobConsumer(queueProcessor), jobProps);
         log.debug("job consumer for prefix {} registered", prefix);
     }
 
@@ -157,5 +168,4 @@ public class JobHandlingDistributionQueueProvider implements DistributionQueuePr
         processingQueueNames = null;
         log.info("unregistering job consumer for agent {}", prefix);
     }
-
 }

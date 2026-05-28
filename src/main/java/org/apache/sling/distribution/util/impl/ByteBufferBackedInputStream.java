@@ -18,8 +18,6 @@
  */
 package org.apache.sling.distribution.util.impl;
 
-import static java.lang.Math.min;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -27,6 +25,8 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 import org.jetbrains.annotations.NotNull;
+
+import static java.lang.Math.min;
 
 final class ByteBufferBackedInputStream extends InputStream {
 

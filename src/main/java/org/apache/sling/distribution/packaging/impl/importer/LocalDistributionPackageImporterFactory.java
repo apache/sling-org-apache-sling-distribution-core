@@ -40,23 +40,24 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 /**
  * OSGi configuration factory for {@link LocalDistributionPackageImporter}s.
  */
-@Component(service=DistributionPackageImporter.class,
+@Component(
+        service = DistributionPackageImporter.class,
         configurationPolicy = ConfigurationPolicy.REQUIRE,
-        property = {
-                "webconsole.configurationFactory.nameHint=Importer name: {name}"
-        })
-@Designate(ocd=LocalDistributionPackageImporterFactory.Config.class, factory = true)
+        property = {"webconsole.configurationFactory.nameHint=Importer name: {name}"})
+@Designate(ocd = LocalDistributionPackageImporterFactory.Config.class, factory = true)
 public class LocalDistributionPackageImporterFactory implements DistributionPackageImporter {
-    
-    @ObjectClassDefinition(name="Apache Sling Distribution Importer - Local Package Importer Factory")
+
+    @ObjectClassDefinition(name = "Apache Sling Distribution Importer - Local Package Importer Factory")
     public @interface Config {
-        @AttributeDefinition(name="Name", description = "THe name of the importer.")
+        @AttributeDefinition(name = "Name", description = "THe name of the importer.")
         String name();
-        
-        @AttributeDefinition(name="Package Builder", description = "The target reference for the DistributionPackageBuilder used to create distribution packages, " +
-            "e.g. use target=(name=...) to bind to services by name.")
+
+        @AttributeDefinition(
+                name = "Package Builder",
+                description =
+                        "The target reference for the DistributionPackageBuilder used to create distribution packages, "
+                                + "e.g. use target=(name=...) to bind to services by name.")
         String packageBuilder_target() default SettingsUtils.COMPONENT_NAME_DEFAULT;
-        
     }
 
     @Reference(name = "packageBuilder")
@@ -73,14 +74,15 @@ public class LocalDistributionPackageImporterFactory implements DistributionPack
         importer = new LocalDistributionPackageImporter(name, eventFactory, packageBuilder);
     }
 
-
-    public void importPackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionPackage distributionPackage) throws DistributionException {
+    public void importPackage(
+            @NotNull ResourceResolver resourceResolver, @NotNull DistributionPackage distributionPackage)
+            throws DistributionException {
         importer.importPackage(resourceResolver, distributionPackage);
     }
 
     @NotNull
-    public DistributionPackageInfo importStream(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream) throws DistributionException {
+    public DistributionPackageInfo importStream(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream)
+            throws DistributionException {
         return importer.importStream(resourceResolver, stream);
     }
-
 }

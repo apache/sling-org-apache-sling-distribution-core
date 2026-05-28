@@ -18,22 +18,22 @@
  */
 package org.apache.sling.distribution.queue.impl.simple;
 
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueItemState;
 import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link SimpleDistributionQueueCheckpoint}
@@ -46,8 +46,8 @@ public class SimpleDistributionQueueCheckpointTest {
         Iterable<DistributionQueueEntry> items = new LinkedList<DistributionQueueEntry>();
         when(queue.getEntries(0, -1)).thenReturn(items);
         File checkpointDirectory = FileUtils.getTempDirectory();
-        SimpleDistributionQueueCheckpoint simpleDistributionQueueCheckpoint = new SimpleDistributionQueueCheckpoint(queue,
-                checkpointDirectory);
+        SimpleDistributionQueueCheckpoint simpleDistributionQueueCheckpoint =
+                new SimpleDistributionQueueCheckpoint(queue, checkpointDirectory);
         simpleDistributionQueueCheckpoint.run();
     }
 
@@ -58,15 +58,17 @@ public class SimpleDistributionQueueCheckpointTest {
         when(queue.getName()).thenReturn(queueName);
         LinkedList<DistributionQueueEntry> entries = new LinkedList<DistributionQueueEntry>();
         Map<String, Object> base = new HashMap<String, Object>();
-        base.put("here","there");
-        base.put("foo","bar");
-        base.put("multi", new String[]{"1", "2"});
-        entries.add(new DistributionQueueEntry("123", new DistributionQueueItem("pid123", base),
+        base.put("here", "there");
+        base.put("foo", "bar");
+        base.put("multi", new String[] {"1", "2"});
+        entries.add(new DistributionQueueEntry(
+                "123",
+                new DistributionQueueItem("pid123", base),
                 new DistributionQueueItemStatus(DistributionQueueItemState.QUEUED, queueName)));
         when(queue.getEntries(0, -1)).thenReturn(entries);
         File checkpointDirectory = FileUtils.getTempDirectory();
-        SimpleDistributionQueueCheckpoint simpleDistributionQueueCheckpoint = new SimpleDistributionQueueCheckpoint(queue,
-                checkpointDirectory);
+        SimpleDistributionQueueCheckpoint simpleDistributionQueueCheckpoint =
+                new SimpleDistributionQueueCheckpoint(queue, checkpointDirectory);
         simpleDistributionQueueCheckpoint.run();
         File checkpointFile = new File(checkpointDirectory, "sample-queue-checkpoint");
         assertTrue(checkpointFile.exists());
