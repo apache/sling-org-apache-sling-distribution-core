@@ -18,6 +18,8 @@
  */
 package org.apache.sling.distribution.queue.impl.resource;
 
+import java.util.GregorianCalendar;
+
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
@@ -25,8 +27,6 @@ import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.testing.resourceresolver.MockResourceResolverFactory;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.GregorianCalendar;
 
 import static java.util.Collections.emptyMap;
 import static java.util.UUID.randomUUID;
@@ -49,16 +49,11 @@ public class ResourceQueueUtilsTest {
     @Test
     public void testTimePath() throws Exception {
 
+        assertEquals("2018/01/01/00/00", ResourceQueueUtils.getTimePath(new GregorianCalendar(2018, 0, 1, 0, 0)));
 
-        assertEquals("2018/01/01/00/00",
-                ResourceQueueUtils.getTimePath(new GregorianCalendar(2018, 0, 1, 0, 0)));
+        assertEquals("2018/12/01/00/00", ResourceQueueUtils.getTimePath(new GregorianCalendar(2018, 11, 1, 0, 0)));
 
-
-        assertEquals("2018/12/01/00/00",
-                ResourceQueueUtils.getTimePath(new GregorianCalendar(2018, 11, 1, 0, 0)));
-
-        assertEquals("2018/12/31/23/59",
-                ResourceQueueUtils.getTimePath(new GregorianCalendar(2018, 11, 31, 23, 59)));
+        assertEquals("2018/12/31/23/59", ResourceQueueUtils.getTimePath(new GregorianCalendar(2018, 11, 31, 23, 59)));
     }
 
     @Test
@@ -83,7 +78,6 @@ public class ResourceQueueUtilsTest {
         Resource root = ResourceQueueUtils.getRootResource(rr, agentPath);
         assertEquals(3, ResourceQueueUtils.getResourceCount(root));
     }
-
 
     @Test
     public void testIsSafeToDelete() throws Exception {
@@ -111,19 +105,14 @@ public class ResourceQueueUtilsTest {
         assertFalse(ResourceQueueUtils.isSafeToDelete("2018/02/15/03/09", "2018/02/15/03/10"));
         assertFalse(ResourceQueueUtils.isSafeToDelete("2018/02/15/03/09", "2018/03/16/04/09"));
 
-
-
-
         // new year
         assertTrue(ResourceQueueUtils.isSafeToDelete("2018/12/31/23/59", "2017"));
         assertFalse(ResourceQueueUtils.isSafeToDelete("2018/12/31/23/59", "2018"));
         assertFalse(ResourceQueueUtils.isSafeToDelete("2018/12/31/23/59", "2019"));
 
-
         assertTrue(ResourceQueueUtils.isSafeToDelete("2018/12/31/23/59", "2018/11"));
         assertFalse(ResourceQueueUtils.isSafeToDelete("2018/12/31/23/59", "2018/12"));
         assertFalse(ResourceQueueUtils.isSafeToDelete("2018/12/31/23/59", "2019/01"));
-
 
         assertTrue(ResourceQueueUtils.isSafeToDelete("2018/12/31/23/59", "2018/12/30"));
         assertFalse(ResourceQueueUtils.isSafeToDelete("2018/12/31/23/59", "2018/12/31"));
@@ -136,6 +125,5 @@ public class ResourceQueueUtilsTest {
         assertTrue(ResourceQueueUtils.isSafeToDelete("2018/12/31/23/59", "2018/12/31/23/58"));
         assertFalse(ResourceQueueUtils.isSafeToDelete("2018/12/31/23/59", "2018/12/31/23/59"));
         assertFalse(ResourceQueueUtils.isSafeToDelete("2018/12/31/23/59", "2019/01/01/00/00"));
-
     }
 }

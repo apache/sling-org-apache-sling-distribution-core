@@ -18,7 +18,6 @@
  */
 package org.apache.sling.distribution.component.impl;
 
-
 /**
  * Constants relevant for distribution components.
  */
@@ -38,5 +37,4 @@ public class DistributionComponentConstants {
      * Property representing component name
      */
     public static final String PN_NAME = "name";
-
 }

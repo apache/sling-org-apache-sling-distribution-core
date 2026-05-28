@@ -57,49 +57,62 @@ import org.osgi.service.metatype.annotations.Option;
  */
 @Component(
         configurationPolicy = ConfigurationPolicy.REQUIRE,
-        service=DistributionPackageBuilder.class,
-        property= {
-                "webconsole.configurationFactory.nameHint=Builder name: {name}"     
-        })
-@Designate(ocd=DistributionPackageBuilderFactory.Config.class, factory=true)
+        service = DistributionPackageBuilder.class,
+        property = {"webconsole.configurationFactory.nameHint=Builder name: {name}"})
+@Designate(ocd = DistributionPackageBuilderFactory.Config.class, factory = true)
 public class DistributionPackageBuilderFactory implements DistributionPackageBuilder {
-    
-    @ObjectClassDefinition(name="Apache Sling Distribution Packaging - Package Builder Factory",
+
+    @ObjectClassDefinition(
+            name = "Apache Sling Distribution Packaging - Package Builder Factory",
             description = "OSGi configuration for package builders")
     public @interface Config {
-        @AttributeDefinition(name="name", description = "The name of the package builder.")
+        @AttributeDefinition(name = "name", description = "The name of the package builder.")
         String name();
-        @AttributeDefinition(name="type",description = "The persistence type used by this package builder",
+
+        @AttributeDefinition(
+                name = "type",
+                description = "The persistence type used by this package builder",
                 options = {
-                        @Option(label = "resource", value="resource package"),
-                        @Option(label="file", value="file package"),
-                        @Option(label="inmemory", value="in memory packages")
+                    @Option(label = "resource", value = "resource package"),
+                    @Option(label = "file", value = "file package"),
+                    @Option(label = "inmemory", value = "in memory packages")
                 })
         String type() default "resource"; // persistence
-        
-        @AttributeDefinition(name="Content Serializer",description = "The target reference for the DistributionSerializationFormat used to (de)serialize packages, " +
-                "e.g. use target=(name=...) to bind to services by name.")
+
+        @AttributeDefinition(
+                name = "Content Serializer",
+                description =
+                        "The target reference for the DistributionSerializationFormat used to (de)serialize packages, "
+                                + "e.g. use target=(name=...) to bind to services by name.")
         String format_target() default SettingsUtils.COMPONENT_NAME_DEFAULT;
-        
-        @AttributeDefinition(name="Temp Filesystem Folder", description = "The filesystem folder where the temporary files should be saved.")
+
+        @AttributeDefinition(
+                name = "Temp Filesystem Folder",
+                description = "The filesystem folder where the temporary files should be saved.")
         String tempFsFolder();
-        
-        @AttributeDefinition(name="File threshold",description = "Once the data reaches the configurable size value, buffering to memory switches to file buffering.")
+
+        @AttributeDefinition(
+                name = "File threshold",
+                description =
+                        "Once the data reaches the configurable size value, buffering to memory switches to file buffering.")
         int fileThreshold() default DEFAULT_FILE_THRESHOLD_VALUE;
-        
-        @AttributeDefinition(name="The memory unit for the file threshold",
-        description = "The memory unit for the file threshold, Megabytes by default",
-        options = {
-                @Option(label = "BYTES", value = "Bytes"),
-                @Option(label = "KILO_BYTES", value = "Kilobytes"),
-                @Option(label = "MEGA_BYTES", value = "Megabytes"),
-                @Option(label = "GIGA_BYTES", value = "Gigabytes")
-        })
+
+        @AttributeDefinition(
+                name = "The memory unit for the file threshold",
+                description = "The memory unit for the file threshold, Megabytes by default",
+                options = {
+                    @Option(label = "BYTES", value = "Bytes"),
+                    @Option(label = "KILO_BYTES", value = "Kilobytes"),
+                    @Option(label = "MEGA_BYTES", value = "Megabytes"),
+                    @Option(label = "GIGA_BYTES", value = "Gigabytes")
+                })
         String memoryUnit() default DEFAULT_MEMORY_UNIT;
-        
-        @AttributeDefinition(name="Flag to enable/disable the off-heap memory", description="Flag to enable/disable the off-heap memory, false by default")
+
+        @AttributeDefinition(
+                name = "Flag to enable/disable the off-heap memory",
+                description = "Flag to enable/disable the off-heap memory, false by default")
         boolean useOffHeapMemory() default DEFAULT_USE_OFF_HEAP_MEMORY;
-        
+
         @AttributeDefinition(
                 name = "The digest algorithm to calculate the package checksum",
                 description = "The digest algorithm to calculate the package checksum, Megabytes by default",
@@ -113,26 +126,28 @@ public class DistributionPackageBuilderFactory implements DistributionPackageBui
                     @Option(label = "SHA-512", value = "sha512")
                 })
         String digestAlgorithm() default DEFAULT_DIGEST_ALGORITHM;
-        
+
         @AttributeDefinition(
-                name="The number of items for monitoring distribution packages creation/installation",
-                description = "The number of items for monitoring distribution packages creation/installation, 100 by default")
+                name = "The number of items for monitoring distribution packages creation/installation",
+                description =
+                        "The number of items for monitoring distribution packages creation/installation, 100 by default")
         int monitoringQueueSize() default DEFAULT_MONITORING_QUEUE_SIZE;
-        
+
         @AttributeDefinition(
-                name="The delay in seconds between two runs of the cleanup phase for resource persisted packages.",
-                description = "The resource persisted packages are cleaned up periodically (asynchronously) since SLING-6503." +
-                        "The delay between two runs of the cleanup phase can be configured with this setting. 60 seconds by default")
+                name = "The delay in seconds between two runs of the cleanup phase for resource persisted packages.",
+                description =
+                        "The resource persisted packages are cleaned up periodically (asynchronously) since SLING-6503."
+                                + "The delay between two runs of the cleanup phase can be configured with this setting. 60 seconds by default")
         long cleanupDelay() default DEFAULT_PACKAGE_CLEANUP_DELAY;
-        
+
         @AttributeDefinition(
-                name = "Package Node Filters", 
-                description = "The package node path filters. Filter format: path|+include|-exclude", 
+                name = "Package Node Filters",
+                description = "The package node path filters. Filter format: path|+include|-exclude",
                 cardinality = 100)
         String[] package_filters();
-        
+
         @AttributeDefinition(
-                name = "Package Property Filters", 
+                name = "Package Property Filters",
                 description = "The package property path filters. Filter format: path|+include|-exclude",
                 cardinality = Integer.MAX_VALUE)
         String[] property_filters();
@@ -141,13 +156,12 @@ public class DistributionPackageBuilderFactory implements DistributionPackageBui
     private MonitoringDistributionPackageBuilder packageBuilder;
 
     private ServiceRegistration<Runnable> packageCleanup = null;
-    
+
     @Reference(name = "format")
     private DistributionContentSerializer contentSerializer;
 
     @Reference
     private ResourceResolverFactory resolverFactory;
-
 
     // 1M
     private static final int DEFAULT_FILE_THRESHOLD_VALUE = 1;
@@ -158,8 +172,7 @@ public class DistributionPackageBuilderFactory implements DistributionPackageBui
     private static final long DEFAULT_PACKAGE_CLEANUP_DELAY = 60L;
 
     @Activate
-    public void activate(BundleContext context,
-                         Config conf) {
+    public void activate(BundleContext context, Config conf) {
 
         String[] nodeFilters = SettingsUtils.removeEmptyEntries(conf.package_filters());
         String[] propertyFilters = SettingsUtils.removeEmptyEntries(conf.property_filters());
@@ -173,16 +186,34 @@ public class DistributionPackageBuilderFactory implements DistributionPackageBui
 
         DistributionPackageBuilder wrapped;
         if ("file".equals(persistenceType)) {
-            wrapped = new FileDistributionPackageBuilder(contentSerializer.getName(), contentSerializer, tempFsFolder, digestAlgorithm, nodeFilters, propertyFilters);
+            wrapped = new FileDistributionPackageBuilder(
+                    contentSerializer.getName(),
+                    contentSerializer,
+                    tempFsFolder,
+                    digestAlgorithm,
+                    nodeFilters,
+                    propertyFilters);
         } else if ("inmemory".equals(persistenceType)) {
-            wrapped = new InMemoryDistributionPackageBuilder(contentSerializer.getName(), contentSerializer, nodeFilters, propertyFilters);
+            wrapped = new InMemoryDistributionPackageBuilder(
+                    contentSerializer.getName(), contentSerializer, nodeFilters, propertyFilters);
         } else {
             final int fileThreshold = conf.fileThreshold();
             String memoryUnitName = conf.memoryUnit();
             final MemoryUnit memoryUnit = MemoryUnit.valueOf(memoryUnitName);
             final boolean useOffHeapMemory = conf.useOffHeapMemory();
-            ResourceDistributionPackageBuilder resourceDistributionPackageBuilder = new ResourceDistributionPackageBuilder(contentSerializer.getName(), contentSerializer, tempFsFolder, fileThreshold, memoryUnit, useOffHeapMemory, digestAlgorithm, nodeFilters, propertyFilters);
-            Runnable cleanup = new ResourceDistributionPackageCleanup(resolverFactory, resourceDistributionPackageBuilder);
+            ResourceDistributionPackageBuilder resourceDistributionPackageBuilder =
+                    new ResourceDistributionPackageBuilder(
+                            contentSerializer.getName(),
+                            contentSerializer,
+                            tempFsFolder,
+                            fileThreshold,
+                            memoryUnit,
+                            useOffHeapMemory,
+                            digestAlgorithm,
+                            nodeFilters,
+                            propertyFilters);
+            Runnable cleanup =
+                    new ResourceDistributionPackageCleanup(resolverFactory, resourceDistributionPackageBuilder);
             Dictionary<String, Object> props = new Hashtable<String, Object>();
             props.put(Scheduler.PROPERTY_SCHEDULER_CONCURRENT, false);
             props.put(Scheduler.PROPERTY_SCHEDULER_PERIOD, cleanupDelay);
@@ -208,27 +239,34 @@ public class DistributionPackageBuilderFactory implements DistributionPackageBui
     }
 
     @NotNull
-    public DistributionPackage createPackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest request) throws DistributionException {
+    public DistributionPackage createPackage(
+            @NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest request)
+            throws DistributionException {
         return packageBuilder.createPackage(resourceResolver, request);
     }
 
     @NotNull
-    public DistributionPackage readPackage(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream) throws DistributionException {
+    public DistributionPackage readPackage(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream)
+            throws DistributionException {
         return packageBuilder.readPackage(resourceResolver, stream);
     }
 
     @Nullable
-    public DistributionPackage getPackage(@NotNull ResourceResolver resourceResolver, @NotNull String id) throws DistributionException {
+    public DistributionPackage getPackage(@NotNull ResourceResolver resourceResolver, @NotNull String id)
+            throws DistributionException {
         return packageBuilder.getPackage(resourceResolver, id);
     }
 
-    public boolean installPackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionPackage distributionPackage) throws DistributionException {
+    public boolean installPackage(
+            @NotNull ResourceResolver resourceResolver, @NotNull DistributionPackage distributionPackage)
+            throws DistributionException {
         return packageBuilder.installPackage(resourceResolver, distributionPackage);
     }
 
     @NotNull
     @Override
-    public DistributionPackageInfo installPackage(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream) throws DistributionException {
+    public DistributionPackageInfo installPackage(
+            @NotNull ResourceResolver resourceResolver, @NotNull InputStream stream) throws DistributionException {
         return packageBuilder.installPackage(resourceResolver, stream);
     }
 }

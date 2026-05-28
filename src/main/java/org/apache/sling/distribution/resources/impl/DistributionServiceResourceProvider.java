@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.resources.impl;
 
 import java.util.ArrayList;
@@ -43,9 +42,8 @@ public class DistributionServiceResourceProvider extends AbstractReadableResourc
     private final DistributionComponentKind kind;
     private final DistributionComponentProvider componentProvider;
 
-    DistributionServiceResourceProvider(String kind,
-                                        DistributionComponentProvider componentProvider,
-                                        String resourceRoot) {
+    DistributionServiceResourceProvider(
+            String kind, DistributionComponentProvider componentProvider, String resourceRoot) {
         super(resourceRoot);
         this.kind = DistributionComponentKind.fromName(kind);
         this.componentProvider = componentProvider;
@@ -67,7 +65,6 @@ public class DistributionServiceResourceProvider extends AbstractReadableResourc
 
         return null;
     }
-
 
     @Override
     protected Iterable<String> getInternalResourceChildren(ResourceResolver resolver, SimplePathInfo pathInfo) {

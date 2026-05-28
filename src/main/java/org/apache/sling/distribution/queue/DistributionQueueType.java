@@ -34,5 +34,4 @@ public enum DistributionQueueType {
      * parallel queue type (items get processed independently from one another, regardless of their order in the queue)
      */
     PARALLEL
-
 }

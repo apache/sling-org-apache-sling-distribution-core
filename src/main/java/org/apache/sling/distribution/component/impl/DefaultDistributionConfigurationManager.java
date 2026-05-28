@@ -18,7 +18,6 @@
  */
 package org.apache.sling.distribution.component.impl;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,25 +42,31 @@ import org.slf4j.LoggerFactory;
  * For each tree of properties a set of OSGI configs is generated and registered in ConfigurationAdmin.
  * To delete a component all configs owned by that component will be unregistered from ConfigurationAdmin.
  */
-@Component(service=DistributionConfigurationManager.class)
-@Designate(ocd=DefaultDistributionConfigurationManager.Config.class)
+@Component(service = DistributionConfigurationManager.class)
+@Designate(ocd = DefaultDistributionConfigurationManager.Config.class)
 public class DefaultDistributionConfigurationManager implements DistributionConfigurationManager {
-    
+
     @ObjectClassDefinition()
     public @interface Config {
-        @AttributeDefinition(name="Resource Config enabled",description = "If storing config in resource tree is enabled.")
+        @AttributeDefinition(
+                name = "Resource Config enabled",
+                description = "If storing config in resource tree is enabled.")
         boolean resource_config_enabled() default false;
-        
-        @AttributeDefinition(name="Resource Config prefix",description = "The prefix of properties to be stored in content")
+
+        @AttributeDefinition(
+                name = "Resource Config prefix",
+                description = "The prefix of properties to be stored in content")
         String resourceConfigPrefix() default "etc.";
-        
-        @AttributeDefinition(name="Resource Config Root", description = "The resource config root")
+
+        @AttributeDefinition(name = "Resource Config Root", description = "The resource config root")
         String resourceConfigRoot() default "/etc/distribution";
-        
-        @AttributeDefinition(name="Resource Config Properties", description = "The resource config properties")
+
+        @AttributeDefinition(name = "Resource Config Properties", description = "The resource config properties")
         String[] resourceConfigProperties() default {"enabled"};
-        
-        @AttributeDefinition(name="Resource Config Defaults", description = "The default values for resource config properties")
+
+        @AttributeDefinition(
+                name = "Resource Config Defaults",
+                description = "The default values for resource config properties")
         String[] resourceConfigDefaults() default {"serializationType=distribution"};
     }
 
@@ -102,7 +107,6 @@ public class DefaultDistributionConfigurationManager implements DistributionConf
         resourceManager = null;
         osgiManager = null;
     }
-
 
     @Override
     public List<DistributionConfiguration> getConfigs(ResourceResolver resolver, DistributionComponentKind kind) {
@@ -162,7 +166,8 @@ public class DefaultDistributionConfigurationManager implements DistributionConf
         }
     }
 
-    static DistributionConfiguration mergeConfig(DistributionConfiguration main, DistributionConfiguration extension, String prefix) {
+    static DistributionConfiguration mergeConfig(
+            DistributionConfiguration main, DistributionConfiguration extension, String prefix) {
 
         if (main == null) {
             return null;
@@ -176,7 +181,8 @@ public class DefaultDistributionConfigurationManager implements DistributionConf
         return mergeConfig(main.getKind(), main.getName(), configMap);
     }
 
-    static DistributionConfiguration mergeConfig(DistributionComponentKind kind, String name, Map<String, DistributionConfiguration> configMap) {
+    static DistributionConfiguration mergeConfig(
+            DistributionComponentKind kind, String name, Map<String, DistributionConfiguration> configMap) {
         Map<String, Object> result = new HashMap<String, Object>();
         for (String prefixKey : configMap.keySet()) {
             DistributionConfiguration config = configMap.get(prefixKey);
@@ -198,7 +204,8 @@ public class DefaultDistributionConfigurationManager implements DistributionConf
         return new DistributionConfiguration(kind, name, result);
     }
 
-    static List<DistributionConfiguration> mergeConfigs(List<DistributionConfiguration> target, List<DistributionConfiguration> source, String prefix) {
+    static List<DistributionConfiguration> mergeConfigs(
+            List<DistributionConfiguration> target, List<DistributionConfiguration> source, String prefix) {
         List<DistributionConfiguration> result = new ArrayList<DistributionConfiguration>();
 
         Map<String, DistributionConfiguration> sourceMap = new HashMap<String, DistributionConfiguration>();
@@ -236,9 +243,12 @@ public class DefaultDistributionConfigurationManager implements DistributionConf
         // split the properties of the given configuration between the OSGi config and the persisted config
         for (String configurationPropertyKey : distributionConfigurationProperties.keySet()) {
             if (configurationPropertyKey.startsWith(prefix)) {
-                prefixMap.put(configurationPropertyKey.substring(prefix.length()), distributionConfigurationProperties.get(configurationPropertyKey));
+                prefixMap.put(
+                        configurationPropertyKey.substring(prefix.length()),
+                        distributionConfigurationProperties.get(configurationPropertyKey));
             } else {
-                defaultMap.put(configurationPropertyKey, distributionConfigurationProperties.get(configurationPropertyKey));
+                defaultMap.put(
+                        configurationPropertyKey, distributionConfigurationProperties.get(configurationPropertyKey));
             }
         }
 

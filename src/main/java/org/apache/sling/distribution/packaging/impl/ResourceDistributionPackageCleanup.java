@@ -18,7 +18,6 @@
  */
 package org.apache.sling.distribution.packaging.impl;
 
-
 import java.util.Iterator;
 
 import org.apache.sling.api.resource.LoginException;
@@ -45,19 +44,22 @@ public class ResourceDistributionPackageCleanup implements Runnable {
 
     private final ResourceResolverFactory resolverFactory;
 
-    public ResourceDistributionPackageCleanup(@NotNull ResourceResolverFactory resolverFactory,
-                                              @NotNull ResourceDistributionPackageBuilder packageBuilder) {
+    public ResourceDistributionPackageCleanup(
+            @NotNull ResourceResolverFactory resolverFactory,
+            @NotNull ResourceDistributionPackageBuilder packageBuilder) {
         this.resolverFactory = resolverFactory;
         this.packageBuilder = packageBuilder;
     }
 
-    public void run () {
+    public void run() {
         log.debug("Cleaning up {} packages", packageBuilder.getType());
         ResourceResolver serviceResolver = null;
         try {
             int deleted = 0, total = 0;
             serviceResolver = resolverFactory.getServiceResourceResolver(null);
-            for (Iterator<ResourceDistributionPackage> pkgs = packageBuilder.getPackages(serviceResolver) ; pkgs.hasNext() ; total++) {
+            for (Iterator<ResourceDistributionPackage> pkgs = packageBuilder.getPackages(serviceResolver);
+                    pkgs.hasNext();
+                    total++) {
                 ResourceDistributionPackage pkg = pkgs.next();
                 if (pkg.disposable()) {
                     log.debug("Delete package {}", pkg.getId());
@@ -70,8 +72,7 @@ public class ResourceDistributionPackageCleanup implements Runnable {
             if (serviceResolver.hasChanges()) {
                 serviceResolver.commit();
             }
-            log.debug("Cleaned up {}/{} {} packages",
-                    deleted, total, packageBuilder.getType());
+            log.debug("Cleaned up {}/{} {} packages", deleted, total, packageBuilder.getType());
         } catch (LoginException e) {
             log.error("Failed to get distribution service resolver: {}", e.getMessage());
         } catch (DistributionException e) {

@@ -29,8 +29,8 @@ import static org.apache.sling.distribution.log.impl.DefaultDistributionLog.LogL
 import static org.apache.sling.distribution.log.impl.DefaultDistributionLog.LogLevel.ERROR;
 import static org.apache.sling.distribution.log.impl.DefaultDistributionLog.LogLevel.INFO;
 import static org.apache.sling.distribution.log.impl.DefaultDistributionLog.LogLevel.WARN;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class DefaultDistributionLogTest {
@@ -131,5 +131,4 @@ public class DefaultDistributionLogTest {
     private DefaultDistributionLog buildLog(LogLevel level) {
         return new DefaultDistributionLog(COMPONENT_KIND, NAME, CLASS, level);
     }
-
 }

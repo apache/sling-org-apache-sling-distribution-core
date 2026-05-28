@@ -38,30 +38,36 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @Component(
         configurationPolicy = ConfigurationPolicy.REQUIRE,
-        service=DistributionTrigger.class,
-        property= {
-               "webconsole.configurationFactory.nameHint=Trigger name: {name}"
-        })
-@Designate(ocd=ScheduledDistributionTriggerFactory.Config.class,factory=true)
+        service = DistributionTrigger.class,
+        property = {"webconsole.configurationFactory.nameHint=Trigger name: {name}"})
+@Designate(ocd = ScheduledDistributionTriggerFactory.Config.class, factory = true)
 public class ScheduledDistributionTriggerFactory implements DistributionTrigger {
 
-    @ObjectClassDefinition(name="Apache Sling Distribution Trigger - Scheduled Triggers Factory",
-            description = "Triggers a distribution request of the given type (action) " +
-                    "for the given path (path) at a periodical time interval (seconds).")
+    @ObjectClassDefinition(
+            name = "Apache Sling Distribution Trigger - Scheduled Triggers Factory",
+            description = "Triggers a distribution request of the given type (action) "
+                    + "for the given path (path) at a periodical time interval (seconds).")
     public @interface Config {
-        @AttributeDefinition(name="Name", description = "The name of the trigger.")
+        @AttributeDefinition(name = "Name", description = "The name of the trigger.")
         String name();
-        @AttributeDefinition(name="Distribution Type", description = "The type of the distribution request produced by "
-                + "this trigger in ('ADD', 'DELETE', 'PULL', 'TEST'). Default 'PULL'.")
+
+        @AttributeDefinition(
+                name = "Distribution Type",
+                description = "The type of the distribution request produced by "
+                        + "this trigger in ('ADD', 'DELETE', 'PULL', 'TEST'). Default 'PULL'.")
         String action();
-        @AttributeDefinition(name="Name", description = "The path to be distributed periodically.")
+
+        @AttributeDefinition(name = "Name", description = "The path to be distributed periodically.")
         String path();
-        
-        @AttributeDefinition(name="Interval in Seconds", 
+
+        @AttributeDefinition(
+                name = "Interval in Seconds",
                 description = "The number of seconds between distribution requests. Default 30 seconds.")
         int seconds() default 30;
-        
-        @AttributeDefinition(name="Service Name", description = "The name of the service used to trigger the distribution requests.")
+
+        @AttributeDefinition(
+                name = "Service Name",
+                description = "The name of the service used to trigger the distribution requests.")
         String serviceName();
     }
 
@@ -73,11 +79,11 @@ public class ScheduledDistributionTriggerFactory implements DistributionTrigger 
     @Reference
     private Scheduler scheduler;
 
-
     @Activate
     public void activate(BundleContext bundleContext, Config conf) {
         // Unfortunately we cannot make DistributionRequestType.PULL.name() a default value in the above annotation.
-        // see https://stackoverflow.com/questions/13253624/how-to-supply-enum-value-to-an-annotation-from-a-constant-in-java
+        // see
+        // https://stackoverflow.com/questions/13253624/how-to-supply-enum-value-to-an-annotation-from-a-constant-in-java
         String action = conf.action();
         if (action == null || action.isEmpty()) {
             action = DistributionRequestType.PULL.name();

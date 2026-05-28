@@ -18,15 +18,15 @@
  */
 package org.apache.sling.distribution.resources.impl.common;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 public class SimpleReadableResourceTestCase {
 
@@ -35,15 +35,12 @@ public class SimpleReadableResourceTestCase {
         ResourceResolver resourceResolver = mock(ResourceResolver.class);
         String resourcePath = "";
         Map<String, Object> properties = new HashMap<String, Object>();
-        Object[] adapters = new Object[]{
-            new String[]{ "hello Apache Sling" }
-        };
+        Object[] adapters = new Object[] {new String[] {"hello Apache Sling"}};
         Resource resource = new SimpleReadableResource(resourceResolver, resourcePath, properties, adapters);
 
         String[] result = resource.adaptTo(String[].class);
         assertNotNull(result);
         assertTrue(result.length == 1);
-        assertEquals( ((String[]) adapters[0])[0], result[0] );
+        assertEquals(((String[]) adapters[0])[0], result[0]);
     }
-
 }

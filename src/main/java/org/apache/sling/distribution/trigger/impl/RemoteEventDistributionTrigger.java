@@ -23,6 +23,7 @@ import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
+
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
@@ -57,7 +58,7 @@ import org.slf4j.LoggerFactory;
  * on a certain URL
  */
 public class RemoteEventDistributionTrigger implements DistributionTrigger {
-    private final static String SCHEDULE_NAME = "remoteEventTrigger";
+    private static final String SCHEDULE_NAME = "remoteEventTrigger";
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -66,9 +67,13 @@ public class RemoteEventDistributionTrigger implements DistributionTrigger {
 
     private Scheduler scheduler;
 
-    private final Map<DistributionRequestHandler, Future<HttpResponse>> requests = new ConcurrentHashMap<DistributionRequestHandler, Future<HttpResponse>>();
+    private final Map<DistributionRequestHandler, Future<HttpResponse>> requests =
+            new ConcurrentHashMap<DistributionRequestHandler, Future<HttpResponse>>();
 
-    public RemoteEventDistributionTrigger(String endpoint, DistributionTransportSecretProvider distributionTransportSecretProvider, Scheduler scheduler) {
+    public RemoteEventDistributionTrigger(
+            String endpoint,
+            DistributionTransportSecretProvider distributionTransportSecretProvider,
+            Scheduler scheduler) {
         if (endpoint == null) {
             throw new IllegalArgumentException("Endpoint is required");
         }
@@ -126,7 +131,8 @@ public class RemoteEventDistributionTrigger implements DistributionTrigger {
             // TODO : currently it always triggers pull request on /, should this be configurable?
             DistributionRequest distributionRequest = new SimpleDistributionRequest(DistributionRequestType.PULL, "/");
             handler.handle(null, distributionRequest);
-            log.info("distribution request to agent {} sent ({} {})",
+            log.info(
+                    "distribution request to agent {} sent ({} {})",
                     handler,
                     distributionRequest.getRequestType(),
                     distributionRequest.getPaths());
@@ -158,11 +164,16 @@ public class RemoteEventDistributionTrigger implements DistributionTrigger {
 
                 CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
 
-                Map<String, String> credentialsMap = distributionTransportSecretProvider.getSecret(endpoint.getUri()).asCredentialsMap();
+                Map<String, String> credentialsMap = distributionTransportSecretProvider
+                        .getSecret(endpoint.getUri())
+                        .asCredentialsMap();
                 if (credentialsMap != null) {
                     String username = credentialsMap.get("username");
                     String password = credentialsMap.get("password");
-                    credentialsProvider.setCredentials(new AuthScope(new HttpHost(endpoint.getUri().getHost(), endpoint.getUri().getPort())),
+                    credentialsProvider.setCredentials(
+                            new AuthScope(new HttpHost(
+                                    endpoint.getUri().getHost(),
+                                    endpoint.getUri().getPort())),
                             new UsernamePasswordCredentials(username, password));
 
                     final CloseableHttpAsyncClient httpClient = HttpAsyncClients.custom()
@@ -177,7 +188,8 @@ public class RemoteEventDistributionTrigger implements DistributionTrigger {
                         log.debug("sending request");
                         Future<HttpResponse> futureResponse = httpClient.execute(
                                 basicAsyncRequestProducer,
-                                new SSEResponseConsumer(requestHandler), new FutureCallback<HttpResponse>() {
+                                new SSEResponseConsumer(requestHandler),
+                                new FutureCallback<HttpResponse>() {
                                     public void completed(HttpResponse httpResponse) {
                                         log.debug("response received {}", httpResponse);
                                     }

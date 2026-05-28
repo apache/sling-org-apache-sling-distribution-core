@@ -38,6 +38,6 @@ public interface DistributionRequestAuthorizationStrategy {
      * @throws DistributionException if the {@link org.apache.sling.api.resource.ResourceResolver} is
      *                                                  not authorized to execute the given {@link org.apache.sling.distribution.DistributionRequest}
      */
-    void checkPermission(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest) throws DistributionException;
-
+    void checkPermission(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest)
+            throws DistributionException;
 }

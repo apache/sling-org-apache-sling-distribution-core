@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.impl;
 
 import javax.annotation.Nonnull;
@@ -46,11 +45,11 @@ public class SimpleDistributionResponse implements DistributionResponse {
         }
         this.info = info;
     }
-    
+
     public SimpleDistributionResponse(DistributionRequestState state, String message) {
         this(state, message, NONE);
     }
-    
+
     public boolean isSuccessful() {
         return DistributionRequestState.ACCEPTED.equals(state) || DistributionRequestState.DISTRIBUTED.equals(state);
     }
@@ -69,15 +68,13 @@ public class SimpleDistributionResponse implements DistributionResponse {
     public DistributionResponseInfo getDistributionInfo() {
         return info;
     }
-    
+
     @Override
     public String toString() {
-        return "SimpleDistributionResponse{" +
-                "isSuccessful=" + isSuccessful() +
-                ", state=" + state +
-                ", message=" + message +
-                ", info={id=" + info.getId() + "}" + 
-                '}';
+        return "SimpleDistributionResponse{" + "isSuccessful="
+                + isSuccessful() + ", state="
+                + state + ", message="
+                + message + ", info={id="
+                + info.getId() + "}" + '}';
     }
-
 }

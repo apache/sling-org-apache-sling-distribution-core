@@ -18,15 +18,15 @@
  */
 package org.apache.sling.distribution.util;
 
+import javax.jcr.RepositoryException;
+import javax.jcr.observation.Event;
+
 import org.apache.jackrabbit.api.observation.JackrabbitEvent;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import javax.jcr.RepositoryException;
-import javax.jcr.observation.Event;
-
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 public class DistributionJcrUtilsTest {
@@ -50,8 +50,7 @@ public class DistributionJcrUtilsTest {
         assertFalse(DistributionJcrUtils.isSafe(buildEvent(false, "do.not.distribute")));
     }
 
-    private JackrabbitEvent buildEvent(boolean external, String userData)
-            throws RepositoryException {
+    private JackrabbitEvent buildEvent(boolean external, String userData) throws RepositoryException {
         JackrabbitEvent event = Mockito.mock(JackrabbitEvent.class);
         when(event.isExternal()).thenReturn(external);
         when(event.getUserData()).thenReturn(userData);

@@ -28,20 +28,21 @@ import org.apache.sling.distribution.packaging.impl.DistributionPackageBuilderPr
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-@Component(service=DistributionPackageBuilderProvider.class)
+@Component(service = DistributionPackageBuilderProvider.class)
 public class DefaultDistributionPackageBuilderProvider implements DistributionPackageBuilderProvider {
 
     @Reference
-    private
-    DistributionComponentProvider componentProvider;
+    private DistributionComponentProvider componentProvider;
 
     public DistributionPackageBuilder getPackageBuilder(String type) {
-        List<DistributionComponent<?>> componentList = componentProvider.getComponents(DistributionComponentKind.PACKAGE_BUILDER);
+        List<DistributionComponent<?>> componentList =
+                componentProvider.getComponents(DistributionComponentKind.PACKAGE_BUILDER);
 
         return filterPackageBuildersByType(componentList, type);
     }
 
-    private static DistributionPackageBuilder filterPackageBuildersByType(List<DistributionComponent<?>> componentList, String type) {
+    private static DistributionPackageBuilder filterPackageBuildersByType(
+            List<DistributionComponent<?>> componentList, String type) {
 
         if (type == null) {
             return null;

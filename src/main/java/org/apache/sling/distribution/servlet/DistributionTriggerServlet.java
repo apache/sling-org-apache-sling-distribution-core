@@ -20,6 +20,7 @@ package org.apache.sling.distribution.servlet;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
@@ -45,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * Triggers Server Sent Events servlet
  */
 @SuppressWarnings("serial")
-@Component(service=Servlet.class)
+@Component(service = Servlet.class)
 @SlingServletResourceTypes(
         methods = {"GET"},
         resourceTypes = {DistributionResourceTypes.TRIGGER_RESOURCE_TYPE},
@@ -54,8 +55,8 @@ public class DistributionTriggerServlet extends SlingAllMethodsServlet {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private final static int DEFAULT_NUMBER_OF_SECONDS = 60;
-    private final static int MAX_NUMBER_OF_SECONDS = 3600;
+    private static final int DEFAULT_NUMBER_OF_SECONDS = 60;
+    private static final int MAX_NUMBER_OF_SECONDS = 3600;
 
     @Override
     protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response)
@@ -63,8 +64,9 @@ public class DistributionTriggerServlet extends SlingAllMethodsServlet {
 
         String secondsParameter = request.getParameter("sec");
 
-        int seconds = secondsParameter != null && secondsParameter.length() > 0 ? Integer.parseInt(secondsParameter) :
-                DEFAULT_NUMBER_OF_SECONDS;
+        int seconds = secondsParameter != null && secondsParameter.length() > 0
+                ? Integer.parseInt(secondsParameter)
+                : DEFAULT_NUMBER_OF_SECONDS;
 
         if (seconds > MAX_NUMBER_OF_SECONDS) {
             seconds = MAX_NUMBER_OF_SECONDS;
@@ -80,9 +82,11 @@ public class DistributionTriggerServlet extends SlingAllMethodsServlet {
         response.setHeader("Cache-Control", "no-cache");
         response.setHeader("Connection", "keep-alive");
 
-        // needed to allow e.g. the JavaScript EventSource API to make a call from author to this server and listen for the events
-//        response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin")); // allowed origins should be explicitly configured
-//        response.setHeader("Access-Control-Allow-Credentials", "true");
+        // needed to allow e.g. the JavaScript EventSource API to make a call from author to this server and listen for
+        // the events
+        //        response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin")); // allowed origins
+        // should be explicitly configured
+        //        response.setHeader("Access-Control-Allow-Credentials", "true");
 
         final PrintWriter writer = response.getWriter();
 
@@ -125,7 +129,8 @@ public class DistributionTriggerServlet extends SlingAllMethodsServlet {
         // write the actual data
         // this could be simple text or could be JSON-encoded text that the
         // client then decodes
-        writer.write("data: " + distributionRequest.getRequestType() + " " + Arrays.toString(distributionRequest.getPaths()) + "\n\n");
+        writer.write("data: " + distributionRequest.getRequestType() + " "
+                + Arrays.toString(distributionRequest.getPaths()) + "\n\n");
 
         // flush the buffers to make sure the container sends the bytes
         writer.flush();

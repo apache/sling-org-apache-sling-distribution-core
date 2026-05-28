@@ -43,10 +43,8 @@ public class VltUtilsTest {
     @Test
     public void testEmptyFilter() throws Exception {
         DistributionRequest request = new SimpleDistributionRequest(ADD, true, "/foo");
-        NavigableMap<String, List<String>> nodeFilters =
-                new TreeMap<String, List<String>>();
-        NavigableMap<String, List<String>> propFilters =
-                new TreeMap<String, List<String>>();
+        NavigableMap<String, List<String>> nodeFilters = new TreeMap<String, List<String>>();
+        NavigableMap<String, List<String>> propFilters = new TreeMap<String, List<String>>();
         WorkspaceFilter filter = VltUtils.createFilter(request, nodeFilters, propFilters);
 
         assertNotNull(filter);
@@ -64,17 +62,14 @@ public class VltUtilsTest {
         PathFilterSet nodeFilter = nodeFilterSet.get(0);
         assertTrue(nodeFilter.getEntries().isEmpty());
         assertEquals("/foo", nodeFilter.getRoot());
-
     }
 
     @Test
     public void testDeepFilter() throws Exception {
         DistributionRequest request = new SimpleDistributionRequest(ADD, true, "/foo");
-        NavigableMap<String, List<String>> nodeFilters =
-                new TreeMap<String, List<String>>();
+        NavigableMap<String, List<String>> nodeFilters = new TreeMap<String, List<String>>();
         nodeFilters.put("/foo", Arrays.asList("/foo/bar", "/foo/bar1"));
-        NavigableMap<String, List<String>> propFilters =
-                new TreeMap<String, List<String>>();
+        NavigableMap<String, List<String>> propFilters = new TreeMap<String, List<String>>();
         propFilters.put("/", Arrays.asList("^.*/prop1", "^.*/prop2"));
         WorkspaceFilter wsFilter = VltUtils.createFilter(request, nodeFilters, propFilters);
 
@@ -92,8 +87,7 @@ public class VltUtilsTest {
 
     @Test
     public void testFilterParsing() throws Exception {
-        Map<String, List<String>> filters = VltUtils.parseFilters(
-                new String[]{"/some/path|-.*/foo"});
+        Map<String, List<String>> filters = VltUtils.parseFilters(new String[] {"/some/path|-.*/foo"});
         assertNotNull(filters);
         assertEquals(1, filters.size());
         List<String> filtersForSomePath = filters.get("/some/path");
@@ -107,8 +101,8 @@ public class VltUtilsTest {
      */
     @Test
     public void testFilterParsingWithSamePath() throws Exception {
-        Map<String, List<String>> filters = VltUtils.parseFilters(
-                new String[]{"/some/path|-.*/foo","/some/path|-.*/bar"});
+        Map<String, List<String>> filters =
+                VltUtils.parseFilters(new String[] {"/some/path|-.*/foo", "/some/path|-.*/bar"});
         assertNotNull(filters);
         assertEquals(1, filters.size());
         List<String> filtersForSomePath = filters.get("/some/path");
@@ -117,7 +111,7 @@ public class VltUtilsTest {
         assertEquals("-.*/foo", filtersForSomePath.get(0));
         assertEquals("-.*/bar", filtersForSomePath.get(1));
     }
-    
+
     @Test
     public void testCreateFilterWithParenthesis() throws Exception {
         DistributionRequest request = new SimpleDistributionRequest(ADD, false, "/nodewith(shouldwork");
@@ -125,7 +119,7 @@ public class VltUtilsTest {
         NavigableMap<String, List<String>> propFilters = new TreeMap<String, List<String>>();
         VltUtils.createFilter(request, nodeFilters, propFilters);
     }
-    
+
     @Test
     public void testSanitizeWithPolicyNodeIsConvertedToDeepPath() {
         String pathWithPolicy = "/nodewith(shouldwork/rep:policy";
@@ -137,5 +131,4 @@ public class VltUtilsTest {
         assertThat(sanitizedRequest.isDeep(pathWithPolicy), equalTo(true));
         assertThat(sanitizedRequest.isDeep(pathWithoutPolicy), equalTo(false));
     }
-    
 }

@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.resources.impl;
 
 import java.io.PrintWriter;
@@ -27,27 +26,26 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-
-import org.apache.sling.distribution.agent.spi.DistributionAgent;
 import org.apache.sling.distribution.agent.DistributionAgentState;
+import org.apache.sling.distribution.agent.spi.DistributionAgent;
 import org.apache.sling.distribution.component.impl.DistributionComponent;
 import org.apache.sling.distribution.component.impl.DistributionComponentKind;
 import org.apache.sling.distribution.component.impl.DistributionComponentProvider;
 import org.apache.sling.distribution.log.spi.DistributionLog;
-import org.apache.sling.distribution.queue.impl.ErrorQueueDispatchingStrategy;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
-import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
 import org.apache.sling.distribution.queue.DistributionQueueStatus;
+import org.apache.sling.distribution.queue.impl.ErrorQueueDispatchingStrategy;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.resources.DistributionResourceTypes;
 import org.apache.sling.distribution.resources.impl.common.SimplePathInfo;
 
 import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.APPENDABLE;
-import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.REMOVABLE;
 import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.CLEARABLE;
+import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.REMOVABLE;
 
 /**
  * Extended service resource provider exposes children resources like .../agents/agentName/queues/queueName/queueItem
@@ -58,21 +56,17 @@ public class ExtendedDistributionServiceResourceProvider extends DistributionSer
     private static final String LOG_PATH = "log";
     private static final String STATUS_PATH = "status";
 
-
     private static final int MAX_QUEUE_LENGTH = 5000;
     private static final int MAX_QUEUE_CHUNK = 100;
 
-
-
-    public ExtendedDistributionServiceResourceProvider(String kind,
-                                                       DistributionComponentProvider componentProvider,
-                                                       String resourceRoot) {
+    public ExtendedDistributionServiceResourceProvider(
+            String kind, DistributionComponentProvider componentProvider, String resourceRoot) {
         super(kind, componentProvider, resourceRoot);
     }
 
-
     @Override
-    protected Map<String, Object> getChildResourceProperties(DistributionComponent<?> component, String childResourceName) {
+    protected Map<String, Object> getChildResourceProperties(
+            DistributionComponent<?> component, String childResourceName) {
         DistributionComponentKind kind = component.getKind();
         if (DistributionComponentKind.AGENT == kind) {
             DistributionAgent agent = (DistributionAgent) component.getService();
@@ -96,7 +90,6 @@ public class ExtendedDistributionServiceResourceProvider extends DistributionSer
                     result.put("state", agentState.name());
                     return result;
                 }
-
             }
         }
         return null;
@@ -167,7 +160,6 @@ public class ExtendedDistributionServiceResourceProvider extends DistributionSer
                 result.put(INTERNAL_ADAPTABLE, queue);
             }
 
-
             return result;
 
         } else if (queueInfo.isChild()) {
@@ -189,10 +181,8 @@ public class ExtendedDistributionServiceResourceProvider extends DistributionSer
         return null;
     }
 
-
     private Map<String, Object> getItemProperties(DistributionQueueEntry entry) {
         Map<String, Object> result = new HashMap<String, Object>();
-
 
         if (entry != null) {
 
@@ -206,7 +196,9 @@ public class ExtendedDistributionServiceResourceProvider extends DistributionSer
             result.put("size", item.getSize());
             result.put("paths", packageInfo.getPaths());
             result.put("action", packageInfo.getRequestType());
-            result.put("userid", packageInfo.get(DistributionPackageUtils.PACKAGE_INFO_PROPERTY_REQUEST_USER, String.class));
+            result.put(
+                    "userid",
+                    packageInfo.get(DistributionPackageUtils.PACKAGE_INFO_PROPERTY_REQUEST_USER, String.class));
 
             DistributionQueueItemStatus status = entry.getStatus();
             result.put("attempts", status.getAttempts());
@@ -222,7 +214,6 @@ public class ExtendedDistributionServiceResourceProvider extends DistributionSer
         }
 
         return result;
-
     }
 
     private String[] queueCapabilities(DistributionQueue queue) {
@@ -238,7 +229,6 @@ public class ExtendedDistributionServiceResourceProvider extends DistributionSer
         }
         return capabilities.toArray(new String[capabilities.size()]);
     }
-
 
     class QueueItemsIterator implements Iterator<Map<String, Object>> {
 
@@ -273,7 +263,7 @@ public class ExtendedDistributionServiceResourceProvider extends DistributionSer
             Map<String, Object> itemProperties = getItemProperties(queueEntry);
             itemProperties.put(INTERNAL_NAME, itemName);
 
-            fetched ++;
+            fetched++;
             return itemProperties;
         }
 
@@ -282,5 +272,4 @@ public class ExtendedDistributionServiceResourceProvider extends DistributionSer
             items.remove();
         }
     }
-
 }

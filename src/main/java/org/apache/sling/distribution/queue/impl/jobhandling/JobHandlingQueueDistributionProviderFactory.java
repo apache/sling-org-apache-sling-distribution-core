@@ -16,8 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.queue.impl.jobhandling;
+
+import java.util.Map;
 
 import org.apache.sling.distribution.component.impl.DistributionComponentConstants;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
@@ -28,12 +29,9 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import java.util.Map;
-
-@Component(service=DistributionQueueProviderFactory.class,
-    property= {
-            DistributionComponentConstants.PN_NAME + "=jobQueue"    
-    })
+@Component(
+        service = DistributionQueueProviderFactory.class,
+        property = {DistributionComponentConstants.PN_NAME + "=jobQueue"})
 public class JobHandlingQueueDistributionProviderFactory implements DistributionQueueProviderFactory {
 
     @Reference
@@ -41,10 +39,8 @@ public class JobHandlingQueueDistributionProviderFactory implements Distribution
 
     BundleContext context;
 
-
     @Activate
-    protected void activate(BundleContext context, Map<String, Object> config)
-    {
+    protected void activate(BundleContext context, Map<String, Object> config) {
         this.context = context;
     }
 
@@ -54,7 +50,5 @@ public class JobHandlingQueueDistributionProviderFactory implements Distribution
     }
 
     @Override
-    public void releaseProvider(DistributionQueueProvider queueProvider) {
-
-    }
+    public void releaseProvider(DistributionQueueProvider queueProvider) {}
 }

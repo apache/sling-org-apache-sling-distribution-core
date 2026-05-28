@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.servlet;
 
 import javax.json.Json;
@@ -40,9 +39,10 @@ import org.slf4j.LoggerFactory;
  */
 class ServletJsonUtils {
 
-    private final static Logger log = LoggerFactory.getLogger(ServletJsonUtils.class);
+    private static final Logger log = LoggerFactory.getLogger(ServletJsonUtils.class);
 
-    public static void writeJson(SlingHttpServletResponse response, DistributionResponse distributionResponse) throws IOException {
+    public static void writeJson(SlingHttpServletResponse response, DistributionResponse distributionResponse)
+            throws IOException {
 
         switch (distributionResponse.getState()) {
             case DISTRIBUTED:
@@ -62,8 +62,9 @@ class ServletJsonUtils {
         append(body, response.getWriter());
     }
 
-    public static void writeJson(SlingHttpServletResponse response, int status, String message,
-                                 @Nullable Map<String, String> kv) throws IOException {
+    public static void writeJson(
+            SlingHttpServletResponse response, int status, String message, @Nullable Map<String, String> kv)
+            throws IOException {
 
         response.setStatus(status);
         JsonObject body = buildBody(message, kv);

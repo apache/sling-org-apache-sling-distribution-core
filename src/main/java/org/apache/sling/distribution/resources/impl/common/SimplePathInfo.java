@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.resources.impl.common;
 
 /**
@@ -36,7 +35,8 @@ public class SimplePathInfo {
     private final String mainResourceName;
     private final String childResourceName;
 
-    private SimplePathInfo(String resourcePathInfo, String resourceRoot, String resourceName, String childResourceName) {
+    private SimplePathInfo(
+            String resourcePathInfo, String resourceRoot, String resourceName, String childResourceName) {
 
         this.resourcePathInfo = resourcePathInfo;
         this.resourceRoot = resourceRoot;
@@ -80,7 +80,6 @@ public class SimplePathInfo {
         return null;
     }
 
-
     public static SimplePathInfo parsePathInfo(String resourceRoot, String requestPath) {
         if (!requestPath.startsWith(resourceRoot)) {
             return null;
@@ -115,5 +114,3 @@ public class SimplePathInfo {
         return new SimplePathInfo(resourcePathInfo, resourceRoot, resourceName, childResourceName);
     }
 }
-
-

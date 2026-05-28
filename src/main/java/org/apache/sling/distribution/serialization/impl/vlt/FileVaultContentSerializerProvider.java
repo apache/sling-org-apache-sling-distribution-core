@@ -36,15 +36,13 @@ public class FileVaultContentSerializerProvider implements DistributionContentSe
     private final Packaging packaging;
 
     @Activate
-    public FileVaultContentSerializerProvider (@Reference Packaging packaging) {
+    public FileVaultContentSerializerProvider(@Reference Packaging packaging) {
         this.packaging = packaging;
     }
 
     @Override
     public DistributionContentSerializer build(
-            String name,
-            ExportSettings exportSettings,
-            ImportSettings importSettings) {
+            String name, ExportSettings exportSettings, ImportSettings importSettings) {
         return new FileVaultContentSerializer(name, packaging, exportSettings, importSettings);
     }
 }

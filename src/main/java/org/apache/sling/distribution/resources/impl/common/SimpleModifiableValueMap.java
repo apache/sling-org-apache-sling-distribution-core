@@ -20,6 +20,7 @@ package org.apache.sling.distribution.resources.impl.common;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.wrappers.ModifiableValueMapDecorator;
@@ -28,16 +29,16 @@ import org.jetbrains.annotations.NotNull;
 /**
  * ValueMap that signals to the underlying resource provider the its values are changed.
  */
-class SimpleModifiableValueMap extends ModifiableValueMapDecorator
-        implements ModifiableValueMap {
+class SimpleModifiableValueMap extends ModifiableValueMapDecorator implements ModifiableValueMap {
 
     private final ResourceResolver resourceResolver;
     private final AbstractModifyingResourceProvider resourceProvider;
     private final SimpleModifiableResource resource;
 
-    public SimpleModifiableValueMap(ResourceResolver resourceResolver,
-                                    AbstractModifyingResourceProvider resourceProvider,
-                                    SimpleModifiableResource resource) {
+    public SimpleModifiableValueMap(
+            ResourceResolver resourceResolver,
+            AbstractModifyingResourceProvider resourceProvider,
+            SimpleModifiableResource resource) {
         super(resource.getProperties());
         this.resourceResolver = resourceResolver;
         this.resourceProvider = resourceProvider;

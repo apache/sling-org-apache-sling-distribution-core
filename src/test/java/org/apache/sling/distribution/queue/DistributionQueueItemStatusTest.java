@@ -33,16 +33,16 @@ public class DistributionQueueItemStatusTest {
 
     @Test
     public void getNoErrorByDefault() {
-        DistributionQueueItemStatus status = new DistributionQueueItemStatus(Calendar.getInstance(),
-                QUEUED, 0, "queue-name");
+        DistributionQueueItemStatus status =
+                new DistributionQueueItemStatus(Calendar.getInstance(), QUEUED, 0, "queue-name");
         assertNull(status.getError());
     }
 
     @Test
     public void getErrorByDefault() {
         Throwable cause = mock(Throwable.class);
-        DistributionQueueItemStatus status = new DistributionQueueItemStatus(Calendar.getInstance(),
-                ERROR, 10, "queue-name", cause);
+        DistributionQueueItemStatus status =
+                new DistributionQueueItemStatus(Calendar.getInstance(), ERROR, 10, "queue-name", cause);
         assertNotNull(status.getError());
         assertEquals(cause, status.getError());
     }

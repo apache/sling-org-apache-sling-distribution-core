@@ -37,7 +37,8 @@ public final class DistributionQueueItemStatus {
 
     private final Throwable error;
 
-    public DistributionQueueItemStatus(Calendar entered, DistributionQueueItemState state, int attempts, String queueName, Throwable error) {
+    public DistributionQueueItemStatus(
+            Calendar entered, DistributionQueueItemState state, int attempts, String queueName, Throwable error) {
         this.entered = entered;
         this.state = state;
         this.attempts = attempts;
@@ -45,7 +46,8 @@ public final class DistributionQueueItemStatus {
         this.error = error;
     }
 
-    public DistributionQueueItemStatus(Calendar entered, DistributionQueueItemState state, int attempts, String queueName) {
+    public DistributionQueueItemStatus(
+            Calendar entered, DistributionQueueItemState state, int attempts, String queueName) {
         this(entered, state, attempts, queueName, null);
     }
 
@@ -71,9 +73,9 @@ public final class DistributionQueueItemStatus {
 
     @Override
     public String toString() {
-        return "{\"attempts\":\"" + attempts + "\",\"" + "\",\"" + "state\":\"" + state +
-                "\",\"" + "queueName\":\"" + queueName +
-                "\",\"" + "error\":\"" + error + "\"}";
+        return "{\"attempts\":\"" + attempts + "\",\"" + "\",\"" + "state\":\"" + state + "\",\""
+                + "queueName\":\"" + queueName + "\",\""
+                + "error\":\"" + error + "\"}";
     }
 
     public Calendar getEntered() {

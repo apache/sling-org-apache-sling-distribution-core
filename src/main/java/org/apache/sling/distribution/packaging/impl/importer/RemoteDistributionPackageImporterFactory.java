@@ -45,27 +45,32 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
  */
 @Component(
         configurationPolicy = ConfigurationPolicy.REQUIRE,
-        service=DistributionPackageImporter.class,
-        property= {
-               "webconsole.configurationFactory.nameHint=Importer name: {name}" 
-        })
-@Designate(ocd=RemoteDistributionPackageImporterFactory.Config.class, factory=true)
+        service = DistributionPackageImporter.class,
+        property = {"webconsole.configurationFactory.nameHint=Importer name: {name}"})
+@Designate(ocd = RemoteDistributionPackageImporterFactory.Config.class, factory = true)
 public class RemoteDistributionPackageImporterFactory implements DistributionPackageImporter {
-    
-    @ObjectClassDefinition(name="Apache Sling Distribution Importer - Remote Package Importer Factory")
+
+    @ObjectClassDefinition(name = "Apache Sling Distribution Importer - Remote Package Importer Factory")
     public @interface Config {
-        @AttributeDefinition(name="Name", description = "The name of the importer.")
+        @AttributeDefinition(name = "Name", description = "The name of the importer.")
         String name();
-        @AttributeDefinition(cardinality = 100, name="Endpoints", description = "The list of endpoints to which the packages will be imported.")
+
+        @AttributeDefinition(
+                cardinality = 100,
+                name = "Endpoints",
+                description = "The list of endpoints to which the packages will be imported.")
         String[] endpoints();
-        @AttributeDefinition(name="Transport Secret Provider", description = "The target reference for the DistributionTransportSecretProvider used to obtain the credentials used for accessing the remote endpoints, " +
-            "e.g. use target=(name=...) to bind to services by name.")
+
+        @AttributeDefinition(
+                name = "Transport Secret Provider",
+                description =
+                        "The target reference for the DistributionTransportSecretProvider used to obtain the credentials used for accessing the remote endpoints, "
+                                + "e.g. use target=(name=...) to bind to services by name.")
         String transportSecretProvider_target();
     }
 
     @Reference(name = "transportSecretProvider")
-    private
-    DistributionTransportSecretProvider transportSecretProvider;
+    private DistributionTransportSecretProvider transportSecretProvider;
 
     private DistributionPackageImporter importer;
 
@@ -75,21 +80,28 @@ public class RemoteDistributionPackageImporterFactory implements DistributionPac
         Map<String, String> endpoints = SettingsUtils.toUriMap(conf.endpoints());
         String importerName = conf.name();
 
-        DefaultDistributionLog distributionLog = new DefaultDistributionLog(DistributionComponentKind.IMPORTER, importerName, RemoteDistributionPackageImporter.class, DefaultDistributionLog.LogLevel.ERROR);
+        DefaultDistributionLog distributionLog = new DefaultDistributionLog(
+                DistributionComponentKind.IMPORTER,
+                importerName,
+                RemoteDistributionPackageImporter.class,
+                DefaultDistributionLog.LogLevel.ERROR);
 
         // default to 10s, we can expose it if needed
         HttpConfiguration httpConfiguration = new HttpConfiguration(10000);
 
-        importer = new RemoteDistributionPackageImporter(distributionLog, transportSecretProvider, endpoints, httpConfiguration);
-
+        importer = new RemoteDistributionPackageImporter(
+                distributionLog, transportSecretProvider, endpoints, httpConfiguration);
     }
 
-    public void importPackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionPackage distributionPackage) throws DistributionException {
+    public void importPackage(
+            @NotNull ResourceResolver resourceResolver, @NotNull DistributionPackage distributionPackage)
+            throws DistributionException {
         importer.importPackage(resourceResolver, distributionPackage);
     }
 
     @NotNull
-    public DistributionPackageInfo importStream(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream) throws DistributionException {
+    public DistributionPackageInfo importStream(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream)
+            throws DistributionException {
         return importer.importStream(resourceResolver, stream);
     }
 }

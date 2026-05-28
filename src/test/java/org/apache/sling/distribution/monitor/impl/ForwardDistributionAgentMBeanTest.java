@@ -18,16 +18,16 @@
  */
 package org.apache.sling.distribution.monitor.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.sling.distribution.agent.spi.DistributionAgent;
 import org.apache.sling.distribution.agent.DistributionAgentState;
+import org.apache.sling.distribution.agent.spi.DistributionAgent;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Test case for {@link ForwardDistributionAgentMBean}
@@ -75,5 +75,4 @@ public class ForwardDistributionAgentMBeanTest {
         assertEquals(osgiConfiguration.get("async.delivery"), mBean.isAsyncDelivery());
         assertEquals(agent.getState().name().toLowerCase(), mBean.getStatus());
     }
-
 }

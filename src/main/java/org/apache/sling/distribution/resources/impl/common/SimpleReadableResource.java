@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.resources.impl.common;
 
 import java.lang.reflect.Array;
@@ -40,9 +39,11 @@ class SimpleReadableResource extends AbstractResource {
 
     private final ResourceMetadata metadata = new ResourceMetadata();
 
-
-    public SimpleReadableResource(ResourceResolver resourceResolver, String resourcePath,
-                                  Map<String, Object> properties, Object... adapters) {
+    public SimpleReadableResource(
+            ResourceResolver resourceResolver,
+            String resourcePath,
+            Map<String, Object> properties,
+            Object... adapters) {
 
         this.resourceResolver = resourceResolver;
         this.resourcePath = resourcePath;
@@ -84,7 +85,6 @@ class SimpleReadableResource extends AbstractResource {
         return properties;
     }
 
-
     @Override
     public <AdapterType> AdapterType adaptTo(Class<AdapterType> type) {
 
@@ -110,7 +110,7 @@ class SimpleReadableResource extends AbstractResource {
         return super.adaptTo(type);
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     private <ArrayType> ArrayType convertArray(Class<ArrayType> arrayType, Object[] array) {
         Object[] result = (Object[]) Array.newInstance(arrayType.getComponentType(), array.length);
         for (int i = 0; i < array.length; i++) {

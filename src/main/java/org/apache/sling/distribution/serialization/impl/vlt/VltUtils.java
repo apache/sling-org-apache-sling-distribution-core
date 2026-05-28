@@ -21,6 +21,7 @@ package org.apache.sling.distribution.serialization.impl.vlt;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -69,7 +70,7 @@ import org.slf4j.LoggerFactory;
  */
 public class VltUtils {
 
-    private final static Logger log = LoggerFactory.getLogger(VltUtils.class);
+    private static final Logger log = LoggerFactory.getLogger(VltUtils.class);
 
     /**
      * The custom <code>Path-Mapping</code> property.
@@ -80,8 +81,11 @@ public class VltUtils {
 
     private static final String MAPPING_DELIMITER = ";";
 
-    public static WorkspaceFilter createFilter(DistributionRequest distributionRequest, NavigableMap<String, List<String>> nodeFilters,
-                                               NavigableMap<String, List<String>> propertyFilters) throws ConfigurationException {
+    public static WorkspaceFilter createFilter(
+            DistributionRequest distributionRequest,
+            NavigableMap<String, List<String>> nodeFilters,
+            NavigableMap<String, List<String>> propertyFilters)
+            throws ConfigurationException {
         DefaultWorkspaceFilter filter = new DefaultWorkspaceFilter();
 
         for (String path : distributionRequest.getPaths()) {
@@ -123,8 +127,9 @@ public class VltUtils {
         return paths;
     }
 
-    private static void initFilterSet(PathFilterSet filterSet, NavigableMap<String, List<String>> globalFilters,
-                                      List<String> patterns) throws ConfigurationException {
+    private static void initFilterSet(
+            PathFilterSet filterSet, NavigableMap<String, List<String>> globalFilters, List<String> patterns)
+            throws ConfigurationException {
 
         // add the most specific filter rules
         String root = filterSet.getRoot();
@@ -146,13 +151,14 @@ public class VltUtils {
         }
     }
 
-
-    public static ExportOptions getExportOptions(WorkspaceFilter filter, String[] packageRoots,
-                                                 String packageGroup,
-                                                 String packageName,
-                                                 String packageVersion,
-                                                 boolean useBinaryReferences,
-                                                 Map<String, String> exportPathMapping) {
+    public static ExportOptions getExportOptions(
+            WorkspaceFilter filter,
+            String[] packageRoots,
+            String packageGroup,
+            String packageName,
+            String packageVersion,
+            boolean useBinaryReferences,
+            Map<String, String> exportPathMapping) {
         DefaultMetaInf inf = new DefaultMetaInf();
         ExportOptions opts = new ExportOptions();
         inf.setFilter(filter);
@@ -171,9 +177,7 @@ public class VltUtils {
                     builder.append(MAPPING_DELIMITER);
                 }
 
-                builder.append(entry.getKey())
-                       .append(MAPPING_SEPARATOR)
-                       .append(entry.getValue());
+                builder.append(entry.getKey()).append(MAPPING_SEPARATOR).append(entry.getValue());
             }
 
             props.setProperty(PATH_MAPPING_PROPERTY, builder.toString());
@@ -194,7 +198,6 @@ public class VltUtils {
 
         return opts;
     }
-
 
     /**
      * Picks a package root that dominates all filter sets. If there is none then "/" is returned.
@@ -265,7 +268,9 @@ public class VltUtils {
         return opts;
     }
 
-    public static VaultPackage createPackage(PackageManager packageManager, Session session, ExportOptions options, File tempFolder) throws IOException, RepositoryException {
+    public static VaultPackage createPackage(
+            PackageManager packageManager, Session session, ExportOptions options, File tempFolder)
+            throws IOException, RepositoryException {
         File file = File.createTempFile("distr-vault-create-" + System.nanoTime(), ".zip", tempFolder);
 
         try {
@@ -276,7 +281,8 @@ public class VltUtils {
         }
     }
 
-    public static VaultPackage readPackage(PackageManager packageManager, InputStream stream, File tempFolder) throws IOException {
+    public static VaultPackage readPackage(PackageManager packageManager, InputStream stream, File tempFolder)
+            throws IOException {
         File file = File.createTempFile("distr-vault-read-" + System.nanoTime(), ".zip", tempFolder);
         OutputStream out = FileUtils.openOutputStream(file);
         try {
@@ -384,7 +390,6 @@ public class VltUtils {
                 }
 
                 result.put(path, filterSet);
-
             }
         }
 
@@ -441,7 +446,8 @@ public class VltUtils {
         return new SimpleDistributionRequest(requestType, paths.toArray(new String[paths.size()]), deepPaths, filters);
     }
 
-    private static PathFilterSet.Entry<DefaultPathFilter> extractPathPattern(String pattern) throws ConfigurationException {
+    private static PathFilterSet.Entry<DefaultPathFilter> extractPathPattern(String pattern)
+            throws ConfigurationException {
         PathFilterSet.Entry<DefaultPathFilter> result;
         if (pattern.startsWith("+")) {
             result = new PathFilterSet.Entry<DefaultPathFilter>(new DefaultPathFilter(pattern.substring(1)), true);
@@ -470,7 +476,5 @@ public class VltUtils {
         } else {
             return Pattern.quote(path);
         }
-
     }
-
 }

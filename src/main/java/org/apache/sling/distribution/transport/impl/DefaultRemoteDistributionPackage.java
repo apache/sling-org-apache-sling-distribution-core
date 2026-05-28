@@ -16,36 +16,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.transport.impl;
-
-import org.apache.http.client.fluent.Executor;
-import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
-import org.apache.sling.distribution.packaging.DistributionPackage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.apache.http.client.fluent.Executor;
+import org.apache.sling.distribution.packaging.DistributionPackage;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DefaultRemoteDistributionPackage implements RemoteDistributionPackage {
     private static final Logger log = LoggerFactory.getLogger(DefaultRemoteDistributionPackage.class);
-
 
     private final DistributionPackage wrappedPackage;
     private final Executor executor;
     private final URI distributionURI;
     private final String remoteId;
 
-    public DefaultRemoteDistributionPackage(DistributionPackage wrappedPackage, Executor executor, URI distributionURI) {
+    public DefaultRemoteDistributionPackage(
+            DistributionPackage wrappedPackage, Executor executor, URI distributionURI) {
         this.wrappedPackage = wrappedPackage;
         this.executor = executor;
         this.distributionURI = distributionURI;
         this.remoteId = (String) wrappedPackage.getInfo().get(DistributionPackageUtils.PROPERTY_REMOTE_PACKAGE_ID);
     }
-
 
     public DistributionPackage getPackage() {
         return wrappedPackage;

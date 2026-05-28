@@ -36,23 +36,25 @@ public class RemoteEventDistributionTriggerTest {
     public void testRegister() throws Exception {
         DistributionRequestHandler handler = mock(DistributionRequestHandler.class);
         String endpoint = "";
-        DistributionTransportSecretProvider distributionTransportSecretProvider = mock(DistributionTransportSecretProvider.class);
+        DistributionTransportSecretProvider distributionTransportSecretProvider =
+                mock(DistributionTransportSecretProvider.class);
         Scheduler scheduler = mock(Scheduler.class);
         ScheduleOptions options = mock(ScheduleOptions.class);
         when(options.name(handler.toString())).thenReturn(options);
         when(scheduler.NOW()).thenReturn(options);
-        RemoteEventDistributionTrigger remoteEventdistributionTrigger = new RemoteEventDistributionTrigger(
-                endpoint, distributionTransportSecretProvider, scheduler);
+        RemoteEventDistributionTrigger remoteEventdistributionTrigger =
+                new RemoteEventDistributionTrigger(endpoint, distributionTransportSecretProvider, scheduler);
         remoteEventdistributionTrigger.register(handler);
     }
 
     @Test
     public void testUnregister() throws Exception {
         String endpoint = "";
-        DistributionTransportSecretProvider distributionTransportSecretProvider = mock(DistributionTransportSecretProvider.class);
+        DistributionTransportSecretProvider distributionTransportSecretProvider =
+                mock(DistributionTransportSecretProvider.class);
         Scheduler scheduler = mock(Scheduler.class);
-        RemoteEventDistributionTrigger remoteEventdistributionTrigger = new RemoteEventDistributionTrigger(
-                endpoint, distributionTransportSecretProvider, scheduler);
+        RemoteEventDistributionTrigger remoteEventdistributionTrigger =
+                new RemoteEventDistributionTrigger(endpoint, distributionTransportSecretProvider, scheduler);
         DistributionRequestHandler handler = mock(DistributionRequestHandler.class);
         remoteEventdistributionTrigger.unregister(handler);
     }

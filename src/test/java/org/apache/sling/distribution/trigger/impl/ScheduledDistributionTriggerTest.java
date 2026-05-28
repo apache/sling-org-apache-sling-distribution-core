@@ -18,9 +18,6 @@
  */
 package org.apache.sling.distribution.trigger.impl;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,6 +32,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 /**
  * Testcase for {@link ScheduledDistributionTrigger}
  */
@@ -46,7 +46,7 @@ public class ScheduledDistributionTriggerTest {
         List<Object[]> data = new LinkedList<Object[]>();
 
         for (DistributionRequestType action : DistributionRequestType.values()) {
-            data.add(new Object[]{ action });
+            data.add(new Object[] {action});
         }
 
         return data;
@@ -67,7 +67,8 @@ public class ScheduledDistributionTriggerTest {
         ScheduleOptions options = mock(ScheduleOptions.class);
         when(scheduler.NOW(-1, interval)).thenReturn(options);
         when(options.name(handler.toString())).thenReturn(options);
-        ScheduledDistributionTrigger scheduleddistributionTrigger = new ScheduledDistributionTrigger(action.name(), path, interval, null, scheduler, mock(ResourceResolverFactory.class));
+        ScheduledDistributionTrigger scheduleddistributionTrigger = new ScheduledDistributionTrigger(
+                action.name(), path, interval, null, scheduler, mock(ResourceResolverFactory.class));
         scheduleddistributionTrigger.register(handler);
     }
 
@@ -76,7 +77,8 @@ public class ScheduledDistributionTriggerTest {
         String path = "/path/to/somewhere";
         int interval = 10;
         Scheduler scheduler = mock(Scheduler.class);
-        ScheduledDistributionTrigger scheduleddistributionTrigger = new ScheduledDistributionTrigger(action.name(), path, interval, null, scheduler, mock(ResourceResolverFactory.class));
+        ScheduledDistributionTrigger scheduleddistributionTrigger = new ScheduledDistributionTrigger(
+                action.name(), path, interval, null, scheduler, mock(ResourceResolverFactory.class));
         DistributionRequestHandler handlerId = mock(DistributionRequestHandler.class);
         scheduleddistributionTrigger.unregister(handlerId);
     }

@@ -19,6 +19,7 @@
 package org.apache.sling.distribution.packaging.impl;
 
 import javax.jcr.RepositoryException;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,17 +43,17 @@ import org.slf4j.LoggerFactory;
 public class ResourceDistributionPackage extends AbstractDistributionPackage {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-
     private final Resource resource;
     private final ResourceResolver resourceResolver;
     private final long size;
 
-    ResourceDistributionPackage(Resource resource,
-                                String type,
-                                ResourceResolver resourceResolver,
-                                @Nullable String digestAlgorithm,
-                                @Nullable String digestMessage,
-                                @Nullable Map<String, Object> baseInfoMap) {
+    ResourceDistributionPackage(
+            Resource resource,
+            String type,
+            ResourceResolver resourceResolver,
+            @Nullable String digestAlgorithm,
+            @Nullable String digestMessage,
+            @Nullable Map<String, Object> baseInfoMap) {
         super(resource.getName(), type, digestAlgorithm, digestMessage);
         this.resourceResolver = resourceResolver;
         ValueMap valueMap = resource.getValueMap();
@@ -66,10 +67,10 @@ public class ResourceDistributionPackage extends AbstractDistributionPackage {
             this.getInfo().putAll(baseInfoMap);
         }
         if (paths instanceof String[]) {
-            this.getInfo().put(DistributionPackageInfo.PROPERTY_REQUEST_PATHS, (String[])paths);
+            this.getInfo().put(DistributionPackageInfo.PROPERTY_REQUEST_PATHS, (String[]) paths);
         }
         if (deepPaths instanceof String[]) {
-            this.getInfo().put(DistributionPackageInfo.PROPERTY_REQUEST_DEEP_PATHS, (String[])deepPaths);
+            this.getInfo().put(DistributionPackageInfo.PROPERTY_REQUEST_DEEP_PATHS, (String[]) deepPaths);
         }
 
         this.getInfo().put(DistributionPackageInfo.PROPERTY_REQUEST_TYPE, DistributionRequestType.ADD);

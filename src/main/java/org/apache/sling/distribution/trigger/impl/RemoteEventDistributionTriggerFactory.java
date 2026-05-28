@@ -36,34 +36,32 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @Component(
         configurationPolicy = ConfigurationPolicy.REQUIRE,
-        service=DistributionTrigger.class,
-        property= {
-                "webconsole.configurationFactory.nameHint=Trigger name: {name}"
-        }
-)
-@Designate(ocd=RemoteEventDistributionTriggerFactory.Config.class)
+        service = DistributionTrigger.class,
+        property = {"webconsole.configurationFactory.nameHint=Trigger name: {name}"})
+@Designate(ocd = RemoteEventDistributionTriggerFactory.Config.class)
 public class RemoteEventDistributionTriggerFactory implements DistributionTrigger {
-    
-    @ObjectClassDefinition(name="Apache Sling Distribution Trigger - Remote Event Triggers Factory")
+
+    @ObjectClassDefinition(name = "Apache Sling Distribution Trigger - Remote Event Triggers Factory")
     public @interface Config {
-        @AttributeDefinition(name="Name", description = "The name of the trigger.")
+        @AttributeDefinition(name = "Name", description = "The name of the trigger.")
         String name();
-        @AttributeDefinition(name="Endpoint", description = "The endpoint from which the remote requests should be polled.")
+
+        @AttributeDefinition(
+                name = "Endpoint",
+                description = "The endpoint from which the remote requests should be polled.")
         String endpoint();
+
         @AttributeDefinition()
         String transportSecretProvider_target();
     }
 
     @Reference(name = "transportSecretProvider")
-    private
-    DistributionTransportSecretProvider transportSecretProvider;
-
+    private DistributionTransportSecretProvider transportSecretProvider;
 
     @Reference
     private Scheduler scheduler;
 
     private RemoteEventDistributionTrigger trigger;
-
 
     @Activate
     public void activate(BundleContext bundleContext, Config conf) {
@@ -74,7 +72,6 @@ public class RemoteEventDistributionTriggerFactory implements DistributionTrigge
     @Deactivate
     public void deactivate() {
         trigger.disable();
-
     }
 
     public void register(@NotNull DistributionRequestHandler requestHandler) throws DistributionException {

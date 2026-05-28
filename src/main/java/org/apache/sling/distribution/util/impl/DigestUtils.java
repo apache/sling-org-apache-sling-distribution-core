@@ -18,9 +18,6 @@
  */
 package org.apache.sling.distribution.util.impl;
 
-import static java.lang.Integer.toHexString;
-import static org.apache.commons.io.IOUtils.closeQuietly;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -30,6 +27,9 @@ import java.security.DigestInputStream;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import static java.lang.Integer.toHexString;
+import static org.apache.commons.io.IOUtils.closeQuietly;
 
 public final class DigestUtils {
 
@@ -49,7 +49,8 @@ public final class DigestUtils {
         try {
             return MessageDigest.getInstance(digestAlgorithm);
         } catch (NoSuchAlgorithmException e) {
-            throw new IllegalArgumentException("Digest algorithm " + digestAlgorithm + " not supported in this version.");
+            throw new IllegalArgumentException(
+                    "Digest algorithm " + digestAlgorithm + " not supported in this version.");
         }
     }
 
@@ -75,9 +76,9 @@ public final class DigestUtils {
 
     private static void readDigest(MessageDigest messageDigest, Writer writer) throws IOException {
         final byte[] data = messageDigest.digest();
-        for (byte element: data) {
+        for (byte element : data) {
             int intVal = element & 0xff;
-            if (intVal < 0x10){
+            if (intVal < 0x10) {
                 // append a zero before a one digit hex
                 // number to make it two digits.
                 writer.append('0');
@@ -85,5 +86,4 @@ public final class DigestUtils {
             writer.append(toHexString(intVal));
         }
     }
-
 }

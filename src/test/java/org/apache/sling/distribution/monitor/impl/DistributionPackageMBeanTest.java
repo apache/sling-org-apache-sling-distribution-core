@@ -18,13 +18,6 @@
  */
 package org.apache.sling.distribution.monitor.impl;
 
-import static org.apache.sling.distribution.packaging.DistributionPackageInfo.*;
-
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +25,12 @@ import org.apache.sling.distribution.DistributionRequestType;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.junit.Test;
+
+import static org.apache.sling.distribution.packaging.DistributionPackageInfo.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Test case for {@link DistributionPackageMBean}
@@ -44,7 +43,7 @@ public class DistributionPackageMBeanTest {
         long processingTime = 2000L;
 
         Map<String, Object> base = new HashMap<String, Object>();
-        base.put(PROPERTY_REQUEST_PATHS, new String[]{ "a", "b", "c" });
+        base.put(PROPERTY_REQUEST_PATHS, new String[] {"a", "b", "c"});
         base.put(PROPERTY_REQUEST_TYPE, DistributionRequestType.ADD);
         DistributionPackageInfo distributionPackageInfo = new DistributionPackageInfo(type, base);
 
@@ -53,9 +52,7 @@ public class DistributionPackageMBeanTest {
         when(distributionPackage.getSize()).thenReturn(1000L);
         when(distributionPackage.getInfo()).thenReturn(distributionPackageInfo);
 
-        DistributionPackageMBean mBean = new DistributionPackageMBeanImpl(distributionPackage,
-                                                                          type,
-                                                                          processingTime);
+        DistributionPackageMBean mBean = new DistributionPackageMBeanImpl(distributionPackage, type, processingTime);
 
         assertEquals(distributionPackage.getId(), mBean.getId());
         assertEquals(type, mBean.getType());
@@ -64,5 +61,4 @@ public class DistributionPackageMBeanTest {
         assertEquals(distributionPackage.getSize(), mBean.getSize());
         assertEquals(processingTime, mBean.getProcessingTime());
     }
-
 }

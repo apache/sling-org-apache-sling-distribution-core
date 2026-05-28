@@ -16,8 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.queue.impl.resource;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.PersistenceException;
@@ -36,22 +42,14 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.APPENDABLE;
-import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.REMOVABLE;
 import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.CLEARABLE;
-
+import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.REMOVABLE;
 
 public class ResourceQueue implements DistributionQueue {
 
-    private static final Set<String> CAPABILITIES = Collections.unmodifiableSet(
-            new HashSet<String>(Arrays.asList(APPENDABLE, REMOVABLE, CLEARABLE)));
+    private static final Set<String> CAPABILITIES =
+            Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(APPENDABLE, REMOVABLE, CLEARABLE)));
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -60,7 +58,8 @@ public class ResourceQueue implements DistributionQueue {
     protected String serviceName;
     protected String queueName;
 
-    public ResourceQueue(ResourceResolverFactory resolverFactory, String serviceName, String queueName, String rootPath) {
+    public ResourceQueue(
+            ResourceResolverFactory resolverFactory, String serviceName, String queueName, String rootPath) {
         this.resolverFactory = resolverFactory;
         this.serviceName = serviceName;
         this.queueName = queueName;
@@ -101,7 +100,6 @@ public class ResourceQueue implements DistributionQueue {
         }
     }
 
-
     @Override
     public DistributionQueueEntry getHead() {
         ResourceResolver resourceResolver = null;
@@ -109,8 +107,7 @@ public class ResourceQueue implements DistributionQueue {
             resourceResolver = DistributionUtils.loginService(resolverFactory, serviceName);
             Resource queueRoot = ResourceQueueUtils.getRootResource(resourceResolver, queueRootPath);
 
-
-            DistributionQueueEntry head =  ResourceQueueUtils.getHead(queueRoot);
+            DistributionQueueEntry head = ResourceQueueUtils.getHead(queueRoot);
 
             logEntry(head, "getHead");
 
@@ -133,7 +130,7 @@ public class ResourceQueue implements DistributionQueue {
             resourceResolver = DistributionUtils.loginService(resolverFactory, serviceName);
             Resource queueRoot = ResourceQueueUtils.getRootResource(resourceResolver, queueRootPath);
 
-            List<DistributionQueueEntry> entries =  ResourceQueueUtils.getEntries(queueRoot, skip, limit);
+            List<DistributionQueueEntry> entries = ResourceQueueUtils.getEntries(queueRoot, skip, limit);
 
             log.debug("queue[{}] getEntries entries={}", queueName, entries.size());
 
@@ -155,7 +152,7 @@ public class ResourceQueue implements DistributionQueue {
             resourceResolver = DistributionUtils.loginService(resolverFactory, serviceName);
             Resource queueRoot = ResourceQueueUtils.getRootResource(resourceResolver, queueRootPath);
 
-            Resource itemResource =  ResourceQueueUtils.getResourceById(queueRoot, itemId);
+            Resource itemResource = ResourceQueueUtils.getResourceById(queueRoot, itemId);
 
             DistributionQueueEntry entry = ResourceQueueUtils.readEntry(queueRoot, itemResource);
 
@@ -240,18 +237,19 @@ public class ResourceQueue implements DistributionQueue {
 
     void logEntry(DistributionQueueEntry entry, String scope) {
         if (entry == null) {
-            log.debug("queue[{}] {} null entry", new Object[] { queueName, scope });
+            log.debug("queue[{}] {} null entry", new Object[] {queueName, scope});
             return;
         }
 
         if (entry.getItem() == null) {
-            log.debug("queue[{}] {} null item (should not happen)", new Object[] { queueName, scope });
+            log.debug("queue[{}] {} null item (should not happen)", new Object[] {queueName, scope});
             return;
         }
 
         String entryId = entry.getId();
         DistributionQueueItem item = entry.getItem();
-        log.debug("queue[{}] {} entryId={} packageId={}", new Object[] { queueName, scope, entryId, item.getPackageId() });
+        log.debug(
+                "queue[{}] {} entryId={} packageId={}", new Object[] {queueName, scope, entryId, item.getPackageId()});
     }
 
     @NotNull
@@ -271,5 +269,4 @@ public class ResourceQueue implements DistributionQueue {
     public boolean hasCapability(@NotNull String capability) {
         return CAPABILITIES.contains(capability);
     }
-
 }

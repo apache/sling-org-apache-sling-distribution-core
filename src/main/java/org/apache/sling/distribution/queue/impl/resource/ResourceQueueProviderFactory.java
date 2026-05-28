@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.queue.impl.resource;
 
 import org.apache.sling.api.resource.ResourceResolverFactory;
@@ -35,22 +34,22 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @Component(
         configurationPolicy = ConfigurationPolicy.REQUIRE,
-        service=DistributionQueueProviderFactory.class,
-        property= {
-                DistributionComponentConstants.PN_NAME + "=resourceQueue" 
-        })
-@Designate(ocd=ResourceQueueProviderFactory.Config.class, factory = true)
+        service = DistributionQueueProviderFactory.class,
+        property = {DistributionComponentConstants.PN_NAME + "=resourceQueue"})
+@Designate(ocd = ResourceQueueProviderFactory.Config.class, factory = true)
 public class ResourceQueueProviderFactory implements DistributionQueueProviderFactory {
-    
-    @ObjectClassDefinition(name="Apache Sling Resource Queue Provider Factory",
-            description="OSGi configuration factory for Resource-backed queues")
+
+    @ObjectClassDefinition(
+            name = "Apache Sling Resource Queue Provider Factory",
+            description = "OSGi configuration factory for Resource-backed queues")
     public @interface Config {
-        @AttributeDefinition(name="Should the Resource-backed queue created with a Queue Processor (i.e., ACTIVE)")
+        @AttributeDefinition(name = "Should the Resource-backed queue created with a Queue Processor (i.e., ACTIVE)")
         boolean queue_isActive() default false;
     }
 
     @Reference
     ResourceResolverFactory resourceResolverFactory;
+
     @Reference
     Scheduler scheduler;
 
