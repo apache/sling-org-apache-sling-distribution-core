@@ -161,7 +161,7 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
                 name = "The digest algorithm to calculate the package checksum",
                 description = "The digest algorithm to calculate the package checksum, Megabytes by default",
                 options = {
-                    @Option(label = DEFAULT_DIGEST_ALGORITHM, value = "Do not send digest"),
+                    @Option(label = DEFAULT_DIGEST_ALGORITHM, value = "NONE"),
                     @Option(label = "MD2", value = "md2"),
                     @Option(label = "MD5", value = "md5"),
                     @Option(label = "SHA-1", value = "sha1"),
