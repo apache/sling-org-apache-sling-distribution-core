@@ -136,6 +136,14 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
         long cleanupDelay() default DEFAULT_PACKAGE_CLEANUP_DELAY;
 
         @AttributeDefinition(
+                name = "The number of disposable packages deleted per commit during the cleanup phase.",
+                description = "The resource persisted packages are deleted in batches of this size during each cleanup "
+                        + "run, rather than in a single commit for the whole run, to avoid an unbounded "
+                        + "transaction when a large number of packages have accumulated. A value <= 0 "
+                        + "restores the previous behavior of a single commit per cleanup run. 100 by default")
+        int cleanupBatchSize() default DEFAULT_PACKAGE_CLEANUP_BATCH_SIZE;
+
+        @AttributeDefinition(
                 name = "File threshold (in bytes)",
                 description =
                         "Once the data reaches the configurable size value, buffering to memory switches to file buffering.")
@@ -202,6 +210,7 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
     }
 
     private static final long DEFAULT_PACKAGE_CLEANUP_DELAY = 60L;
+    private static final int DEFAULT_PACKAGE_CLEANUP_BATCH_SIZE = 100;
     // 1M
     private static final int DEFAULT_FILE_THRESHOLD_VALUE = 1;
     private static final String DEFAULT_MEMORY_UNIT = "MEGA_BYTES";
@@ -236,6 +245,7 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
         String[] packagePropertyFilters = SettingsUtils.removeEmptyEntries(conf.property_filters());
 
         long cleanupDelay = conf.cleanupDelay();
+        int cleanupBatchSize = conf.cleanupBatchSize();
 
         String tempFsFolder = SettingsUtils.removeEmptyEntry(conf.tempFsFolder());
         boolean useBinaryReferences = conf.useBinaryReferences();
@@ -315,8 +325,8 @@ public class VaultDistributionPackageBuilderFactory implements DistributionPacka
                             digestAlgorithm,
                             packageNodeFilters,
                             packagePropertyFilters);
-            Runnable cleanup =
-                    new ResourceDistributionPackageCleanup(resolverFactory, resourceDistributionPackageBuilder);
+            Runnable cleanup = new ResourceDistributionPackageCleanup(
+                    resolverFactory, resourceDistributionPackageBuilder, cleanupBatchSize);
             Dictionary<String, Object> props = new Hashtable<String, Object>();
             props.put(Scheduler.PROPERTY_SCHEDULER_CONCURRENT, false);
             props.put(Scheduler.PROPERTY_SCHEDULER_PERIOD, cleanupDelay);

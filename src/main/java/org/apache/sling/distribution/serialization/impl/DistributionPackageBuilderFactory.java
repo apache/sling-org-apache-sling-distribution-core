@@ -141,6 +141,14 @@ public class DistributionPackageBuilderFactory implements DistributionPackageBui
         long cleanupDelay() default DEFAULT_PACKAGE_CLEANUP_DELAY;
 
         @AttributeDefinition(
+                name = "The number of disposable packages deleted per commit during the cleanup phase.",
+                description = "The resource persisted packages are deleted in batches of this size during each cleanup "
+                        + "run, rather than in a single commit for the whole run, to avoid an unbounded "
+                        + "transaction when a large number of packages have accumulated. A value <= 0 "
+                        + "restores the previous behavior of a single commit per cleanup run. 100 by default")
+        int cleanupBatchSize() default DEFAULT_PACKAGE_CLEANUP_BATCH_SIZE;
+
+        @AttributeDefinition(
                 name = "Package Node Filters",
                 description = "The package node path filters. Filter format: path|+include|-exclude",
                 cardinality = 100)
@@ -170,6 +178,7 @@ public class DistributionPackageBuilderFactory implements DistributionPackageBui
     private static final String DEFAULT_DIGEST_ALGORITHM = "NONE";
     private static final int DEFAULT_MONITORING_QUEUE_SIZE = 0;
     private static final long DEFAULT_PACKAGE_CLEANUP_DELAY = 60L;
+    private static final int DEFAULT_PACKAGE_CLEANUP_BATCH_SIZE = 100;
 
     @Activate
     public void activate(BundleContext context, Config conf) {
@@ -180,6 +189,7 @@ public class DistributionPackageBuilderFactory implements DistributionPackageBui
         String tempFsFolder = SettingsUtils.removeEmptyEntry(conf.tempFsFolder());
         String digestAlgorithm = conf.digestAlgorithm();
         long cleanupDelay = conf.cleanupDelay();
+        int cleanupBatchSize = conf.cleanupBatchSize();
         if (DEFAULT_DIGEST_ALGORITHM.equals(digestAlgorithm)) {
             digestAlgorithm = null;
         }
@@ -212,8 +222,8 @@ public class DistributionPackageBuilderFactory implements DistributionPackageBui
                             digestAlgorithm,
                             nodeFilters,
                             propertyFilters);
-            Runnable cleanup =
-                    new ResourceDistributionPackageCleanup(resolverFactory, resourceDistributionPackageBuilder);
+            Runnable cleanup = new ResourceDistributionPackageCleanup(
+                    resolverFactory, resourceDistributionPackageBuilder, cleanupBatchSize);
             Dictionary<String, Object> props = new Hashtable<String, Object>();
             props.put(Scheduler.PROPERTY_SCHEDULER_CONCURRENT, false);
             props.put(Scheduler.PROPERTY_SCHEDULER_PERIOD, cleanupDelay);

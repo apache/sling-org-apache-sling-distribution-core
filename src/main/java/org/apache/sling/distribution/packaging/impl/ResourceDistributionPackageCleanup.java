@@ -32,6 +32,9 @@ import org.slf4j.LoggerFactory;
 /**
  * This runnable removes unreferenced {@link ResourceDistributionPackage} packages.
  * It is meant to be run periodically. See SLING-6503.
+ * Deletions are committed in batches (see SLING-13356) rather than in a single commit for
+ * the whole run, to avoid an unbounded transaction when a large number of packages have
+ * accumulated.
  */
 public class ResourceDistributionPackageCleanup implements Runnable {
 
@@ -44,18 +47,33 @@ public class ResourceDistributionPackageCleanup implements Runnable {
 
     private final ResourceResolverFactory resolverFactory;
 
+    /**
+     * Maximum number of disposable packages deleted per JCR commit during a cleanup run.
+     * A value {@code <= 0} disables batching, restoring the previous behavior of a single
+     * commit for the whole run.
+     */
+    private final int cleanupBatchSize;
+
     public ResourceDistributionPackageCleanup(
             @NotNull ResourceResolverFactory resolverFactory,
             @NotNull ResourceDistributionPackageBuilder packageBuilder) {
+        this(resolverFactory, packageBuilder, 0);
+    }
+
+    public ResourceDistributionPackageCleanup(
+            @NotNull ResourceResolverFactory resolverFactory,
+            @NotNull ResourceDistributionPackageBuilder packageBuilder,
+            int cleanupBatchSize) {
         this.resolverFactory = resolverFactory;
         this.packageBuilder = packageBuilder;
+        this.cleanupBatchSize = cleanupBatchSize;
     }
 
     public void run() {
         log.debug("Cleaning up {} packages", packageBuilder.getType());
         ResourceResolver serviceResolver = null;
         try {
-            int deleted = 0, total = 0;
+            int deleted = 0, total = 0, pendingInBatch = 0;
             serviceResolver = resolverFactory.getServiceResourceResolver(null);
             for (Iterator<ResourceDistributionPackage> pkgs = packageBuilder.getPackages(serviceResolver);
                     pkgs.hasNext();
@@ -65,6 +83,11 @@ public class ResourceDistributionPackageCleanup implements Runnable {
                     log.debug("Delete package {}", pkg.getId());
                     deleted++;
                     pkg.delete(false);
+                    pendingInBatch++;
+                    if (cleanupBatchSize > 0 && pendingInBatch >= cleanupBatchSize) {
+                        serviceResolver.commit();
+                        pendingInBatch = 0;
+                    }
                 } else {
                     log.debug("package {} is not disposable", pkg.getId());
                 }
