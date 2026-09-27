@@ -22,17 +22,29 @@ package org.apache.sling.distribution.common;
  * Generic checked exception for distribution
  */
 @SuppressWarnings("serial")
-public class DistributionException extends Exception {
+public class DistributionException extends DocumentedException {
 
     public DistributionException(Throwable e) {
         super(e);
+    }
+
+    public DistributionException(Throwable e, ErrorCode errorCode) {
+        super(e, errorCode);
     }
 
     public DistributionException(String string) {
         super(string);
     }
 
+    public DistributionException(String string, ErrorCode errorCode) {
+        super(string, errorCode);
+    }
+
     public DistributionException(String string, Throwable cause) {
         super(string, cause);
+    }
+
+    public DistributionException(String string, Throwable cause, ErrorCode errorCode) {
+        super(string, cause, errorCode);
     }
 }
