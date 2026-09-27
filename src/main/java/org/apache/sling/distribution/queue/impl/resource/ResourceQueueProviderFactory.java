@@ -45,6 +45,14 @@ public class ResourceQueueProviderFactory implements DistributionQueueProviderFa
     public @interface Config {
         @AttributeDefinition(name = "Should the Resource-backed queue created with a Queue Processor (i.e., ACTIVE)")
         boolean queue_isActive() default false;
+
+        @AttributeDefinition(
+                name = "Use exact (uncapped) queue length for status",
+                description = "By default, queue status/console reporting caps the counted queue length for "
+                        + "performance on very large queues, showing an approximate 'N+' count instead of the "
+                        + "exact size. Enable this to always compute the exact queue length instead, restoring "
+                        + "the pre-cap behavior. This can be slow for queues with a very large backlog.")
+        boolean status_useExactQueueLength() default false;
     }
 
     @Reference
@@ -56,16 +64,19 @@ public class ResourceQueueProviderFactory implements DistributionQueueProviderFa
     BundleContext context;
 
     private boolean isActive;
+    private boolean useExactQueueLength;
 
     @Activate
     protected void activate(BundleContext context, Config conf) {
         this.isActive = conf.queue_isActive();
+        this.useExactQueueLength = conf.status_useExactQueueLength();
         this.context = context;
     }
 
     @Override
     public DistributionQueueProvider getProvider(String agentName, String serviceName) {
-        return new ResourceQueueProvider(context, resourceResolverFactory, serviceName, agentName, scheduler, isActive);
+        return new ResourceQueueProvider(
+                context, resourceResolverFactory, serviceName, agentName, scheduler, isActive, useExactQueueLength);
     }
 
     @Override

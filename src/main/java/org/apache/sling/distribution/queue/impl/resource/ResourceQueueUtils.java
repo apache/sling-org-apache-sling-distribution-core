@@ -64,6 +64,13 @@ public class ResourceQueueUtils {
     private static final String ENTERED_DATE = "entered.date";
     private static final String PROCESSING_ATTEMPTS = "processing.attempts";
 
+    /**
+     * Cap on how many entries getResourceCountCapped() will traverse when computing queue size for
+     * status/console. Queues larger than this report STATUS_ITEMS_COUNT_CAP instead of the exact count,
+     * so status lookups on very large queues stay bounded.
+     */
+    static final int STATUS_ITEMS_COUNT_CAP = 1_000;
+
     private static final AtomicLong itemCounter = new AtomicLong(0);
     private static final Logger log = LoggerFactory.getLogger(ResourceQueueUtils.class);
 
@@ -305,6 +312,29 @@ public class ResourceQueueUtils {
 
     public static int getResourceCount(Resource root) {
         return getEntries(root, 0, -1).size();
+    }
+
+    /**
+     * Like getResourceCount(), but bounds the amount of traversal done: once more than
+     * STATUS_ITEMS_COUNT_CAP entries have been seen, stops early and returns STATUS_ITEMS_COUNT_CAP
+     * instead of the exact count. Intended for status/console displays on potentially very large
+     * queues, where an exact count is not required and a full traversal would be too expensive.
+     * Callers that need the exact size should use getResourceCount() instead.
+     */
+    public static int getResourceCountCapped(Resource root) {
+        Iterator<Resource> it = new ResourceIterator(root, RESOURCE_FOLDER, false, true);
+
+        int count = 0;
+        while (it.hasNext()) {
+            it.next();
+            count++;
+
+            if (count > STATUS_ITEMS_COUNT_CAP) {
+                return STATUS_ITEMS_COUNT_CAP;
+            }
+        }
+
+        return count;
     }
 
     private static String getUniqueEntryPath(Resource parent) {

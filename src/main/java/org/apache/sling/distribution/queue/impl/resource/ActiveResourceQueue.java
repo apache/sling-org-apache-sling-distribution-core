@@ -48,6 +48,15 @@ public class ActiveResourceQueue extends ResourceQueue {
         super(resolverFactory, serviceName, queueName, rootPath);
     }
 
+    public ActiveResourceQueue(
+            ResourceResolverFactory resolverFactory,
+            String serviceName,
+            String queueName,
+            String rootPath,
+            boolean useExactQueueLength) {
+        super(resolverFactory, serviceName, queueName, rootPath, useExactQueueLength);
+    }
+
     @NotNull
     @Override
     public DistributionQueueStatus getStatus() {
@@ -56,7 +65,9 @@ public class ActiveResourceQueue extends ResourceQueue {
             resourceResolver = DistributionUtils.loginService(resolverFactory, serviceName);
             Resource queueRoot = ResourceQueueUtils.getRootResource(resourceResolver, queueRootPath);
 
-            int count = ResourceQueueUtils.getResourceCount(queueRoot);
+            int count = useExactQueueLength
+                    ? ResourceQueueUtils.getResourceCount(queueRoot)
+                    : ResourceQueueUtils.getResourceCountCapped(queueRoot);
 
             DistributionQueueEntry head = ResourceQueueUtils.getHead(queueRoot);
             DistributionQueueItem firstItem = (null != head) ? head.getItem() : null;

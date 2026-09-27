@@ -57,13 +57,29 @@ public class ResourceQueue implements DistributionQueue {
     protected final String queueRootPath;
     protected String serviceName;
     protected String queueName;
+    protected final boolean useExactQueueLength;
 
     public ResourceQueue(
             ResourceResolverFactory resolverFactory, String serviceName, String queueName, String rootPath) {
+        this(resolverFactory, serviceName, queueName, rootPath, false);
+    }
+
+    /**
+     * @param useExactQueueLength if true, getStatus() reports the exact (uncapped) queue length instead
+     *                            of the capped approximation. Backed by the resourceQueue provider's
+     *                            "status.useExactQueueLength" OSGi configuration.
+     */
+    public ResourceQueue(
+            ResourceResolverFactory resolverFactory,
+            String serviceName,
+            String queueName,
+            String rootPath,
+            boolean useExactQueueLength) {
         this.resolverFactory = resolverFactory;
         this.serviceName = serviceName;
         this.queueName = queueName;
         this.queueRootPath = rootPath + "/" + queueName;
+        this.useExactQueueLength = useExactQueueLength;
         log.debug("starting a Resource Queue {}", queueName);
     }
 
@@ -217,7 +233,9 @@ public class ResourceQueue implements DistributionQueue {
             resourceResolver = DistributionUtils.loginService(resolverFactory, serviceName);
             Resource queueRoot = ResourceQueueUtils.getRootResource(resourceResolver, queueRootPath);
 
-            int count = ResourceQueueUtils.getResourceCount(queueRoot);
+            int count = useExactQueueLength
+                    ? ResourceQueueUtils.getResourceCount(queueRoot)
+                    : ResourceQueueUtils.getResourceCountCapped(queueRoot);
 
             return new DistributionQueueStatus(count, DistributionQueueState.PASSIVE);
         } catch (LoginException e) {
