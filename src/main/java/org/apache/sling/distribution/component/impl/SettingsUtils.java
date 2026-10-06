@@ -27,7 +27,7 @@ import java.util.TreeMap;
 
 import org.apache.sling.commons.osgi.PropertiesUtil;
 
-//TODO: Consider removing it
+// TODO: Consider removing it
 
 /**
  * Utility class that provides parsing from linear set of properties into a tree of properties
@@ -40,7 +40,6 @@ public class SettingsUtils {
     private static final char COMPONENT_MAP_BEGIN = '[';
     private static final char COMPONENT_MAP_END = ']';
     private static final char COMPONENT_MAP_DELIM = '=';
-
 
     /**
      * packageExporter/propertyKey=propertyValue
@@ -81,7 +80,6 @@ public class SettingsUtils {
     private static Map<String, List<String>> toLinesMap(String[] lines) {
         Map<String, List<String>> result = new HashMap<String, List<String>>();
 
-
         for (String line : lines) {
             int firstMapDelim = line.indexOf(COMPONENT_MAP_DELIM);
             if (firstMapDelim < 0) {
@@ -97,20 +95,18 @@ public class SettingsUtils {
                 value = line.substring(firstDelim + 1);
             }
 
-
             if (!result.containsKey(key)) {
                 result.put(key, new ArrayList<String>());
             }
 
             List<String> exitingLines = result.get(key);
             exitingLines.add(value);
-
         }
 
         return result;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private static Map<String, Object> collapseMap(Map<String, Object> valueMap) {
 
         Map<String, Object> result = new HashMap<String, Object>();
@@ -124,7 +120,6 @@ public class SettingsUtils {
             if (beginDelim >= 0 && endDelim > beginDelim) {
                 String newKey = key.substring(0, beginDelim);
                 String partialKey = key.substring(beginDelim + 1, endDelim);
-
 
                 boolean isNumber = isNumber(partialKey);
 
@@ -146,7 +141,6 @@ public class SettingsUtils {
         }
 
         return result;
-
     }
 
     private static boolean isNumber(String value) {
@@ -158,7 +152,6 @@ public class SettingsUtils {
         }
     }
 
-
     private static <AType> Map<String, AType> toMap(List<AType> aList, String prefix) {
         Map<String, AType> result = new TreeMap<String, AType>();
         for (int i = 0; i < aList.size(); i++) {
@@ -167,7 +160,6 @@ public class SettingsUtils {
 
         return result;
     }
-
 
     public static Map<String, String> toUriMap(Object obj) {
         Map<String, String> uriMap = PropertiesUtil.toMap(obj, new String[0]);
@@ -210,15 +202,12 @@ public class SettingsUtils {
         }
     }
 
-
-
     public static String removeEmptyEntry(String entry) {
         if (entry == null) {
             return null;
         }
 
         entry = entry.trim();
-
 
         if (entry.length() == 0) {
             return null;
@@ -233,11 +222,11 @@ public class SettingsUtils {
         }
 
         Map<String, String> result = new HashMap<String, String>();
-        for(Map.Entry<String, String> entry : map.entrySet()) {
+        for (Map.Entry<String, String> entry : map.entrySet()) {
             String key = removeEmptyEntry(entry.getKey());
             String value = removeEmptyEntry(entry.getValue());
 
-            if (key != null && value!= null) {
+            if (key != null && value != null) {
                 result.put(key, value);
             }
         }
@@ -246,9 +235,8 @@ public class SettingsUtils {
             return null;
         }
 
-       return result;
+        return result;
     }
-
 
     public static Map<String, String> expandUriMap(Map<String, String> map, Map<String, String> aliases) {
         Map<String, String> result = new TreeMap<String, String>(map);
@@ -257,7 +245,6 @@ public class SettingsUtils {
             if (aliasEntry.getValue() != null && map.containsKey(aliasEntry.getValue())) {
                 result.put(aliasEntry.getKey(), map.get(aliasEntry.getValue()));
             }
-
         }
 
         return result;

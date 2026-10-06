@@ -28,7 +28,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 public class DistributionComponentFactoryMapTest {
-    
+
     @Rule
     public final OsgiContext context = new OsgiContext();
 
@@ -36,7 +36,8 @@ public class DistributionComponentFactoryMapTest {
     public void testGetDefaultType() throws Exception {
         DistributionComponentFactoryMap dcfm = new DistributionComponentFactoryMap();
         context.registerInjectActivateService(dcfm);
-        String type = dcfm.getType(DistributionComponentKind.AGENT,
+        String type = dcfm.getType(
+                DistributionComponentKind.AGENT,
                 "org.apache.sling.distribution.agent.impl.SimpleDistributionAgentFactory");
         assertEquals("simple", type);
     }
@@ -46,8 +47,7 @@ public class DistributionComponentFactoryMapTest {
         DistributionComponentFactoryMap dcfm = new DistributionComponentFactoryMap();
         context.registerInjectActivateService(dcfm);
         String factoryPid = dcfm.getFactoryPid(DistributionComponentKind.AGENT, "simple");
-        assertEquals("org.apache.sling.distribution.agent.impl.SimpleDistributionAgentFactory",
-                factoryPid);
+        assertEquals("org.apache.sling.distribution.agent.impl.SimpleDistributionAgentFactory", factoryPid);
     }
 
     @Test
@@ -61,7 +61,10 @@ public class DistributionComponentFactoryMapTest {
     public void testAddMapping() throws Exception {
         DistributionComponentFactoryMap dcfm = new DistributionComponentFactoryMap();
         String customFactoryPid = "org.test.CustomAgentFactory";
-        context.registerInjectActivateService(dcfm,Collections.<String, Object>singletonMap("mapping.agent", String.format("custom:%s", customFactoryPid)));
+        context.registerInjectActivateService(
+                dcfm,
+                Collections.<String, Object>singletonMap(
+                        "mapping.agent", String.format("custom:%s", customFactoryPid)));
         assertEquals(6, dcfm.getFactoryPids(DistributionComponentKind.AGENT).size());
         String type = dcfm.getType(DistributionComponentKind.AGENT, customFactoryPid);
         assertEquals("custom", type);
@@ -71,7 +74,10 @@ public class DistributionComponentFactoryMapTest {
     public void testAddWrongMapping() throws Exception {
         DistributionComponentFactoryMap dcfm = new DistributionComponentFactoryMap();
         String customFactoryPid = "org.test.CustomAgentFactory";
-        context.registerInjectActivateService(dcfm,Collections.<String, Object>singletonMap("mapping.agent", String.format("custom-%s", customFactoryPid)));
+        context.registerInjectActivateService(
+                dcfm,
+                Collections.<String, Object>singletonMap(
+                        "mapping.agent", String.format("custom-%s", customFactoryPid)));
         assertEquals(5, dcfm.getFactoryPids(DistributionComponentKind.AGENT).size());
         String type = dcfm.getType(DistributionComponentKind.AGENT, customFactoryPid);
         assertNull(type);

@@ -24,13 +24,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.sling.commons.osgi.PropertiesUtil;
-import org.apache.sling.distribution.agent.spi.DistributionAgent;
 import org.apache.sling.distribution.agent.impl.DistributionRequestAuthorizationStrategy;
+import org.apache.sling.distribution.agent.spi.DistributionAgent;
 import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageExporter;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
-import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
 import org.apache.sling.distribution.queue.impl.DistributionQueueDispatchingStrategy;
+import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
 import org.apache.sling.distribution.transport.DistributionTransportSecretProvider;
 import org.apache.sling.distribution.trigger.DistributionTrigger;
 import org.osgi.service.component.annotations.Component;
@@ -41,30 +41,40 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 /**
  * {@link DistributionComponentProvider} OSGi service.
  */
-@Component ( property = {
-        "name=default"
-})
+@Component(property = {"name=default"})
 public class DefaultDistributionComponentProvider implements DistributionComponentProvider {
 
     private static final String NAME = DistributionComponentConstants.PN_NAME;
 
-    private final Map<String, DistributionComponent<DistributionAgent>> distributionAgentMap = new ConcurrentHashMap<String, DistributionComponent<DistributionAgent>>();
+    private final Map<String, DistributionComponent<DistributionAgent>> distributionAgentMap =
+            new ConcurrentHashMap<String, DistributionComponent<DistributionAgent>>();
 
-    private final Map<String, DistributionComponent<DistributionQueueProvider>> distributionQueueProviderMap = new ConcurrentHashMap<String, DistributionComponent<DistributionQueueProvider>>();
+    private final Map<String, DistributionComponent<DistributionQueueProvider>> distributionQueueProviderMap =
+            new ConcurrentHashMap<String, DistributionComponent<DistributionQueueProvider>>();
 
-    private final Map<String, DistributionComponent<DistributionQueueDispatchingStrategy>> distributionQueueDistributionStrategyMap = new ConcurrentHashMap<String, DistributionComponent<DistributionQueueDispatchingStrategy>>();
+    private final Map<String, DistributionComponent<DistributionQueueDispatchingStrategy>>
+            distributionQueueDistributionStrategyMap =
+                    new ConcurrentHashMap<String, DistributionComponent<DistributionQueueDispatchingStrategy>>();
 
-    private final Map<String, DistributionComponent<DistributionTransportSecretProvider>> distributionTransportSecretProviderMap = new ConcurrentHashMap<String, DistributionComponent<DistributionTransportSecretProvider>>();
+    private final Map<String, DistributionComponent<DistributionTransportSecretProvider>>
+            distributionTransportSecretProviderMap =
+                    new ConcurrentHashMap<String, DistributionComponent<DistributionTransportSecretProvider>>();
 
-    private final Map<String, DistributionComponent<DistributionPackageImporter>> distributionPackageImporterMap = new ConcurrentHashMap<String, DistributionComponent<DistributionPackageImporter>>();
+    private final Map<String, DistributionComponent<DistributionPackageImporter>> distributionPackageImporterMap =
+            new ConcurrentHashMap<String, DistributionComponent<DistributionPackageImporter>>();
 
-    private final Map<String, DistributionComponent<DistributionPackageExporter>> distributionPackageExporterMap = new ConcurrentHashMap<String, DistributionComponent<DistributionPackageExporter>>();
+    private final Map<String, DistributionComponent<DistributionPackageExporter>> distributionPackageExporterMap =
+            new ConcurrentHashMap<String, DistributionComponent<DistributionPackageExporter>>();
 
-    private final Map<String, DistributionComponent<DistributionPackageBuilder>> distributionPackageBuilderMap = new ConcurrentHashMap<String, DistributionComponent<DistributionPackageBuilder>>();
+    private final Map<String, DistributionComponent<DistributionPackageBuilder>> distributionPackageBuilderMap =
+            new ConcurrentHashMap<String, DistributionComponent<DistributionPackageBuilder>>();
 
-    private final Map<String, DistributionComponent<DistributionTrigger>> distributionTriggerMap = new ConcurrentHashMap<String, DistributionComponent<DistributionTrigger>>();
+    private final Map<String, DistributionComponent<DistributionTrigger>> distributionTriggerMap =
+            new ConcurrentHashMap<String, DistributionComponent<DistributionTrigger>>();
 
-    private final Map<String, DistributionComponent<DistributionRequestAuthorizationStrategy>> distributionRequestAuthorizationStrategy = new ConcurrentHashMap<String, DistributionComponent<DistributionRequestAuthorizationStrategy>>();
+    private final Map<String, DistributionComponent<DistributionRequestAuthorizationStrategy>>
+            distributionRequestAuthorizationStrategy =
+                    new ConcurrentHashMap<String, DistributionComponent<DistributionRequestAuthorizationStrategy>>();
 
     public DistributionComponent<?> getComponent(DistributionComponentKind kind, String componentName) {
         Map<String, DistributionComponent<?>> componentMap = getComponentMap(kind.asClass());
@@ -92,7 +102,7 @@ public class DefaultDistributionComponentProvider implements DistributionCompone
         return type.cast(component.getService());
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private Map<String, DistributionComponent<?>> getComponentMap(Class<?> type) {
         if (type.isAssignableFrom(DistributionAgent.class)) {
             return (Map) distributionAgentMap;
@@ -119,63 +129,79 @@ public class DefaultDistributionComponentProvider implements DistributionCompone
 
     // (un)binding methods
 
-    @Reference(name = "distributionQueueProvider",  
-            cardinality = ReferenceCardinality.MULTIPLE, 
+    @Reference(
+            name = "distributionQueueProvider",
+            cardinality = ReferenceCardinality.MULTIPLE,
             policy = ReferencePolicy.DYNAMIC)
-    public void bindDistributionQueueProvider(DistributionQueueProvider distributionQueueProvider, Map<String, Object> config) {
+    public void bindDistributionQueueProvider(
+            DistributionQueueProvider distributionQueueProvider, Map<String, Object> config) {
         put(DistributionQueueProvider.class, distributionQueueProvider, config);
     }
 
-    public void unbindDistributionQueueProvider(DistributionQueueProvider distributionQueueProvider, Map<String, Object> config) {
+    public void unbindDistributionQueueProvider(
+            DistributionQueueProvider distributionQueueProvider, Map<String, Object> config) {
         remove(DistributionQueueProvider.class, distributionQueueProvider, config);
     }
 
-    @Reference(name = "distributionQueueDistributionStrategy", 
-            cardinality = ReferenceCardinality.MULTIPLE, 
+    @Reference(
+            name = "distributionQueueDistributionStrategy",
+            cardinality = ReferenceCardinality.MULTIPLE,
             policy = ReferencePolicy.DYNAMIC)
-    public void bindDistributionQueueDistributionStrategy(DistributionQueueDispatchingStrategy distributionQueueDispatchingStrategy, Map<String, Object> config) {
+    public void bindDistributionQueueDistributionStrategy(
+            DistributionQueueDispatchingStrategy distributionQueueDispatchingStrategy, Map<String, Object> config) {
         put(DistributionQueueDispatchingStrategy.class, distributionQueueDispatchingStrategy, config);
     }
 
-    public void unbindDistributionQueueDistributionStrategy(DistributionQueueDispatchingStrategy distributionQueueDispatchingStrategy, Map<String, Object> config) {
+    public void unbindDistributionQueueDistributionStrategy(
+            DistributionQueueDispatchingStrategy distributionQueueDispatchingStrategy, Map<String, Object> config) {
         remove(DistributionQueueDispatchingStrategy.class, distributionQueueDispatchingStrategy, config);
     }
 
-    @Reference(name = "distributionTransportSecretProvider",  
-            cardinality = ReferenceCardinality.MULTIPLE, 
+    @Reference(
+            name = "distributionTransportSecretProvider",
+            cardinality = ReferenceCardinality.MULTIPLE,
             policy = ReferencePolicy.DYNAMIC)
-    public void bindDistributionTransportSecretProvider(DistributionTransportSecretProvider distributionTransportSecretProvider, Map<String, Object> config) {
+    public void bindDistributionTransportSecretProvider(
+            DistributionTransportSecretProvider distributionTransportSecretProvider, Map<String, Object> config) {
         put(DistributionTransportSecretProvider.class, distributionTransportSecretProvider, config);
     }
 
-    public void unbindDistributionTransportSecretProvider(DistributionTransportSecretProvider distributionTransportSecretProvider, Map<String, Object> config) {
+    public void unbindDistributionTransportSecretProvider(
+            DistributionTransportSecretProvider distributionTransportSecretProvider, Map<String, Object> config) {
         remove(DistributionTransportSecretProvider.class, distributionTransportSecretProvider, config);
     }
 
-    @Reference(name = "distributionPackageImporter", 
-            cardinality = ReferenceCardinality.MULTIPLE, 
+    @Reference(
+            name = "distributionPackageImporter",
+            cardinality = ReferenceCardinality.MULTIPLE,
             policy = ReferencePolicy.DYNAMIC)
-    public void bindDistributionPackageImporter(DistributionPackageImporter distributionPackageImporter, Map<String, Object> config) {
+    public void bindDistributionPackageImporter(
+            DistributionPackageImporter distributionPackageImporter, Map<String, Object> config) {
         put(DistributionPackageImporter.class, distributionPackageImporter, config);
     }
 
-    public void unbindDistributionPackageImporter(DistributionPackageImporter distributionPackageImporter, Map<String, Object> config) {
+    public void unbindDistributionPackageImporter(
+            DistributionPackageImporter distributionPackageImporter, Map<String, Object> config) {
         remove(DistributionPackageImporter.class, distributionPackageImporter, config);
     }
 
-    @Reference(name = "distributionPackageExporter", 
-            cardinality = ReferenceCardinality.MULTIPLE, 
+    @Reference(
+            name = "distributionPackageExporter",
+            cardinality = ReferenceCardinality.MULTIPLE,
             policy = ReferencePolicy.DYNAMIC)
-    public void bindDistributionPackageExporter(DistributionPackageExporter distributionPackageExporter, Map<String, Object> config) {
+    public void bindDistributionPackageExporter(
+            DistributionPackageExporter distributionPackageExporter, Map<String, Object> config) {
         put(DistributionPackageExporter.class, distributionPackageExporter, config);
     }
 
-    public void unbindDistributionPackageExporter(DistributionPackageExporter distributionPackageExporter, Map<String, Object> config) {
+    public void unbindDistributionPackageExporter(
+            DistributionPackageExporter distributionPackageExporter, Map<String, Object> config) {
         remove(DistributionPackageExporter.class, distributionPackageExporter, config);
     }
 
-    @Reference(name = "distributionAgent", 
-            cardinality = ReferenceCardinality.MULTIPLE, 
+    @Reference(
+            name = "distributionAgent",
+            cardinality = ReferenceCardinality.MULTIPLE,
             policy = ReferencePolicy.DYNAMIC)
     public void bindDistributionAgent(DistributionAgent distributionAgent, Map<String, Object> config) {
         put(DistributionAgent.class, distributionAgent, config);
@@ -185,19 +211,23 @@ public class DefaultDistributionComponentProvider implements DistributionCompone
         remove(DistributionAgent.class, distributionAgent, config);
     }
 
-    @Reference(name = "distributionPackageBuilder", 
-            cardinality = ReferenceCardinality.MULTIPLE, 
+    @Reference(
+            name = "distributionPackageBuilder",
+            cardinality = ReferenceCardinality.MULTIPLE,
             policy = ReferencePolicy.DYNAMIC)
-    public void bindDistributionPackageBuilder(DistributionPackageBuilder distributionPackageBuilder, Map<String, Object> config) {
+    public void bindDistributionPackageBuilder(
+            DistributionPackageBuilder distributionPackageBuilder, Map<String, Object> config) {
         put(DistributionPackageBuilder.class, distributionPackageBuilder, config);
     }
 
-    public void unbindDistributionPackageBuilder(DistributionPackageBuilder distributionPackageBuilder, Map<String, Object> config) {
+    public void unbindDistributionPackageBuilder(
+            DistributionPackageBuilder distributionPackageBuilder, Map<String, Object> config) {
         remove(DistributionPackageBuilder.class, distributionPackageBuilder, config);
     }
 
-    @Reference(name = "distributionTrigger", 
-            cardinality = ReferenceCardinality.MULTIPLE, 
+    @Reference(
+            name = "distributionTrigger",
+            cardinality = ReferenceCardinality.MULTIPLE,
             policy = ReferencePolicy.DYNAMIC)
     public void bindDistributionTrigger(DistributionTrigger distributionTrigger, Map<String, Object> config) {
         put(DistributionTrigger.class, distributionTrigger, config);
@@ -207,21 +237,26 @@ public class DefaultDistributionComponentProvider implements DistributionCompone
         remove(DistributionTrigger.class, distributionTrigger, config);
     }
 
-    @Reference(name = "distributionRequestAuthorizationStrategy", 
-            cardinality = ReferenceCardinality.MULTIPLE, 
+    @Reference(
+            name = "distributionRequestAuthorizationStrategy",
+            cardinality = ReferenceCardinality.MULTIPLE,
             policy = ReferencePolicy.DYNAMIC)
-    public void bindDistributionRequestAuthorizationStrategy(DistributionRequestAuthorizationStrategy distributionRequestAuthorizationStrategy, Map<String, Object> config) {
+    public void bindDistributionRequestAuthorizationStrategy(
+            DistributionRequestAuthorizationStrategy distributionRequestAuthorizationStrategy,
+            Map<String, Object> config) {
         put(DistributionRequestAuthorizationStrategy.class, distributionRequestAuthorizationStrategy, config);
     }
 
-    public void unbindDistributionRequestAuthorizationStrategy(DistributionRequestAuthorizationStrategy distributionRequestAuthorizationStrategy, Map<String, Object> config) {
+    public void unbindDistributionRequestAuthorizationStrategy(
+            DistributionRequestAuthorizationStrategy distributionRequestAuthorizationStrategy,
+            Map<String, Object> config) {
         remove(DistributionRequestAuthorizationStrategy.class, distributionRequestAuthorizationStrategy, config);
     }
 
-
     // internals
 
-    private <ComponentType> void put(Class<ComponentType> typeClass, ComponentType service, Map<String, Object> config) {
+    private <ComponentType> void put(
+            Class<ComponentType> typeClass, ComponentType service, Map<String, Object> config) {
         Map<String, DistributionComponent<?>> componentMap = getComponentMap(typeClass);
 
         String name = PropertiesUtil.toString(config.get(NAME), null);
@@ -231,7 +266,8 @@ public class DefaultDistributionComponentProvider implements DistributionCompone
         }
     }
 
-    private <ComponentType> void remove(Class<ComponentType> typeClass, ComponentType service, Map<String, Object> config) {
+    private <ComponentType> void remove(
+            Class<ComponentType> typeClass, ComponentType service, Map<String, Object> config) {
         Map<String, DistributionComponent<?>> componentMap = getComponentMap(typeClass);
 
         String name = PropertiesUtil.toString(config.get(NAME), null);
@@ -239,5 +275,4 @@ public class DefaultDistributionComponentProvider implements DistributionCompone
             componentMap.remove(name);
         }
     }
-
 }

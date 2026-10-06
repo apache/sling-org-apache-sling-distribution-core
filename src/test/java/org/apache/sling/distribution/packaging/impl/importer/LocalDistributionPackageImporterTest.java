@@ -18,6 +18,10 @@
  */
 package org.apache.sling.distribution.packaging.impl.importer;
 
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.vault.fs.api.IdConflictPolicy;
 import org.apache.jackrabbit.vault.fs.api.ImportMode;
@@ -42,10 +46,6 @@ import org.apache.sling.testing.mock.sling.junit.SlingContext;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mockito;
-
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.Map;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -80,8 +80,14 @@ public class LocalDistributionPackageImporterTest {
         LocalDistributionPackageImporter localdistributionPackageImporter =
                 new LocalDistributionPackageImporter("mockImporter", distributionEventFactory, packageBuilder);
 
-        ImportSettings importSettings = new ImportSettings(ImportMode.UPDATE, AccessControlHandling.IGNORE,
-                AccessControlHandling.IGNORE, -1, false, false, IdConflictPolicy.LEGACY);
+        ImportSettings importSettings = new ImportSettings(
+                ImportMode.UPDATE,
+                AccessControlHandling.IGNORE,
+                AccessControlHandling.IGNORE,
+                -1,
+                false,
+                false,
+                IdConflictPolicy.LEGACY);
 
         FileVaultContentSerializer vaultSerializer = new FileVaultContentSerializer(
                 "importPackageWithLargeHeader",
@@ -91,21 +97,17 @@ public class LocalDistributionPackageImporterTest {
                 new String[0],
                 false,
                 null,
-                importSettings
-        );
+                importSettings);
 
-        DistributionPackageBuilder builder =
-                new FileDistributionPackageBuilder(DistributionRequestType.ADD.name(), vaultSerializer, null, null, null, null);
+        DistributionPackageBuilder builder = new FileDistributionPackageBuilder(
+                DistributionRequestType.ADD.name(), vaultSerializer, null, null, null, null);
 
         ResourceResolver resourceResolver = slingContext.resourceResolver();
 
         String[] paths = createPaths(resourceResolver, 1000, "/content/company/de/press-releases/2016/11/04/message");
 
-
         DistributionPackage pkg = builder.createPackage(
-                resourceResolver,
-                new SimpleDistributionRequest(DistributionRequestType.ADD, paths)
-        );
+                resourceResolver, new SimpleDistributionRequest(DistributionRequestType.ADD, paths));
 
         InputStream streamWithHeader = DistributionPackageUtils.createStreamWithHeader(pkg);
         localdistributionPackageImporter.importStream(resourceResolver, streamWithHeader);

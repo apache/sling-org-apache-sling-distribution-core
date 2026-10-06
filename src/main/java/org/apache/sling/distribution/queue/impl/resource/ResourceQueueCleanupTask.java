@@ -16,8 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.queue.impl.resource;
+
+import java.util.Calendar;
+import java.util.Iterator;
 
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
@@ -27,13 +29,8 @@ import org.apache.sling.distribution.util.impl.DistributionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Calendar;
-import java.util.Iterator;
-
-
 public class ResourceQueueCleanupTask implements Runnable {
     private final Logger log = LoggerFactory.getLogger(getClass());
-
 
     private final ResourceResolverFactory resolverFactory;
     private final String serviceName;
@@ -73,7 +70,6 @@ public class ResourceQueueCleanupTask implements Runnable {
         }
     }
 
-
     public void removeEmptyFolders(Resource root) throws PersistenceException {
         Calendar now = Calendar.getInstance();
         now.add(Calendar.MINUTE, -5);
@@ -81,12 +77,12 @@ public class ResourceQueueCleanupTask implements Runnable {
         ResourceResolver resolver = root.getResourceResolver();
         ResourceIterator it = new ResourceIterator(root, ResourceQueueUtils.RESOURCE_FOLDER, true, false);
 
-        String nowPath =  ResourceQueueUtils.getTimePath(now);
+        String nowPath = ResourceQueueUtils.getTimePath(now);
 
         while (it.hasNext()) {
             Resource res = it.next();
 
-            String resPath = res.getPath().substring(root.getPath().length()+1);
+            String resPath = res.getPath().substring(root.getPath().length() + 1);
 
             if (!res.isResourceType(ResourceQueueUtils.RESOURCE_FOLDER)) {
                 continue;
@@ -107,6 +103,5 @@ public class ResourceQueueCleanupTask implements Runnable {
             resolver.delete(res);
             resolver.commit();
         }
-
     }
 }

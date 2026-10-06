@@ -35,8 +35,7 @@ public class ErrorListener implements ProgressTrackerListener {
     }
 
     @Override
-    public void onMessage(Mode mode, String action, String path) {
-    }
+    public void onMessage(Mode mode, String action, String path) {}
 
     @Override
     public void onError(Mode mode, String path, Exception e) {

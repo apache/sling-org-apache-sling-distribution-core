@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.queue.impl.resource;
 
 import org.apache.sling.api.resource.LoginException;
@@ -44,7 +43,8 @@ public class ActiveResourceQueue extends ResourceQueue {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    public ActiveResourceQueue(ResourceResolverFactory resolverFactory, String serviceName, String queueName, String rootPath) {
+    public ActiveResourceQueue(
+            ResourceResolverFactory resolverFactory, String serviceName, String queueName, String rootPath) {
         super(resolverFactory, serviceName, queueName, rootPath);
     }
 
@@ -59,12 +59,11 @@ public class ActiveResourceQueue extends ResourceQueue {
             int count = ResourceQueueUtils.getResourceCount(queueRoot);
 
             DistributionQueueEntry head = ResourceQueueUtils.getHead(queueRoot);
-            DistributionQueueItem firstItem = (null != head)? head.getItem(): null;
-            DistributionQueueItemStatus firstItemStatus = (null != head)? head.getStatus(): null;
-            log.debug("Queue has {} items, with following status for the head: {}",
-                    count, firstItemStatus);
-            return new DistributionQueueStatus(count,
-                    DistributionQueueUtils.calculateState(firstItem, firstItemStatus));
+            DistributionQueueItem firstItem = (null != head) ? head.getItem() : null;
+            DistributionQueueItemStatus firstItemStatus = (null != head) ? head.getStatus() : null;
+            log.debug("Queue has {} items, with following status for the head: {}", count, firstItemStatus);
+            return new DistributionQueueStatus(
+                    count, DistributionQueueUtils.calculateState(firstItem, firstItemStatus));
         } catch (LoginException | PersistenceException e) {
             throw new RuntimeException(e);
         } finally {

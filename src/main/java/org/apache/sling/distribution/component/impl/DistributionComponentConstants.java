@@ -18,7 +18,6 @@
  */
 package org.apache.sling.distribution.component.impl;
 
-
 /**
  * Constants relevant for distribution components.
  */

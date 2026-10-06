@@ -16,8 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.util.impl;
+
+import javax.jcr.Session;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.PersistenceException;
@@ -28,15 +32,11 @@ import org.apache.sling.jcr.api.SlingRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.Session;
-import java.util.HashMap;
-import java.util.Map;
-
-
 public class DistributionUtils {
     private static final Logger log = LoggerFactory.getLogger(DistributionUtils.class);
 
-    public static ResourceResolver loginService(ResourceResolverFactory resolverFactory, String serviceName) throws LoginException {
+    public static ResourceResolver loginService(ResourceResolverFactory resolverFactory, String serviceName)
+            throws LoginException {
         Map<String, Object> authInfo = new HashMap<String, Object>();
 
         authInfo.put(ResourceResolverFactory.SUBSERVICE, serviceName);
@@ -73,8 +73,12 @@ public class DistributionUtils {
         }
     }
 
-    public static ResourceResolver getResourceResolver(String user, String service, SlingRepository slingRepository,
-                                                       String subServiceName, ResourceResolverFactory resourceResolverFactory)
+    public static ResourceResolver getResourceResolver(
+            String user,
+            String service,
+            SlingRepository slingRepository,
+            String subServiceName,
+            ResourceResolverFactory resourceResolverFactory)
             throws DistributionException {
         ResourceResolver resourceResolver;
 

@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.queue.impl;
 
 import java.util.ArrayList;
@@ -24,18 +23,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
-import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueItemState;
 import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 /**
  * The error strategy for delivering packages to queues. The strategy delivers the packages in a queue named error-queueName
@@ -44,8 +43,7 @@ import org.slf4j.LoggerFactory;
 public class ErrorQueueDispatchingStrategy implements DistributionQueueDispatchingStrategy {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-
-    public final static String ERROR_PREFIX = "error-";
+    public static final String ERROR_PREFIX = "error-";
     private final Set<String> queueNames = new TreeSet<String>();
 
     public ErrorQueueDispatchingStrategy(String[] queueNames) {
@@ -53,7 +51,9 @@ public class ErrorQueueDispatchingStrategy implements DistributionQueueDispatchi
     }
 
     @Override
-    public Iterable<DistributionQueueItemStatus> add(@NotNull DistributionPackage distributionPackage, @NotNull DistributionQueueProvider queueProvider) throws DistributionException {
+    public Iterable<DistributionQueueItemStatus> add(
+            @NotNull DistributionPackage distributionPackage, @NotNull DistributionQueueProvider queueProvider)
+            throws DistributionException {
 
         List<DistributionQueueItemStatus> result = new ArrayList<DistributionQueueItemStatus>();
         String originQueue = DistributionPackageUtils.getQueueName(distributionPackage.getInfo());
@@ -66,7 +66,8 @@ public class ErrorQueueDispatchingStrategy implements DistributionQueueDispatchi
 
         DistributionQueue errorQueue = queueProvider.getQueue(errorQueueName);
 
-        DistributionQueueItemStatus status = new DistributionQueueItemStatus(DistributionQueueItemState.ERROR, errorQueueName);
+        DistributionQueueItemStatus status =
+                new DistributionQueueItemStatus(DistributionQueueItemState.ERROR, errorQueueName);
 
         DistributionQueueItem queueItem = DistributionPackageUtils.toQueueItem(distributionPackage);
         DistributionPackageUtils.acquire(distributionPackage, errorQueueName);

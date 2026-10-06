@@ -49,7 +49,9 @@ public interface DistributionQueueDispatchingStrategy {
      * the states of the {@link org.apache.sling.distribution.queue.DistributionQueueItem}s added to one or more {@link DistributionQueue}s
      * @throws DistributionException if any internal error happens during distribution
      */
-    Iterable<DistributionQueueItemStatus> add(@NotNull DistributionPackage distributionPackage, @NotNull DistributionQueueProvider queueProvider) throws DistributionException;
+    Iterable<DistributionQueueItemStatus> add(
+            @NotNull DistributionPackage distributionPackage, @NotNull DistributionQueueProvider queueProvider)
+            throws DistributionException;
 
     /**
      * Returns the queue names available for this strategy.
@@ -58,5 +60,4 @@ public interface DistributionQueueDispatchingStrategy {
      */
     @NotNull
     List<String> getQueueNames();
-
 }

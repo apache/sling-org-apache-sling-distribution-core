@@ -16,9 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.component.impl;
-
 
 import java.util.Map;
 
@@ -30,7 +28,6 @@ public class DistributionConfiguration {
     private final DistributionComponentKind kind;
     private final String name;
     private final Map<String, Object> properties;
-
 
     public DistributionConfiguration(DistributionComponentKind kind, String name, Map<String, Object> properties) {
 
@@ -47,17 +44,15 @@ public class DistributionConfiguration {
         return kind;
     }
 
-
     public String getName() {
         return name;
     }
 
     @Override
     public String toString() {
-        return "DistributionConfiguration{" +
-                "kind=" + kind +
-                ", name='" + name + '\'' +
-                ", properties=" + properties +
-                '}';
+        return "DistributionConfiguration{" + "kind="
+                + kind + ", name='"
+                + name + '\'' + ", properties="
+                + properties + '}';
     }
 }

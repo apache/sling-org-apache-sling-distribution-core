@@ -23,6 +23,7 @@ import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.security.AccessControlManager;
 import javax.jcr.security.Privilege;
+
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
@@ -31,8 +32,8 @@ import org.apache.jackrabbit.util.Text;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.packaging.DistributionPackage;
-import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
 import org.apache.sling.jcr.api.SlingRepository;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -51,41 +52,47 @@ public class RepositoryDistributionPackageImporter implements DistributionPackag
     private final String path;
     private final String privilegeName;
 
-    public RepositoryDistributionPackageImporter(SlingRepository repository,
-                                                 String serviceName, String path,
-                                                 String privilegeName) {
+    public RepositoryDistributionPackageImporter(
+            SlingRepository repository, String serviceName, String path, String privilegeName) {
         this.repository = repository;
         this.serviceName = serviceName;
         this.path = path;
         this.privilegeName = privilegeName;
     }
 
-    public void importPackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionPackage distributionPackage) throws DistributionException {
+    public void importPackage(
+            @NotNull ResourceResolver resourceResolver, @NotNull DistributionPackage distributionPackage)
+            throws DistributionException {
 
         Session session = null;
         try {
             session = authenticate();
             int lastSlash = distributionPackage.getId().lastIndexOf('/');
-            String nodeName = Text.escape(lastSlash < 0 ? distributionPackage.getId() : distributionPackage.getId().substring(lastSlash + 1));
+            String nodeName = Text.escape(
+                    lastSlash < 0
+                            ? distributionPackage.getId()
+                            : distributionPackage.getId().substring(lastSlash + 1));
             log.debug("importing package {} in {}", distributionPackage.getId(), nodeName);
 
             if (session != null) {
-                Node addedNode = session.getNode(path).addNode(nodeName,
-                        NodeType.NT_FILE);
+                Node addedNode = session.getNode(path).addNode(nodeName, NodeType.NT_FILE);
                 Node contentNode = addedNode.addNode(JcrConstants.JCR_CONTENT, NodeType.NT_RESOURCE);
                 if (contentNode != null) {
                     InputStream inputStream = null;
                     try {
                         inputStream = distributionPackage.createInputStream();
-                        contentNode.setProperty(JcrConstants.JCR_DATA, session.getValueFactory().createBinary(inputStream));
+                        contentNode.setProperty(
+                                JcrConstants.JCR_DATA, session.getValueFactory().createBinary(inputStream));
                         contentNode.setProperty("package.type", distributionPackage.getType());
                         session.save();
                     } finally {
                         IOUtils.closeQuietly(inputStream);
                     }
                 }
-                log.debug("package {} imported into the repository as node {} ",
-                        distributionPackage.getId(), addedNode.getPath());
+                log.debug(
+                        "package {} imported into the repository as node {} ",
+                        distributionPackage.getId(),
+                        addedNode.getPath());
 
             } else {
                 throw new Exception("could not get a Session to deliver package to the repository");
@@ -100,7 +107,8 @@ public class RepositoryDistributionPackageImporter implements DistributionPackag
     }
 
     @NotNull
-    public DistributionPackageInfo importStream(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream) throws DistributionException {
+    public DistributionPackageInfo importStream(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream)
+            throws DistributionException {
         throw new DistributionException("not supported");
     }
 
@@ -111,7 +119,7 @@ public class RepositoryDistributionPackageImporter implements DistributionPackag
             AccessControlManager accessControlManager = session.getAccessControlManager();
             Privilege privilege = accessControlManager.privilegeFromName(privilegeName);
 
-            if (!accessControlManager.hasPrivileges(path, new Privilege[]{privilege})) {
+            if (!accessControlManager.hasPrivileges(path, new Privilege[] {privilege})) {
                 session.logout();
                 throw new Exception("failed to access path " + path + " with privilege " + privilege);
             }

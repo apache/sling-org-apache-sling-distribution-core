@@ -20,6 +20,7 @@ package org.apache.sling.distribution.event.impl;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
+
 import org.apache.sling.distribution.component.impl.DistributionComponentKind;
 import org.apache.sling.distribution.event.DistributionEventProperties;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
@@ -34,7 +35,7 @@ import org.slf4j.LoggerFactory;
 /**
  * {@link DistributionEventFactory} OSGi service
  */
-@Component(immediate = true, service=DistributionEventFactory.class)
+@Component(immediate = true, service = DistributionEventFactory.class)
 public class DefaultDistributionEventFactory implements DistributionEventFactory {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -47,8 +48,11 @@ public class DefaultDistributionEventFactory implements DistributionEventFactory
         log.debug("distribution event {} posted", distributionEventTopic);
     }
 
-    public void generatePackageEvent(@NotNull String distributionEventTopic, @NotNull DistributionComponentKind kind,
-                                     @NotNull String name, @NotNull DistributionPackageInfo info) {
+    public void generatePackageEvent(
+            @NotNull String distributionEventTopic,
+            @NotNull DistributionComponentKind kind,
+            @NotNull String name,
+            @NotNull DistributionPackageInfo info) {
         try {
             Dictionary<String, Object> dictionary = new Hashtable<String, Object>();
             dictionary.put(DistributionEventProperties.DISTRIBUTION_COMPONENT_NAME, name);
@@ -64,7 +68,5 @@ public class DefaultDistributionEventFactory implements DistributionEventFactory
         } catch (Throwable e) {
             log.error("Cannot generate package event", e);
         }
-
     }
-
 }

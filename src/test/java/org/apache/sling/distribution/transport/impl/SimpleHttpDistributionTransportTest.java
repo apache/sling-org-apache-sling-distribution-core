@@ -18,6 +18,12 @@
  */
 package org.apache.sling.distribution.transport.impl;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -39,12 +45,6 @@ import org.apache.sling.distribution.packaging.impl.InMemoryDistributionPackage;
 import org.apache.sling.distribution.transport.DistributionTransportSecret;
 import org.apache.sling.distribution.transport.DistributionTransportSecretProvider;
 import org.junit.Test;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -75,8 +75,12 @@ public class SimpleHttpDistributionTransportTest {
         when(executor.execute(any(Request.class))).thenReturn(response);
         DistributionEndpoint endpoint = new DistributionEndpoint("http://127.0.0.1:8080/some/resource");
         DistributionPackageBuilder packageBuilder = mock(DistributionPackageBuilder.class);
-        SimpleHttpDistributionTransport simpleHttpDistributionTransport = new SimpleHttpDistributionTransport(mock(DefaultDistributionLog.class),
-                endpoint, packageBuilder, secretProvider, new HttpConfiguration(1000, 1000));
+        SimpleHttpDistributionTransport simpleHttpDistributionTransport = new SimpleHttpDistributionTransport(
+                mock(DefaultDistributionLog.class),
+                endpoint,
+                packageBuilder,
+                secretProvider,
+                new HttpConfiguration(1000, 1000));
         ResourceResolver resourceResolver = mock(ResourceResolver.class);
         DistributionPackage distributionPackage = mock(DistributionPackage.class);
         when(distributionPackage.getInfo()).thenReturn(new DistributionPackageInfo("type"));
@@ -108,11 +112,16 @@ public class SimpleHttpDistributionTransportTest {
         when(executor.execute(any(Request.class))).thenReturn(response);
         DistributionEndpoint endpoint = new DistributionEndpoint("http://127.0.0.1:8080/some/resource");
         DistributionPackageBuilder packageBuilder = mock(DistributionPackageBuilder.class);
-        SimpleHttpDistributionTransport simpleHttpDistributionTransport = new SimpleHttpDistributionTransport(mock(DefaultDistributionLog.class),
-                endpoint, packageBuilder, secretProvider, new HttpConfiguration(1000, 1000));
+        SimpleHttpDistributionTransport simpleHttpDistributionTransport = new SimpleHttpDistributionTransport(
+                mock(DefaultDistributionLog.class),
+                endpoint,
+                packageBuilder,
+                secretProvider,
+                new HttpConfiguration(1000, 1000));
         ResourceResolver resourceResolver = mock(ResourceResolver.class);
         DistributionRequest distributionRequest = new SimpleDistributionRequest(DistributionRequestType.ADD, "/");
-        RemoteDistributionPackage retrievedPackage = simpleHttpDistributionTransport.retrievePackage(resourceResolver, distributionRequest, new DistributionTransportContext());
+        RemoteDistributionPackage retrievedPackage = simpleHttpDistributionTransport.retrievePackage(
+                resourceResolver, distributionRequest, new DistributionTransportContext());
         assertNull(retrievedPackage);
     }
 
@@ -142,24 +151,30 @@ public class SimpleHttpDistributionTransportTest {
         DistributionPackageBuilder packageBuilder = mock(DistributionPackageBuilder.class);
         DistributionPackage distributionPackage = mock(DistributionPackage.class);
         when(distributionPackage.getInfo()).thenReturn(new DistributionPackageInfo("type"));
-        when(packageBuilder.readPackage(any(ResourceResolver.class), any(InputStream.class))).thenReturn(distributionPackage);
-        SimpleHttpDistributionTransport simpleHttpDistributionTransport = new SimpleHttpDistributionTransport(mock(DefaultDistributionLog.class),
-                endpoint, packageBuilder, secretProvider, new HttpConfiguration(1000, 1000));
+        when(packageBuilder.readPackage(any(ResourceResolver.class), any(InputStream.class)))
+                .thenReturn(distributionPackage);
+        SimpleHttpDistributionTransport simpleHttpDistributionTransport = new SimpleHttpDistributionTransport(
+                mock(DefaultDistributionLog.class),
+                endpoint,
+                packageBuilder,
+                secretProvider,
+                new HttpConfiguration(1000, 1000));
         ResourceResolver resourceResolver = mock(ResourceResolver.class);
         DistributionRequest distributionRequest = new SimpleDistributionRequest(DistributionRequestType.ADD, "/");
         DistributionTransportContext distributionContext = mock(DistributionTransportContext.class);
         when(distributionContext.get(any(String.class), same(Executor.class))).thenReturn(executor);
         when(distributionContext.containsKey(any(String.class))).thenReturn(true);
 
-        RemoteDistributionPackage retrievedPackage = simpleHttpDistributionTransport.retrievePackage(resourceResolver, distributionRequest, distributionContext);
+        RemoteDistributionPackage retrievedPackage = simpleHttpDistributionTransport.retrievePackage(
+                resourceResolver, distributionRequest, distributionContext);
         assertNotNull(retrievedPackage);
     }
-    
+
     @Test
     public void testSetupTransport() throws Exception {
         System.setProperty("http.proxyHost", "10.0.0.100");
         System.setProperty("http.proxyPort", "8800");
-        
+
         DistributionTransportSecret secret = mock(DistributionTransportSecret.class);
         Map<String, String> credentialsMap = new HashMap<String, String>();
         credentialsMap.put("username", "foo");
@@ -167,19 +182,24 @@ public class SimpleHttpDistributionTransportTest {
         when(secret.asCredentialsMap()).thenReturn(credentialsMap);
         DistributionTransportSecretProvider secretProvider = mock(DistributionTransportSecretProvider.class);
         when(secretProvider.getSecret(any(URI.class))).thenReturn(secret);
-        
+
         DistributionEndpoint endpoint = new DistributionEndpoint("http://127.0.0.1:8080/some/resource");
         DistributionPackageBuilder packageBuilder = mock(DistributionPackageBuilder.class);
-        DistributionPackage distributionPackage = new InMemoryDistributionPackage("myid", "type", new byte[] {}, new HashMap<String, Object>());
+        DistributionPackage distributionPackage =
+                new InMemoryDistributionPackage("myid", "type", new byte[] {}, new HashMap<String, Object>());
         ResourceResolver resourceResolver = mock(ResourceResolver.class);
-        
-        SimpleHttpDistributionTransport transport = new SimpleHttpDistributionTransport(mock(DefaultDistributionLog.class),
-                endpoint, packageBuilder, secretProvider, new HttpConfiguration(1000, 1000));
+
+        SimpleHttpDistributionTransport transport = new SimpleHttpDistributionTransport(
+                mock(DefaultDistributionLog.class),
+                endpoint,
+                packageBuilder,
+                secretProvider,
+                new HttpConfiguration(1000, 1000));
         DistributionTransportContext context = new DistributionTransportContext();
         try {
             transport.deliverPackage(resourceResolver, distributionPackage, context);
         } catch (RecoverableDistributionException e) {
-            HttpHostConnectException cause = (HttpHostConnectException)e.getCause();
+            HttpHostConnectException cause = (HttpHostConnectException) e.getCause();
             HttpHost host = cause.getHost();
             assertThat(host.getHostName(), equalTo("127.0.0.1"));
         }

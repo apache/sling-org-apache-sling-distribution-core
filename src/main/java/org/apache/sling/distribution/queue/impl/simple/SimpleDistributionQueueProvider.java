@@ -34,12 +34,12 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.sling.commons.scheduler.ScheduleOptions;
 import org.apache.sling.commons.scheduler.Scheduler;
-import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
+import org.apache.sling.distribution.queue.DistributionQueueType;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProcessor;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
-import org.apache.sling.distribution.queue.DistributionQueueType;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +58,8 @@ public class SimpleDistributionQueueProvider implements DistributionQueueProvide
     private final String name;
     private final Scheduler scheduler;
 
-    private final Map<String, SimpleDistributionQueue> queueMap = new ConcurrentHashMap<String, SimpleDistributionQueue>();
+    private final Map<String, SimpleDistributionQueue> queueMap =
+            new ConcurrentHashMap<String, SimpleDistributionQueue>();
     private final boolean checkpoint;
     private File checkpointDirectory;
 
@@ -78,7 +79,9 @@ public class SimpleDistributionQueueProvider implements DistributionQueueProvide
             if (!checkpointDirectory.exists()) {
                 created = checkpointDirectory.mkdir();
             }
-            log.info("checkpoint directory created: {}, exists {}", created,
+            log.info(
+                    "checkpoint directory created: {}, exists {}",
+                    created,
                     checkpointDirectory.isDirectory() && checkpointDirectory.exists());
         }
 
@@ -133,7 +136,10 @@ public class SimpleDistributionQueueProvider implements DistributionQueueProvide
                             DistributionQueueItem item = mapper.readQueueItem(line);
                             queue.add(item);
                         }
-                        log.info("recovered {} items from queue {}", queue.getStatus().getItemsCount(), queueName);
+                        log.info(
+                                "recovered {} items from queue {}",
+                                queue.getStatus().getItemsCount(),
+                                queueName);
                     } catch (FileNotFoundException e) {
                         log.warn("could not read checkpoint file {}", qf.getAbsolutePath());
                     } catch (JsonException e) {
@@ -146,25 +152,25 @@ public class SimpleDistributionQueueProvider implements DistributionQueueProvide
 
             // enable checkpointing
             for (String queueName : queueNames) {
-                ScheduleOptions options = scheduler.NOW(-1, 15).canRunConcurrently(false)
-                        .name(getJobName(queueName + "-checkpoint"));
-                scheduler.schedule(new SimpleDistributionQueueCheckpoint(getQueue(queueName), checkpointDirectory),
-                        options);
+                ScheduleOptions options =
+                        scheduler.NOW(-1, 15).canRunConcurrently(false).name(getJobName(queueName + "-checkpoint"));
+                scheduler.schedule(
+                        new SimpleDistributionQueueCheckpoint(getQueue(queueName), checkpointDirectory), options);
             }
         }
 
         // enable processing
         for (String queueName : queueNames) {
-            ScheduleOptions options = scheduler.NOW(-1, 1)
-                    .canRunConcurrently(false)
-                    .name(getJobName(queueName));
+            ScheduleOptions options =
+                    scheduler.NOW(-1, 1).canRunConcurrently(false).name(getJobName(queueName));
             DistributionQueue queueImpl = getQueue(queueName);
             Consumer<DistributionQueueEntry> processingAttemptRecorder =
-                    ((SimpleDistributionQueue)queueImpl)::recordProcessingAttempt;
-            scheduler.schedule(new SimpleDistributionQueueProcessor(getQueue(queueName), queueProcessor, processingAttemptRecorder),
+                    ((SimpleDistributionQueue) queueImpl)::recordProcessingAttempt;
+            scheduler.schedule(
+                    new SimpleDistributionQueueProcessor(
+                            getQueue(queueName), queueProcessor, processingAttemptRecorder),
                     options);
         }
-
     }
 
     public void disableQueueProcessing() {

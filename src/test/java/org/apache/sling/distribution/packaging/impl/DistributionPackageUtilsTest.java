@@ -16,11 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.packaging.impl;
-
-import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.junit.Test;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -29,13 +25,15 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.junit.Test;
+
 import static org.junit.Assert.assertEquals;
 
 public class DistributionPackageUtilsTest {
 
-
     @Test
-    public void testInfoEmptyStreams(){
+    public void testInfoEmptyStreams() {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         Map<String, Object> info = new HashMap<String, Object>();
@@ -47,18 +45,16 @@ public class DistributionPackageUtilsTest {
         DistributionPackageUtils.readInfo(inputStream, resultInfo);
 
         assertEquals(info.size(), resultInfo.size());
-
     }
 
-
     @Test
-    public void testInfoFullStreams(){
+    public void testInfoFullStreams() {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         Map<String, Object> info = new HashMap<String, Object>();
         info.put("test1", "value1");
         info.put("test2", "value2");
-        info.put("test3", new String[] { "value1", "value2" });
+        info.put("test3", new String[] {"value1", "value2"});
 
         DistributionPackageUtils.writeInfo(outputStream, info);
 
@@ -76,12 +72,11 @@ public class DistributionPackageUtilsTest {
         assertEquals("value2", array[1]);
     }
 
-
     @Test
     public void testStreamsWithoutInfo() throws IOException {
 
-        byte[] bytes =new byte[100];
-        for (int i=0; i< bytes.length; i++) {
+        byte[] bytes = new byte[100];
+        for (int i = 0; i < bytes.length; i++) {
             bytes[i] = (byte) i;
         }
 
@@ -98,9 +93,8 @@ public class DistributionPackageUtilsTest {
 
         assertEquals(-1, inputStream.read());
 
-        for (int i=0; i < bytes.length; i++) {
-            assertEquals((byte)i, resultBytes[i]);
+        for (int i = 0; i < bytes.length; i++) {
+            assertEquals((byte) i, resultBytes[i]);
         }
-
     }
 }

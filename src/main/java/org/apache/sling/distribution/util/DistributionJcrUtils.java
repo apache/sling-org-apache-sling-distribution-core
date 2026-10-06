@@ -49,7 +49,6 @@ public class DistributionJcrUtils {
             }
         }
         return safe;
-
     }
 
     /**

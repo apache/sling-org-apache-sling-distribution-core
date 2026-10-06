@@ -68,23 +68,20 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.metatype.annotations.Designate;
 
-
-
-
 /**
  * An OSGi service factory for {@link DistributionAgent}s which references already existing OSGi services.
  */
 @Component(
         configurationPolicy = ConfigurationPolicy.REQUIRE,
-        property= {"webconsole.configurationFactory.nameHint=Agent name: {name}"}
-)
-@Designate(ocd =ForwardDistributionAgentFactoryConfig.class, factory=true)
+        property = {"webconsole.configurationFactory.nameHint=Agent name: {name}"})
+@Designate(ocd = ForwardDistributionAgentFactoryConfig.class, factory = true)
 public class ForwardDistributionAgentFactory extends AbstractDistributionAgentFactory<ForwardDistributionAgentMBean> {
-    
+
     /**
      * Need to keep the constants around so the code below is still working.
      */
     private static final String ALLOWED_ROOTS = "allowed.roots";
+
     private static final String SERVICE_NAME = "serviceName";
     private static final Object QUEUE_PROCESSING_ENABLED = "queue.processing.enabled";
     private static final String PASSIVE_QUEUES = "passiveQueues";
@@ -133,9 +130,13 @@ public class ForwardDistributionAgentFactory extends AbstractDistributionAgentFa
         super(ForwardDistributionAgentMBean.class);
     }
 
-    @Reference(name = "triggers", service = DistributionTrigger.class,
-            policy = ReferencePolicy.DYNAMIC, cardinality = ReferenceCardinality.MULTIPLE,
-            bind = "bindDistributionTrigger", unbind = "unbindDistributionTrigger")
+    @Reference(
+            name = "triggers",
+            service = DistributionTrigger.class,
+            policy = ReferencePolicy.DYNAMIC,
+            cardinality = ReferenceCardinality.MULTIPLE,
+            bind = "bindDistributionTrigger",
+            unbind = "unbindDistributionTrigger")
     protected void bindDistributionTrigger(DistributionTrigger distributionTrigger, Map<String, Object> config) {
         super.bindDistributionTrigger(distributionTrigger, config);
     }
@@ -143,11 +144,11 @@ public class ForwardDistributionAgentFactory extends AbstractDistributionAgentFa
     protected void unbindDistributionTrigger(DistributionTrigger distributionTrigger, Map<String, Object> config) {
         super.unbindDistributionTrigger(distributionTrigger, config);
     }
-    
+
     /**
      * In the first round it's not possible to utilize the signature with the above
      * config class because of the way the configuration is processed ...
-     * 
+     *
      */
     @Activate
     protected void activate(BundleContext context, Map<String, Object> config) {
@@ -160,7 +161,11 @@ public class ForwardDistributionAgentFactory extends AbstractDistributionAgentFa
     }
 
     @Override
-    protected SimpleDistributionAgent createAgent(String agentName, BundleContext context, Map<String, Object> config, DefaultDistributionLog distributionLog) {
+    protected SimpleDistributionAgent createAgent(
+            String agentName,
+            BundleContext context,
+            Map<String, Object> config,
+            DefaultDistributionLog distributionLog) {
         String serviceName = SettingsUtils.removeEmptyEntry(PropertiesUtil.toString(config.get(SERVICE_NAME), null));
         String[] allowedRoots = PropertiesUtil.toStringArray(config.get(ALLOWED_ROOTS), null);
         allowedRoots = SettingsUtils.removeEmptyEntries(allowedRoots);
@@ -179,14 +184,20 @@ public class ForwardDistributionAgentFactory extends AbstractDistributionAgentFa
         DistributionPackageExporter packageExporter = new LocalDistributionPackageExporter(packageBuilder);
 
         DistributionQueueProvider queueProvider;
-        String queueProviderName = PropertiesUtil.toString(config.get(QUEUE_PROVIDER), JobHandlingDistributionQueueProvider.TYPE);
+        String queueProviderName =
+                PropertiesUtil.toString(config.get(QUEUE_PROVIDER), JobHandlingDistributionQueueProvider.TYPE);
         if (JobHandlingDistributionQueueProvider.TYPE.equals(queueProviderName)) {
             queueProvider = new JobHandlingDistributionQueueProvider(agentName, jobManager, context, configAdmin);
         } else if (SimpleDistributionQueueProvider.TYPE.equals(queueProviderName)) {
             queueProvider = new SimpleDistributionQueueProvider(scheduler, agentName, false);
         } else if (ResourceQueueProvider.TYPE.equals(queueProviderName)) {
-            queueProvider = new ResourceQueueProvider(context,
-                    resourceResolverFactory, SimpleDistributionAgent.DEFAULT_AGENT_SERVICE, agentName, scheduler, true);
+            queueProvider = new ResourceQueueProvider(
+                    context,
+                    resourceResolverFactory,
+                    SimpleDistributionAgent.DEFAULT_AGENT_SERVICE,
+                    agentName,
+                    scheduler,
+                    true);
         } else { // when SimpleDistributionQueueProvider.TYPE_CHECKPOINT is "queueProviderName"
             queueProvider = new SimpleDistributionQueueProvider(scheduler, agentName, true);
         }
@@ -209,7 +220,8 @@ public class ForwardDistributionAgentFactory extends AbstractDistributionAgentFa
         String[] queueNames = endpointsAndPassiveQueues.toArray(new String[endpointsAndPassiveQueues.size()]);
 
         if (priorityQueues != null) {
-            PriorityQueueDispatchingStrategy dispatchingStrategy = new PriorityQueueDispatchingStrategy(priorityQueues, queueNames);
+            PriorityQueueDispatchingStrategy dispatchingStrategy =
+                    new PriorityQueueDispatchingStrategy(priorityQueues, queueNames);
             Map<String, String> queueAliases = dispatchingStrategy.getMatchingQueues(null);
             importerEndpointsMap = SettingsUtils.expandUriMap(importerEndpointsMap, queueAliases);
             exportQueueStrategy = dispatchingStrategy;
@@ -226,36 +238,52 @@ public class ForwardDistributionAgentFactory extends AbstractDistributionAgentFa
                 processingQueues.addAll(deliveryQueues.values());
                 exportQueueStrategy = new AsyncDeliveryDispatchingStrategy(deliveryQueues);
             } else {
-                exportQueueStrategy = new MultipleQueueDispatchingStrategy(endpointNames.toArray(new String[endpointNames.size()]));
+                exportQueueStrategy =
+                        new MultipleQueueDispatchingStrategy(endpointNames.toArray(new String[endpointNames.size()]));
             }
         }
 
         processingQueues.addAll(endpointNames);
         processingQueues.removeAll(Arrays.asList(passiveQueues));
 
-        packageImporter = new RemoteDistributionPackageImporter(distributionLog, transportSecretProvider,
-                importerEndpointsMap, httpConfiguration);
+        packageImporter = new RemoteDistributionPackageImporter(
+                distributionLog, transportSecretProvider, importerEndpointsMap, httpConfiguration);
 
-        DistributionRequestType[] allowedRequests = new DistributionRequestType[]{DistributionRequestType.ADD, DistributionRequestType.DELETE};
+        DistributionRequestType[] allowedRequests =
+                new DistributionRequestType[] {DistributionRequestType.ADD, DistributionRequestType.DELETE};
 
-        String retryStrategy = SettingsUtils.removeEmptyEntry(PropertiesUtil.toString(config.get(RETRY_STRATEGY), null));
+        String retryStrategy =
+                SettingsUtils.removeEmptyEntry(PropertiesUtil.toString(config.get(RETRY_STRATEGY), null));
         int retryAttepts = PropertiesUtil.toInteger(config.get(RETRY_ATTEMPTS), 100);
 
         if ("errorQueue".equals(retryStrategy)) {
-            errorQueueStrategy = new ErrorQueueDispatchingStrategy(processingQueues.toArray(new String[processingQueues.size()]));
+            errorQueueStrategy =
+                    new ErrorQueueDispatchingStrategy(processingQueues.toArray(new String[processingQueues.size()]));
         }
 
-        return new SimpleDistributionAgent(agentName, queueProcessingEnabled, processingQueues,
-                serviceName, packageImporter, packageExporter, requestAuthorizationStrategy,
-                queueProvider, exportQueueStrategy, errorQueueStrategy, distributionEventFactory, resourceResolverFactory, slingRepository,
-                distributionLog, allowedRequests, allowedRoots, retryAttepts);
-
-
+        return new SimpleDistributionAgent(
+                agentName,
+                queueProcessingEnabled,
+                processingQueues,
+                serviceName,
+                packageImporter,
+                packageExporter,
+                requestAuthorizationStrategy,
+                queueProvider,
+                exportQueueStrategy,
+                errorQueueStrategy,
+                distributionEventFactory,
+                resourceResolverFactory,
+                slingRepository,
+                distributionLog,
+                allowedRequests,
+                allowedRoots,
+                retryAttepts);
     }
 
     @Override
-    protected ForwardDistributionAgentMBean createMBeanAgent(DistributionAgent agent, Map<String, Object> osgiConfiguration) {
+    protected ForwardDistributionAgentMBean createMBeanAgent(
+            DistributionAgent agent, Map<String, Object> osgiConfiguration) {
         return new ForwardDistributionAgentMBeanImpl(agent, osgiConfiguration);
     }
-
 }

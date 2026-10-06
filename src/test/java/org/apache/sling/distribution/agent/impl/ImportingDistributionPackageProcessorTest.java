@@ -18,17 +18,17 @@
  */
 package org.apache.sling.distribution.agent.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.distribution.DistributionRequestType;
 import org.apache.sling.distribution.log.impl.DefaultDistributionLog;
 import org.apache.sling.distribution.packaging.DistributionPackage;
-import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
 import org.apache.sling.jcr.api.SlingRepository;
 import org.junit.Test;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -46,13 +46,13 @@ public class ImportingDistributionPackageProcessorTest {
         String agentService = "agentService";
         ResourceResolverFactory resourceResolverFactory = mock(ResourceResolverFactory.class);
         String subServiceName = "ssn";
-        SimpleDistributionAgentAuthenticationInfo authInfo = new SimpleDistributionAgentAuthenticationInfo(repository,
-                agentService, resourceResolverFactory, subServiceName);
+        SimpleDistributionAgentAuthenticationInfo authInfo = new SimpleDistributionAgentAuthenticationInfo(
+                repository, agentService, resourceResolverFactory, subServiceName);
         String callingUser = "foo";
         String requestId = "123";
         DefaultDistributionLog log = mock(DefaultDistributionLog.class);
-        ImportingDistributionPackageProcessor processor = new ImportingDistributionPackageProcessor(importer, authInfo,
-                callingUser, requestId, log);
+        ImportingDistributionPackageProcessor processor =
+                new ImportingDistributionPackageProcessor(importer, authInfo, callingUser, requestId, log);
         DistributionPackage distributionPackage = mock(DistributionPackage.class);
 
         Map<String, Object> map = new HashMap<String, Object>();
@@ -71,16 +71,15 @@ public class ImportingDistributionPackageProcessorTest {
         String agentService = "agentService";
         ResourceResolverFactory resourceResolverFactory = mock(ResourceResolverFactory.class);
         String subServiceName = "ssn";
-        SimpleDistributionAgentAuthenticationInfo authInfo = new SimpleDistributionAgentAuthenticationInfo(repository,
-                agentService, resourceResolverFactory, subServiceName);
+        SimpleDistributionAgentAuthenticationInfo authInfo = new SimpleDistributionAgentAuthenticationInfo(
+                repository, agentService, resourceResolverFactory, subServiceName);
         String callingUser = "foo";
         String requestId = "123";
         DefaultDistributionLog log = mock(DefaultDistributionLog.class);
-        ImportingDistributionPackageProcessor processor = new ImportingDistributionPackageProcessor(importer, authInfo,
-                callingUser, requestId, log);
+        ImportingDistributionPackageProcessor processor =
+                new ImportingDistributionPackageProcessor(importer, authInfo, callingUser, requestId, log);
         assertNotNull(processor.getAllResponses());
         assertTrue(processor.getAllResponses().isEmpty());
-
     }
 
     @Test
@@ -90,13 +89,13 @@ public class ImportingDistributionPackageProcessorTest {
         String agentService = "agentService";
         ResourceResolverFactory resourceResolverFactory = mock(ResourceResolverFactory.class);
         String subServiceName = "ssn";
-        SimpleDistributionAgentAuthenticationInfo authInfo = new SimpleDistributionAgentAuthenticationInfo(repository,
-                agentService, resourceResolverFactory, subServiceName);
+        SimpleDistributionAgentAuthenticationInfo authInfo = new SimpleDistributionAgentAuthenticationInfo(
+                repository, agentService, resourceResolverFactory, subServiceName);
         String callingUser = "foo";
         String requestId = "123";
         DefaultDistributionLog log = mock(DefaultDistributionLog.class);
-        ImportingDistributionPackageProcessor processor = new ImportingDistributionPackageProcessor(importer, authInfo,
-                callingUser, requestId, log);
+        ImportingDistributionPackageProcessor processor =
+                new ImportingDistributionPackageProcessor(importer, authInfo, callingUser, requestId, log);
         assertEquals(0, processor.getPackagesCount());
     }
 
@@ -107,13 +106,13 @@ public class ImportingDistributionPackageProcessorTest {
         String agentService = "agentService";
         ResourceResolverFactory resourceResolverFactory = mock(ResourceResolverFactory.class);
         String subServiceName = "ssn";
-        SimpleDistributionAgentAuthenticationInfo authInfo = new SimpleDistributionAgentAuthenticationInfo(repository,
-                agentService, resourceResolverFactory, subServiceName);
+        SimpleDistributionAgentAuthenticationInfo authInfo = new SimpleDistributionAgentAuthenticationInfo(
+                repository, agentService, resourceResolverFactory, subServiceName);
         String callingUser = "foo";
         String requestId = "123";
         DefaultDistributionLog log = mock(DefaultDistributionLog.class);
-        ImportingDistributionPackageProcessor processor = new ImportingDistributionPackageProcessor(importer, authInfo,
-                callingUser, requestId, log);
+        ImportingDistributionPackageProcessor processor =
+                new ImportingDistributionPackageProcessor(importer, authInfo, callingUser, requestId, log);
         assertEquals(0, processor.getPackagesSize());
     }
 }

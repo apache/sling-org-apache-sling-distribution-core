@@ -16,8 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.queue.impl.resource;
+
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.commons.scheduler.ScheduleOptions;
@@ -29,23 +34,16 @@ import org.apache.sling.distribution.queue.impl.DistributionQueueProcessor;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
 import org.apache.sling.distribution.queue.impl.simple.SimpleDistributionQueueProcessor;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
-
 import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Dictionary;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
-
 public class ResourceQueueProvider implements DistributionQueueProvider {
     public static final String TYPE = "resource";
 
-    public final static String QUEUES_ROOT = "/var/sling/distribution/queues/";
+    public static final String QUEUES_ROOT = "/var/sling/distribution/queues/";
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -60,10 +58,18 @@ public class ResourceQueueProvider implements DistributionQueueProvider {
 
     private ServiceRegistration<Runnable> cleanupTask;
 
-    public ResourceQueueProvider(BundleContext context, ResourceResolverFactory resolverFactory,
-            String serviceName, String agentName, Scheduler scheduler, boolean isActive) {
-        if (serviceName == null || (scheduler == null && isActive)
-                || context == null || resolverFactory == null || agentName == null) {
+    public ResourceQueueProvider(
+            BundleContext context,
+            ResourceResolverFactory resolverFactory,
+            String serviceName,
+            String agentName,
+            Scheduler scheduler,
+            boolean isActive) {
+        if (serviceName == null
+                || (scheduler == null && isActive)
+                || context == null
+                || resolverFactory == null
+                || agentName == null) {
             throw new IllegalArgumentException("all arguments are required");
         }
         this.resolverFactory = resolverFactory;
@@ -99,24 +105,28 @@ public class ResourceQueueProvider implements DistributionQueueProvider {
     }
 
     @Override
-    public void enableQueueProcessing(@NotNull DistributionQueueProcessor queueProcessor, String... queueNames) throws DistributionException {
+    public void enableQueueProcessing(@NotNull DistributionQueueProcessor queueProcessor, String... queueNames)
+            throws DistributionException {
         // enable processing only for active ResourceQueues
         if (isActive) {
             for (String queueName : queueNames) {
-                ScheduleOptions options = scheduler.NOW(-1, 1)
+                ScheduleOptions options = scheduler
+                        .NOW(-1, 1)
                         .canRunConcurrently(false)
                         .onSingleInstanceOnly(true)
                         .name(getJobName(queueName));
                 DistributionQueue queueImpl = getQueue(queueName);
                 Consumer<DistributionQueueEntry> processingAttemptRecorder = null;
                 if (isActive) {
-                    processingAttemptRecorder = ((ActiveResourceQueue)queueImpl)::recordProcessingAttempt;
+                    processingAttemptRecorder = ((ActiveResourceQueue) queueImpl)::recordProcessingAttempt;
                 }
-                scheduler.schedule(new SimpleDistributionQueueProcessor(queueImpl, queueProcessor, processingAttemptRecorder),
+                scheduler.schedule(
+                        new SimpleDistributionQueueProcessor(queueImpl, queueProcessor, processingAttemptRecorder),
                         options);
             }
         } else {
-            throw new DistributionException(new UnsupportedOperationException("enable Processing not supported for Passive Queues"));
+            throw new DistributionException(
+                    new UnsupportedOperationException("enable Processing not supported for Passive Queues"));
         }
     }
 
@@ -134,14 +144,14 @@ public class ResourceQueueProvider implements DistributionQueueProvider {
                 }
             }
         } else {
-            throw new DistributionException(new UnsupportedOperationException("disable Processing not supported for Passive Queues"));
+            throw new DistributionException(
+                    new UnsupportedOperationException("disable Processing not supported for Passive Queues"));
         }
     }
 
     private String getJobName(String queueName) {
         return "resource-queueProcessor-" + agentName + "-" + queueName;
     }
-
 
     private void register(BundleContext context) {
         Runnable cleanup = new ResourceQueueCleanupTask(resolverFactory, serviceName, agentRootPath);

@@ -35,21 +35,21 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @Component(
         configurationPolicy = ConfigurationPolicy.REQUIRE,
-        service=DistributionTrigger.class,
-        property= {
-                "webconsole.configurationFactory.nameHint=Trigger name: {name}"    
-        }
-)
-@Designate(ocd=ResourceEventDistributionTriggerFactory.Config.class, factory=true)
+        service = DistributionTrigger.class,
+        property = {"webconsole.configurationFactory.nameHint=Trigger name: {name}"})
+@Designate(ocd = ResourceEventDistributionTriggerFactory.Config.class, factory = true)
 public class ResourceEventDistributionTriggerFactory implements DistributionTrigger {
 
-    @ObjectClassDefinition(name="Apache Sling Distribution Trigger - Resource Event Triggers Factory",
-            description = "Triggers a distribution request ('ADD', 'DELETE') " +
-                    "for the given path (path) whenever the resource at the given path is modified (added, resp. removed).")
+    @ObjectClassDefinition(
+            name = "Apache Sling Distribution Trigger - Resource Event Triggers Factory",
+            description =
+                    "Triggers a distribution request ('ADD', 'DELETE') "
+                            + "for the given path (path) whenever the resource at the given path is modified (added, resp. removed).")
     public @interface Config {
-        @AttributeDefinition(name="Name", description = "The name of the trigger.")
+        @AttributeDefinition(name = "Name", description = "The name of the trigger.")
         String name();
-        @AttributeDefinition(name="Name", description = "The resource path for which changes are distributed")
+
+        @AttributeDefinition(name = "Name", description = "The resource path for which changes are distributed")
         String path();
     }
 

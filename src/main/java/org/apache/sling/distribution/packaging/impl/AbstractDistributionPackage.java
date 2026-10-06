@@ -66,5 +66,4 @@ public abstract class AbstractDistributionPackage implements SharedDistributionP
     public String getDigestMessage() {
         return digestMessage;
     }
-
 }

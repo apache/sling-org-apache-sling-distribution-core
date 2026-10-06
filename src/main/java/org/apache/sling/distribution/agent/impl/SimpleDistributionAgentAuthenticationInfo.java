@@ -34,9 +34,11 @@ class SimpleDistributionAgentAuthenticationInfo {
     private final ResourceResolverFactory resourceResolverFactory;
     private final String subServiceName;
 
-    public SimpleDistributionAgentAuthenticationInfo(@NotNull SlingRepository slingRepository, @NotNull String agentService,
-                                                     @NotNull ResourceResolverFactory resourceResolverFactory,
-                                                     @Nullable String subServiceName) {
+    public SimpleDistributionAgentAuthenticationInfo(
+            @NotNull SlingRepository slingRepository,
+            @NotNull String agentService,
+            @NotNull ResourceResolverFactory resourceResolverFactory,
+            @Nullable String subServiceName) {
         this.slingRepository = slingRepository;
         this.agentService = agentService;
         this.resourceResolverFactory = resourceResolverFactory;

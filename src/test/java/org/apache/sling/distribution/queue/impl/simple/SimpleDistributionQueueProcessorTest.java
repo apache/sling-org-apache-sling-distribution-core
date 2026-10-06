@@ -22,13 +22,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import org.apache.sling.distribution.queue.DistributionQueueItemState;
-import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
-import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
+import org.apache.sling.distribution.queue.DistributionQueueItemState;
+import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProcessor;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.junit.Test;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -41,8 +42,8 @@ public class SimpleDistributionQueueProcessorTest {
     public void testRunWithNoQueue() throws Exception {
         DistributionQueue queue = mock(DistributionQueue.class);
         DistributionQueueProcessor queueProcessor = mock(DistributionQueueProcessor.class);
-        SimpleDistributionQueueProcessor simpleDistributionQueueProcessor = new SimpleDistributionQueueProcessor(
-                queue, queueProcessor, null);
+        SimpleDistributionQueueProcessor simpleDistributionQueueProcessor =
+                new SimpleDistributionQueueProcessor(queue, queueProcessor, null);
         simpleDistributionQueueProcessor.run();
     }
 
@@ -55,8 +56,8 @@ public class SimpleDistributionQueueProcessorTest {
         queues.add(queue);
         when(queueProvider.getQueues()).thenReturn(queues);
         DistributionQueueProcessor queueProcessor = mock(DistributionQueueProcessor.class);
-        SimpleDistributionQueueProcessor simpleDistributionQueueProcessor = new SimpleDistributionQueueProcessor(
-                queue, queueProcessor, null);
+        SimpleDistributionQueueProcessor simpleDistributionQueueProcessor =
+                new SimpleDistributionQueueProcessor(queue, queueProcessor, null);
         simpleDistributionQueueProcessor.run();
     }
 
@@ -66,14 +67,17 @@ public class SimpleDistributionQueueProcessorTest {
         Collection<SimpleDistributionQueue> queues = new LinkedList<SimpleDistributionQueue>();
         SimpleDistributionQueue queue = mock(SimpleDistributionQueue.class);
         DistributionQueueItem item = new DistributionQueueItem("packageId", new HashMap<String, Object>());
-        DistributionQueueItemStatus status = new DistributionQueueItemStatus(DistributionQueueItemState.QUEUED, "queueName");
-        when(queue.getHead()).thenReturn(new DistributionQueueEntry(null, item, status)).thenReturn(null);
+        DistributionQueueItemStatus status =
+                new DistributionQueueItemStatus(DistributionQueueItemState.QUEUED, "queueName");
+        when(queue.getHead())
+                .thenReturn(new DistributionQueueEntry(null, item, status))
+                .thenReturn(null);
 
         queues.add(queue);
         when(queueProvider.getQueues()).thenReturn(queues);
         DistributionQueueProcessor queueProcessor = mock(DistributionQueueProcessor.class);
-        SimpleDistributionQueueProcessor simpleDistributionQueueProcessor = new SimpleDistributionQueueProcessor(
-                queue, queueProcessor, queue::recordProcessingAttempt);
+        SimpleDistributionQueueProcessor simpleDistributionQueueProcessor =
+                new SimpleDistributionQueueProcessor(queue, queueProcessor, queue::recordProcessingAttempt);
         simpleDistributionQueueProcessor.run();
     }
 }

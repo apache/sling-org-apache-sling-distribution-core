@@ -18,15 +18,15 @@
  */
 package org.apache.sling.distribution.queue.impl.jobhandling;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import java.util.Map;
 
 import org.apache.sling.distribution.DistributionRequestType;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Testcase for {@link JobHandlingUtils}
@@ -35,7 +35,7 @@ public class JobHandlingUtilsTest {
     @Test
     public void testFullPropertiesFromPackageCreation() throws Exception {
         DistributionPackageInfo packageInfo = new DistributionPackageInfo("vlt");
-        packageInfo.put(DistributionPackageInfo.PROPERTY_REQUEST_PATHS, new String[]{"/foo"});
+        packageInfo.put(DistributionPackageInfo.PROPERTY_REQUEST_PATHS, new String[] {"/foo"});
         packageInfo.put(DistributionPackageInfo.PROPERTY_REQUEST_TYPE, DistributionRequestType.ADD);
         packageInfo.put(DistributionPackageInfo.PROPERTY_PACKAGE_TYPE, "vlt");
 

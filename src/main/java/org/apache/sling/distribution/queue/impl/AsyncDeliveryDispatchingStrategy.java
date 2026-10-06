@@ -21,6 +21,7 @@ package org.apache.sling.distribution.queue.impl;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
@@ -57,11 +58,13 @@ public class AsyncDeliveryDispatchingStrategy implements DistributionQueueDispat
     }
 
     @Override
-    public Iterable<DistributionQueueItemStatus> add(@NotNull DistributionPackage distributionPackage,
-                                                     @NotNull DistributionQueueProvider queueProvider) throws DistributionException {
+    public Iterable<DistributionQueueItemStatus> add(
+            @NotNull DistributionPackage distributionPackage, @NotNull DistributionQueueProvider queueProvider)
+            throws DistributionException {
 
         if (!(distributionPackage instanceof SharedDistributionPackage) && deliveryMappings.size() > 1) {
-            throw new DistributionException("distribution package must be a shared package to be added in multiple queues");
+            throw new DistributionException(
+                    "distribution package must be a shared package to be added in multiple queues");
         }
 
         String distributionPackageId = distributionPackage.getId();
@@ -87,7 +90,8 @@ public class AsyncDeliveryDispatchingStrategy implements DistributionQueueDispat
                 DistributionPackageUtils.acquire(distributionPackage, deliveryQueueName);
 
                 // add the actual package to the delivery queue
-                DistributionQueue deliveryQueue = queueProvider.getQueue(deliveryQueueName, DistributionQueueType.PARALLEL);
+                DistributionQueue deliveryQueue =
+                        queueProvider.getQueue(deliveryQueueName, DistributionQueueType.PARALLEL);
                 DistributionQueueEntry deliveryQueueEntry = deliveryQueue.add(item);
                 if (deliveryQueueEntry != null) {
                     DistributionQueueItemStatus status = deliveryQueueEntry.getStatus();
@@ -96,7 +100,8 @@ public class AsyncDeliveryDispatchingStrategy implements DistributionQueueDispat
                 } else {
                     DistributionPackageUtils.release(distributionPackage, deliveryQueueName);
                     log.error("cannot add package {} to delivery queue {}", distributionPackageId, deliveryQueueName);
-                    result.add(new DistributionQueueItemStatus(DistributionQueueItemState.ERROR, deliveryQueue.getName()));
+                    result.add(
+                            new DistributionQueueItemStatus(DistributionQueueItemState.ERROR, deliveryQueue.getName()));
                 }
 
                 // add the reference package to the reference queue
@@ -109,7 +114,8 @@ public class AsyncDeliveryDispatchingStrategy implements DistributionQueueDispat
                 } else {
                     DistributionPackageUtils.release(referencePackage, referenceQueueName);
                     log.error("cannot add package {} to reference queue {}", distributionPackageId, referenceQueueName);
-                    result.add(new DistributionQueueItemStatus(DistributionQueueItemState.ERROR, referenceQueue.getName()));
+                    result.add(new DistributionQueueItemStatus(
+                            DistributionQueueItemState.ERROR, referenceQueue.getName()));
                 }
 
             } else {
@@ -117,7 +123,8 @@ public class AsyncDeliveryDispatchingStrategy implements DistributionQueueDispat
 
                 DistributionQueueItem item = getItem(distributionPackage);
 
-                DistributionQueueItemStatus status = new DistributionQueueItemStatus(DistributionQueueItemState.ERROR, queue.getName());
+                DistributionQueueItemStatus status =
+                        new DistributionQueueItemStatus(DistributionQueueItemState.ERROR, queue.getName());
                 DistributionPackageUtils.acquire(distributionPackage, referenceQueueName);
 
                 DistributionQueueEntry queueEntry = queue.add(item);
@@ -135,7 +142,6 @@ public class AsyncDeliveryDispatchingStrategy implements DistributionQueueDispat
         }
 
         return result;
-
     }
 
     @NotNull

@@ -16,14 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.queue.impl.resource;
-
-
-import org.apache.sling.api.resource.Resource;
 
 import java.util.Iterator;
 import java.util.Stack;
+
+import org.apache.sling.api.resource.Resource;
 
 public class ResourceIterator implements Iterator<Resource> {
 
@@ -39,7 +37,6 @@ public class ResourceIterator implements Iterator<Resource> {
     private Iterator<Resource> currentIterator;
 
     private Resource next;
-
 
     public ResourceIterator(Resource root, String folderResourceType, boolean includeFolders, boolean includeLeafs) {
         this.folderResourceType = folderResourceType;
@@ -111,8 +108,8 @@ public class ResourceIterator implements Iterator<Resource> {
             } else {
                 Resource folder = currentFolder;
 
-                currentFolder  = currentFolder.getParent();
-                currentIterator = folderIterators.empty() ? null  : folderIterators.pop();
+                currentFolder = currentFolder.getParent();
+                currentIterator = folderIterators.empty() ? null : folderIterators.pop();
 
                 return folder;
             }

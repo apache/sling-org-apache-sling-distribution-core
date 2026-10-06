@@ -18,15 +18,16 @@
  */
 package org.apache.sling.distribution.queue.impl;
 
-import org.apache.sling.distribution.queue.spi.DistributionQueue;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueStatus;
 import org.apache.sling.distribution.queue.DistributionQueueType;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 /**
  * {@link DistributionQueueWrapper} that caches entries for 30s.
  */
@@ -34,7 +35,8 @@ public class CachingDistributionQueue extends DistributionQueueWrapper {
     // cache status for 30 sec as it is expensive to count items
     private static final int EXPIRY_QUEUE_CACHE = 30 * 1000;
 
-    private static final Map<String, DistributionQueueStatus> queueCache = new ConcurrentHashMap<String, DistributionQueueStatus>();
+    private static final Map<String, DistributionQueueStatus> queueCache =
+            new ConcurrentHashMap<String, DistributionQueueStatus>();
     private static final Map<String, Long> queueCacheExpiry = new ConcurrentHashMap<String, Long>();
     private final String cacheKey;
 
@@ -65,7 +67,7 @@ public class CachingDistributionQueue extends DistributionQueueWrapper {
         queueStatus = wrappedQueue.getStatus();
 
         queueCache.put(cacheKey, queueStatus);
-        queueCacheExpiry.put(cacheKey,  System.currentTimeMillis() + EXPIRY_QUEUE_CACHE);
+        queueCacheExpiry.put(cacheKey, System.currentTimeMillis() + EXPIRY_QUEUE_CACHE);
 
         return queueStatus;
     }

@@ -18,12 +18,6 @@
  */
 package org.apache.sling.distribution.packaging.impl.importer;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.io.InputStream;
-
 import javax.jcr.Node;
 import javax.jcr.Session;
 import javax.jcr.ValueFactory;
@@ -31,12 +25,18 @@ import javax.jcr.nodetype.NodeType;
 import javax.jcr.security.AccessControlManager;
 import javax.jcr.security.Privilege;
 
+import java.io.InputStream;
+
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.jcr.api.SlingRepository;
 import org.junit.Test;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Testcase for {@link org.apache.sling.distribution.packaging.impl.importer.RepositoryDistributionPackageImporter}
@@ -91,10 +91,11 @@ public class RepositoryDistributionPackageImporterTest {
         Node rootNode = mock(Node.class);
         Node createdNode = mock(Node.class);
         Node jcrContentNode = mock(Node.class);
-        when(createdNode.addNode(JcrConstants.JCR_CONTENT, NodeType.NT_RESOURCE)).thenReturn(jcrContentNode);
+        when(createdNode.addNode(JcrConstants.JCR_CONTENT, NodeType.NT_RESOURCE))
+                .thenReturn(jcrContentNode);
         when(rootNode.addNode(any(String.class), any(String.class))).thenReturn(createdNode);
         when(session.getNode(path)).thenReturn(rootNode);
-        when(acm.hasPrivileges(path, new Privilege[]{privilege})).thenReturn(true);
+        when(acm.hasPrivileges(path, new Privilege[] {privilege})).thenReturn(true);
         when(acm.privilegeFromName(privilegeName)).thenReturn(privilege);
         when(session.getAccessControlManager()).thenReturn(acm);
         when(repository.loginService(serviceName, null)).thenReturn(session);

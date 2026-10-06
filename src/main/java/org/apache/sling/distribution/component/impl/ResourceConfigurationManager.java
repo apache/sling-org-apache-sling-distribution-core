@@ -16,9 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.component.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
@@ -27,11 +30,6 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Manager implementation which represents the distribution configurations as resources.
@@ -44,7 +42,8 @@ public class ResourceConfigurationManager implements DistributionConfigurationMa
     private final String[] configProperties;
     private final Map<String, String> configDefaults;
 
-    public ResourceConfigurationManager(String configRootPath, String[] configProperties, Map<String, String> configDefaults) {
+    public ResourceConfigurationManager(
+            String configRootPath, String[] configProperties, Map<String, String> configDefaults) {
         this.configRootPath = configRootPath;
         this.configProperties = configProperties;
         this.configDefaults = configDefaults;
@@ -65,7 +64,6 @@ public class ResourceConfigurationManager implements DistributionConfigurationMa
             Map<String, Object> configMap = getFilteredMap(configResource);
 
             configurations.add(new DistributionConfiguration(kind, configResource.getName(), configMap));
-
         }
 
         return configurations;
@@ -86,7 +84,6 @@ public class ResourceConfigurationManager implements DistributionConfigurationMa
             return null;
         }
 
-
         Map<String, Object> configMap = getFilteredMap(configResource);
 
         return new DistributionConfiguration(kind, configResource.getName(), configMap);
@@ -101,9 +98,7 @@ public class ResourceConfigurationManager implements DistributionConfigurationMa
         }
 
         Resource configResource = configRoot.getChild(config.getName());
-        Resource contentResource = (configResource != null)
-                ? configResource.getChild(CONTENT_NODE)
-                : null ;
+        Resource contentResource = (configResource != null) ? configResource.getChild(CONTENT_NODE) : null;
 
         try {
             if (configResource == null) {
@@ -122,16 +117,15 @@ public class ResourceConfigurationManager implements DistributionConfigurationMa
             properties = filterMap(properties);
             for (Map.Entry<String, String> propDefault : configDefaults.entrySet()) {
                 if (!properties.containsKey(propDefault.getKey())) {
-                    properties.put(propDefault.getKey(),propDefault.getValue());
+                    properties.put(propDefault.getKey(), propDefault.getValue());
                 }
             }
 
             ModifiableValueMap valueMap = contentResource.adaptTo(ModifiableValueMap.class);
             valueMap.putAll(properties);
         } catch (PersistenceException e) {
-            log.error("cannot save config {}", config.getName(),  e);
+            log.error("cannot save config {}", config.getName(), e);
         }
-
     }
 
     @Override
@@ -148,9 +142,8 @@ public class ResourceConfigurationManager implements DistributionConfigurationMa
             resolver.delete(configResource);
             resolver.commit();
         } catch (PersistenceException e) {
-            log.error("cannot delete config {}", name,  e);
+            log.error("cannot delete config {}", name, e);
         }
-
     }
 
     private Map<String, Object> getMap(Resource resource) {
@@ -177,7 +170,7 @@ public class ResourceConfigurationManager implements DistributionConfigurationMa
     private Map<String, Object> filterMap(Map<String, Object> configMap) {
         Map<String, Object> result = new HashMap<String, Object>();
 
-        for (String key: configMap.keySet()) {
+        for (String key : configMap.keySet()) {
             if (isAccepted(key)) {
                 result.put(key, configMap.get(key));
             }
@@ -188,14 +181,10 @@ public class ResourceConfigurationManager implements DistributionConfigurationMa
 
     private boolean isAccepted(String key) {
         for (String property : configProperties) {
-           if (property.equals(key)) {
-               return true;
-           }
+            if (property.equals(key)) {
+                return true;
+            }
         }
         return false;
     }
-
-
-
-
 }

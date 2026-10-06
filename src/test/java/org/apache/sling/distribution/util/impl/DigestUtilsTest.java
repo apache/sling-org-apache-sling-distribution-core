@@ -35,9 +35,9 @@ import static org.mockito.Mockito.mock;
 
 public class DigestUtilsTest {
 
-    private Set<String> DIGEST_ALGORITHM = new HashSet<String>(asList("md2","md5","sha1"));
+    private Set<String> DIGEST_ALGORITHM = new HashSet<String>(asList("md2", "md5", "sha1"));
 
-    private byte[] DATA = new byte[]{0x01, 0x02, 0x03};
+    private byte[] DATA = new byte[] {0x01, 0x02, 0x03};
 
     private String DATA_MD5_DIGEST = "d41d8cd98f00b204e9800998ecf8427e";
 
@@ -80,5 +80,4 @@ public class DigestUtilsTest {
         bos.flush();
         DigestUtils.openDigestOutputStream(bos, "unsupported");
     }
-
 }

@@ -53,7 +53,8 @@ public interface DistributionQueueProvider {
      *
      * @param queueProcessor the queue processor to be used
      */
-    void enableQueueProcessing(@NotNull DistributionQueueProcessor queueProcessor, String... queueNames) throws DistributionException;
+    void enableQueueProcessing(@NotNull DistributionQueueProcessor queueProcessor, String... queueNames)
+            throws DistributionException;
 
     /**
      * disables queue processing

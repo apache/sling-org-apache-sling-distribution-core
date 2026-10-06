@@ -24,49 +24,52 @@ import java.util.Map;
  * Settings that control the package export.
  */
 public class ExportSettings {
-	private final String[] packageRoots;
-	private final String[] nodeFilters;
-	private final String[] propertyFilters;
-	private final boolean useBinaryReferences;
-	private final Map<String, String> exportPathMapping;
-	
-	/**
-	 * 
-	 * @param packageRoots The serializer package roots
-	 * @param nodeFilters The serializer node path filters
-	 * @param propertyFilters The serializer property path filters
-	 * @param useBinaryReferences {@code true} to pass binaries by reference ;
-	 *                            {@code false} to inline binaries
-	 * @param exportPathMapping The mapping for exported paths
-	 */
-	public ExportSettings(String[] packageRoots, String[] nodeFilters, String[] propertyFilters,
-			boolean useBinaryReferences, Map<String, String> exportPathMapping) {
-		super();
-		this.packageRoots = packageRoots;
-		this.nodeFilters = nodeFilters;
-		this.propertyFilters = propertyFilters;
-		this.useBinaryReferences = useBinaryReferences;
-		this.exportPathMapping = exportPathMapping;
-	}
+    private final String[] packageRoots;
+    private final String[] nodeFilters;
+    private final String[] propertyFilters;
+    private final boolean useBinaryReferences;
+    private final Map<String, String> exportPathMapping;
 
-	public String[] getPackageRoots() {
-		return packageRoots;
-	}
+    /**
+     *
+     * @param packageRoots The serializer package roots
+     * @param nodeFilters The serializer node path filters
+     * @param propertyFilters The serializer property path filters
+     * @param useBinaryReferences {@code true} to pass binaries by reference ;
+     *                            {@code false} to inline binaries
+     * @param exportPathMapping The mapping for exported paths
+     */
+    public ExportSettings(
+            String[] packageRoots,
+            String[] nodeFilters,
+            String[] propertyFilters,
+            boolean useBinaryReferences,
+            Map<String, String> exportPathMapping) {
+        super();
+        this.packageRoots = packageRoots;
+        this.nodeFilters = nodeFilters;
+        this.propertyFilters = propertyFilters;
+        this.useBinaryReferences = useBinaryReferences;
+        this.exportPathMapping = exportPathMapping;
+    }
 
-	public String[] getNodeFilters() {
-		return nodeFilters;
-	}
+    public String[] getPackageRoots() {
+        return packageRoots;
+    }
 
-	public String[] getPropertyFilters() {
-		return propertyFilters;
-	}
+    public String[] getNodeFilters() {
+        return nodeFilters;
+    }
 
-	public boolean isUseBinaryReferences() {
-		return useBinaryReferences;
-	}
+    public String[] getPropertyFilters() {
+        return propertyFilters;
+    }
 
-	public Map<String, String> getExportPathMapping() {
-		return exportPathMapping;
-	}
+    public boolean isUseBinaryReferences() {
+        return useBinaryReferences;
+    }
 
+    public Map<String, String> getExportPathMapping() {
+        return exportPathMapping;
+    }
 }

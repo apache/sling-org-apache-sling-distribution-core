@@ -21,6 +21,7 @@ package org.apache.sling.distribution.packaging.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.regex.Pattern;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.DistributionRequestType;
@@ -38,11 +39,11 @@ public class SimpleDistributionPackage extends AbstractDistributionPackage imple
 
     private static final Logger log = LoggerFactory.getLogger(SimpleDistributionPackage.class);
 
-    private final static String PACKAGE_START = "DSTRPCK::";
-    private final static String PACKAGE_START_OLD = "DSTRPCK:";
-    private final static String DELIM = "|";
-    private final static String PATH_DELIM = "::";
-    private final static String PATH_DELIM_OLD = ",";
+    private static final String PACKAGE_START = "DSTRPCK::";
+    private static final String PACKAGE_START_OLD = "DSTRPCK:";
+    private static final String DELIM = "|";
+    private static final String PATH_DELIM = "::";
+    private static final String PATH_DELIM_OLD = ",";
     private final long size;
 
     public SimpleDistributionPackage(DistributionRequest request, String type) {
@@ -84,7 +85,7 @@ public class SimpleDistributionPackage extends AbstractDistributionPackage imple
         String id = null;
         if (packageId.startsWith(PACKAGE_START)) {
             id = packageId.substring(PACKAGE_START.length());
-        } else if (packageId.startsWith(PACKAGE_START_OLD)) { //For back compatibility with old path delimiter.
+        } else if (packageId.startsWith(PACKAGE_START_OLD)) { // For back compatibility with old path delimiter.
             id = packageId.substring(PACKAGE_START_OLD.length());
         } else {
             return null;
@@ -108,7 +109,7 @@ public class SimpleDistributionPackage extends AbstractDistributionPackage imple
                 if (packageId.startsWith(PACKAGE_START)) {
                     paths = pathsString.split(PATH_DELIM);
                 } else {
-                    paths = pathsString.split(PATH_DELIM_OLD); //For back compatibility with old path delimiter
+                    paths = pathsString.split(PATH_DELIM_OLD); // For back compatibility with old path delimiter
                 }
             } else {
                 paths = new String[0];
@@ -121,7 +122,6 @@ public class SimpleDistributionPackage extends AbstractDistributionPackage imple
         return distributionPackage;
     }
 
-
     @NotNull
     public InputStream createInputStream() throws IOException {
         return IOUtils.toInputStream(getId(), "UTF-8");
@@ -131,7 +131,6 @@ public class SimpleDistributionPackage extends AbstractDistributionPackage imple
     public long getSize() {
         return size;
     }
-
 
     public void close() {
         // there's nothing to close
@@ -169,12 +168,8 @@ public class SimpleDistributionPackage extends AbstractDistributionPackage imple
     }
 
     @Override
-    public void acquire(@NotNull String... holderNames) {
-
-    }
+    public void acquire(@NotNull String... holderNames) {}
 
     @Override
-    public void release(@NotNull String... holderNames) {
-
-    }
+    public void release(@NotNull String... holderNames) {}
 }

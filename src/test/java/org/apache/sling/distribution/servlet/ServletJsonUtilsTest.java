@@ -18,10 +18,10 @@
  */
 package org.apache.sling.distribution.servlet;
 
+import javax.json.JsonObject;
+
 import java.util.Collections;
 import java.util.Map;
-
-import javax.json.JsonObject;
 
 import org.apache.sling.distribution.DistributionRequestState;
 import org.apache.sling.distribution.DistributionResponse;
@@ -43,7 +43,7 @@ public class ServletJsonUtilsTest {
     public void testBuildBodyWithMessageAndProperties() throws Exception {
         String message2 = "message #2";
         String k1 = "keyOne", v1 = "value #1";
-        Map<String,String> props = Collections.singletonMap(k1, v1);
+        Map<String, String> props = Collections.singletonMap(k1, v1);
         JsonObject body = ServletJsonUtils.buildBody(message2, props);
         assertEquals(message2, body.getString("message"));
         assertEquals(v1, body.getString(k1));
@@ -65,5 +65,4 @@ public class ServletJsonUtilsTest {
         JsonObject body = ServletJsonUtils.buildBody(response);
         assertFalse(body.containsKey("message"));
     }
-
 }

@@ -19,6 +19,7 @@
 package org.apache.sling.distribution.serialization;
 
 import java.io.OutputStream;
+
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
 import org.jetbrains.annotations.Nullable;

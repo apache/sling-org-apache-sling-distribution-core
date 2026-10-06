@@ -22,7 +22,7 @@ package org.apache.sling.distribution.monitor.impl;
  * The {@link UserCredentialsDistributionTransportSecretMBean} implementation.
  */
 public class UserCredentialsDistributionTransportSecretMBeanImpl
-    implements UserCredentialsDistributionTransportSecretMBean {
+        implements UserCredentialsDistributionTransportSecretMBean {
 
     private static final String ADMIN = "admin";
 
@@ -36,5 +36,4 @@ public class UserCredentialsDistributionTransportSecretMBeanImpl
     public boolean useAdministrativeTransport() {
         return ADMIN.equals(username);
     }
-
 }

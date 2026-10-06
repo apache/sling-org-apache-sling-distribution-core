@@ -16,9 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.queue.impl.resource;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
@@ -34,18 +43,6 @@ import org.apache.sling.distribution.queue.DistributionQueueItemState;
 import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class ResourceQueueUtils {
 
@@ -67,10 +64,8 @@ public class ResourceQueueUtils {
     private static final String ENTERED_DATE = "entered.date";
     private static final String PROCESSING_ATTEMPTS = "processing.attempts";
 
-
     private static final AtomicLong itemCounter = new AtomicLong(0);
     private static final Logger log = LoggerFactory.getLogger(ResourceQueueUtils.class);
-
 
     private static Map<String, Object> serializeItem(DistributionQueueItem queueItem) {
 
@@ -142,8 +137,8 @@ public class ResourceQueueUtils {
         DistributionQueueItem queueItem = deserializeItem(valueMap);
         Calendar entered = valueMap.get(ENTERED_DATE, Calendar.getInstance());
         int attempts = valueMap.get(PROCESSING_ATTEMPTS, 0);
-        DistributionQueueItemStatus queueItemStatus = new DistributionQueueItemStatus(entered,
-                DistributionQueueItemState.QUEUED, attempts, queueName);
+        DistributionQueueItemStatus queueItemStatus =
+                new DistributionQueueItemStatus(entered, DistributionQueueItemState.QUEUED, attempts, queueName);
 
         String entryId = getIdFromPath(queueRoot.getPath(), resource.getPath());
 
@@ -172,12 +167,10 @@ public class ResourceQueueUtils {
         }
 
         return entries;
-
     }
 
-
     static DistributionQueueEntry getHead(Resource root) {
-        Iterator<DistributionQueueEntry> it =  getEntries(root, 0, 1).iterator();
+        Iterator<DistributionQueueEntry> it = getEntries(root, 0, 1).iterator();
 
         if (it.hasNext()) {
             return it.next();
@@ -186,18 +179,18 @@ public class ResourceQueueUtils {
         return null;
     }
 
-    public static Resource getRootResource(ResourceResolver resourceResolver, String rootPath) throws PersistenceException {
-        Resource resource =  ResourceUtil.getOrCreateResource(resourceResolver, rootPath, RESOURCE_FOLDER, RESOURCE_ROOT, true);
+    public static Resource getRootResource(ResourceResolver resourceResolver, String rootPath)
+            throws PersistenceException {
+        Resource resource =
+                ResourceUtil.getOrCreateResource(resourceResolver, rootPath, RESOURCE_FOLDER, RESOURCE_ROOT, true);
 
         return resource;
     }
 
-    public static Resource getResourceById(Resource root, String entryId)  {
+    public static Resource getResourceById(Resource root, String entryId) {
         String entryPath = getPathFromId(root.getPath(), entryId);
         return root.getResourceResolver().getResource(entryPath);
     }
-
-
 
     public static Resource createResource(Resource root, DistributionQueueItem queueItem) throws PersistenceException {
 
@@ -211,14 +204,13 @@ public class ResourceQueueUtils {
 
         properties.put("sling:resourceType", RESOURCE_ITEM);
         properties.put(ENTERED_DATE, Calendar.getInstance());
-        Resource resourceItem =  ResourceUtil.getOrCreateResource(resourceResolver, entryPath, properties,
-                RESOURCE_FOLDER, true);
+        Resource resourceItem =
+                ResourceUtil.getOrCreateResource(resourceResolver, entryPath, properties, RESOURCE_FOLDER, true);
 
         resourceResolver.commit();
 
         return resourceItem;
     }
-
 
     /**
      * Creates a minute resource by retrying several times. If it fails even the last time it will throw an exception.
@@ -226,11 +218,11 @@ public class ResourceQueueUtils {
     private static Resource getOrCreateMinuteResource(Resource root) throws PersistenceException {
 
         final int retries = 2;
-        for (int i=0; i < retries; i++) {
+        for (int i = 0; i < retries; i++) {
             try {
                 return tryGetOrCreateMinutes(root);
             } catch (PersistenceException e) {
-                log.warn("creating minute resource failed. retrying {} more times.", retries-i);
+                log.warn("creating minute resource failed. retrying {} more times.", retries - i);
             }
 
             root.getResourceResolver().revert();
@@ -257,7 +249,7 @@ public class ResourceQueueUtils {
             return firstMinuteResource;
         }
 
-        for (int i=0; i < 3; i++) {
+        for (int i = 0; i < 3; i++) {
             String newMinutePath = getTimePath(now);
             Resource resource = createResource(root, newMinutePath);
             log.debug("minute resource created {}", resource.getPath());
@@ -283,10 +275,11 @@ public class ResourceQueueUtils {
         final String parentPath = ResourceUtil.getParent(path);
         final String name = ResourceUtil.getName(path);
 
-        Resource parent =  ResourceUtil.getOrCreateResource(resourceResolver, parentPath, RESOURCE_FOLDER,
-                RESOURCE_FOLDER, false);
+        Resource parent =
+                ResourceUtil.getOrCreateResource(resourceResolver, parentPath, RESOURCE_FOLDER, RESOURCE_FOLDER, false);
 
-        Map<String, Object> props = Collections.singletonMap(ResourceResolver.PROPERTY_RESOURCE_TYPE, (Object) RESOURCE_FOLDER);
+        Map<String, Object> props =
+                Collections.singletonMap(ResourceResolver.PROPERTY_RESOURCE_TYPE, (Object) RESOURCE_FOLDER);
 
         return resourceResolver.create(parent, name, props);
     }
@@ -310,11 +303,9 @@ public class ResourceQueueUtils {
         }
     }
 
-
     public static int getResourceCount(Resource root) {
         return getEntries(root, 0, -1).size();
     }
-
 
     private static String getUniqueEntryPath(Resource parent) {
         final StringBuilder sb = new StringBuilder();
@@ -338,7 +329,6 @@ public class ResourceQueueUtils {
         return sdf.format(now.getTime());
     }
 
-
     /**
      * Checks if path is safe to delete at this time.
      * A path is safe to delete if the nowPath does not overlap with it.
@@ -359,8 +349,6 @@ public class ResourceQueueUtils {
         return nowPath.compareTo(path) > 0;
     }
 
-
-
     private static String getPathFromId(String roothPath, String entryId) {
         String entryPath = unescapeId(entryId);
         return roothPath + "/" + entryPath;
@@ -369,7 +357,7 @@ public class ResourceQueueUtils {
     private static String getIdFromPath(String rootPath, String path) {
 
         if (path.startsWith(rootPath)) {
-            String entryPath = path.substring(rootPath.length()+1);
+            String entryPath = path.substring(rootPath.length() + 1);
 
             String entryId = escapeId(entryPath);
 
@@ -378,9 +366,8 @@ public class ResourceQueueUtils {
         throw new IllegalArgumentException("entry path does not start with " + rootPath);
     }
 
-
     private static String escapeId(String jobId) {
-        //return id;
+        // return id;
         if (jobId == null) {
             return null;
         }
@@ -403,5 +390,4 @@ public class ResourceQueueUtils {
         int attempts = vm.get(PROCESSING_ATTEMPTS, 0);
         vm.put(PROCESSING_ATTEMPTS, attempts + 1);
     }
-
 }

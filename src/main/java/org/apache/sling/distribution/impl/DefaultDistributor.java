@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.impl;
 
 import org.apache.sling.api.resource.ResourceResolver;
@@ -25,8 +24,8 @@ import org.apache.sling.distribution.DistributionRequestState;
 import org.apache.sling.distribution.DistributionResponse;
 import org.apache.sling.distribution.Distributor;
 import org.apache.sling.distribution.agent.spi.DistributionAgent;
-import org.apache.sling.distribution.component.impl.DistributionComponentProvider;
 import org.apache.sling.distribution.common.DistributionException;
+import org.apache.sling.distribution.component.impl.DistributionComponentProvider;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -41,12 +40,14 @@ public class DefaultDistributor implements Distributor {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-
     @Reference
     private DistributionComponentProvider componentProvider;
 
     @NotNull
-    public DistributionResponse distribute(@NotNull String agentName, @NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest) {
+    public DistributionResponse distribute(
+            @NotNull String agentName,
+            @NotNull ResourceResolver resourceResolver,
+            @NotNull DistributionRequest distributionRequest) {
         DistributionAgent agent = componentProvider.getService(DistributionAgent.class, agentName);
 
         if (agent == null) {
@@ -57,7 +58,8 @@ public class DefaultDistributor implements Distributor {
             return agent.execute(resourceResolver, distributionRequest);
         } catch (DistributionException e) {
             log.error("cannot execute", e);
-            return new SimpleDistributionResponse(DistributionRequestState.DROPPED, "Cannot execute request " + e.getMessage());
+            return new SimpleDistributionResponse(
+                    DistributionRequestState.DROPPED, "Cannot execute request " + e.getMessage());
         }
     }
 }

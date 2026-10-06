@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.queue.impl;
 
 import org.apache.sling.distribution.queue.DistributionQueueItem;
@@ -34,7 +33,8 @@ public class DistributionQueueUtils {
      * @param status an item status
      * @return a queue item state
      */
-    public static DistributionQueueState calculateState(DistributionQueueItem item, DistributionQueueItemStatus status) {
+    public static DistributionQueueState calculateState(
+            DistributionQueueItem item, DistributionQueueItemStatus status) {
         if (item != null && status != null) {
 
             int attempts = status.getAttempts();

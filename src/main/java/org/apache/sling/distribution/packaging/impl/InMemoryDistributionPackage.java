@@ -75,8 +75,7 @@ public class InMemoryDistributionPackage implements DistributionPackage {
     }
 
     @Override
-    public void close() {
-    }
+    public void close() {}
 
     @Override
     public void delete() {

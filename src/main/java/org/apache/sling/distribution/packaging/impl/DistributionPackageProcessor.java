@@ -16,13 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.packaging.impl;
+
+import java.util.List;
 
 import org.apache.sling.distribution.DistributionResponse;
 import org.apache.sling.distribution.packaging.DistributionPackage;
-
-import java.util.List;
 
 /**
  * A callback function used to process packages

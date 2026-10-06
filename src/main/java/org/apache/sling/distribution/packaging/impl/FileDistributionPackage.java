@@ -42,11 +42,12 @@ public class FileDistributionPackage extends AbstractDistributionPackage {
 
     private final File file;
 
-    public FileDistributionPackage(@NotNull File file,
-                                   @NotNull String type,
-                                   @Nullable String digestAlgorithm,
-                                   @Nullable String digestMessage,
-                                   @Nullable Map<String, Object> baseInfoMap) {
+    public FileDistributionPackage(
+            @NotNull File file,
+            @NotNull String type,
+            @Nullable String digestAlgorithm,
+            @Nullable String digestMessage,
+            @Nullable Map<String, Object> baseInfoMap) {
         super(file.getName(), type, digestAlgorithm, digestMessage);
         this.file = file;
 
@@ -114,7 +115,6 @@ public class FileDistributionPackage extends AbstractDistributionPackage {
         }
     }
 
-
     private File getStatusFile() {
         String statusFilePath = file.getAbsolutePath() + ".status";
         return new File(statusFilePath);
@@ -125,7 +125,6 @@ public class FileDistributionPackage extends AbstractDistributionPackage {
         return new File(metaInfoFilePath);
     }
 
-
     public class PackageInputStream extends BufferedInputStream {
         private final File file;
 
@@ -135,10 +134,8 @@ public class FileDistributionPackage extends AbstractDistributionPackage {
             this.file = file;
         }
 
-
         public File getFile() {
             return file;
         }
     }
-
 }

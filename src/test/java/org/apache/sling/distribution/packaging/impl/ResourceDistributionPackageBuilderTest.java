@@ -16,13 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.packaging.impl;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,6 +39,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 public class ResourceDistributionPackageBuilderTest {
     BundleContext bundleContext = null;
     ResourceResolver resolver = null;
@@ -60,33 +59,43 @@ public class ResourceDistributionPackageBuilderTest {
         when(mockRequest.isDeep(testDeepPath)).thenReturn(true);
         when(mockRequest.isDeep(testPath)).thenReturn(false);
 
-        ResourceDistributionPackageBuilder builder = new ResourceDistributionPackageBuilder("test",
-                new TestSerializer(), null, 0, MemoryUnit.valueOf("MEGA_BYTES"), false, null,
-                new String[0],new String[0]);
+        ResourceDistributionPackageBuilder builder = new ResourceDistributionPackageBuilder(
+                "test",
+                new TestSerializer(),
+                null,
+                0,
+                MemoryUnit.valueOf("MEGA_BYTES"),
+                false,
+                null,
+                new String[0],
+                new String[0]);
 
         DistributionPackage createdPackage = builder.createPackageForAdd(resolver, mockRequest);
 
         InputStream createdPackageContentIS = createdPackage.createInputStream();
         assertNotNull("Couldn't create stream from DistributionPackage", createdPackageContentIS);
         // create a new package from the stream of created-package
-        assertNotNull("Couldn't read stream from DistributionPackage",
+        assertNotNull(
+                "Couldn't read stream from DistributionPackage",
                 builder.readPackage(resolver, createdPackageContentIS));
 
         try {
             DistributionPackage gotPackage = builder.getPackageInternal(resolver, createdPackage.getId());
             final String[] createdPackagePaths = createdPackage.getInfo().getPaths();
             final String[] gotPackagePaths = gotPackage.getInfo().getPaths();
-            final String[] createdPackageDeepPaths = (String[]) createdPackage.getInfo()
-                    .get(DistributionPackageInfo.PROPERTY_REQUEST_DEEP_PATHS);
-            final String[] gotPackageDeepPaths = (String[]) gotPackage.getInfo()
-                    .get(DistributionPackageInfo.PROPERTY_REQUEST_DEEP_PATHS);
-            assertTrue("packaged Paths at createPackage and getPackage not consistent. "
-                    + "expected " + Arrays.toString(createdPackagePaths)
-                    + ", found " + Arrays.toString(gotPackagePaths),
+            final String[] createdPackageDeepPaths =
+                    (String[]) createdPackage.getInfo().get(DistributionPackageInfo.PROPERTY_REQUEST_DEEP_PATHS);
+            final String[] gotPackageDeepPaths =
+                    (String[]) gotPackage.getInfo().get(DistributionPackageInfo.PROPERTY_REQUEST_DEEP_PATHS);
+            assertTrue(
+                    "packaged Paths at createPackage and getPackage not consistent. "
+                            + "expected " + Arrays.toString(createdPackagePaths)
+                            + ", found " + Arrays.toString(gotPackagePaths),
                     Arrays.equals(createdPackagePaths, gotPackagePaths));
-            assertTrue("packaged deep Paths at createPackage and getPackage not consistent. "
-                    + "expected " + Arrays.toString(createdPackageDeepPaths)
-                    + ", found " + Arrays.toString(gotPackageDeepPaths),
+            assertTrue(
+                    "packaged deep Paths at createPackage and getPackage not consistent. "
+                            + "expected " + Arrays.toString(createdPackageDeepPaths)
+                            + ", found " + Arrays.toString(gotPackageDeepPaths),
                     Arrays.equals(createdPackageDeepPaths, gotPackageDeepPaths));
         } finally {
             createdPackage.delete();
@@ -95,8 +104,10 @@ public class ResourceDistributionPackageBuilderTest {
 
     class TestSerializer implements DistributionContentSerializer {
 
-        @Override public void exportToStream(ResourceResolver resourceResolver, DistributionExportOptions exportOptions,
-                OutputStream outputStream) throws DistributionException {
+        @Override
+        public void exportToStream(
+                ResourceResolver resourceResolver, DistributionExportOptions exportOptions, OutputStream outputStream)
+                throws DistributionException {
             try {
                 outputStream.write("test".getBytes());
             } catch (IOException ex) {
@@ -104,15 +115,19 @@ public class ResourceDistributionPackageBuilderTest {
             }
         }
 
-        @Override public void importFromStream(ResourceResolver resourceResolver, InputStream inputStream) throws DistributionException {
+        @Override
+        public void importFromStream(ResourceResolver resourceResolver, InputStream inputStream)
+                throws DistributionException {
             throw new DistributionException("unsupported");
         }
 
-        @Override public String getName() {
+        @Override
+        public String getName() {
             return "test";
         }
 
-        @Override public boolean isRequestFiltering() {
+        @Override
+        public boolean isRequestFiltering() {
             return true;
         }
     }

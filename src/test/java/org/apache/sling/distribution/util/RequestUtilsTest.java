@@ -39,27 +39,25 @@ public class RequestUtilsTest {
 
     @Test
     public void testFromServletRequest() throws Exception {
-        DistributionRequest dr = RequestUtils.fromServletRequest(buildServletRequest(REQ_TYPE.toString(), P_PATHS, "true"));
+        DistributionRequest dr =
+                RequestUtils.fromServletRequest(buildServletRequest(REQ_TYPE.toString(), P_PATHS, "true"));
         assertEquals(REQ_TYPE, dr.getRequestType());
         assertArrayEquals(P_PATHS, dr.getPaths());
     }
 
     @Test
     public void testFromServletRequestEmptyPath() throws Exception {
-        DistributionRequest dr = RequestUtils.fromServletRequest(buildServletRequest(REQ_TYPE.toString(), null, "true"));
+        DistributionRequest dr =
+                RequestUtils.fromServletRequest(buildServletRequest(REQ_TYPE.toString(), null, "true"));
         assertEquals(REQ_TYPE, dr.getRequestType());
         assertArrayEquals(EMPTY_PATHS, dr.getPaths());
     }
 
     private HttpServletRequest buildServletRequest(String action, String[] paths, String deep) {
         HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getParameter("action"))
-                .thenReturn(action);
-        when(request.getParameterValues("path"))
-                .thenReturn(paths);
-        when(request.getParameter("deep"))
-                .thenReturn(deep);
+        when(request.getParameter("action")).thenReturn(action);
+        when(request.getParameterValues("path")).thenReturn(paths);
+        when(request.getParameter("deep")).thenReturn(deep);
         return request;
-
     }
 }

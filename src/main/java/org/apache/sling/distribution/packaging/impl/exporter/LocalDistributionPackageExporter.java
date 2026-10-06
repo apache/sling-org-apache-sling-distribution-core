@@ -21,11 +21,11 @@ package org.apache.sling.distribution.packaging.impl.exporter;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.common.DistributionException;
+import org.apache.sling.distribution.packaging.DistributionPackage;
+import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageExporter;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageProcessor;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
-import org.apache.sling.distribution.packaging.DistributionPackage;
-import org.apache.sling.distribution.packaging.impl.DistributionPackageExporter;
-import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -40,7 +40,11 @@ public class LocalDistributionPackageExporter implements DistributionPackageExpo
         this.packageBuilder = packageBuilder;
     }
 
-    public void exportPackages(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest, @NotNull DistributionPackageProcessor packageProcessor) throws DistributionException {
+    public void exportPackages(
+            @NotNull ResourceResolver resourceResolver,
+            @NotNull DistributionRequest distributionRequest,
+            @NotNull DistributionPackageProcessor packageProcessor)
+            throws DistributionException {
         DistributionPackage createdPackage = packageBuilder.createPackage(resourceResolver, distributionRequest);
 
         try {
@@ -52,7 +56,9 @@ public class LocalDistributionPackageExporter implements DistributionPackageExpo
         }
     }
 
-    public DistributionPackage getPackage(@NotNull ResourceResolver resourceResolver, @NotNull String distributionPackageId) throws DistributionException {
+    public DistributionPackage getPackage(
+            @NotNull ResourceResolver resourceResolver, @NotNull String distributionPackageId)
+            throws DistributionException {
         return packageBuilder.getPackage(resourceResolver, distributionPackageId);
     }
 }

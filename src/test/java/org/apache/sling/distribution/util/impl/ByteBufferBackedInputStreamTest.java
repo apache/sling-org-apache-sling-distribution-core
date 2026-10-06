@@ -25,34 +25,25 @@ import java.io.IOException;
 import org.junit.Test;
 
 import static java.io.File.createTempFile;
+import static java.lang.String.format;
 import static java.lang.System.arraycopy;
 import static java.lang.System.currentTimeMillis;
-import static java.lang.String.format;
 import static java.nio.ByteBuffer.wrap;
 import static org.junit.Assert.assertEquals;
 
 public class ByteBufferBackedInputStreamTest {
 
-    private byte[] DATA = new byte[]{0x00, 0x01, 0x02};
+    private byte[] DATA = new byte[] {0x00, 0x01, 0x02};
 
     @Test
     public void testRead() throws Exception {
-        testRead(new ByteBufferBackedInputStream(
-                wrap(subData(0, 3)),
-                write(subData(3, 0))));
-        testRead(new ByteBufferBackedInputStream(
-                wrap(subData(0, 1)),
-                write(subData(1, 2))));
-        testRead(new ByteBufferBackedInputStream(
-                wrap(subData(0, 2)),
-                write(subData(2, 1))));
-        testRead(new ByteBufferBackedInputStream(
-                wrap(subData(0, 0)),
-                write(subData(0, 3))));
+        testRead(new ByteBufferBackedInputStream(wrap(subData(0, 3)), write(subData(3, 0))));
+        testRead(new ByteBufferBackedInputStream(wrap(subData(0, 1)), write(subData(1, 2))));
+        testRead(new ByteBufferBackedInputStream(wrap(subData(0, 2)), write(subData(2, 1))));
+        testRead(new ByteBufferBackedInputStream(wrap(subData(0, 0)), write(subData(0, 3))));
     }
 
-    private void testRead(ByteBufferBackedInputStream bbisData)
-            throws IOException {
+    private void testRead(ByteBufferBackedInputStream bbisData) throws IOException {
         assertEquals(DATA[0], bbisData.read());
         assertEquals(DATA[1], bbisData.read());
         assertEquals(DATA[2], bbisData.read());

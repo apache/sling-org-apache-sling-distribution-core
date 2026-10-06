@@ -19,6 +19,7 @@
 package org.apache.sling.distribution.resources.impl.common;
 
 import javax.jcr.Session;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -40,10 +41,10 @@ public abstract class AbstractModifyingResourceProvider extends AbstractReadable
 
     protected AbstractModifyingResourceProvider(String resourceRoot) {
         super(resourceRoot);
-
     }
 
-    public Resource create(ResourceResolver resolver, String path, Map<String, Object> properties) throws PersistenceException {
+    public Resource create(ResourceResolver resolver, String path, Map<String, Object> properties)
+            throws PersistenceException {
         SimplePathInfo pathInfo = extractPathInfo(path);
 
         if (pathInfo == null) {
@@ -119,7 +120,11 @@ public abstract class AbstractModifyingResourceProvider extends AbstractReadable
         addToChangedResources(resourceResolver, resourceName, properties, false);
     }
 
-    private boolean addToChangedResources(ResourceResolver resolver, String resourceName, Map<String, Object> newProperties, boolean failIfAlreadyExists) {
+    private boolean addToChangedResources(
+            ResourceResolver resolver,
+            String resourceName,
+            Map<String, Object> newProperties,
+            boolean failIfAlreadyExists) {
         final boolean deleted = this.deletedResources.remove(resourceName);
 
         SimplePathInfo pathInfo = SimplePathInfo.parsePathInfo(resourceRoot, resourceRoot + "/" + resourceName);
@@ -144,7 +149,6 @@ public abstract class AbstractModifyingResourceProvider extends AbstractReadable
         return true;
     }
 
-
     @Override
     protected Map<String, Object> getResourceProperties(ResourceResolver resolver, SimplePathInfo pathInfo) {
 
@@ -163,10 +167,11 @@ public abstract class AbstractModifyingResourceProvider extends AbstractReadable
     }
 
     @Override
-    Resource buildMainResource(ResourceResolver resourceResolver,
-                               SimplePathInfo pathInfo,
-                               Map<String, Object> properties,
-                               Object... adapters) {
+    Resource buildMainResource(
+            ResourceResolver resourceResolver,
+            SimplePathInfo pathInfo,
+            Map<String, Object> properties,
+            Object... adapters) {
         return new SimpleModifiableResource(resourceResolver, this, pathInfo.getResourcePath(), properties);
     }
 
@@ -175,10 +180,9 @@ public abstract class AbstractModifyingResourceProvider extends AbstractReadable
         deletedResources.clear();
     }
 
-
-    protected abstract void saveInternalResources(ResourceResolver resourceResolver,
-                                                  Map<String, Map<String, Object>> changedResources,
-                                                  Set<String> deletedResources) throws PersistenceException;
-
-
+    protected abstract void saveInternalResources(
+            ResourceResolver resourceResolver,
+            Map<String, Map<String, Object>> changedResources,
+            Set<String> deletedResources)
+            throws PersistenceException;
 }

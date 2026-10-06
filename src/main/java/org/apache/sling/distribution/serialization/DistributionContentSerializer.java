@@ -38,8 +38,9 @@ public interface DistributionContentSerializer {
      * @param outputStream the output stream
      * @throws DistributionException if extraction fails for some reason
      */
-    void exportToStream(ResourceResolver resourceResolver, DistributionExportOptions exportOptions,
-                        OutputStream outputStream) throws DistributionException;
+    void exportToStream(
+            ResourceResolver resourceResolver, DistributionExportOptions exportOptions, OutputStream outputStream)
+            throws DistributionException;
 
     /**
      * imports the given stream

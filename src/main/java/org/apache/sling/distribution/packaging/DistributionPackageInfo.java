@@ -21,6 +21,7 @@ package org.apache.sling.distribution.packaging;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.wrappers.ValueMapDecorator;
 import org.apache.sling.distribution.DistributionRequestType;
@@ -50,12 +51,10 @@ public final class DistributionPackageInfo extends ValueMapDecorator implements 
      */
     public static final String PROPERTY_REQUEST_DEEP_PATHS = "request.deepPaths";
 
-
     /**
      * distribution request type
      */
     public static final String PROPERTY_REQUEST_TYPE = "request.type";
-
 
     /**
      * Creates a new wrapper around a given map.
@@ -72,16 +71,14 @@ public final class DistributionPackageInfo extends ValueMapDecorator implements 
         put(PROPERTY_PACKAGE_TYPE, packageType);
     }
 
-
     /**
      * Creates a new wrapper around an empty map.
-     * 
+     *
      * @param packageType type of package
      */
     public DistributionPackageInfo(String packageType) {
         this(packageType, new HashMap<String, Object>());
     }
-
 
     @NotNull
     public String getType() {
@@ -110,9 +107,8 @@ public final class DistributionPackageInfo extends ValueMapDecorator implements 
 
     @Override
     public String toString() {
-        return "DistributionPackageInfo{" +
-                " request.type=" + get(PROPERTY_REQUEST_TYPE, DistributionRequestType.class) +
-                ", request.paths=" + Arrays.toString(get(PROPERTY_REQUEST_PATHS, String[].class)) +
-                '}';
+        return "DistributionPackageInfo{" + " request.type="
+                + get(PROPERTY_REQUEST_TYPE, DistributionRequestType.class) + ", request.paths="
+                + Arrays.toString(get(PROPERTY_REQUEST_PATHS, String[].class)) + '}';
     }
 }

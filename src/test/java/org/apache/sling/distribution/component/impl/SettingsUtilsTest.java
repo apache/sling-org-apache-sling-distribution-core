@@ -32,15 +32,14 @@ public class SettingsUtilsTest {
     @Test
     public void testParseMap() {
         String[] lines = new String[] {
-                "packageExporter/exporterKey=exporterValue",
-                "packageExporter/exporterMap[key1]=mapvalue1",
-                "packageExporter/exporterBuilder/builderKey=builderValue",
-                "packageExporter/endpointsArray[0]=http://abc.com",
-
-                "mainKey=mainValue",
-                "trigger[0]/propertyKey1=propertyValue1",
-                "trigger[0]/propertyKey2=propertyValue2",
-                "slashKey=http://aaa.com"
+            "packageExporter/exporterKey=exporterValue",
+            "packageExporter/exporterMap[key1]=mapvalue1",
+            "packageExporter/exporterBuilder/builderKey=builderValue",
+            "packageExporter/endpointsArray[0]=http://abc.com",
+            "mainKey=mainValue",
+            "trigger[0]/propertyKey1=propertyValue1",
+            "trigger[0]/propertyKey2=propertyValue2",
+            "slashKey=http://aaa.com"
         };
         Map<String, Object> result = SettingsUtils.parseLines(lines);
 
@@ -62,7 +61,7 @@ public class SettingsUtilsTest {
         assertTrue(packageExporterMap.containsKey("exporterMap"));
         assertTrue(packageExporterMap.get("exporterMap") instanceof Map);
         @SuppressWarnings("unchecked") // type is known
-        Map<String, Object> exporterMap =  (Map<String, Object>) packageExporterMap.get("exporterMap");
+        Map<String, Object> exporterMap = (Map<String, Object>) packageExporterMap.get("exporterMap");
         assertEquals("mapvalue1", exporterMap.get("key1"));
 
         assertTrue(packageExporterMap.containsKey("endpointsArray"));

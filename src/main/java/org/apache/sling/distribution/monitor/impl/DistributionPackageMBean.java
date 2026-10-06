@@ -36,5 +36,4 @@ public interface DistributionPackageMBean {
     long getSize();
 
     long getProcessingTime();
-
 }

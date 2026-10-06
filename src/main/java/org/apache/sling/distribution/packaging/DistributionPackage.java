@@ -81,5 +81,4 @@ public interface DistributionPackage {
      */
     @NotNull
     DistributionPackageInfo getInfo();
-
 }

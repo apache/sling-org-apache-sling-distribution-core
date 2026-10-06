@@ -38,24 +38,25 @@ public class InMemoryDistributionPackageTest {
         final String testPath = "/a/test/path";
         final String testDeepPath = "/a/test/deepPath";
         new Random().nextBytes(data);
-        Map <String, Object> baseInfoMap = new HashMap<String, Object>() {{
-            put(DistributionPackageInfo.PROPERTY_REQUEST_PATHS, new String[] {testPath, testDeepPath});
-            put(DistributionPackageInfo.PROPERTY_REQUEST_DEEP_PATHS, new String[] {testDeepPath});
-        }};
+        Map<String, Object> baseInfoMap = new HashMap<String, Object>() {
+            {
+                put(DistributionPackageInfo.PROPERTY_REQUEST_PATHS, new String[] {testPath, testDeepPath});
+                put(DistributionPackageInfo.PROPERTY_REQUEST_DEEP_PATHS, new String[] {testDeepPath});
+            }
+        };
         DistributionPackage pkg = new InMemoryDistributionPackage("id", "type", data, baseInfoMap);
         Assert.assertEquals("type", pkg.getType());
         Assert.assertEquals("id", pkg.getId());
         Assert.assertEquals(size, pkg.getSize());
-        Assert.assertTrue("DistributionRequest provided Paths and those retrieved from"
-                + "DistributionPackage.getInfo() don't match",
-                Arrays.equals(new String[] {testPath, testDeepPath},
-                        (String[])pkg.getInfo().get(DistributionPackageInfo.PROPERTY_REQUEST_PATHS))
-                );
-        Assert.assertTrue("DistributionRequest deep Paths and those retrieved from"
-                + "DistributionPackage.getInfo() don't match",
-                Arrays.equals(new String[] {testDeepPath},
-                        (String[]) pkg.getInfo().get(DistributionPackageInfo.PROPERTY_REQUEST_DEEP_PATHS))
-                );
+        Assert.assertTrue(
+                "DistributionRequest provided Paths and those retrieved from"
+                        + "DistributionPackage.getInfo() don't match",
+                Arrays.equals(new String[] {testPath, testDeepPath}, (String[])
+                        pkg.getInfo().get(DistributionPackageInfo.PROPERTY_REQUEST_PATHS)));
+        Assert.assertTrue(
+                "DistributionRequest deep Paths and those retrieved from" + "DistributionPackage.getInfo() don't match",
+                Arrays.equals(new String[] {testDeepPath}, (String[])
+                        pkg.getInfo().get(DistributionPackageInfo.PROPERTY_REQUEST_DEEP_PATHS)));
     }
 
     @Test

@@ -18,17 +18,17 @@
  */
 package org.apache.sling.distribution.queue.impl;
 
-import org.apache.sling.distribution.common.DistributionException;
-import org.apache.sling.distribution.packaging.DistributionPackage;
-import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import org.apache.sling.distribution.common.DistributionException;
+import org.apache.sling.distribution.packaging.DistributionPackage;
+import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
+import org.jetbrains.annotations.NotNull;
 
 public class PriorityQueueDispatchingStrategy implements DistributionQueueDispatchingStrategy {
 
@@ -46,16 +46,19 @@ public class PriorityQueueDispatchingStrategy implements DistributionQueueDispat
     }
 
     @Override
-    public Iterable<DistributionQueueItemStatus> add(@NotNull DistributionPackage distributionPackage, @NotNull DistributionQueueProvider queueProvider) throws DistributionException {
+    public Iterable<DistributionQueueItemStatus> add(
+            @NotNull DistributionPackage distributionPackage, @NotNull DistributionQueueProvider queueProvider)
+            throws DistributionException {
         String[] paths = distributionPackage.getInfo().getPaths();
-        Map<String, String> matchingQueues = paths != null ?  getMatchingQueues(paths) : new HashMap<String, String>();
+        Map<String, String> matchingQueues = paths != null ? getMatchingQueues(paths) : new HashMap<String, String>();
 
         DistributionQueueDispatchingStrategy dispatchingStrategy = null;
         if (matchingQueues.size() > 0) {
             java.util.Set<String> var = matchingQueues.keySet();
             dispatchingStrategy = new MultipleQueueDispatchingStrategy(var.toArray(new String[var.size()]));
         } else {
-            dispatchingStrategy = new MultipleQueueDispatchingStrategy(mainQueues.toArray(new String[mainQueues.size()]));
+            dispatchingStrategy =
+                    new MultipleQueueDispatchingStrategy(mainQueues.toArray(new String[mainQueues.size()]));
         }
 
         return dispatchingStrategy.add(distributionPackage, queueProvider);
@@ -67,26 +70,24 @@ public class PriorityQueueDispatchingStrategy implements DistributionQueueDispat
         return allQueues;
     }
 
-
     public Map<String, String> getMatchingQueues(String[] paths) {
 
         Map<String, String> result = new TreeMap<String, String>();
 
         if (paths == null) {
-            paths = new String[] { null };
+            paths = new String[] {null};
         }
 
         for (String queueSelector : selectors.keySet()) {
             String pathMatcher = selectors.get(queueSelector);
-            int idx =  queueSelector.indexOf('|');
+            int idx = queueSelector.indexOf('|');
 
             String queuePrefix = queueSelector;
             String queueMatcher = null;
-            if (idx >=0) {
+            if (idx >= 0) {
                 queuePrefix = queueSelector.substring(0, idx);
-                queueMatcher = queueSelector.substring(idx+1);
+                queueMatcher = queueSelector.substring(idx + 1);
             }
-
 
             for (String path : paths) {
                 if (path == null || path.matches(pathMatcher)) {

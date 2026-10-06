@@ -33,8 +33,8 @@ import org.apache.sling.distribution.monitor.impl.SimpleDistributionAgentMBean;
 import org.apache.sling.distribution.monitor.impl.SimpleDistributionAgentMBeanImpl;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageExporter;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
-import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
 import org.apache.sling.distribution.queue.impl.DistributionQueueDispatchingStrategy;
+import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
 import org.apache.sling.distribution.queue.impl.SingleQueueDispatchingStrategy;
 import org.apache.sling.distribution.queue.impl.jobhandling.JobHandlingDistributionQueueProvider;
 import org.apache.sling.distribution.trigger.DistributionTrigger;
@@ -59,56 +59,73 @@ import org.osgi.service.metatype.annotations.Option;
  */
 @Component(
         configurationPolicy = ConfigurationPolicy.REQUIRE,
-        property = {
-                "webconsole.configurationFactory.nameHint=Agent name: {name}"
-        }
-)
-
-@Designate(ocd=SimpleDistributionAgentFactory.Config.class, factory = true)
+        property = {"webconsole.configurationFactory.nameHint=Agent name: {name}"})
+@Designate(ocd = SimpleDistributionAgentFactory.Config.class, factory = true)
 public class SimpleDistributionAgentFactory extends AbstractDistributionAgentFactory<SimpleDistributionAgentMBean> {
-    
-    @ObjectClassDefinition(name="Apache Sling Distribution Agent - Simple Agents Factory",
+
+    @ObjectClassDefinition(
+            name = "Apache Sling Distribution Agent - Simple Agents Factory",
             description = "OSGi configuration factory for agents")
     public @interface Config {
-        @AttributeDefinition(name = "Name", description = "The name of the agent." )
+        @AttributeDefinition(name = "Name", description = "The name of the agent.")
         String name() default "";
-        @AttributeDefinition(name="Title", description="The display friendly title of the agent.")
+
+        @AttributeDefinition(name = "Title", description = "The display friendly title of the agent.")
         String title() default "";
-        @AttributeDefinition(name="Details",description = "The display friendly details of the agent.")
+
+        @AttributeDefinition(name = "Details", description = "The display friendly details of the agent.")
         String details() default "";
-        @AttributeDefinition(name="Enabled", description = "Whether or not to start the distribution agent.")
+
+        @AttributeDefinition(name = "Enabled", description = "Whether or not to start the distribution agent.")
         boolean enabled() default true;
-        
-        @AttributeDefinition(name="Service Name", description = "The name of the service used to access the repository. " +
-                "If not set, the calling user ResourceResolver will be used" )
+
+        @AttributeDefinition(
+                name = "Service Name",
+                description = "The name of the service used to access the repository. "
+                        + "If not set, the calling user ResourceResolver will be used")
         String serviceName() default "";
-        
-        @AttributeDefinition(name="Log Level", description = "The log level recorded in the transient log accessible via http.",
+
+        @AttributeDefinition(
+                name = "Log Level",
+                description = "The log level recorded in the transient log accessible via http.",
                 options = {
-                        @Option(label="debug", value="debug"),
-                        @Option(label="info", value="info"),
-                        @Option(label="warn", value="warn"),
-                        @Option(label="error", value="error")
-        })
+                    @Option(label = "debug", value = "debug"),
+                    @Option(label = "info", value = "info"),
+                    @Option(label = "warn", value = "warn"),
+                    @Option(label = "error", value = "error")
+                })
         String log_level() default "info";
-        
-        @AttributeDefinition(name="Queue Processing Enabled", description = "Whether or not the distribution agent should process packages in the queues.")
+
+        @AttributeDefinition(
+                name = "Queue Processing Enabled",
+                description = "Whether or not the distribution agent should process packages in the queues.")
         boolean queue_processing_enabled() default true;
-        
-        @AttributeDefinition(name="Exporter", description="The target reference for the DistributionPackageExporter used to receive (export) the distribution packages,\" +\n"
-                + "            \"e.g. use target=(name=...) to bind to services by name.")
+
+        @AttributeDefinition(
+                name = "Exporter",
+                description =
+                        "The target reference for the DistributionPackageExporter used to receive (export) the distribution packages,\" +\n"
+                                + "            \"e.g. use target=(name=...) to bind to services by name.")
         String packageExporter_target();
-        
-        @AttributeDefinition(name="Importer", description = "The target reference for the DistributionPackageImporter used to send (import) the distribution packages," +
-            "e.g. use target=(name=...) to bind to services by name.")
+
+        @AttributeDefinition(
+                name = "Importer",
+                description =
+                        "The target reference for the DistributionPackageImporter used to send (import) the distribution packages,"
+                                + "e.g. use target=(name=...) to bind to services by name.")
         String packageImporter_target();
-        
-        @AttributeDefinition(name="Request Authorization Strategy", description = "The target reference for the DistributionRequestAuthorizationStrategy used to authorize the access to distribution process," +
-                "e.g. use target=(name=...) to bind to services by name.")
+
+        @AttributeDefinition(
+                name = "Request Authorization Strategy",
+                description =
+                        "The target reference for the DistributionRequestAuthorizationStrategy used to authorize the access to distribution process,"
+                                + "e.g. use target=(name=...) to bind to services by name.")
         String requestAuthorizationStrategy_target();
-        
-        @AttributeDefinition(name="Triggers",description = "The target reference for DistributionTrigger used to trigger distribution, " +
-                "e.g. use target=(name=...) to bind to services by name.")
+
+        @AttributeDefinition(
+                name = "Triggers",
+                description = "The target reference for DistributionTrigger used to trigger distribution, "
+                        + "e.g. use target=(name=...) to bind to services by name.")
         String triggers_target() default DEFAULT_TRIGGER_TARGET;
     }
 
@@ -117,7 +134,6 @@ public class SimpleDistributionAgentFactory extends AbstractDistributionAgentFac
     public static final String DETAILS = "details";
     private static final String SERVICE_NAME = "serviceName";
     private static final String QUEUE_PROCESSING_ENABLED = "queue.processing.enabled";
-
 
     @Reference(name = "packageExporter")
     private DistributionPackageExporter packageExporter;
@@ -129,7 +145,6 @@ public class SimpleDistributionAgentFactory extends AbstractDistributionAgentFac
     private DistributionRequestAuthorizationStrategy requestAuthorizationStrategy;
 
     public static final String TRIGGERS_TARGET = "triggers.target";
-
 
     @Reference
     private DistributionEventFactory distributionEventFactory;
@@ -155,12 +170,14 @@ public class SimpleDistributionAgentFactory extends AbstractDistributionAgentFac
         super.activate(context, config);
     }
 
-    @Reference(name = "triggers",
-            policy = ReferencePolicy.DYNAMIC, cardinality = ReferenceCardinality.MULTIPLE,
-            bind = "bindDistributionTrigger", unbind = "unbindDistributionTrigger")
+    @Reference(
+            name = "triggers",
+            policy = ReferencePolicy.DYNAMIC,
+            cardinality = ReferenceCardinality.MULTIPLE,
+            bind = "bindDistributionTrigger",
+            unbind = "unbindDistributionTrigger")
     protected void bindDistributionTrigger(DistributionTrigger distributionTrigger, Map<String, Object> config) {
         super.bindDistributionTrigger(distributionTrigger, config);
-
     }
 
     protected void unbindDistributionTrigger(DistributionTrigger distributionTrigger, Map<String, Object> config) {
@@ -173,28 +190,46 @@ public class SimpleDistributionAgentFactory extends AbstractDistributionAgentFac
     }
 
     @Override
-    protected SimpleDistributionAgent createAgent(String agentName, BundleContext context, Map<String, Object> config, DefaultDistributionLog distributionLog) {
+    protected SimpleDistributionAgent createAgent(
+            String agentName,
+            BundleContext context,
+            Map<String, Object> config,
+            DefaultDistributionLog distributionLog) {
         String serviceName = SettingsUtils.removeEmptyEntry(PropertiesUtil.toString(config.get(SERVICE_NAME), null));
 
         boolean queueProcessingEnabled = PropertiesUtil.toBoolean(config.get(QUEUE_PROCESSING_ENABLED), true);
 
-        DistributionQueueProvider queueProvider = new JobHandlingDistributionQueueProvider(agentName, jobManager, context);
+        DistributionQueueProvider queueProvider =
+                new JobHandlingDistributionQueueProvider(agentName, jobManager, context);
         DistributionQueueDispatchingStrategy exportQueueStrategy = new SingleQueueDispatchingStrategy();
         DistributionQueueDispatchingStrategy importQueueStrategy = null;
 
         Set<String> processingQueues = new HashSet<String>();
         processingQueues.addAll(exportQueueStrategy.getQueueNames());
 
-        return new SimpleDistributionAgent(agentName, queueProcessingEnabled, processingQueues,
-                serviceName, packageImporter, packageExporter, requestAuthorizationStrategy,
-                queueProvider, exportQueueStrategy, importQueueStrategy, distributionEventFactory, resourceResolverFactory, slingRepository,
-                distributionLog, null, null, 0);
-
+        return new SimpleDistributionAgent(
+                agentName,
+                queueProcessingEnabled,
+                processingQueues,
+                serviceName,
+                packageImporter,
+                packageExporter,
+                requestAuthorizationStrategy,
+                queueProvider,
+                exportQueueStrategy,
+                importQueueStrategy,
+                distributionEventFactory,
+                resourceResolverFactory,
+                slingRepository,
+                distributionLog,
+                null,
+                null,
+                0);
     }
 
     @Override
-    protected SimpleDistributionAgentMBean createMBeanAgent(DistributionAgent agent, Map<String, Object> osgiConfiguration) {
+    protected SimpleDistributionAgentMBean createMBeanAgent(
+            DistributionAgent agent, Map<String, Object> osgiConfiguration) {
         return new SimpleDistributionAgentMBeanImpl(agent, osgiConfiguration);
     }
-
 }

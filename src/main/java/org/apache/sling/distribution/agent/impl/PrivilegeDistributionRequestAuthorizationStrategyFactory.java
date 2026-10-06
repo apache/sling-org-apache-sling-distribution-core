@@ -35,31 +35,39 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
  */
 @Component(
         configurationPolicy = ConfigurationPolicy.REQUIRE,
-        service=DistributionRequestAuthorizationStrategy.class,
+        service = DistributionRequestAuthorizationStrategy.class,
         immediate = true,
-        property = {
-                "webconsole.configurationFactory.nameHint=Strategy name: {name}"
-        }
-)
+        property = {"webconsole.configurationFactory.nameHint=Strategy name: {name}"})
 @Designate(ocd = PrivilegeDistributionRequestAuthorizationStrategyFactory.Config.class, factory = true)
-public class PrivilegeDistributionRequestAuthorizationStrategyFactory implements DistributionRequestAuthorizationStrategy {
-    
-    @ObjectClassDefinition(name = "Apache Sling Distribution Request Authorization - Privilege Request Authorization Strategy",
+public class PrivilegeDistributionRequestAuthorizationStrategyFactory
+        implements DistributionRequestAuthorizationStrategy {
+
+    @ObjectClassDefinition(
+            name = "Apache Sling Distribution Request Authorization - Privilege Request Authorization Strategy",
             description = "OSGi configuration for request based authorization strategy based on privileges")
     public @interface Config {
-        
-        @AttributeDefinition(name="name")
+
+        @AttributeDefinition(name = "name")
         String name() default "";
-        
-        @AttributeDefinition(name="Jcr Privilege", description = "Jcr privilege to check for authorizing distribution requests. The privilege is checked for the calling user session.")
+
+        @AttributeDefinition(
+                name = "Jcr Privilege",
+                description =
+                        "Jcr privilege to check for authorizing distribution requests. The privilege is checked for the calling user session.")
         String jcrPrivilege() default "";
-        
-        @AttributeDefinition(cardinality = 100, name="Additional Jcr Privileges for Add",description = "Additional Jcr privileges to check for authorizing ADD distribution requests. " +
-            "The privilege is checked for the calling user session.")
+
+        @AttributeDefinition(
+                cardinality = 100,
+                name = "Additional Jcr Privileges for Add",
+                description = "Additional Jcr privileges to check for authorizing ADD distribution requests. "
+                        + "The privilege is checked for the calling user session.")
         String[] additionalJcrPrivilegesForAdd() default "jcr:read";
-        
-        @AttributeDefinition(cardinality = 100, name="Additional Jcr Privileges for Delete", description = "Additional Jcr privileges to check for authorizing ADD distribution requests. " +
-            "The privilege is checked for the calling user session.")
+
+        @AttributeDefinition(
+                cardinality = 100,
+                name = "Additional Jcr Privileges for Delete",
+                description = "Additional Jcr privileges to check for authorizing ADD distribution requests. "
+                        + "The privilege is checked for the calling user session.")
         String[] additionalJcrPrivilegesForDelete() default "jcr:removeNode";
     }
 
@@ -70,10 +78,13 @@ public class PrivilegeDistributionRequestAuthorizationStrategyFactory implements
         String jcrPrivilege = conf.jcrPrivilege();
         String[] jcrAddPrivileges = conf.additionalJcrPrivilegesForAdd();
         String[] jcrDeletePrivileges = conf.additionalJcrPrivilegesForDelete();
-        authorizationStrategy = new PrivilegeDistributionRequestAuthorizationStrategy(jcrPrivilege, jcrAddPrivileges, jcrDeletePrivileges);
+        authorizationStrategy = new PrivilegeDistributionRequestAuthorizationStrategy(
+                jcrPrivilege, jcrAddPrivileges, jcrDeletePrivileges);
     }
 
-    public void checkPermission(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest) throws DistributionException {
+    public void checkPermission(
+            @NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest)
+            throws DistributionException {
         authorizationStrategy.checkPermission(resourceResolver, distributionRequest);
     }
 }

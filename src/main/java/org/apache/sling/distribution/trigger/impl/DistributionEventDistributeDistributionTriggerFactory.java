@@ -33,23 +33,23 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @Component(
         configurationPolicy = ConfigurationPolicy.REQUIRE,
-        service=DistributionTrigger.class,
-        property= {
-                "webconsole.configurationFactory.nameHint=Trigger name: {name}"    
-        })
-@Designate(ocd=DistributionEventDistributeDistributionTriggerFactory.Config.class, factory = true)
+        service = DistributionTrigger.class,
+        property = {"webconsole.configurationFactory.nameHint=Trigger name: {name}"})
+@Designate(ocd = DistributionEventDistributeDistributionTriggerFactory.Config.class, factory = true)
 public class DistributionEventDistributeDistributionTriggerFactory implements DistributionTrigger {
-    
-    @ObjectClassDefinition(name="Apache Sling Distribution Trigger - Distribution Event Triggers Factory")
+
+    @ObjectClassDefinition(name = "Apache Sling Distribution Trigger - Distribution Event Triggers Factory")
     public @interface Config {
-        @AttributeDefinition(name="Name",description = "The name of the trigger.")
+        @AttributeDefinition(name = "Name", description = "The name of the trigger.")
         String name();
-        @AttributeDefinition(name="Path", description = "The path for which the distribution events will be forwarded.")
+
+        @AttributeDefinition(
+                name = "Path",
+                description = "The path for which the distribution events will be forwarded.")
         String path();
     }
 
     private DistributionEventDistributeDistributionTrigger trigger;
-
 
     @Activate
     public void activate(BundleContext bundleContext, Config conf) {

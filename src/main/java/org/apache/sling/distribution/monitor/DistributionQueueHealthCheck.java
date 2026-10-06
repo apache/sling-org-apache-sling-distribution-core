@@ -46,17 +46,16 @@ import org.slf4j.LoggerFactory;
  * {@link HealthCheck} that checks if distribution queues' first item has been retried more than a configurable amount
  * of times
  */
-@Component(immediate = true, service=HealthCheck.class,
-    property = {
-            HealthCheck.NAME + "=SlingDistributionQueueHC",
-            HealthCheck.MBEAN_NAME + "=slingDistributionQueue"
-    })
-@Designate(ocd=DistributionQueueHealthCheck.Config.class)
+@Component(
+        immediate = true,
+        service = HealthCheck.class,
+        property = {HealthCheck.NAME + "=SlingDistributionQueueHC", HealthCheck.MBEAN_NAME + "=slingDistributionQueue"})
+@Designate(ocd = DistributionQueueHealthCheck.Config.class)
 public class DistributionQueueHealthCheck implements HealthCheck {
-    
-    @ObjectClassDefinition(name="Apache Sling Distribution Queue Health Check")
+
+    @ObjectClassDefinition(name = "Apache Sling Distribution Queue Health Check")
     public @interface Config {
-        @AttributeDefinition(name="Allowed retries", description = "Number of allowed retries")
+        @AttributeDefinition(name = "Allowed retries", description = "Number of allowed retries")
         int numberOfRetriesAllowed() default DEFAULT_NUMBER_OF_RETRIES_ALLOWED;
     }
 
@@ -65,7 +64,6 @@ public class DistributionQueueHealthCheck implements HealthCheck {
     private static final int DEFAULT_NUMBER_OF_RETRIES_ALLOWED = 3;
 
     private int numberOfRetriesAllowed;
-
 
     private final List<DistributionAgent> distributionAgents = new CopyOnWriteArrayList<DistributionAgent>();
 
@@ -80,7 +78,8 @@ public class DistributionQueueHealthCheck implements HealthCheck {
         distributionAgents.clear();
     }
 
-    @Reference(name = "distributionAgent",
+    @Reference(
+            name = "distributionAgent",
             cardinality = ReferenceCardinality.MULTIPLE,
             policy = ReferencePolicy.DYNAMIC)
     void bindDistributionAgent(final DistributionAgent distributionAgent) {
@@ -108,11 +107,19 @@ public class DistributionQueueHealthCheck implements HealthCheck {
                         if (entry != null) {
                             DistributionQueueItemStatus status = entry.getStatus();
                             if (status.getAttempts() <= numberOfRetriesAllowed) {
-                                resultLog.debug("Queue: [{}], first item: [{}], number of retries: {}", q.getName(), entry.getId(), status.getAttempts());
+                                resultLog.debug(
+                                        "Queue: [{}], first item: [{}], number of retries: {}",
+                                        q.getName(),
+                                        entry.getId(),
+                                        status.getAttempts());
                             } else {
                                 // the no. of attempts is higher than the configured threshold
-                                resultLog.warn("Queue: [{}], first item: [{}], number of retries: {}, expected number of retries <= {}",
-                                        q.getName(), entry.getId(), status.getAttempts(), numberOfRetriesAllowed);
+                                resultLog.warn(
+                                        "Queue: [{}], first item: [{}], number of retries: {}, expected number of retries <= {}",
+                                        q.getName(),
+                                        entry.getId(),
+                                        status.getAttempts(),
+                                        numberOfRetriesAllowed);
                                 failures.put(q.getName(), status.getAttempts());
                             }
                         } else {
@@ -131,12 +138,14 @@ public class DistributionQueueHealthCheck implements HealthCheck {
         if (failures.size() > 0) {
             // a specific log entry (using markdown) to provide a recommended user action
             for (Map.Entry<String, Integer> entry : failures.entrySet()) {
-                resultLog.warn("Distribution queue {}'s first item in the default queue has been retried {} times (threshold: {})",
-                        entry.getKey(), entry.getValue(), numberOfRetriesAllowed);
+                resultLog.warn(
+                        "Distribution queue {}'s first item in the default queue has been retried {} times (threshold: {})",
+                        entry.getKey(),
+                        entry.getValue(),
+                        numberOfRetriesAllowed);
             }
         }
 
         return new Result(resultLog);
     }
-
 }

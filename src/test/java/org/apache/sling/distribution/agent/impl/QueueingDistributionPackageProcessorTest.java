@@ -29,8 +29,8 @@ import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.apache.sling.distribution.queue.DistributionQueueItemState;
 import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
-import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
 import org.apache.sling.distribution.queue.impl.DistributionQueueDispatchingStrategy;
+import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -53,8 +53,8 @@ public class QueueingDistributionPackageProcessorTest {
         DistributionQueueProvider queueProvider = mock(DistributionQueueProvider.class);
         DefaultDistributionLog log = mock(DefaultDistributionLog.class);
         String agentName = "dummy";
-        QueueingDistributionPackageProcessor exporterProcessor = new QueueingDistributionPackageProcessor(callingUser, requestId,
-                startTime, eventFactory, scheduleQueueStrategy, queueProvider, log, agentName);
+        QueueingDistributionPackageProcessor exporterProcessor = new QueueingDistributionPackageProcessor(
+                callingUser, requestId, startTime, eventFactory, scheduleQueueStrategy, queueProvider, log, agentName);
 
         List<DistributionResponse> allResponses = exporterProcessor.getAllResponses();
         assertNotNull(allResponses);
@@ -71,12 +71,11 @@ public class QueueingDistributionPackageProcessorTest {
         DistributionQueueProvider queueProvider = mock(DistributionQueueProvider.class);
         DefaultDistributionLog log = mock(DefaultDistributionLog.class);
         String agentName = "dummy";
-        QueueingDistributionPackageProcessor exporterProcessor = new QueueingDistributionPackageProcessor(callingUser, requestId,
-                startTime, eventFactory, scheduleQueueStrategy, queueProvider, log, agentName);
+        QueueingDistributionPackageProcessor exporterProcessor = new QueueingDistributionPackageProcessor(
+                callingUser, requestId, startTime, eventFactory, scheduleQueueStrategy, queueProvider, log, agentName);
 
         int packagesCount = exporterProcessor.getPackagesCount();
         assertEquals(0, packagesCount);
-
     }
 
     @Test
@@ -89,8 +88,8 @@ public class QueueingDistributionPackageProcessorTest {
         DistributionQueueProvider queueProvider = mock(DistributionQueueProvider.class);
         DefaultDistributionLog log = mock(DefaultDistributionLog.class);
         String agentName = "dummy";
-        QueueingDistributionPackageProcessor exporterProcessor = new QueueingDistributionPackageProcessor(callingUser, requestId,
-                startTime, eventFactory, scheduleQueueStrategy, queueProvider, log, agentName);
+        QueueingDistributionPackageProcessor exporterProcessor = new QueueingDistributionPackageProcessor(
+                callingUser, requestId, startTime, eventFactory, scheduleQueueStrategy, queueProvider, log, agentName);
 
         long packagesSize = exporterProcessor.getPackagesSize();
         assertEquals(0L, packagesSize);
@@ -113,8 +112,8 @@ public class QueueingDistributionPackageProcessorTest {
 
         DefaultDistributionLog log = mock(DefaultDistributionLog.class);
         String agentName = "dummy";
-        QueueingDistributionPackageProcessor exporterProcessor = new QueueingDistributionPackageProcessor(callingUser, requestId,
-                startTime, eventFactory, scheduleQueueStrategy, queueProvider, log, agentName);
+        QueueingDistributionPackageProcessor exporterProcessor = new QueueingDistributionPackageProcessor(
+                callingUser, requestId, startTime, eventFactory, scheduleQueueStrategy, queueProvider, log, agentName);
 
         DistributionPackageInfo info = new DistributionPackageInfo("type-a", new HashMap<String, Object>());
         when(distributionPackage.getInfo()).thenReturn(info);

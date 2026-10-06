@@ -16,16 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution;
-
-import static org.apache.sling.testing.paxexam.SlingOptions.logback;
-import static org.apache.sling.testing.paxexam.SlingOptions.slingDistribution;
-import static org.apache.sling.testing.paxexam.SlingOptions.slingQuickstartOakTar;
-import static org.ops4j.pax.exam.CoreOptions.composite;
-import static org.ops4j.pax.exam.CoreOptions.junitBundles;
-import static org.ops4j.pax.exam.cm.ConfigurationAdminOptions.factoryConfiguration;
-import static org.ops4j.pax.exam.cm.ConfigurationAdminOptions.newConfiguration;
 
 import org.apache.sling.distribution.agent.impl.PrivilegeDistributionRequestAuthorizationStrategyFactory;
 import org.apache.sling.distribution.agent.impl.QueueDistributionAgentFactory;
@@ -37,6 +28,14 @@ import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
 
+import static org.apache.sling.testing.paxexam.SlingOptions.logback;
+import static org.apache.sling.testing.paxexam.SlingOptions.slingDistribution;
+import static org.apache.sling.testing.paxexam.SlingOptions.slingQuickstartOakTar;
+import static org.ops4j.pax.exam.CoreOptions.composite;
+import static org.ops4j.pax.exam.CoreOptions.junitBundles;
+import static org.ops4j.pax.exam.cm.ConfigurationAdminOptions.factoryConfiguration;
+import static org.ops4j.pax.exam.cm.ConfigurationAdminOptions.newConfiguration;
+
 public class DistributionBaseIT extends TestSupport {
 
     protected static final String AGENT_RESOURCE_QUEUE = "agentResourceQueue";
@@ -47,18 +46,19 @@ public class DistributionBaseIT extends TestSupport {
         // Patch versions of features provided by SlingOptions
         SlingOptions.versionResolver.setVersionFromProject("org.apache.sling", "org.apache.sling.distribution.core");
         SlingOptions.versionResolver.setVersionFromProject("org.apache.sling", "org.apache.sling.distribution.api");
-        SlingOptions.versionResolver.setVersionFromProject("org.apache.jackrabbit.vault","org.apache.jackrabbit.vault");
-        return new Option[]{
-                baseConfiguration(),
-                slingQuickstart(),
-                logback(),
-                // build artifact
-                slingDistribution(),
-                // testing
-                defaultOsgiConfigs(),
-                SlingOptions.webconsole(),
-                CoreOptions.mavenBundle("org.apache.felix", "org.apache.felix.webconsole.plugins.ds", "2.0.8"),
-                junitBundles()
+        SlingOptions.versionResolver.setVersionFromProject(
+                "org.apache.jackrabbit.vault", "org.apache.jackrabbit.vault");
+        return new Option[] {
+            baseConfiguration(),
+            slingQuickstart(),
+            logback(),
+            // build artifact
+            slingDistribution(),
+            // testing
+            defaultOsgiConfigs(),
+            SlingOptions.webconsole(),
+            CoreOptions.mavenBundle("org.apache.felix", "org.apache.felix.webconsole.plugins.ds", "2.0.8"),
+            junitBundles()
         };
     }
 
@@ -67,50 +67,44 @@ public class DistributionBaseIT extends TestSupport {
         final int httpPort = findFreePort(); // from TestSupport
         return composite(
                 slingQuickstartOakTar(workingDirectory, httpPort) // from SlingOptions
-        );
+                );
     }
 
     public static Option defaultOsgiConfigs() {
         return composite(
                 newConfiguration("org.apache.sling.jcr.resource.internal.JcrSystemUserValidator")
-                        .put("allow.only.system.user", false).asOption(),
-
+                        .put("allow.only.system.user", false)
+                        .asOption(),
                 newConfiguration("org.apache.sling.jcr.base.internal.LoginAdminWhitelist")
-                        .put("whitelist.bypass", "true").asOption(),
+                        .put("whitelist.bypass", "true")
+                        .asOption(),
 
                 // For production the users would be: replication-service,content-writer-service
                 factoryConfiguration("org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended")
-                        .put("user.mapping", new String[]{"org.apache.sling.distribution.core:testService=admin"})
+                        .put("user.mapping", new String[] {"org.apache.sling.distribution.core:testService=admin"})
                         .asOption(),
-
                 factoryConfiguration(PrivilegeDistributionRequestAuthorizationStrategyFactory.class.getName())
                         .put("name", "default")
                         .put("jcrPrivilege", "jcr:read")
                         .asOption(),
-
                 factoryConfiguration(VaultDistributionPackageBuilderFactory.class.getName())
                         .put("name", "default")
                         .put("type", "jcrvlt")
                         .asOption(),
-
                 factoryConfiguration(QueueDistributionAgentFactory.class.getName())
                         .put("name", AGENT_RESOURCE_QUEUE)
                         .put("serviceName", "testService")
                         .put("enabled", true)
                         .put("queueProviderFactory.target", "(name=resourceQueue)")
                         .asOption(),
-
                 factoryConfiguration(ResourceQueueProviderFactory.class.getName())
                         .put("queue_isActive", true)
                         .asOption(),
-
                 factoryConfiguration(QueueDistributionAgentFactory.class.getName())
                         .put("name", AGENT_JOB_QUEUE)
                         .put("serviceName", "testService")
                         .put("enabled", true)
                         .put("queueProviderFactory.target", "(name=jobQueue)")
-                        .asOption()
-        );
+                        .asOption());
     }
-
 }

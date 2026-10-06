@@ -21,6 +21,7 @@ package org.apache.sling.distribution.serialization.impl.vlt;
 import javax.jcr.Session;
 import javax.jcr.Workspace;
 import javax.jcr.observation.ObservationManager;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -61,12 +62,16 @@ public class FileVaultContentSerializerTest {
     @Before
     public void setUp() throws Exception {
         // create test content
-        MockHelper helper = MockHelper.create(context.resourceResolver()).resource("/libs").p("prop", "value")
-                .resource("sub").p("sub", "hello")
+        MockHelper helper = MockHelper.create(context.resourceResolver())
+                .resource("/libs")
+                .p("prop", "value")
+                .resource("sub")
+                .p("sub", "hello")
                 .resource(".sameLevel")
-                .resource("/apps").p("foo", "baa");
+                .resource("/apps")
+                .p("foo", "baa");
         helper.commit();
-        
+
         // register sling node types
         Session session = context.resourceResolver().adaptTo(Session.class);
         RepositoryUtil.registerSlingNodeTypes(session);
@@ -75,16 +80,29 @@ public class FileVaultContentSerializerTest {
     @Test
     public void testExportToStream() throws Exception {
         Packaging packaging = mock(Packaging.class);
-        ImportSettings importSettings = new ImportSettings(ImportMode.REPLACE, AccessControlHandling.IGNORE,
-                AccessControlHandling.IGNORE, 1024, false, false, IdConflictPolicy.LEGACY);
+        ImportSettings importSettings = new ImportSettings(
+                ImportMode.REPLACE,
+                AccessControlHandling.IGNORE,
+                AccessControlHandling.IGNORE,
+                1024,
+                false,
+                false,
+                IdConflictPolicy.LEGACY);
 
-        String[] packageRoots = new String[]{"/etc/packages"};
+        String[] packageRoots = new String[] {"/etc/packages"};
         String[] nodeFilters = new String[0];
         String[] propertyFilters = new String[0];
         boolean useReferences = false;
         int threshold = 1024;
-        FileVaultContentSerializer fileVaultContentSerializer = new FileVaultContentSerializer("vlt", packaging, packageRoots, nodeFilters,
-                propertyFilters, useReferences, new HashMap<String, String>(), importSettings);
+        FileVaultContentSerializer fileVaultContentSerializer = new FileVaultContentSerializer(
+                "vlt",
+                packaging,
+                packageRoots,
+                nodeFilters,
+                propertyFilters,
+                useReferences,
+                new HashMap<String, String>(),
+                importSettings);
 
         ResourceResolver sessionResolver = mock(ResourceResolver.class);
         Session session = mock(Session.class);
@@ -94,11 +112,13 @@ public class FileVaultContentSerializerTest {
         OutputStream outputStream = new ByteArrayOutputStream();
 
         doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
-                return null;
-            }
-        }).when(pm).assemble(same(session), any(ExportOptions.class), same(outputStream));
+                    @Override
+                    public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
+                        return null;
+                    }
+                })
+                .when(pm)
+                .assemble(same(session), any(ExportOptions.class), same(outputStream));
 
         Workspace workspace = mock(Workspace.class);
         ObservationManager observationManager = mock(ObservationManager.class);
@@ -107,7 +127,7 @@ public class FileVaultContentSerializerTest {
         when(sessionResolver.adaptTo(Session.class)).thenReturn(session);
         DistributionExportFilter filter = mock(DistributionExportFilter.class);
         DistributionRequest request = mock(DistributionRequest.class);
-        when(request.getPaths()).thenReturn(new String[]{"/libs"});
+        when(request.getPaths()).thenReturn(new String[] {"/libs"});
         when(request.getFilters("/libs")).thenReturn(new String[0]);
         DistributionExportOptions exportOptions = new DistributionExportOptions(request, filter);
 
@@ -117,15 +137,28 @@ public class FileVaultContentSerializerTest {
     @Test
     public void testImportFromStream() throws Exception {
         Packaging packaging = mock(Packaging.class);
-        ImportSettings importSettings = new ImportSettings(ImportMode.REPLACE, AccessControlHandling.IGNORE,
-                AccessControlHandling.IGNORE, 1024, true, true, IdConflictPolicy.LEGACY);
+        ImportSettings importSettings = new ImportSettings(
+                ImportMode.REPLACE,
+                AccessControlHandling.IGNORE,
+                AccessControlHandling.IGNORE,
+                1024,
+                true,
+                true,
+                IdConflictPolicy.LEGACY);
 
-        String[] packageRoots = new String[]{"/"};
+        String[] packageRoots = new String[] {"/"};
         String[] nodeFilters = new String[0];
         String[] propertyFilters = new String[0];
         boolean useReferences = false;
-        FileVaultContentSerializer fileVaultContentSerializer = new FileVaultContentSerializer("vlt", packaging, packageRoots, nodeFilters,
-                propertyFilters, useReferences, new HashMap<String, String>(), importSettings);
+        FileVaultContentSerializer fileVaultContentSerializer = new FileVaultContentSerializer(
+                "vlt",
+                packaging,
+                packageRoots,
+                nodeFilters,
+                propertyFilters,
+                useReferences,
+                new HashMap<String, String>(),
+                importSettings);
 
         File file = new File(getClass().getResource("/vlt/dp.vlt").getFile());
 

@@ -18,12 +18,12 @@
  */
 package org.apache.sling.distribution.agent.impl;
 
-import java.util.ArrayList;
-
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.security.AccessControlManager;
 import javax.jcr.security.Privilege;
+
+import java.util.ArrayList;
 
 import org.apache.jackrabbit.util.Text;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -43,7 +43,8 @@ public class PrivilegeDistributionRequestAuthorizationStrategy implements Distri
 
     private final String[] additionalJcrPrivilegesForDelete;
 
-    public PrivilegeDistributionRequestAuthorizationStrategy(String jcrPrivilege, String[] additionalJcrPrivilegesForAdd, String[] additionalJcrPrivilegesForDelete) {
+    public PrivilegeDistributionRequestAuthorizationStrategy(
+            String jcrPrivilege, String[] additionalJcrPrivilegesForAdd, String[] additionalJcrPrivilegesForDelete) {
         if (jcrPrivilege == null || additionalJcrPrivilegesForAdd == null || additionalJcrPrivilegesForDelete == null) {
             throw new IllegalArgumentException("Missing required privilege(s).");
         }
@@ -53,7 +54,9 @@ public class PrivilegeDistributionRequestAuthorizationStrategy implements Distri
         this.additionalJcrPrivilegesForDelete = additionalJcrPrivilegesForDelete;
     }
 
-    public void checkPermission(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest) throws DistributionException {
+    public void checkPermission(
+            @NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest)
+            throws DistributionException {
         Session session = resourceResolver.adaptTo(Session.class);
 
         if (session == null) {
@@ -70,7 +73,6 @@ public class PrivilegeDistributionRequestAuthorizationStrategy implements Distri
         } catch (RepositoryException e) {
             throw new DistributionException("Not enough privileges");
         }
-
     }
 
     private void checkPermissionForAdd(Session session, String[] paths)
@@ -82,7 +84,6 @@ public class PrivilegeDistributionRequestAuthorizationStrategy implements Distri
                 throw new DistributionException("Not enough privileges");
             }
         }
-
     }
 
     private void checkPermissionForDelete(Session session, String[] paths)
@@ -105,13 +106,13 @@ public class PrivilegeDistributionRequestAuthorizationStrategy implements Distri
                 return path;
             }
             path = Text.getRelativeParent(path, 1);
-        }
-        while (path != null && path.length() > 0);
+        } while (path != null && path.length() > 0);
 
         return null;
     }
 
-    private static Privilege[] computePrivileges(AccessControlManager acMgr, String jcrPrivilege, String[] additionalJcrPrivileges)
+    private static Privilege[] computePrivileges(
+            AccessControlManager acMgr, String jcrPrivilege, String[] additionalJcrPrivileges)
             throws RepositoryException {
         ArrayList<Privilege> privileges = new ArrayList<Privilege>();
         privileges.add(acMgr.privilegeFromName(jcrPrivilege));
@@ -120,5 +121,4 @@ public class PrivilegeDistributionRequestAuthorizationStrategy implements Distri
         }
         return privileges.toArray(new Privilege[0]);
     }
-
 }

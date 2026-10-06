@@ -18,17 +18,17 @@
  */
 package org.apache.sling.distribution.util.impl;
 
-import static java.io.File.createTempFile;
-import static java.lang.Math.pow;
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteBuffer.allocateDirect;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+
+import static java.io.File.createTempFile;
+import static java.lang.Math.pow;
+import static java.nio.ByteBuffer.allocate;
+import static java.nio.ByteBuffer.allocateDirect;
 
 /**
  * {@link OutputStream} implementation which writes into a {@code byte[]} until a certain threshold is
@@ -39,7 +39,6 @@ public class FileBackedMemoryOutputStream extends OutputStream {
     private int memorySize = -1;
 
     public enum MemoryUnit {
-
         BYTES(1),
         KILO_BYTES(1000),
         MEGA_BYTES((int) pow(10, 6)),
@@ -50,7 +49,6 @@ public class FileBackedMemoryOutputStream extends OutputStream {
         MemoryUnit(int memoryFactor) {
             this.memoryFactor = memoryFactor;
         }
-
     }
 
     private final ByteBuffer memory;
@@ -65,12 +63,13 @@ public class FileBackedMemoryOutputStream extends OutputStream {
 
     private File file;
 
-    public FileBackedMemoryOutputStream(int fileThreshold,
-                                        MemoryUnit memoryUnit,
-                                        boolean useOffHeapMemory,
-                                        File tempDirectory,
-                                        String fileName,
-                                        String fileExtension) {
+    public FileBackedMemoryOutputStream(
+            int fileThreshold,
+            MemoryUnit memoryUnit,
+            boolean useOffHeapMemory,
+            File tempDirectory,
+            String fileName,
+            String fileExtension) {
         if (fileThreshold < 0) {
             throw new IllegalArgumentException("Negative fileThreshold size has no semantic in this version.");
         }
@@ -151,9 +150,9 @@ public class FileBackedMemoryOutputStream extends OutputStream {
     }
 
     public InputStream openWrittenDataInputStream() throws IOException {
-        memorySize = memory.position(); // save the memory position for size calculation as after flip() position's always 0
+        memorySize =
+                memory.position(); // save the memory position for size calculation as after flip() position's always 0
         memory.flip();
         return new ByteBufferBackedInputStream(memory, file);
     }
-
 }

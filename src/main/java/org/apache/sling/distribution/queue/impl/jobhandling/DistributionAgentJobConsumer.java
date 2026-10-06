@@ -53,5 +53,4 @@ class DistributionAgentJobConsumer implements JobConsumer {
         }
         return processingResult ? JobResult.OK : JobResult.FAILED;
     }
-
 }

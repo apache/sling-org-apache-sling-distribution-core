@@ -16,24 +16,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.resources.impl.common;
-
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
 
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+
 /**
  * Read only resource collection.
  */
-public class SimpleReadableResourceIterator  implements Iterator<Resource> {
+public class SimpleReadableResourceIterator implements Iterator<Resource> {
     private final Iterator<Map<String, Object>> itemsIterator;
     private final ResourceResolver resourceResolver;
     private final String parentPath;
 
-    SimpleReadableResourceIterator(Iterator<Map<String, Object>> itemsIterator, ResourceResolver resourceResolver, String parentPath) {
+    SimpleReadableResourceIterator(
+            Iterator<Map<String, Object>> itemsIterator, ResourceResolver resourceResolver, String parentPath) {
 
         this.itemsIterator = itemsIterator;
         this.resourceResolver = resourceResolver;

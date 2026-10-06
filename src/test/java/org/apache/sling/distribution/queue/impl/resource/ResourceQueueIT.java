@@ -16,11 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.queue.impl.resource;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import javax.inject.Inject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,8 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import javax.inject.Inject;
 
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -51,6 +47,9 @@ import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.util.Filter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 @RunWith(PaxExam.class)
 public class ResourceQueueIT extends DistributionBaseIT {
 
@@ -59,21 +58,21 @@ public class ResourceQueueIT extends DistributionBaseIT {
 
     @Inject
     protected Distributor distributor;
-    
+
     @Inject
     ResourceResolverFactory resolverFactory;
-    
+
     @Filter("(name=" + AGENT_RESOURCE_QUEUE + ")")
     @Inject
     private DistributionAgent agent;
-    
+
     private DistributionQueue queue;
 
     @Before
     public void getQueue() {
         queue = agent.getQueue(QUEUE_NAME);
     }
-    
+
     @After
     public void clear() {
         for (DistributionQueueEntry entry : queue.getEntries(0, -1)) {
@@ -84,15 +83,14 @@ public class ResourceQueueIT extends DistributionBaseIT {
     @SuppressWarnings("deprecation")
     @Test
     public void testExecute() throws LoginException, DistributionException {
-        ResourceResolver resourceResolver =  resolverFactory.getAdministrativeResourceResolver(null);
+        ResourceResolver resourceResolver = resolverFactory.getAdministrativeResourceResolver(null);
 
-        SimpleDistributionRequest request = new SimpleDistributionRequest(DistributionRequestType.ADD, "/content" );
+        SimpleDistributionRequest request = new SimpleDistributionRequest(DistributionRequestType.ADD, "/content");
         DistributionResponse response = agent.execute(resourceResolver, request);
 
         assertTrue(response.isSuccessful());
         assertEquals(1, queue.getStatus().getItemsCount());
     }
-
 
     @Test
     public void testFifo() {
@@ -101,7 +99,7 @@ public class ResourceQueueIT extends DistributionBaseIT {
     }
 
     @Test
-    public void testConcurrentFifo () throws InterruptedException {
+    public void testConcurrentFifo() throws InterruptedException {
         Producer p1 = new Producer(queue, "p1");
         Producer p2 = new Producer(queue, "p2");
         Producer p3 = new Producer(queue, "p3");
@@ -113,8 +111,8 @@ public class ResourceQueueIT extends DistributionBaseIT {
         producerMap.put("p3", p3);
         producerMap.put("p4", p4);
 
-        Consumer c1 = new Consumer(queue, "c1", new String[] { "p1", "p2" });
-        Consumer c2 = new Consumer(queue, "c2", new String[] { "p3", "p4" });
+        Consumer c1 = new Consumer(queue, "c1", new String[] {"p1", "p2"});
+        Consumer c2 = new Consumer(queue, "c2", new String[] {"p3", "p4"});
 
         Map<String, Consumer> consumerMap = new HashMap<String, Consumer>();
         consumerMap.put("c1", c1);
@@ -161,7 +159,7 @@ public class ResourceQueueIT extends DistributionBaseIT {
         }
 
         public void run() {
-            for(int i=0; i<ITERATIONS; i++) {
+            for (int i = 0; i < ITERATIONS; i++) {
 
                 if (i % 1000 == 0) {
                     System.out.println("Producer " + name + " " + i);
@@ -193,13 +191,12 @@ public class ResourceQueueIT extends DistributionBaseIT {
 
         final Map<String, List<String>> removedBySource = new HashMap<String, List<String>>();
 
-
         Consumer(DistributionQueue queue, String name, String[] sources) {
 
             this.queue = queue;
             this.name = name;
             this.sources = sources;
-            for (String source: sources) {
+            for (String source : sources) {
                 removedBySource.put(source, new ArrayList<String>());
             }
         }

@@ -19,6 +19,7 @@
 package org.apache.sling.distribution.util;
 
 import javax.servlet.http.HttpServletRequest;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -47,13 +48,15 @@ public class RequestUtils {
             paths = new String[0];
         }
 
-
         return new SimpleDistributionRequest(DistributionRequestType.fromName(action), deep, paths);
     }
 
-    public static URI appendDistributionRequest(URI uri, DistributionRequest distributionRequest) throws URISyntaxException {
+    public static URI appendDistributionRequest(URI uri, DistributionRequest distributionRequest)
+            throws URISyntaxException {
         URIBuilder uriBuilder = new URIBuilder(uri);
-        uriBuilder.addParameter(DistributionParameter.ACTION.toString(), distributionRequest.getRequestType().name());
+        uriBuilder.addParameter(
+                DistributionParameter.ACTION.toString(),
+                distributionRequest.getRequestType().name());
 
         String[] paths = distributionRequest.getPaths();
 
@@ -65,5 +68,4 @@ public class RequestUtils {
 
         return uriBuilder.build();
     }
-
 }

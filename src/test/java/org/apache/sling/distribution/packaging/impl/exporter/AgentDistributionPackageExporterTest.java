@@ -16,8 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.packaging.impl.exporter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
@@ -25,13 +27,10 @@ import org.apache.sling.distribution.DistributionRequestType;
 import org.apache.sling.distribution.DistributionResponse;
 import org.apache.sling.distribution.SimpleDistributionRequest;
 import org.apache.sling.distribution.agent.spi.DistributionAgent;
-import org.apache.sling.distribution.packaging.impl.DistributionPackageProcessor;
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageBuilderProvider;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageProcessor;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -41,37 +40,36 @@ public class AgentDistributionPackageExporterTest {
 
     @Test
     public void testTestExport() throws Exception {
-        AgentDistributionPackageExporter distributionPackageExporter = new AgentDistributionPackageExporter(null,
-                mock(DistributionAgent.class), mock(DistributionPackageBuilderProvider.class), null, true);
+        AgentDistributionPackageExporter distributionPackageExporter = new AgentDistributionPackageExporter(
+                null, mock(DistributionAgent.class), mock(DistributionPackageBuilderProvider.class), null, true);
         ResourceResolver resourceResolver = mock(ResourceResolver.class);
         String[] args = new String[0]; // vargarg doesn't match and causes compiler warning
         DistributionRequest distributionRequest = new SimpleDistributionRequest(DistributionRequestType.TEST, args);
         final List<DistributionPackage> distributionPackages = new ArrayList<DistributionPackage>();
-        distributionPackageExporter.exportPackages(resourceResolver, distributionRequest, new DistributionPackageProcessor() {
-            @Override
-            public void process(DistributionPackage distributionPackage) {
-                distributionPackages.add(distributionPackage);
-            }
+        distributionPackageExporter.exportPackages(
+                resourceResolver, distributionRequest, new DistributionPackageProcessor() {
+                    @Override
+                    public void process(DistributionPackage distributionPackage) {
+                        distributionPackages.add(distributionPackage);
+                    }
 
-            @Override
-            public List<DistributionResponse> getAllResponses() {
-                return null;
-            }
+                    @Override
+                    public List<DistributionResponse> getAllResponses() {
+                        return null;
+                    }
 
-            @Override
-            public int getPackagesCount() {
-                return 0;
-            }
+                    @Override
+                    public int getPackagesCount() {
+                        return 0;
+                    }
 
-            @Override
-            public long getPackagesSize() {
-                return 0;
-            }
-        });
+                    @Override
+                    public long getPackagesSize() {
+                        return 0;
+                    }
+                });
         assertNotNull(distributionPackages);
 
         assertEquals(1, distributionPackages.size());
-
     }
 }
-

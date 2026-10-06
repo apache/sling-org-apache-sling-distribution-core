@@ -87,6 +87,7 @@ public interface DistributionAgent {
      * @throws DistributionException if any error happens during the execution of the request or if the authentication fails
      */
     @NotNull
-    DistributionResponse execute(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest) throws DistributionException;
-
+    DistributionResponse execute(
+            @NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest)
+            throws DistributionException;
 }

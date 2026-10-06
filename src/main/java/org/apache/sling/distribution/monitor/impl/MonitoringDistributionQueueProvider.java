@@ -19,6 +19,7 @@
 package org.apache.sling.distribution.monitor.impl;
 
 import javax.management.ObjectName;
+
 import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -27,10 +28,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.sling.distribution.common.DistributionException;
-import org.apache.sling.distribution.queue.spi.DistributionQueue;
+import org.apache.sling.distribution.queue.DistributionQueueType;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProcessor;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
-import org.apache.sling.distribution.queue.DistributionQueueType;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
@@ -70,7 +71,8 @@ public class MonitoringDistributionQueueProvider implements DistributionQueuePro
     }
 
     @Override
-    public void enableQueueProcessing(DistributionQueueProcessor queueProcessor, String... queueNames) throws DistributionException {
+    public void enableQueueProcessing(DistributionQueueProcessor queueProcessor, String... queueNames)
+            throws DistributionException {
         wrapped.enableQueueProcessing(queueProcessor, queueNames);
     }
 
@@ -92,22 +94,22 @@ public class MonitoringDistributionQueueProvider implements DistributionQueuePro
                 DistributionQueueMBean mBean = new DistributionQueueMBeanImpl(distributionQueue);
 
                 Dictionary<String, String> mBeanProps = new Hashtable<String, String>();
-                mBeanProps.put("jmx.objectname", "org.apache.sling.distribution:type=queue,id="
-                        + ObjectName.quote(distributionQueue.getName()));
+                mBeanProps.put(
+                        "jmx.objectname",
+                        "org.apache.sling.distribution:type=queue,id=" + ObjectName.quote(distributionQueue.getName()));
 
-                ServiceRegistration<DistributionQueueMBean> mBeanRegistration = context.registerService(DistributionQueueMBean.class, mBean, mBeanProps);
+                ServiceRegistration<DistributionQueueMBean> mBeanRegistration =
+                        context.registerService(DistributionQueueMBean.class, mBean, mBeanProps);
                 mBeans.add(mBeanRegistration);
             }
         } catch (Throwable e) {
             log.error("cannot register queue mbean", e);
         }
-
     }
-    
+
     private static void safeUnregister(ServiceRegistration<?> serviceRegistration) {
         if (serviceRegistration != null) {
             serviceRegistration.unregister();
         }
     }
-
 }

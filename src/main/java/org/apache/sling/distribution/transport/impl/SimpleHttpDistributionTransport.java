@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.Map;
 import java.util.UUID;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpHost;
@@ -94,28 +95,35 @@ public class SimpleHttpDistributionTransport implements DistributionTransport {
     private final HttpConfiguration httpConfiguration;
     private final String contextKeyExecutor;
 
-    public SimpleHttpDistributionTransport(DefaultDistributionLog log, DistributionEndpoint distributionEndpoint,
-                                           DistributionPackageBuilder packageBuilder,
-                                           DistributionTransportSecretProvider secretProvider,
-                                           HttpConfiguration httpConfiguration) {
+    public SimpleHttpDistributionTransport(
+            DefaultDistributionLog log,
+            DistributionEndpoint distributionEndpoint,
+            DistributionPackageBuilder packageBuilder,
+            DistributionTransportSecretProvider secretProvider,
+            HttpConfiguration httpConfiguration) {
         this.log = log;
 
         this.distributionEndpoint = distributionEndpoint;
         this.packageBuilder = packageBuilder;
         this.secretProvider = secretProvider;
         this.httpConfiguration = httpConfiguration;
-        this.contextKeyExecutor = EXECUTOR_CONTEXT_KEY_PREFIX + "_" + getHostAndPort(distributionEndpoint.getUri()) + "_" + UUID.randomUUID();
+        this.contextKeyExecutor = EXECUTOR_CONTEXT_KEY_PREFIX + "_" + getHostAndPort(distributionEndpoint.getUri())
+                + "_" + UUID.randomUUID();
     }
 
-    public void deliverPackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionPackage distributionPackage,
-                               @NotNull DistributionTransportContext distributionContext) throws DistributionException {
+    public void deliverPackage(
+            @NotNull ResourceResolver resourceResolver,
+            @NotNull DistributionPackage distributionPackage,
+            @NotNull DistributionTransportContext distributionContext)
+            throws DistributionException {
         String hostAndPort = getHostAndPort(distributionEndpoint.getUri());
 
         DistributionPackageInfo info = distributionPackage.getInfo();
         URI packageOrigin = info.get(PACKAGE_INFO_PROPERTY_ORIGIN_URI, URI.class);
 
         if (packageOrigin != null && hostAndPort.equals(getHostAndPort(packageOrigin))) {
-            log.debug("skipping distribution of package {} to same origin {}", distributionPackage.getId(), hostAndPort);
+            log.debug(
+                    "skipping distribution of package {} to same origin {}", distributionPackage.getId(), hostAndPort);
         } else {
 
             try {
@@ -135,7 +143,9 @@ public class SimpleHttpDistributionTransport implements DistributionTransport {
                 if (distributionPackage instanceof AbstractDistributionPackage) {
                     AbstractDistributionPackage adb = (AbstractDistributionPackage) distributionPackage;
                     if (adb.getDigestAlgorithm() != null && adb.getDigestMessage() != null) {
-                        req.addHeader(DIGEST_HEADER, String.format("%s=%s", adb.getDigestAlgorithm(), adb.getDigestMessage()));
+                        req.addHeader(
+                                DIGEST_HEADER,
+                                String.format("%s=%s", adb.getDigestAlgorithm(), adb.getDigestMessage()));
                     }
                 }
 
@@ -152,28 +162,37 @@ public class SimpleHttpDistributionTransport implements DistributionTransport {
                     IOUtils.closeQuietly(inputStream);
                 }
 
-                log.debug("delivered packageId={}, endpoint={}", distributionPackage.getId(), distributionEndpoint.getUri());
+                log.debug(
+                        "delivered packageId={}, endpoint={}",
+                        distributionPackage.getId(),
+                        distributionEndpoint.getUri());
             } catch (HttpHostConnectException e) {
-                throw new RecoverableDistributionException("endpoint not available " + distributionEndpoint.getUri(), e);
+                throw new RecoverableDistributionException(
+                        "endpoint not available " + distributionEndpoint.getUri(), e);
             } catch (HttpResponseException e) {
                 int statusCode = e.getStatusCode();
                 if (statusCode == 404 || statusCode == 401) {
-                    throw new RecoverableDistributionException("not enough rights for " + distributionEndpoint.getUri(), e);
+                    throw new RecoverableDistributionException(
+                            "not enough rights for " + distributionEndpoint.getUri(), e);
                 }
                 throw new DistributionException(e);
             } catch (Exception e) {
                 throw new DistributionException(e);
-
             }
         }
     }
 
     @Nullable
-    public RemoteDistributionPackage retrievePackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest, @NotNull DistributionTransportContext distributionContext) throws DistributionException {
+    public RemoteDistributionPackage retrievePackage(
+            @NotNull ResourceResolver resourceResolver,
+            @NotNull DistributionRequest distributionRequest,
+            @NotNull DistributionTransportContext distributionContext)
+            throws DistributionException {
         log.debug("pulling from {}", distributionEndpoint.getUri());
 
         try {
-            URI distributionURI = RequestUtils.appendDistributionRequest(distributionEndpoint.getUri(), distributionRequest);
+            URI distributionURI =
+                    RequestUtils.appendDistributionRequest(distributionEndpoint.getUri(), distributionRequest);
 
             Executor executor = getExecutor(distributionContext);
 
@@ -206,7 +225,6 @@ public class SimpleHttpDistributionTransport implements DistributionTransport {
         return uri.getHost() + ":" + uri.getPort();
     }
 
-
     private Executor getExecutor(DistributionTransportContext distributionContext) {
         Executor executor = distributionContext.get(contextKeyExecutor, Executor.class);
         if (executor == null) {
@@ -226,7 +244,7 @@ public class SimpleHttpDistributionTransport implements DistributionTransport {
             HttpHost host = new HttpHost(uri.getHost(), uri.getPort(), uri.getScheme());
             log.debug("authenticate user={}, endpoint={}", username, uri);
             return Executor.newInstance(client).auth(host, username, password).authPreemptive(host);
-        } else { 
+        } else {
             return Executor.newInstance(client);
         }
     }
@@ -242,7 +260,7 @@ public class SimpleHttpDistributionTransport implements DistributionTransport {
         }
         return null;
     }
-    
+
     private Map<String, String> getCredentialsMap() {
         DistributionTransportSecret secret = secretProvider.getSecret(distributionEndpoint.getUri());
         Map<String, String> credentialsMap = null;
@@ -251,5 +269,4 @@ public class SimpleHttpDistributionTransport implements DistributionTransport {
         }
         return credentialsMap;
     }
-
 }

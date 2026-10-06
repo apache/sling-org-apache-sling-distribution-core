@@ -36,12 +36,11 @@ public class SimpleDistributionAgentAuthenticationInfoTest {
         String agentService = "dumb";
         ResourceResolverFactory resourceResolverFactory = mock(ResourceResolverFactory.class);
         String subServiceName = "ssn";
-        SimpleDistributionAgentAuthenticationInfo authenticationInfo = new SimpleDistributionAgentAuthenticationInfo(slingRepository,
-                agentService, resourceResolverFactory, subServiceName);
+        SimpleDistributionAgentAuthenticationInfo authenticationInfo = new SimpleDistributionAgentAuthenticationInfo(
+                slingRepository, agentService, resourceResolverFactory, subServiceName);
         assertNotNull(authenticationInfo.getAgentService());
         assertNotNull(authenticationInfo.getResourceResolverFactory());
         assertNotNull(authenticationInfo.getSlingRepository());
         assertNotNull(authenticationInfo.getSubServiceName());
     }
-
 }

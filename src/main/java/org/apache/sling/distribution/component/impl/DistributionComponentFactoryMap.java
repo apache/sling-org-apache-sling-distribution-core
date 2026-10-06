@@ -18,18 +18,6 @@
  */
 package org.apache.sling.distribution.component.impl;
 
-
-import static java.lang.String.format;
-import static org.apache.sling.distribution.component.impl.DistributionComponentKind.AGENT;
-import static org.apache.sling.distribution.component.impl.DistributionComponentKind.EXPORTER;
-import static org.apache.sling.distribution.component.impl.DistributionComponentKind.IMPORTER;
-import static org.apache.sling.distribution.component.impl.DistributionComponentKind.PACKAGE_BUILDER;
-import static org.apache.sling.distribution.component.impl.DistributionComponentKind.QUEUE_PROVIDER;
-import static org.apache.sling.distribution.component.impl.DistributionComponentKind.QUEUE_STRATEGY;
-import static org.apache.sling.distribution.component.impl.DistributionComponentKind.REQUEST_AUTHORIZATION;
-import static org.apache.sling.distribution.component.impl.DistributionComponentKind.TRANSPORT_SECRET_PROVIDER;
-import static org.apache.sling.distribution.component.impl.DistributionComponentKind.TRIGGER;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -63,40 +51,50 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.lang.String.format;
+import static org.apache.sling.distribution.component.impl.DistributionComponentKind.AGENT;
+import static org.apache.sling.distribution.component.impl.DistributionComponentKind.EXPORTER;
+import static org.apache.sling.distribution.component.impl.DistributionComponentKind.IMPORTER;
+import static org.apache.sling.distribution.component.impl.DistributionComponentKind.PACKAGE_BUILDER;
+import static org.apache.sling.distribution.component.impl.DistributionComponentKind.QUEUE_PROVIDER;
+import static org.apache.sling.distribution.component.impl.DistributionComponentKind.QUEUE_STRATEGY;
+import static org.apache.sling.distribution.component.impl.DistributionComponentKind.REQUEST_AUTHORIZATION;
+import static org.apache.sling.distribution.component.impl.DistributionComponentKind.TRANSPORT_SECRET_PROVIDER;
+import static org.apache.sling.distribution.component.impl.DistributionComponentKind.TRIGGER;
 
-@Component(service=DistributionComponentFactoryMap.class)
-@Designate(ocd=DistributionComponentFactoryMap.Config.class)
+@Component(service = DistributionComponentFactoryMap.class)
+@Designate(ocd = DistributionComponentFactoryMap.Config.class)
 public class DistributionComponentFactoryMap {
-    
+
     // Note: Before converting to OSGI annotations there were properties, but
     // not metatype(s)!
-    
+
     @ObjectClassDefinition()
     public @interface Config {
         @AttributeDefinition()
         String[] mapping_agent();
-        
+
         @AttributeDefinition()
         String[] mapping_importer();
-        
+
         @AttributeDefinition()
         String[] mapping_exporter();
-        
+
         @AttributeDefinition()
         String[] mapping_queueProvider();
-        
-        @AttributeDefinition() 
+
+        @AttributeDefinition()
         String[] mapping_queueStrategy();
-        
+
         @AttributeDefinition()
         String[] mapping_transportSecretProvider();
-        
+
         @AttributeDefinition()
         String[] mapping_packageBuilder();
-        
+
         @AttributeDefinition()
         String[] mapping_requestAuthorization();
-        
+
         @AttributeDefinition()
         String[] mapping_trigger();
     }
@@ -104,52 +102,60 @@ public class DistributionComponentFactoryMap {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private static final String[] MAPPING_AGENT_DEFAULT = {
-            format("simple:%s", SimpleDistributionAgentFactory.class.getName()),
-            format("sync:%s", SyncDistributionAgentFactory.class.getName()),
-            format("forward:%s", ForwardDistributionAgentFactory.class.getName()),
-            format("reverse:%s", ReverseDistributionAgentFactory.class.getName()),
-            format("queue:%s", QueueDistributionAgentFactory.class.getName()) };
+        format("simple:%s", SimpleDistributionAgentFactory.class.getName()),
+        format("sync:%s", SyncDistributionAgentFactory.class.getName()),
+        format("forward:%s", ForwardDistributionAgentFactory.class.getName()),
+        format("reverse:%s", ReverseDistributionAgentFactory.class.getName()),
+        format("queue:%s", QueueDistributionAgentFactory.class.getName())
+    };
 
     private static final String[] MAPPING_IMPORTER_DEFAULT = {
-            format("local:%s", LocalDistributionPackageImporterFactory.class.getName()),
-            format("remote:%s", RemoteDistributionPackageImporterFactory.class.getName()) };
+        format("local:%s", LocalDistributionPackageImporterFactory.class.getName()),
+        format("remote:%s", RemoteDistributionPackageImporterFactory.class.getName())
+    };
 
     private static final String[] MAPPING_EXPORTER_DEFAULT = {
-            format("local:%s", LocalDistributionPackageExporterFactory.class.getName()),
-            format("remote:%s", RemoteDistributionPackageExporterFactory.class.getName()),
-            format("agent:%s", AgentDistributionPackageExporterFactory.class.getName()) };
+        format("local:%s", LocalDistributionPackageExporterFactory.class.getName()),
+        format("remote:%s", RemoteDistributionPackageExporterFactory.class.getName()),
+        format("agent:%s", AgentDistributionPackageExporterFactory.class.getName())
+    };
 
     private static final String[] MAPPING_QUEUE_PROVIDER_DEFAULT = {
-            format("simple:%s", SimpleDistributionAgentFactory.class.getName()),
-            format("sync:%s", SyncDistributionAgentFactory.class.getName()),
-            format("forward:%s", ForwardDistributionAgentFactory.class.getName()),
-            format("reverse:%s", ReverseDistributionAgentFactory.class.getName()),
-            format("queue:%s", QueueDistributionAgentFactory.class.getName()) };
+        format("simple:%s", SimpleDistributionAgentFactory.class.getName()),
+        format("sync:%s", SyncDistributionAgentFactory.class.getName()),
+        format("forward:%s", ForwardDistributionAgentFactory.class.getName()),
+        format("reverse:%s", ReverseDistributionAgentFactory.class.getName()),
+        format("queue:%s", QueueDistributionAgentFactory.class.getName())
+    };
 
     private static final String[] MAPPING_QUEUE_STRATEGY_DEFAULT = {
-            format("simple:%s", SimpleDistributionAgentFactory.class.getName()),
-            format("sync:%s", SyncDistributionAgentFactory.class.getName()),
-            format("forward:%s", ForwardDistributionAgentFactory.class.getName()),
-            format("reverse:%s", ReverseDistributionAgentFactory.class.getName()),
-            format("queue:%s", QueueDistributionAgentFactory.class.getName()) };
+        format("simple:%s", SimpleDistributionAgentFactory.class.getName()),
+        format("sync:%s", SyncDistributionAgentFactory.class.getName()),
+        format("forward:%s", ForwardDistributionAgentFactory.class.getName()),
+        format("reverse:%s", ReverseDistributionAgentFactory.class.getName()),
+        format("queue:%s", QueueDistributionAgentFactory.class.getName())
+    };
 
     private static final String[] MAPPING_TRANSPORT_SECRET_PROVIDER_DEFAULT = {
-            format("user:%s", UserCredentialsDistributionTransportSecretProvider.class.getName()) };
+        format("user:%s", UserCredentialsDistributionTransportSecretProvider.class.getName())
+    };
 
     private static final String[] MAPPING_PACKAGE_BUILDER_DEFAULT = {
-            format("filevlt:%s", VaultDistributionPackageBuilderFactory.class.getName()),
-            format("jcrvlt:%s", VaultDistributionPackageBuilderFactory.class.getName()) };
+        format("filevlt:%s", VaultDistributionPackageBuilderFactory.class.getName()),
+        format("jcrvlt:%s", VaultDistributionPackageBuilderFactory.class.getName())
+    };
 
     private static final String[] MAPPING_REQUEST_AUTHORIZATION_DEFAULT = {
-            format("privilege:%s", PrivilegeDistributionRequestAuthorizationStrategy.class.getName()) };
+        format("privilege:%s", PrivilegeDistributionRequestAuthorizationStrategy.class.getName())
+    };
 
     private static final String[] MAPPING_TRIGGER_DEFAULT = {
-            format("resourceEvent:%s", ResourceEventDistributionTriggerFactory.class.getName()),
-            format("scheduledEvent:%s", ScheduledDistributionTriggerFactory.class.getName()),
-            format("distributionEvent:%s", DistributionEventDistributeDistributionTriggerFactory.class.getName()),
-            format("persistedJcrEvent:%s", PersistedJcrEventDistributionTriggerFactory.class.getName()),
-            format("jcrEvent:%s", JcrEventDistributionTriggerFactory.class.getName()) };
-
+        format("resourceEvent:%s", ResourceEventDistributionTriggerFactory.class.getName()),
+        format("scheduledEvent:%s", ScheduledDistributionTriggerFactory.class.getName()),
+        format("distributionEvent:%s", DistributionEventDistributeDistributionTriggerFactory.class.getName()),
+        format("persistedJcrEvent:%s", PersistedJcrEventDistributionTriggerFactory.class.getName()),
+        format("jcrEvent:%s", JcrEventDistributionTriggerFactory.class.getName())
+    };
 
     private final Map<DistributionComponentKind, Map<String, String>> mapping =
             new HashMap<DistributionComponentKind, Map<String, String>>();
@@ -161,14 +167,18 @@ public class DistributionComponentFactoryMap {
         mapping.put(EXPORTER, parse(conf.mapping_exporter(), MAPPING_EXPORTER_DEFAULT));
         mapping.put(QUEUE_PROVIDER, parse(conf.mapping_queueProvider(), MAPPING_QUEUE_PROVIDER_DEFAULT));
         mapping.put(QUEUE_STRATEGY, parse(conf.mapping_queueStrategy(), MAPPING_QUEUE_STRATEGY_DEFAULT));
-        mapping.put(TRANSPORT_SECRET_PROVIDER, parse(conf.mapping_transportSecretProvider(), MAPPING_TRANSPORT_SECRET_PROVIDER_DEFAULT));
+        mapping.put(
+                TRANSPORT_SECRET_PROVIDER,
+                parse(conf.mapping_transportSecretProvider(), MAPPING_TRANSPORT_SECRET_PROVIDER_DEFAULT));
         mapping.put(PACKAGE_BUILDER, parse(conf.mapping_packageBuilder(), MAPPING_PACKAGE_BUILDER_DEFAULT));
-        mapping.put(REQUEST_AUTHORIZATION, parse(conf.mapping_requestAuthorization(), MAPPING_REQUEST_AUTHORIZATION_DEFAULT));
+        mapping.put(
+                REQUEST_AUTHORIZATION,
+                parse(conf.mapping_requestAuthorization(), MAPPING_REQUEST_AUTHORIZATION_DEFAULT));
         mapping.put(TRIGGER, parse(conf.mapping_trigger(), MAPPING_TRIGGER_DEFAULT));
     }
 
     String getType(DistributionComponentKind kind, @NotNull String factoryPid) {
-        Map<String,String> entries = getEntries(kind);
+        Map<String, String> entries = getEntries(kind);
         for (Map.Entry<String, String> entry : entries.entrySet()) {
             if (factoryPid.equals(entry.getValue())) {
                 return entry.getKey();
@@ -187,8 +197,8 @@ public class DistributionComponentFactoryMap {
 
     //
 
-    private Map<String,String> parse(@Nullable String[] mappings, @NotNull String[] defaultMappings) {
-        Map<String,String> parsed = new HashMap<String, String>();
+    private Map<String, String> parse(@Nullable String[] mappings, @NotNull String[] defaultMappings) {
+        Map<String, String> parsed = new HashMap<String, String>();
         parsed.putAll(parse(defaultMappings));
         if (mappings != null) {
             parsed.putAll(parse(mappings));
@@ -196,7 +206,7 @@ public class DistributionComponentFactoryMap {
         return parsed;
     }
 
-    private Map<String,String> parse(@NotNull String[] mappings) {
+    private Map<String, String> parse(@NotNull String[] mappings) {
         Map<String, String> map = new HashMap<String, String>();
         for (String mapping : mappings) {
             String[] chunks = mapping.split(":");
@@ -209,8 +219,8 @@ public class DistributionComponentFactoryMap {
         return map;
     }
 
-    private Map<String,String> getEntries(DistributionComponentKind kind) {
-        Map<String,String> entries = mapping.get(kind);
+    private Map<String, String> getEntries(DistributionComponentKind kind) {
+        Map<String, String> entries = mapping.get(kind);
         if (entries == null) {
             throw new IllegalArgumentException(format("No mapping for components kind %s", kind));
         }

@@ -35,7 +35,7 @@ public class ImportSettings {
     private final IdConflictPolicy idConflictPolicy;
 
     /**
-     * 
+     *
      * @param importMode The serializer import mode
      * @param aclHandling The serializer ACL handling mode
      * @param cugHandling The serializer CUG handling mode
@@ -46,8 +46,14 @@ public class ImportSettings {
      *               					     {@code false} otherwise
      * @param idConflictPolicy The policy to handle conflicts
      */
-    public ImportSettings(ImportMode importMode, AccessControlHandling aclHandling, AccessControlHandling cugHandling, int autosaveThreshold,
-                          boolean isStrict, boolean overwritePrimaryTypesOfFolders, IdConflictPolicy idConflictPolicy) {
+    public ImportSettings(
+            ImportMode importMode,
+            AccessControlHandling aclHandling,
+            AccessControlHandling cugHandling,
+            int autosaveThreshold,
+            boolean isStrict,
+            boolean overwritePrimaryTypesOfFolders,
+            IdConflictPolicy idConflictPolicy) {
         this.importMode = importMode;
         this.aclHandling = aclHandling;
         this.cugHandling = cugHandling;
@@ -57,17 +63,31 @@ public class ImportSettings {
         this.idConflictPolicy = idConflictPolicy;
     }
 
-    public ImportMode getImportMode() { return importMode; }
+    public ImportMode getImportMode() {
+        return importMode;
+    }
 
-    public AccessControlHandling getAclHandling() { return aclHandling; }
+    public AccessControlHandling getAclHandling() {
+        return aclHandling;
+    }
 
-    public AccessControlHandling getCugHandling() { return cugHandling; }
+    public AccessControlHandling getCugHandling() {
+        return cugHandling;
+    }
 
-    public int getAutosaveThreshold() { return autosaveThreshold; }
+    public int getAutosaveThreshold() {
+        return autosaveThreshold;
+    }
 
-    public boolean isStrict() { return isStrict; }
+    public boolean isStrict() {
+        return isStrict;
+    }
 
-    public boolean isOverwritePrimaryTypesOfFolders() { return overwritePrimaryTypesOfFolders; }
+    public boolean isOverwritePrimaryTypesOfFolders() {
+        return overwritePrimaryTypesOfFolders;
+    }
 
-    public IdConflictPolicy getIdConflictPolicy() { return idConflictPolicy; }
+    public IdConflictPolicy getIdConflictPolicy() {
+        return idConflictPolicy;
+    }
 }

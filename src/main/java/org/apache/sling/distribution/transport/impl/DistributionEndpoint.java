@@ -57,7 +57,6 @@ public class DistributionEndpoint {
         DistributionEndpoint that = (DistributionEndpoint) o;
 
         return uri.equals(that.uri);
-
     }
 
     @Override

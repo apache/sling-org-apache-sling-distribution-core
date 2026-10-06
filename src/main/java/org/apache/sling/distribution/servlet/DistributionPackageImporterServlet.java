@@ -18,10 +18,8 @@
  */
 package org.apache.sling.distribution.servlet;
 
-import static java.lang.String.format;
-import static javax.servlet.http.HttpServletResponse.*;
-import static org.apache.sling.distribution.util.impl.DigestUtils.openDigestInputStream;
-import static org.apache.sling.distribution.util.impl.DigestUtils.readDigestMessage;
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,26 +29,28 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
-import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
 import org.apache.sling.distribution.resources.DistributionResourceTypes;
 import org.apache.sling.servlets.annotations.SlingServletResourceTypes;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.lang.String.format;
+import static javax.servlet.http.HttpServletResponse.*;
+import static org.apache.sling.distribution.util.impl.DigestUtils.openDigestInputStream;
+import static org.apache.sling.distribution.util.impl.DigestUtils.readDigestMessage;
+
 /**
  * Servlet to handle reception of distribution content.
  */
 @SuppressWarnings("serial")
-@Component(service=Servlet.class)
+@Component(service = Servlet.class)
 @SlingServletResourceTypes(
         methods = {"POST"},
         resourceTypes = {DistributionResourceTypes.IMPORTER_RESOURCE_TYPE})
@@ -70,9 +70,8 @@ public class DistributionPackageImporterServlet extends SlingAllMethodsServlet {
     protected void doPost(SlingHttpServletRequest request, SlingHttpServletResponse response)
             throws ServletException, IOException {
 
-        DistributionPackageImporter distributionPackageImporter = request
-                .getResource()
-                .adaptTo(DistributionPackageImporter.class);
+        DistributionPackageImporter distributionPackageImporter =
+                request.getResource().adaptTo(DistributionPackageImporter.class);
 
         String digestAlgorithm = null;
         String digestMessage = null;
@@ -85,7 +84,10 @@ public class DistributionPackageImporterServlet extends SlingAllMethodsServlet {
                 digestAlgorithm = matcher.group(1);
                 digestMessage = matcher.group(2);
             } else {
-                log.debug("Digest header {} not supported, it doesn't match with expected pattern {}", digestHeader, digestHeaderRegex.pattern());
+                log.debug(
+                        "Digest header {} not supported, it doesn't match with expected pattern {}",
+                        digestHeader,
+                        digestHeaderRegex.pattern());
             }
         }
 
@@ -105,20 +107,24 @@ public class DistributionPackageImporterServlet extends SlingAllMethodsServlet {
                 throw new Exception("manually forced error");
             }
 
-            DistributionPackageInfo distributionPackageInfo = distributionPackageImporter.importStream(resourceResolver, stream);
+            DistributionPackageInfo distributionPackageInfo =
+                    distributionPackageImporter.importStream(resourceResolver, stream);
 
             long end = System.currentTimeMillis();
 
             if (isNotEmpty(digestAlgorithm) && isNotEmpty(digestMessage)) {
                 String receivedDigestMessage = readDigestMessage((DigestInputStream) stream);
                 if (!digestMessage.equalsIgnoreCase(receivedDigestMessage)) {
-                    log.error("Error during distribution import: received distribution package is corrupted, expected [{}] but received [{}]",
-                            digestMessage, receivedDigestMessage);
+                    log.error(
+                            "Error during distribution import: received distribution package is corrupted, expected [{}] but received [{}]",
+                            digestMessage,
+                            receivedDigestMessage);
                     Map<String, String> kv = new HashMap<String, String>();
                     kv.put("digestAlgorithm", digestAlgorithm);
                     kv.put("expected", digestMessage);
                     kv.put("received", receivedDigestMessage);
-                    ServletJsonUtils.writeJson(response, SC_BAD_REQUEST, "Received distribution package is corrupted", kv);
+                    ServletJsonUtils.writeJson(
+                            response, SC_BAD_REQUEST, "Received distribution package is corrupted", kv);
                     return;
                 }
             }
@@ -127,9 +133,8 @@ public class DistributionPackageImporterServlet extends SlingAllMethodsServlet {
             ServletJsonUtils.writeJson(response, SC_OK, "package imported successfully", null);
 
         } catch (final Throwable e) {
-            String msg = format("an unexpected error has occurred during distribution import. " +
-                            "Error: %s",
-                    e.getMessage());
+            String msg = format(
+                    "an unexpected error has occurred during distribution import. " + "Error: %s", e.getMessage());
             log.error(msg, e);
             ServletJsonUtils.writeJson(response, SC_INTERNAL_SERVER_ERROR, msg, null);
         } finally {
@@ -141,5 +146,4 @@ public class DistributionPackageImporterServlet extends SlingAllMethodsServlet {
     private static boolean isNotEmpty(String s) {
         return s != null && !s.isEmpty();
     }
-
 }

@@ -18,11 +18,11 @@
  */
 package org.apache.sling.distribution.queue.impl.simple;
 
-import org.apache.sling.distribution.queue.spi.DistributionQueue;
-
 import java.util.function.Consumer;
+
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProcessor;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,14 +36,13 @@ public class SimpleDistributionQueueProcessor implements Runnable {
     private final DistributionQueueProcessor queueProcessor;
     private Consumer<DistributionQueueEntry> recordProcessingAttempt;
 
-    public SimpleDistributionQueueProcessor(DistributionQueue queue,
-                                            DistributionQueueProcessor queueProcessor,
-                                            Consumer<DistributionQueueEntry> processingAttemptRecorder) {
+    public SimpleDistributionQueueProcessor(
+            DistributionQueue queue,
+            DistributionQueueProcessor queueProcessor,
+            Consumer<DistributionQueueEntry> processingAttemptRecorder) {
         this.queue = queue;
         this.queueProcessor = queueProcessor;
-        this.recordProcessingAttempt = (null != processingAttemptRecorder)?
-                processingAttemptRecorder:
-                (entry) -> {};
+        this.recordProcessingAttempt = (null != processingAttemptRecorder) ? processingAttemptRecorder : (entry) -> {};
     }
 
     public void run() {
@@ -51,9 +50,7 @@ public class SimpleDistributionQueueProcessor implements Runnable {
             DistributionQueueEntry entry;
             while ((entry = queue.getHead()) != null) {
                 boolean wasProcessed = queueProcessor.process(queue.getName(), entry);
-                boolean wasRemoved = wasProcessed?
-                        (queue.remove(entry.getId()) != null):
-                            false;
+                boolean wasRemoved = wasProcessed ? (queue.remove(entry.getId()) != null) : false;
                 if (wasProcessed && wasRemoved) {
                     log.debug("item {} processed and removed from the queue", entry.getItem());
                 } else {

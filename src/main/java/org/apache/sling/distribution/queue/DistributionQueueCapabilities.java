@@ -37,6 +37,4 @@ public final class DistributionQueueCapabilities {
      * Indicates that the queue supports adding entries.
      */
     public static final String APPENDABLE = "appendable";
-
-
 }

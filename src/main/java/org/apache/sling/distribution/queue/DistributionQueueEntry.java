@@ -30,7 +30,8 @@ public final class DistributionQueueEntry {
     private final DistributionQueueItem item;
     private final DistributionQueueItemStatus status;
 
-    public DistributionQueueEntry(String entryId, @NotNull DistributionQueueItem item, @NotNull DistributionQueueItemStatus status) {
+    public DistributionQueueEntry(
+            String entryId, @NotNull DistributionQueueItem item, @NotNull DistributionQueueItemStatus status) {
         this.entryId = entryId;
         this.item = item;
         this.status = status;

@@ -16,12 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.packaging.impl;
-
 
 import java.io.IOException;
 import java.io.InputStream;
+
 import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.DistributionPackageInfo;
 import org.jetbrains.annotations.NotNull;
@@ -30,7 +29,6 @@ import org.jetbrains.annotations.NotNull;
  * Package wrapper meant to be extended and provide just simple overridden methods.
  */
 public class DistributionPackageWrapper implements DistributionPackage {
-
 
     private final DistributionPackage wrappedPackage;
 
@@ -75,5 +73,4 @@ public class DistributionPackageWrapper implements DistributionPackage {
     public DistributionPackage getWrappedPackage() {
         return wrappedPackage;
     }
-
 }

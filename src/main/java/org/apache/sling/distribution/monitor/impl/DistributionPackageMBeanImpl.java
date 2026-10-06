@@ -31,9 +31,7 @@ public final class DistributionPackageMBeanImpl implements DistributionPackageMB
 
     private final long processingTime;
 
-    public DistributionPackageMBeanImpl(DistributionPackage distributionPackage,
-                                        String type,
-                                        long processingTime) {
+    public DistributionPackageMBeanImpl(DistributionPackage distributionPackage, String type, long processingTime) {
         this.distributionPackage = distributionPackage;
         this.type = type;
         this.processingTime = processingTime;
@@ -68,5 +66,4 @@ public final class DistributionPackageMBeanImpl implements DistributionPackageMB
     public long getProcessingTime() {
         return processingTime;
     }
-
 }

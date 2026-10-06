@@ -31,8 +31,8 @@ import org.apache.sling.distribution.queue.impl.DistributionQueueDispatchingStra
 import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
@@ -42,36 +42,36 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
  */
 @Component(
         configurationPolicy = ConfigurationPolicy.REQUIRE,
-        service=DistributionPackageExporter.class,
-        property = {
-                "webconsole.configurationFactory.nameHint=Exporter name: {name}"
-        })
-@Designate(ocd=AgentDistributionPackageExporterFactory.Config.class, factory = true)
+        service = DistributionPackageExporter.class,
+        property = {"webconsole.configurationFactory.nameHint=Exporter name: {name}"})
+@Designate(ocd = AgentDistributionPackageExporterFactory.Config.class, factory = true)
 public class AgentDistributionPackageExporterFactory implements DistributionPackageExporter {
-    
-    @ObjectClassDefinition(name="Apache Sling Distribution Exporter - Agent Based Package Exporter")
+
+    @ObjectClassDefinition(name = "Apache Sling Distribution Exporter - Agent Based Package Exporter")
     public @interface Config {
-        @AttributeDefinition(name="Name", description = "The name of the exporter.")
+        @AttributeDefinition(name = "Name", description = "The name of the exporter.")
         String name();
-        @AttributeDefinition(name="Queue", description = "The name of the queue from which the packages should be exported.")
+
+        @AttributeDefinition(
+                name = "Queue",
+                description = "The name of the queue from which the packages should be exported.")
         String queue() default DistributionQueueDispatchingStrategy.DEFAULT_QUEUE_NAME;
-        
-        @AttributeDefinition(name="Drop invalid queue items", description = "Remove invalid items from the queue.")
+
+        @AttributeDefinition(name = "Drop invalid queue items", description = "Remove invalid items from the queue.")
         boolean drop_invalid_items() default false;
-        
-        @AttributeDefinition(name = "The target reference for the DistributionAgent that will be used to export packages.")
+
+        @AttributeDefinition(
+                name = "The target reference for the DistributionAgent that will be used to export packages.")
         String agent_target();
     }
 
     @Reference(name = "agent")
     private DistributionAgent agent;
 
-
     @Reference
     private DistributionPackageBuilderProvider packageBuilderProvider;
 
     private DistributionPackageExporter packageExporter;
-
 
     @Activate
     public void activate(Config conf) {
@@ -83,16 +83,21 @@ public class AgentDistributionPackageExporterFactory implements DistributionPack
         String name = conf.name();
         boolean dropInvalidItems = conf.drop_invalid_items();
 
-
-        packageExporter = new AgentDistributionPackageExporter(queueName, agent, packageBuilderProvider, name, dropInvalidItems);
+        packageExporter =
+                new AgentDistributionPackageExporter(queueName, agent, packageBuilderProvider, name, dropInvalidItems);
     }
 
-    public void exportPackages(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest, @NotNull DistributionPackageProcessor packageProcessor) throws DistributionException {
+    public void exportPackages(
+            @NotNull ResourceResolver resourceResolver,
+            @NotNull DistributionRequest distributionRequest,
+            @NotNull DistributionPackageProcessor packageProcessor)
+            throws DistributionException {
         packageExporter.exportPackages(resourceResolver, distributionRequest, packageProcessor);
     }
 
-    public DistributionPackage getPackage(@NotNull ResourceResolver resourceResolver, @NotNull String distributionPackageId) throws DistributionException {
+    public DistributionPackage getPackage(
+            @NotNull ResourceResolver resourceResolver, @NotNull String distributionPackageId)
+            throws DistributionException {
         return packageExporter.getPackage(resourceResolver, distributionPackageId);
     }
-
 }

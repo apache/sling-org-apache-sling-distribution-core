@@ -18,6 +18,11 @@
  */
 package org.apache.sling.distribution.agent.impl;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequestState;
 import org.apache.sling.distribution.DistributionResponse;
@@ -28,11 +33,6 @@ import org.apache.sling.distribution.packaging.DistributionPackage;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageImporter;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageProcessor;
 import org.apache.sling.distribution.util.impl.DistributionUtils;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * {@link DistributionPackageProcessor} that directly imports {@link DistributionPackage}s (skipping queues).
@@ -53,10 +53,12 @@ class ImportingDistributionPackageProcessor implements DistributionPackageProces
     private final AtomicLong packagesSize = new AtomicLong();
     private final List<DistributionResponse> allResponses = new LinkedList<DistributionResponse>();
 
-
-    public ImportingDistributionPackageProcessor(DistributionPackageImporter distributionPackageImporter,
-                                                 SimpleDistributionAgentAuthenticationInfo authenticationInfo,
-                                                 String callingUser, String requestId, DefaultDistributionLog log) {
+    public ImportingDistributionPackageProcessor(
+            DistributionPackageImporter distributionPackageImporter,
+            SimpleDistributionAgentAuthenticationInfo authenticationInfo,
+            String callingUser,
+            String requestId,
+            DefaultDistributionLog log) {
         this.distributionPackageImporter = distributionPackageImporter;
         this.authenticationInfo = authenticationInfo;
         this.callingUser = callingUser;
@@ -70,8 +72,11 @@ class ImportingDistributionPackageProcessor implements DistributionPackageProces
         ResourceResolver agentResourceResolver = null;
         try {
             // set up original calling RR
-            agentResourceResolver = DistributionUtils.getResourceResolver(callingUser, authenticationInfo.getAgentService(),
-                    authenticationInfo.getSlingRepository(), authenticationInfo.getSubServiceName(),
+            agentResourceResolver = DistributionUtils.getResourceResolver(
+                    callingUser,
+                    authenticationInfo.getAgentService(),
+                    authenticationInfo.getSlingRepository(),
+                    authenticationInfo.getSubServiceName(),
                     authenticationInfo.getResourceResolverFactory());
 
             // perform importing
@@ -81,12 +86,18 @@ class ImportingDistributionPackageProcessor implements DistributionPackageProces
             packagesSize.addAndGet(distributionPackage.getSize());
             packagesCount.incrementAndGet();
 
-            DistributionResponse response = new SimpleDistributionResponse(DistributionRequestState.ACCEPTED, "package imported");
+            DistributionResponse response =
+                    new SimpleDistributionResponse(DistributionRequestState.ACCEPTED, "package imported");
             allResponses.add(response);
 
             final long endTime = System.currentTimeMillis();
-            log.debug("PACKAGE-IMPORTED {}: packageId={}, paths={}, responses={}", requestId, distributionPackage.getId(),
-                    distributionPackage.getInfo().getPaths(), endTime - startTime, response);
+            log.debug(
+                    "PACKAGE-IMPORTED {}: packageId={}, paths={}, responses={}",
+                    requestId,
+                    distributionPackage.getId(),
+                    distributionPackage.getInfo().getPaths(),
+                    endTime - startTime,
+                    response);
 
         } catch (DistributionException e) {
             log.error("an error happened during package import", e);

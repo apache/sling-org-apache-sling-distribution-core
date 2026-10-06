@@ -18,12 +18,6 @@
  */
 package org.apache.sling.distribution.servlet;
 
-import static java.lang.String.format;
-import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
-
-import java.io.IOException;
-import java.util.Collection;
-
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -31,6 +25,9 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
+import java.util.Collection;
 
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.distribution.agent.spi.DistributionAgent;
@@ -42,18 +39,22 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.lang.String.format;
+import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
+
 /**
  * {@link Filter} to avoid creation of duplicate agents.
  */
-@Component(immediate = true, service=Filter.class,
-        property= {
-                "service.description=Duplicate replication agents IDs checking Filter",
-                "service.vendor=The Apache Software Foundation",
-                "sling.filter.scope=request",
-                "sling.filter.pattern=/libs/sling/distribution/settings/agents/.*",
-                "osgi.http.whiteboard.filter.regex=/libs/sling/distribution/settings/agents/.*",
-                "service.ranking="+ Integer.MAX_VALUE
-                
+@Component(
+        immediate = true,
+        service = Filter.class,
+        property = {
+            "service.description=Duplicate replication agents IDs checking Filter",
+            "service.vendor=The Apache Software Foundation",
+            "sling.filter.scope=request",
+            "sling.filter.pattern=/libs/sling/distribution/settings/agents/.*",
+            "osgi.http.whiteboard.filter.regex=/libs/sling/distribution/settings/agents/.*",
+            "service.ranking=" + Integer.MAX_VALUE
         })
 public final class DistributionAgentCreationFilter implements Filter {
 
@@ -80,7 +81,8 @@ public final class DistributionAgentCreationFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
         SlingHttpServletRequest servletRequest = (SlingHttpServletRequest) request;
 
         // only intercept POST requests
@@ -91,9 +93,11 @@ public final class DistributionAgentCreationFilter implements Filter {
             if (type != null && name != null) {
                 String filter = format(FACTORY_FILTER_PATTERN, name, type);
                 try {
-                    Collection<ServiceReference<DistributionAgent>> services = context.getServiceReferences(DistributionAgent.class, filter);
+                    Collection<ServiceReference<DistributionAgent>> services =
+                            context.getServiceReferences(DistributionAgent.class, filter);
                     if (!services.isEmpty()) {
-                        String errorMessage = format("An agent named '%s' of different type than '%s' was already previously registered, please change the Agent name.",
+                        String errorMessage = format(
+                                "An agent named '%s' of different type than '%s' was already previously registered, please change the Agent name.",
                                 name, type);
                         ((HttpServletResponse) response).sendError(SC_CONFLICT, errorMessage);
                         return;
@@ -112,5 +116,4 @@ public final class DistributionAgentCreationFilter implements Filter {
     public void destroy() {
         // do nothing
     }
-
 }

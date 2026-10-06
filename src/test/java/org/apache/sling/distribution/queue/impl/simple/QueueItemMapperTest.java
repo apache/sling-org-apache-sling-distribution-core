@@ -18,14 +18,14 @@
  */
 package org.apache.sling.distribution.queue.impl.simple;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.junit.Test;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 public class QueueItemMapperTest {
 
@@ -37,7 +37,7 @@ public class QueueItemMapperTest {
         properties.put("null", null);
         properties.put("long", 200L);
         properties.put("double", 300.3d);
-        properties.put("array", new String[] {"one","two"});
+        properties.put("array", new String[] {"one", "two"});
         DistributionQueueItem expected = new DistributionQueueItem("packageId", properties);
         DistributionQueueItem actual = mapper.readQueueItem(mapper.writeQueueItem(expected));
         assertEquals(expected.getPackageId(), actual.getPackageId());

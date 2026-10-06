@@ -18,14 +18,14 @@
  */
 package org.apache.sling.distribution.transport.impl;
 
+import javax.management.ObjectName;
+
 import java.net.URI;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
-
-import javax.management.ObjectName;
 
 import org.apache.sling.distribution.monitor.impl.UserCredentialsDistributionTransportSecretMBean;
 import org.apache.sling.distribution.monitor.impl.UserCredentialsDistributionTransportSecretMBeanImpl;
@@ -44,24 +44,26 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @Component(
         configurationPolicy = ConfigurationPolicy.REQUIRE,
-        service=DistributionTransportSecretProvider.class,
-        property= {
-                "webconsole.configurationFactory.nameHint=Secret provider name: {name}"
-        })
-@Designate(ocd=UserCredentialsDistributionTransportSecretProvider.Config.class, factory = true)
-public class UserCredentialsDistributionTransportSecretProvider implements
-        DistributionTransportSecretProvider {
-    
-    @ObjectClassDefinition(name="Apache Sling Distribution Transport Credentials - User Credentials based DistributionTransportSecretProvider")
+        service = DistributionTransportSecretProvider.class,
+        property = {"webconsole.configurationFactory.nameHint=Secret provider name: {name}"})
+@Designate(ocd = UserCredentialsDistributionTransportSecretProvider.Config.class, factory = true)
+public class UserCredentialsDistributionTransportSecretProvider implements DistributionTransportSecretProvider {
+
+    @ObjectClassDefinition(
+            name =
+                    "Apache Sling Distribution Transport Credentials - User Credentials based DistributionTransportSecretProvider")
     public @interface Config {
-        @AttributeDefinition(name="Name")
+        @AttributeDefinition(name = "Name")
         String name();
-        
-        @AttributeDefinition(name="User Name", description = "The name of the user used to perform remote actions.")
+
+        @AttributeDefinition(name = "User Name", description = "The name of the user used to perform remote actions.")
         String username();
-        
-        @AttributeDefinition(type = AttributeType.PASSWORD, name="Password", 
-                description = "The clear text password to perform authentication. Warning: storing clear text passwords is not safe.")
+
+        @AttributeDefinition(
+                type = AttributeType.PASSWORD,
+                name = "Password",
+                description =
+                        "The clear text password to perform authentication. Warning: storing clear text passwords is not safe.")
         String password();
     }
 
@@ -81,9 +83,9 @@ public class UserCredentialsDistributionTransportSecretProvider implements
         mbeanProps.put("jmx.objectname", "org.apache.sling.distribution:type=transport,id=" + ObjectName.quote(id));
 
         UserCredentialsDistributionTransportSecretMBean mbean =
-                        new UserCredentialsDistributionTransportSecretMBeanImpl(username);
+                new UserCredentialsDistributionTransportSecretMBeanImpl(username);
         mbeanServiceRegistration =
-                        context.registerService(UserCredentialsDistributionTransportSecretMBean.class, mbean, mbeanProps);
+                context.registerService(UserCredentialsDistributionTransportSecretMBean.class, mbean, mbeanProps);
     }
 
     @Deactivate

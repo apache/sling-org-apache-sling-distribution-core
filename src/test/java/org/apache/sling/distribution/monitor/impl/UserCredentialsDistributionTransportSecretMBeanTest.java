@@ -18,10 +18,10 @@
  */
 package org.apache.sling.distribution.monitor.impl;
 
+import org.junit.Test;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
 
 /**
  * Test case for {@link UserCredentialsDistributionTransportSecretMBean}
@@ -30,11 +30,11 @@ public class UserCredentialsDistributionTransportSecretMBeanTest {
 
     @Test
     public void verifyMBeanExposedValues() {
-        UserCredentialsDistributionTransportSecretMBean mBean = new UserCredentialsDistributionTransportSecretMBeanImpl("user");
+        UserCredentialsDistributionTransportSecretMBean mBean =
+                new UserCredentialsDistributionTransportSecretMBeanImpl("user");
         assertFalse(mBean.useAdministrativeTransport());
 
         mBean = new UserCredentialsDistributionTransportSecretMBeanImpl("admin");
         assertTrue(mBean.useAdministrativeTransport());
     }
-
 }

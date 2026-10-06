@@ -18,14 +18,14 @@
  */
 package org.apache.sling.distribution.packaging.impl;
 
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -60,7 +60,8 @@ public abstract class AbstractDistributionPackageBuilder implements Distribution
     }
 
     @NotNull
-    public DistributionPackage createPackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest request)
+    public DistributionPackage createPackage(
+            @NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest request)
             throws DistributionException {
         DistributionPackage distributionPackage;
 
@@ -86,7 +87,8 @@ public abstract class AbstractDistributionPackageBuilder implements Distribution
     }
 
     @NotNull
-    public DistributionPackage readPackage(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream) throws DistributionException {
+    public DistributionPackage readPackage(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream)
+            throws DistributionException {
 
         if (!stream.markSupported()) {
             stream = new BufferedInputStream(stream);
@@ -117,7 +119,9 @@ public abstract class AbstractDistributionPackageBuilder implements Distribution
         return distributionPackage;
     }
 
-    public boolean installPackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionPackage distributionPackage) throws DistributionException {
+    public boolean installPackage(
+            @NotNull ResourceResolver resourceResolver, @NotNull DistributionPackage distributionPackage)
+            throws DistributionException {
 
         DistributionRequestType actionType = distributionPackage.getInfo().getRequestType();
 
@@ -140,7 +144,8 @@ public abstract class AbstractDistributionPackageBuilder implements Distribution
 
     @NotNull
     @Override
-    public DistributionPackageInfo installPackage(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream) throws DistributionException {
+    public DistributionPackageInfo installPackage(
+            @NotNull ResourceResolver resourceResolver, @NotNull InputStream stream) throws DistributionException {
         if (!stream.markSupported()) {
             stream = new BufferedInputStream(stream);
         }
@@ -166,7 +171,9 @@ public abstract class AbstractDistributionPackageBuilder implements Distribution
         }
     }
 
-    private boolean installDeletePackage(@NotNull ResourceResolver resourceResolver, @Nullable DistributionPackage distributionPackage) throws DistributionException {
+    private boolean installDeletePackage(
+            @NotNull ResourceResolver resourceResolver, @Nullable DistributionPackage distributionPackage)
+            throws DistributionException {
         Session session = null;
         try {
             if (distributionPackage != null) {
@@ -187,8 +194,8 @@ public abstract class AbstractDistributionPackageBuilder implements Distribution
         return false;
     }
 
-
-    private boolean installAddPackage(@NotNull ResourceResolver resourceResolver, @NotNull DistributionPackage distributionPackage)
+    private boolean installAddPackage(
+            @NotNull ResourceResolver resourceResolver, @NotNull DistributionPackage distributionPackage)
             throws DistributionException {
         InputStream inputStream = null;
         try {
@@ -213,7 +220,6 @@ public abstract class AbstractDistributionPackageBuilder implements Distribution
             } else {
                 distributionPackage = getPackageInternal(resourceResolver, id);
             }
-
         }
         return distributionPackage;
     }
@@ -221,10 +227,12 @@ public abstract class AbstractDistributionPackageBuilder implements Distribution
     private Session getSession(ResourceResolver resourceResolver) throws RepositoryException {
         Session session = resourceResolver.adaptTo(Session.class);
         if (session != null) {
-            // this is needed in order to avoid loops in sync case when there're deletions, otherwise it could work with sling resources
+            // this is needed in order to avoid loops in sync case when there're deletions, otherwise it could work with
+            // sling resources
             DistributionJcrUtils.setDoNotDistribute(session);
         } else {
-            throw new RepositoryException("could not obtain a session from calling user " + resourceResolver.getUserID());
+            throw new RepositoryException(
+                    "could not obtain a session from calling user " + resourceResolver.getUserID());
         }
         return session;
     }
@@ -241,20 +249,19 @@ public abstract class AbstractDistributionPackageBuilder implements Distribution
         }
     }
 
-
     @Nullable
-    protected abstract DistributionPackage createPackageForAdd(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest request)
+    protected abstract DistributionPackage createPackageForAdd(
+            @NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest request)
             throws DistributionException;
 
     @Nullable
-    protected abstract DistributionPackage readPackageInternal(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream)
-            throws DistributionException;
+    protected abstract DistributionPackage readPackageInternal(
+            @NotNull ResourceResolver resourceResolver, @NotNull InputStream stream) throws DistributionException;
 
-
-    protected abstract boolean installPackageInternal(@NotNull ResourceResolver resourceResolver, @NotNull InputStream stream)
-            throws DistributionException;
+    protected abstract boolean installPackageInternal(
+            @NotNull ResourceResolver resourceResolver, @NotNull InputStream stream) throws DistributionException;
 
     @Nullable
-    protected abstract DistributionPackage getPackageInternal(@NotNull ResourceResolver resourceResolver, @NotNull String id);
-
+    protected abstract DistributionPackage getPackageInternal(
+            @NotNull ResourceResolver resourceResolver, @NotNull String id);
 }

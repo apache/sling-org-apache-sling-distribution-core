@@ -29,5 +29,4 @@ public interface UserCredentialsDistributionTransportSecretMBean {
      * @return true, if the current credential is using the administrative user to transport, false otherwise.
      */
     boolean useAdministrativeTransport();
-
 }

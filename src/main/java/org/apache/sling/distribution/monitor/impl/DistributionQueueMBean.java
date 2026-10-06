@@ -87,5 +87,4 @@ public interface DistributionQueueMBean {
      * @return the first item date time when joined the queue or {@code null} if the queue is empty
      */
     Calendar getHeadEnqueuingDate();
-
 }

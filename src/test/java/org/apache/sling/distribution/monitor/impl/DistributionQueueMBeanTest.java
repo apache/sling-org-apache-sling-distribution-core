@@ -18,6 +18,16 @@
  */
 package org.apache.sling.distribution.monitor.impl;
 
+import java.util.Calendar;
+import java.util.HashMap;
+
+import org.apache.sling.distribution.queue.DistributionQueueEntry;
+import org.apache.sling.distribution.queue.DistributionQueueItem;
+import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
+import org.apache.sling.distribution.queue.DistributionQueueStatus;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
+import org.junit.Test;
+
 import static org.apache.sling.distribution.queue.DistributionQueueItemState.QUEUED;
 import static org.apache.sling.distribution.queue.DistributionQueueState.PAUSED;
 import static org.apache.sling.distribution.queue.DistributionQueueState.RUNNING;
@@ -29,16 +39,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import java.util.Calendar;
-import java.util.HashMap;
-
-import org.apache.sling.distribution.queue.spi.DistributionQueue;
-import org.apache.sling.distribution.queue.DistributionQueueEntry;
-import org.apache.sling.distribution.queue.DistributionQueueItem;
-import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
-import org.apache.sling.distribution.queue.DistributionQueueStatus;
-import org.junit.Test;
 
 /**
  * Test case for {@link DistributionQueueMBean}
@@ -71,9 +71,10 @@ public class DistributionQueueMBeanTest {
     public void verifyMBeanExposedValuesWhenHeadIsNotNull() {
         DistributionQueueStatus status = new DistributionQueueStatus(1, RUNNING);
         Calendar joined = Calendar.getInstance();
-        DistributionQueueEntry entry = new DistributionQueueEntry("#entry",
-                                                                  new DistributionQueueItem("#package", 1000L, new HashMap<String, Object>()),
-                                                                  new DistributionQueueItemStatus(joined, QUEUED, 1, "#queue"));
+        DistributionQueueEntry entry = new DistributionQueueEntry(
+                "#entry",
+                new DistributionQueueItem("#package", 1000L, new HashMap<String, Object>()),
+                new DistributionQueueItemStatus(joined, QUEUED, 1, "#queue"));
 
         DistributionQueue distributionQueue = mock(DistributionQueue.class);
         when(distributionQueue.getName()).thenReturn("#distributionQueue");
@@ -92,5 +93,4 @@ public class DistributionQueueMBeanTest {
         assertEquals(QUEUED.name().toLowerCase(), mBean.getHeadStatus());
         assertEquals(joined, mBean.getHeadEnqueuingDate());
     }
-
 }

@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
@@ -35,6 +34,7 @@ import org.apache.sling.distribution.queue.DistributionQueueState;
 import org.apache.sling.distribution.queue.DistributionQueueStatus;
 import org.apache.sling.distribution.queue.DistributionQueueType;
 import org.apache.sling.distribution.queue.impl.DistributionQueueUtils;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.event.jobs.Job;
 import org.apache.sling.event.jobs.JobManager;
 import org.apache.sling.event.jobs.JobManager.QueryType;
@@ -43,18 +43,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.APPENDABLE;
-import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.REMOVABLE;
 import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.CLEARABLE;
+import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.REMOVABLE;
 
 /**
  * a {@link DistributionQueue} based on Sling Job Handling facilities
  */
 public class JobHandlingDistributionQueue implements DistributionQueue {
 
-    public final static String DISTRIBUTION_QUEUE_TOPIC = "org/apache/sling/distribution/queue";
+    public static final String DISTRIBUTION_QUEUE_TOPIC = "org/apache/sling/distribution/queue";
 
-    private static final Set<String> CAPABILITIES = Collections.unmodifiableSet(
-            new HashSet<String>(Arrays.asList(APPENDABLE, REMOVABLE, CLEARABLE)));
+    private static final Set<String> CAPABILITIES =
+            Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(APPENDABLE, REMOVABLE, CLEARABLE)));
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -67,7 +67,8 @@ public class JobHandlingDistributionQueue implements DistributionQueue {
     private final boolean isActive;
     private final DistributionQueueType type;
 
-    JobHandlingDistributionQueue(String name, String topic, JobManager jobManager, boolean isActive, DistributionQueueType type) {
+    JobHandlingDistributionQueue(
+            String name, String topic, JobManager jobManager, boolean isActive, DistributionQueueType type) {
         this.name = name;
         this.topic = topic;
         this.jobManager = jobManager;
@@ -109,8 +110,11 @@ public class JobHandlingDistributionQueue implements DistributionQueue {
         List<Job> jobs = getJobs(0, 1);
         if (jobs.size() > 0) {
             Job firstItem = jobs.get(0);
-            log.debug("first item in the queue is {}, retried {} times, state {}",
-                    firstItem.getId(), firstItem.getRetryCount(), firstItem.getJobState());
+            log.debug(
+                    "first item in the queue is {}, retried {} times, state {}",
+                    firstItem.getId(),
+                    firstItem.getRetryCount(),
+                    firstItem.getJobState());
             return firstItem;
         }
         return null;
@@ -123,8 +127,11 @@ public class JobHandlingDistributionQueue implements DistributionQueue {
         if (job == null) {
             log.warn("item with id {} cannot be found", itemId);
         } else {
-            log.debug("retrieved item with id {}, retried {} times, state {}",
-                    job.getId(), job.getRetryCount(), job.getJobState());
+            log.debug(
+                    "retrieved item with id {}, retried {} times, state {}",
+                    job.getId(),
+                    job.getRetryCount(),
+                    job.getJobState());
         }
 
         return job;
@@ -151,7 +158,6 @@ public class JobHandlingDistributionQueue implements DistributionQueue {
 
         return result;
     }
-
 
     @NotNull
     public List<DistributionQueueEntry> getEntries(int skip, int limit) {
@@ -202,7 +208,6 @@ public class JobHandlingDistributionQueue implements DistributionQueue {
         log.debug("item with id {} removed from the queue: {}", id, removed);
         return entry;
     }
-
 
     @Override
     @NotNull

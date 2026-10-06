@@ -46,15 +46,25 @@ public class SimpleDistributionAgentQueueProcessorTest {
         DefaultDistributionLog log = mock(DefaultDistributionLog.class);
         DistributionQueueProvider queueProvider = mock(DistributionQueueProvider.class);
         DistributionEventFactory eventFactory = mock(DistributionEventFactory.class);
-        SimpleDistributionAgentAuthenticationInfo authenticationInfo = mock(SimpleDistributionAgentAuthenticationInfo.class);
+        SimpleDistributionAgentAuthenticationInfo authenticationInfo =
+                mock(SimpleDistributionAgentAuthenticationInfo.class);
         String agentName = "dummy-a";
-        SimpleDistributionAgentQueueProcessor queueProcessor = new SimpleDistributionAgentQueueProcessor(packageExporter,
-                packageImporter, retryAttempts, null, log, queueProvider, eventFactory, authenticationInfo, agentName);
+        SimpleDistributionAgentQueueProcessor queueProcessor = new SimpleDistributionAgentQueueProcessor(
+                packageExporter,
+                packageImporter,
+                retryAttempts,
+                null,
+                log,
+                queueProvider,
+                eventFactory,
+                authenticationInfo,
+                agentName);
 
         String id = "123-456";
         DistributionQueueItem item = new DistributionQueueItem("pckg-123", new HashMap<String, Object>());
         String queueName = "queue-1";
-        DistributionQueueItemStatus status = new DistributionQueueItemStatus(DistributionQueueItemState.QUEUED, queueName);
+        DistributionQueueItemStatus status =
+                new DistributionQueueItemStatus(DistributionQueueItemState.QUEUED, queueName);
         DistributionQueueEntry entry = new DistributionQueueEntry(id, item, status);
         queueProcessor.process(queueName, entry);
     }

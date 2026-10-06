@@ -39,5 +39,4 @@ public interface SharedDistributionPackage extends DistributionPackage {
      * when no more references are hold the package {@code DistributionPackage#delete} method will be invoked.
      */
     void release(@NotNull String... holderNames);
-
 }

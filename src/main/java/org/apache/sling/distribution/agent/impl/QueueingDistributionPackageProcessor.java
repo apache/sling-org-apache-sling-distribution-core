@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+
 import org.apache.sling.distribution.DistributionRequestState;
 import org.apache.sling.distribution.DistributionResponse;
 import org.apache.sling.distribution.common.DistributionException;
@@ -36,8 +37,8 @@ import org.apache.sling.distribution.packaging.impl.DistributionPackageProcessor
 import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
 import org.apache.sling.distribution.queue.DistributionQueueItemState;
 import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
-import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
 import org.apache.sling.distribution.queue.impl.DistributionQueueDispatchingStrategy;
+import org.apache.sling.distribution.queue.impl.DistributionQueueProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -76,11 +77,15 @@ class QueueingDistributionPackageProcessor implements DistributionPackageProcess
         return packagesSize.get();
     }
 
-    QueueingDistributionPackageProcessor(@Nullable String callingUser, @NotNull String requestId, long requestStartTime,
-                                         @NotNull DistributionEventFactory distributionEventFactory,
-                                         @NotNull DistributionQueueDispatchingStrategy scheduleQueueStrategy,
-                                         @NotNull DistributionQueueProvider queueProvider, @NotNull DefaultDistributionLog log,
-                                         @NotNull String agentName) {
+    QueueingDistributionPackageProcessor(
+            @Nullable String callingUser,
+            @NotNull String requestId,
+            long requestStartTime,
+            @NotNull DistributionEventFactory distributionEventFactory,
+            @NotNull DistributionQueueDispatchingStrategy scheduleQueueStrategy,
+            @NotNull DistributionQueueProvider queueProvider,
+            @NotNull DefaultDistributionLog log,
+            @NotNull String agentName) {
         this.callingUser = callingUser;
         this.requestId = requestId;
         this.requestStartTime = requestStartTime;
@@ -95,20 +100,25 @@ class QueueingDistributionPackageProcessor implements DistributionPackageProcess
     public void process(DistributionPackage distributionPackage) {
         final long startTime = System.currentTimeMillis();
 
-        Collection<SimpleDistributionResponse> responses = scheduleImportPackage(distributionPackage, callingUser,
-                requestId, requestStartTime);
+        Collection<SimpleDistributionResponse> responses =
+                scheduleImportPackage(distributionPackage, callingUser, requestId, requestStartTime);
         packagesCount.incrementAndGet();
         packagesSize.addAndGet(distributionPackage.getSize());
         allResponses.addAll(responses);
 
         final long endTime = System.currentTimeMillis();
 
-        log.debug("PACKAGE-QUEUED {}: packageId={}, paths={}, queueTime={}ms, responses={}", requestId, distributionPackage.getId(),
-                distributionPackage.getInfo().getPaths(), endTime - startTime, responses.size());
+        log.debug(
+                "PACKAGE-QUEUED {}: packageId={}, paths={}, queueTime={}ms, responses={}",
+                requestId,
+                distributionPackage.getId(),
+                distributionPackage.getInfo().getPaths(),
+                endTime - startTime,
+                responses.size());
     }
 
-    private Collection<SimpleDistributionResponse> scheduleImportPackage(DistributionPackage distributionPackage, String callingUser,
-                                                                         String requestId, long startTime) {
+    private Collection<SimpleDistributionResponse> scheduleImportPackage(
+            DistributionPackage distributionPackage, String callingUser, String requestId, long startTime) {
         Collection<SimpleDistributionResponse> distributionResponses = new LinkedList<SimpleDistributionResponse>();
 
         // dispatch the distribution package to one or more queues
@@ -116,17 +126,24 @@ class QueueingDistributionPackageProcessor implements DistributionPackageProcess
             // add metadata to the package
             distributionPackage.getInfo().put(DistributionPackageUtils.PACKAGE_INFO_PROPERTY_REQUEST_USER, callingUser);
             distributionPackage.getInfo().put(DistributionPackageUtils.PACKAGE_INFO_PROPERTY_REQUEST_ID, requestId);
-            distributionPackage.getInfo().put(DistributionPackageUtils.PACKAGE_INFO_PROPERTY_REQUEST_START_TIME, startTime);
+            distributionPackage
+                    .getInfo()
+                    .put(DistributionPackageUtils.PACKAGE_INFO_PROPERTY_REQUEST_START_TIME, startTime);
 
             // put the package in the queue
-            Iterable<DistributionQueueItemStatus> states = scheduleQueueStrategy.add(distributionPackage, queueProvider);
+            Iterable<DistributionQueueItemStatus> states =
+                    scheduleQueueStrategy.add(distributionPackage, queueProvider);
             for (DistributionQueueItemStatus state : states) {
                 DistributionRequestState requestState = getRequestStateFromQueueState(state.getItemState());
-                distributionResponses.add(new SimpleDistributionResponse(requestState, state.getItemState().toString()));
+                distributionResponses.add(new SimpleDistributionResponse(
+                        requestState, state.getItemState().toString()));
             }
 
-            distributionEventFactory.generatePackageEvent(DistributionEventTopics.AGENT_PACKAGE_QUEUED,
-                    DistributionComponentKind.AGENT, agentName, distributionPackage.getInfo());
+            distributionEventFactory.generatePackageEvent(
+                    DistributionEventTopics.AGENT_PACKAGE_QUEUED,
+                    DistributionComponentKind.AGENT,
+                    agentName,
+                    distributionPackage.getInfo());
         } catch (DistributionException e) {
             log.error("an error happened during dispatching items to the queue(s)", e);
             distributionResponses.add(new SimpleDistributionResponse(DistributionRequestState.DROPPED, e.toString()));

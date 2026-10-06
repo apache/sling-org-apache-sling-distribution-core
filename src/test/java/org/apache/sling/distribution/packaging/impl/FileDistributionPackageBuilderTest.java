@@ -16,13 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.packaging.impl;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,6 +32,11 @@ import org.apache.sling.distribution.serialization.DistributionContentSerializer
 import org.apache.sling.distribution.serialization.DistributionExportOptions;
 import org.junit.Test;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 public class FileDistributionPackageBuilderTest {
 
     @Test
@@ -50,28 +49,31 @@ public class FileDistributionPackageBuilderTest {
         when(mockRequest.isDeep(testDeepPath)).thenReturn(true);
         when(mockRequest.isDeep(testPath)).thenReturn(false);
 
-        FileDistributionPackageBuilder builder = new FileDistributionPackageBuilder("test", new TestSerializer(), null, null, new String[0],
-                new String[0]);
+        FileDistributionPackageBuilder builder = new FileDistributionPackageBuilder(
+                "test", new TestSerializer(), null, null, new String[0], new String[0]);
 
         DistributionPackage createdPackage = builder.createPackageForAdd(mock(ResourceResolver.class), mockRequest);
 
         try {
             assertNotNull(createdPackage.createInputStream());
-            DistributionPackage gotPackage = builder.getPackageInternal(mock(ResourceResolver.class), createdPackage.getId());
+            DistributionPackage gotPackage =
+                    builder.getPackageInternal(mock(ResourceResolver.class), createdPackage.getId());
             assertNotNull(gotPackage.createInputStream()); // this will throw an exception when the file doesn't exist
             final String[] createdPackagePaths = createdPackage.getInfo().getPaths();
             final String[] gotPackagePaths = gotPackage.getInfo().getPaths();
-            final String[] createdPackageDeepPaths = (String[]) createdPackage.getInfo()
-                    .get(DistributionPackageInfo.PROPERTY_REQUEST_DEEP_PATHS);
-            final String[] gotPackageDeepPaths = (String[]) gotPackage.getInfo()
-                    .get(DistributionPackageInfo.PROPERTY_REQUEST_DEEP_PATHS);
-            assertTrue("packaged Paths at createPackage and getPackage not consistent. "
-                    + "expected " + Arrays.toString(createdPackagePaths)
-                    + ", found " + Arrays.toString(gotPackagePaths),
+            final String[] createdPackageDeepPaths =
+                    (String[]) createdPackage.getInfo().get(DistributionPackageInfo.PROPERTY_REQUEST_DEEP_PATHS);
+            final String[] gotPackageDeepPaths =
+                    (String[]) gotPackage.getInfo().get(DistributionPackageInfo.PROPERTY_REQUEST_DEEP_PATHS);
+            assertTrue(
+                    "packaged Paths at createPackage and getPackage not consistent. "
+                            + "expected " + Arrays.toString(createdPackagePaths)
+                            + ", found " + Arrays.toString(gotPackagePaths),
                     Arrays.equals(createdPackagePaths, gotPackagePaths));
-            assertTrue("packaged deep Paths at createPackage and getPackage not consistent. "
-                    + "expected " + Arrays.toString(createdPackageDeepPaths)
-                    + ", found " + Arrays.toString(gotPackageDeepPaths),
+            assertTrue(
+                    "packaged deep Paths at createPackage and getPackage not consistent. "
+                            + "expected " + Arrays.toString(createdPackageDeepPaths)
+                            + ", found " + Arrays.toString(gotPackageDeepPaths),
                     Arrays.equals(createdPackageDeepPaths, gotPackageDeepPaths));
         } finally {
             createdPackage.delete();
@@ -80,8 +82,10 @@ public class FileDistributionPackageBuilderTest {
 
     class TestSerializer implements DistributionContentSerializer {
 
-        @Override public void exportToStream(ResourceResolver resourceResolver, DistributionExportOptions exportOptions,
-                OutputStream outputStream) throws DistributionException {
+        @Override
+        public void exportToStream(
+                ResourceResolver resourceResolver, DistributionExportOptions exportOptions, OutputStream outputStream)
+                throws DistributionException {
             try {
                 outputStream.write("test".getBytes());
             } catch (IOException ex) {
@@ -89,15 +93,19 @@ public class FileDistributionPackageBuilderTest {
             }
         }
 
-        @Override public void importFromStream(ResourceResolver resourceResolver, InputStream inputStream) throws DistributionException {
+        @Override
+        public void importFromStream(ResourceResolver resourceResolver, InputStream inputStream)
+                throws DistributionException {
             throw new DistributionException("unsupported");
         }
 
-        @Override public String getName() {
+        @Override
+        public String getName() {
             return "test";
         }
 
-        @Override public boolean isRequestFiltering() {
+        @Override
+        public boolean isRequestFiltering() {
             return true;
         }
     }

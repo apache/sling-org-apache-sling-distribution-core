@@ -18,17 +18,13 @@
  */
 package org.apache.sling.distribution.servlet;
 
-import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.APPENDABLE;
-import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.CLEARABLE;
-import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.REMOVABLE;
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
 
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
@@ -52,11 +48,15 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.APPENDABLE;
+import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.CLEARABLE;
+import static org.apache.sling.distribution.queue.DistributionQueueCapabilities.REMOVABLE;
+
 /**
  * Servlet to retrieve a {@link DistributionQueue} status.
  */
 @SuppressWarnings("serial")
-@Component(service=Servlet.class)
+@Component(service = Servlet.class)
 @SlingServletResourceTypes(
         methods = {"POST"},
         resourceTypes = {DistributionResourceTypes.AGENT_QUEUE_RESOURCE_TYPE})
@@ -65,8 +65,7 @@ public class DistributionAgentQueueServlet extends SlingAllMethodsServlet {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Reference
-    private
-    DistributionPackageBuilderProvider packageBuilderProvider;
+    private DistributionPackageBuilderProvider packageBuilderProvider;
 
     @Override
     protected void doPost(SlingHttpServletRequest request, SlingHttpServletResponse response)
@@ -75,9 +74,7 @@ public class DistributionAgentQueueServlet extends SlingAllMethodsServlet {
 
         DistributionQueue queue = request.getResource().adaptTo(DistributionQueue.class);
 
-
         ResourceResolver resourceResolver = request.getResourceResolver();
-
 
         if ("delete".equals(operation)) {
             String limitParam = request.getParameter("limit");
@@ -90,7 +87,7 @@ public class DistributionAgentQueueServlet extends SlingAllMethodsServlet {
                 try {
                     limit = Integer.parseInt(limitParam);
                 } catch (NumberFormatException ex) {
-                    log.warn("limit param malformed : "+limitParam, ex);
+                    log.warn("limit param malformed : " + limitParam, ex);
                 }
                 assertCapability(queue, CLEARABLE);
                 clearItems(resourceResolver, queue, limit);
@@ -101,11 +98,11 @@ public class DistributionAgentQueueServlet extends SlingAllMethodsServlet {
 
             if (idParam != null && from != null) {
                 assertCapability(queue, APPENDABLE);
-                DistributionAgent agent = request.getResource().getParent().getParent().adaptTo(DistributionAgent.class);
-                DistributionQueue sourceQueue = getQueueOrThrow(agent,from);
+                DistributionAgent agent =
+                        request.getResource().getParent().getParent().adaptTo(DistributionAgent.class);
+                DistributionQueue sourceQueue = getQueueOrThrow(agent, from);
 
                 addItems(resourceResolver, queue, sourceQueue, idParam);
-
             }
         } else if ("move".equals(operation)) {
             String from = request.getParameter("from");
@@ -113,8 +110,9 @@ public class DistributionAgentQueueServlet extends SlingAllMethodsServlet {
 
             if (idParam != null && from != null) {
                 assertCapability(queue, APPENDABLE);
-                DistributionAgent agent = request.getResource().getParent().getParent().adaptTo(DistributionAgent.class);
-                DistributionQueue sourceQueue = getQueueOrThrow(agent,from);
+                DistributionAgent agent =
+                        request.getResource().getParent().getParent().adaptTo(DistributionAgent.class);
+                DistributionQueue sourceQueue = getQueueOrThrow(agent, from);
                 assertCapability(sourceQueue, REMOVABLE);
                 addItems(resourceResolver, queue, sourceQueue, idParam);
                 deleteItems(resourceResolver, sourceQueue, new HashSet<String>(Arrays.asList(idParam)));
@@ -122,8 +120,12 @@ public class DistributionAgentQueueServlet extends SlingAllMethodsServlet {
         }
     }
 
-    private void addItems(ResourceResolver resourceResolver, DistributionQueue targetQueue, DistributionQueue sourceQueue, String[] ids) {
-        for (String id: ids) {
+    private void addItems(
+            ResourceResolver resourceResolver,
+            DistributionQueue targetQueue,
+            DistributionQueue sourceQueue,
+            String[] ids) {
+        for (String id : ids) {
             DistributionQueueEntry entry = sourceQueue.getEntry(id);
             if (entry != null) {
                 targetQueue.add(entry.getItem());
@@ -145,7 +147,8 @@ public class DistributionAgentQueueServlet extends SlingAllMethodsServlet {
         }
     }
 
-    private void releaseOrDeletePackage(ResourceResolver resourceResolver, DistributionQueueItem queueItem, String queueName) {
+    private void releaseOrDeletePackage(
+            ResourceResolver resourceResolver, DistributionQueueItem queueItem, String queueName) {
         DistributionPackage distributionPackage = getPackage(resourceResolver, queueItem);
         DistributionPackageUtils.releaseOrDelete(distributionPackage, queueName);
     }
@@ -170,7 +173,8 @@ public class DistributionAgentQueueServlet extends SlingAllMethodsServlet {
 
     private void assertCapability(DistributionQueue queue, String capability) {
         if (!queue.hasCapability(capability)) {
-            throw new UnsupportedOperationException(String.format("Capability %s not supported for queue %s", capability, queue.getName()));
+            throw new UnsupportedOperationException(
+                    String.format("Capability %s not supported for queue %s", capability, queue.getName()));
         }
     }
 

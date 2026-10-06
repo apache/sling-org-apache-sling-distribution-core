@@ -18,8 +18,8 @@
  */
 package org.apache.sling.distribution.queue.impl.jobhandling;
 
-import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.distribution.queue.impl.DistributionQueueProcessor;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.event.jobs.JobManager;
 import org.apache.sling.event.jobs.QueueConfiguration;
 import org.junit.Test;
@@ -41,23 +41,22 @@ public class JobHandlingDistributionQueueProviderTest {
         JobManager jobManager = mock(JobManager.class);
 
         BundleContext context = mock(BundleContext.class);
-        JobHandlingDistributionQueueProvider jobHandlingdistributionQueueProvider = new JobHandlingDistributionQueueProvider("dummy-agent",
-                jobManager, context);
+        JobHandlingDistributionQueueProvider jobHandlingdistributionQueueProvider =
+                new JobHandlingDistributionQueueProvider("dummy-agent", jobManager, context);
         DistributionQueue queue = jobHandlingdistributionQueueProvider.getQueue("default");
         assertNotNull(queue);
     }
-
-
 
     @Test
     public void testEnableQueueProcessing() throws Exception {
         JobManager jobManager = mock(JobManager.class);
         ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class);
         Configuration config = mock(Configuration.class);
-        when(configAdmin.createFactoryConfiguration(QueueConfiguration.class.getName(), null)).thenReturn(config);
+        when(configAdmin.createFactoryConfiguration(QueueConfiguration.class.getName(), null))
+                .thenReturn(config);
         BundleContext context = mock(BundleContext.class);
-        JobHandlingDistributionQueueProvider jobHandlingdistributionQueueProvider = new JobHandlingDistributionQueueProvider("dummy-agent",
-                jobManager, context);
+        JobHandlingDistributionQueueProvider jobHandlingdistributionQueueProvider =
+                new JobHandlingDistributionQueueProvider("dummy-agent", jobManager, context);
         DistributionQueueProcessor queueProcessor = mock(DistributionQueueProcessor.class);
         jobHandlingdistributionQueueProvider.enableQueueProcessing(queueProcessor);
     }
@@ -67,10 +66,11 @@ public class JobHandlingDistributionQueueProviderTest {
         JobManager jobManager = mock(JobManager.class);
         ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class);
         Configuration config = mock(Configuration.class);
-        when(configAdmin.createFactoryConfiguration(QueueConfiguration.class.getName(), null)).thenReturn(config);
+        when(configAdmin.createFactoryConfiguration(QueueConfiguration.class.getName(), null))
+                .thenReturn(config);
         BundleContext context = mock(BundleContext.class);
-        JobHandlingDistributionQueueProvider jobHandlingdistributionQueueProvider = new JobHandlingDistributionQueueProvider("dummy-agent",
-                jobManager, context);
+        JobHandlingDistributionQueueProvider jobHandlingdistributionQueueProvider =
+                new JobHandlingDistributionQueueProvider("dummy-agent", jobManager, context);
         jobHandlingdistributionQueueProvider.disableQueueProcessing();
     }
 }

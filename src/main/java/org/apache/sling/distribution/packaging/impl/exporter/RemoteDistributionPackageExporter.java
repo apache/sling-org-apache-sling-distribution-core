@@ -20,16 +20,17 @@ package org.apache.sling.distribution.packaging.impl.exporter;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequest;
 import org.apache.sling.distribution.DistributionRequestType;
 import org.apache.sling.distribution.common.DistributionException;
 import org.apache.sling.distribution.log.impl.DefaultDistributionLog;
+import org.apache.sling.distribution.packaging.DistributionPackage;
+import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
+import org.apache.sling.distribution.packaging.impl.DistributionPackageExporter;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageProcessor;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
-import org.apache.sling.distribution.packaging.DistributionPackage;
-import org.apache.sling.distribution.packaging.impl.DistributionPackageExporter;
-import org.apache.sling.distribution.packaging.DistributionPackageBuilder;
 import org.apache.sling.distribution.transport.DistributionTransportSecretProvider;
 import org.apache.sling.distribution.transport.impl.*;
 import org.jetbrains.annotations.NotNull;
@@ -43,12 +44,15 @@ public class RemoteDistributionPackageExporter implements DistributionPackageExp
     private final int maxPullItems;
     private final DistributionTransportContext distributionContext = new DistributionTransportContext();
 
-
     private final List<DistributionTransport> transportHandlers = new ArrayList<DistributionTransport>();
 
-    public RemoteDistributionPackageExporter(DefaultDistributionLog log, DistributionPackageBuilder packageBuilder,
-                                             DistributionTransportSecretProvider secretProvider,
-                                             String[] endpoints, int maxPullItems, HttpConfiguration httpConfiguration) {
+    public RemoteDistributionPackageExporter(
+            DefaultDistributionLog log,
+            DistributionPackageBuilder packageBuilder,
+            DistributionTransportSecretProvider secretProvider,
+            String[] endpoints,
+            int maxPullItems,
+            HttpConfiguration httpConfiguration) {
         this.maxPullItems = maxPullItems;
         if (packageBuilder == null) {
             throw new IllegalArgumentException("packageBuilder is required");
@@ -62,19 +66,27 @@ public class RemoteDistributionPackageExporter implements DistributionPackageExp
 
         for (String endpoint : endpoints) {
             if (endpoint != null && endpoint.length() > 0) {
-                transportHandlers.add(new SimpleHttpDistributionTransport(log, new DistributionEndpoint(endpoint),
-                        packageBuilder, secretProvider, httpConfiguration));
+                transportHandlers.add(new SimpleHttpDistributionTransport(
+                        log, new DistributionEndpoint(endpoint), packageBuilder, secretProvider, httpConfiguration));
             }
         }
     }
 
-    public void exportPackages(@NotNull ResourceResolver resourceResolver, @NotNull DistributionRequest distributionRequest, @NotNull DistributionPackageProcessor packageProcessor) throws DistributionException {
-        int maxNumberOfPackages = DistributionRequestType.PULL.equals(distributionRequest.getRequestType()) ? maxPullItems : 1;
+    public void exportPackages(
+            @NotNull ResourceResolver resourceResolver,
+            @NotNull DistributionRequest distributionRequest,
+            @NotNull DistributionPackageProcessor packageProcessor)
+            throws DistributionException {
+        int maxNumberOfPackages =
+                DistributionRequestType.PULL.equals(distributionRequest.getRequestType()) ? maxPullItems : 1;
         for (DistributionTransport distributionTransport : transportHandlers) {
             int noPackages = 0;
 
             RemoteDistributionPackage retrievedPackage;
-            while (noPackages < maxNumberOfPackages && ((retrievedPackage = distributionTransport.retrievePackage(resourceResolver, distributionRequest, distributionContext)) != null)) {
+            while (noPackages < maxNumberOfPackages
+                    && ((retrievedPackage = distributionTransport.retrievePackage(
+                                    resourceResolver, distributionRequest, distributionContext))
+                            != null)) {
 
                 DistributionPackage distributionPackage = retrievedPackage.getPackage();
 
@@ -92,7 +104,9 @@ public class RemoteDistributionPackageExporter implements DistributionPackageExp
         }
     }
 
-    public DistributionPackage getPackage(@NotNull ResourceResolver resourceResolver, @NotNull String distributionPackageId) throws DistributionException {
+    public DistributionPackage getPackage(
+            @NotNull ResourceResolver resourceResolver, @NotNull String distributionPackageId)
+            throws DistributionException {
         return packageBuilder.getPackage(resourceResolver, distributionPackageId);
     }
 }

@@ -22,7 +22,6 @@ package org.apache.sling.distribution.impl;
  * HTTP Parameters for distribution
  */
 public enum DistributionParameter {
-
     QUEUE("queue"),
     TYPE("type"),
     ACTION("action"),

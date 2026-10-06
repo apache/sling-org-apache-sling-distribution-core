@@ -74,7 +74,6 @@ public class OsgiUtils {
         return obj == null ? "null" : obj.toString();
     }
 
-
     /**
      * Create a filter for selecting configs of a certain factory
      */
@@ -88,7 +87,6 @@ public class OsgiUtils {
 
         return null;
     }
-
 
     /**
      * Transform a Dictionary into a Map
@@ -162,6 +160,5 @@ public class OsgiUtils {
         }
 
         return result;
-
     }
 }

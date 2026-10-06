@@ -16,12 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.component.impl;
 
-import org.apache.sling.api.resource.ResourceResolver;
-
 import java.util.List;
+
+import org.apache.sling.api.resource.ResourceResolver;
 
 /**
  * A configuration manager allows basic access/editing operations on distribution configurations.

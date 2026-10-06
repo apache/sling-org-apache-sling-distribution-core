@@ -21,15 +21,16 @@ package org.apache.sling.distribution.queue.impl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import org.apache.sling.distribution.common.DistributionException;
-import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.packaging.DistributionPackage;
-import org.apache.sling.distribution.packaging.impl.SharedDistributionPackage;
 import org.apache.sling.distribution.packaging.impl.DistributionPackageUtils;
-import org.apache.sling.distribution.queue.spi.DistributionQueue;
+import org.apache.sling.distribution.packaging.impl.SharedDistributionPackage;
+import org.apache.sling.distribution.queue.DistributionQueueEntry;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
 import org.apache.sling.distribution.queue.DistributionQueueItemState;
 import org.apache.sling.distribution.queue.DistributionQueueItemStatus;
+import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,11 +48,13 @@ public class MultipleQueueDispatchingStrategy implements DistributionQueueDispat
         this.queueNames = Arrays.copyOf(queueNames, queueNames.length);
     }
 
-    public Iterable<DistributionQueueItemStatus> add(@NotNull DistributionPackage distributionPackage,
-                                                     @NotNull DistributionQueueProvider queueProvider) throws DistributionException {
+    public Iterable<DistributionQueueItemStatus> add(
+            @NotNull DistributionPackage distributionPackage, @NotNull DistributionQueueProvider queueProvider)
+            throws DistributionException {
 
         if (!(distributionPackage instanceof SharedDistributionPackage) && queueNames.length > 1) {
-            throw new DistributionException("distribution package must be a shared package to be added in multiple queues");
+            throw new DistributionException(
+                    "distribution package must be a shared package to be added in multiple queues");
         }
 
         DistributionQueueItem queueItem = getItem(distributionPackage);
@@ -63,7 +66,8 @@ public class MultipleQueueDispatchingStrategy implements DistributionQueueDispat
         // second add the package to all queues
         for (String queueName : queueNames) {
             DistributionQueue queue = queueProvider.getQueue(queueName);
-            DistributionQueueItemStatus status = new DistributionQueueItemStatus(DistributionQueueItemState.ERROR, queue.getName());
+            DistributionQueueItemStatus status =
+                    new DistributionQueueItemStatus(DistributionQueueItemState.ERROR, queue.getName());
 
             DistributionQueueEntry queueEntry = queue.add(queueItem);
 
@@ -78,7 +82,6 @@ public class MultipleQueueDispatchingStrategy implements DistributionQueueDispat
         }
 
         return result;
-
     }
 
     @NotNull
@@ -89,5 +92,4 @@ public class MultipleQueueDispatchingStrategy implements DistributionQueueDispat
     private DistributionQueueItem getItem(DistributionPackage distributionPackage) {
         return DistributionPackageUtils.toQueueItem(distributionPackage);
     }
-
 }

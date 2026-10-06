@@ -151,5 +151,4 @@ public class ReferencePackageTest {
         assertNotNull(id);
         assertEquals(reference, id);
     }
-
 }

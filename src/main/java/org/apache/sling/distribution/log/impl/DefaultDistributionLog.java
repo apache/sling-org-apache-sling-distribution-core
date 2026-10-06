@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.log.impl;
 
 import java.text.DateFormat;
@@ -83,12 +82,7 @@ public class DefaultDistributionLog implements DistributionLog {
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS");
         Calendar cal = Calendar.getInstance();
 
-
-        String log = dateFormat.format(cal.getTime()) +
-                " - " +
-                level.name() +
-                " - " +
-                message;
+        String log = dateFormat.format(cal.getTime()) + " - " + level.name() + " - " + message;
         synchronized (lines) {
             lines.add(log);
             int maxLines = 1000;
@@ -130,17 +124,14 @@ public class DefaultDistributionLog implements DistributionLog {
         internalLog(LogLevel.WARN, fmt, objects);
     }
 
-
     private String getSpecificString(String fmt) {
         return "[" + kind.getName() + "][" + name + "] " + fmt;
     }
-
 
     /**
      * Log level
      */
     public enum LogLevel {
-
         DEBUG(0),
 
         INFO(1),

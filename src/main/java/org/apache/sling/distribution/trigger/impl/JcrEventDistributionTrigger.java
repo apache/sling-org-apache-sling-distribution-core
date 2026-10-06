@@ -41,8 +41,14 @@ public class JcrEventDistributionTrigger extends AbstractJcrEventTrigger impleme
     private final boolean deep;
     private final String[] ignoredPathsPatterns;
 
-    public JcrEventDistributionTrigger(SlingRepository repository, Scheduler scheduler, ResourceResolverFactory resolverFactory,
-                                       String path, boolean deep, String serviceName, String[] ignoredPathsPatterns) {
+    public JcrEventDistributionTrigger(
+            SlingRepository repository,
+            Scheduler scheduler,
+            ResourceResolverFactory resolverFactory,
+            String path,
+            boolean deep,
+            String serviceName,
+            String[] ignoredPathsPatterns) {
         super(repository, scheduler, resolverFactory, path, serviceName);
         this.deep = deep;
         this.ignoredPathsPatterns = ignoredPathsPatterns;
@@ -60,8 +66,10 @@ public class JcrEventDistributionTrigger extends AbstractJcrEventTrigger impleme
                 replicatingPath = VltUtils.findParent(replicatingPath, "rep:policy") + "/rep:policy";
 
                 distributionRequest = new SimpleDistributionRequest(DistributionRequestType.ADD, replicatingPath);
-            } else if (VltUtils.findParent(replicatingPath, "rep:membersList") != null || eventPath.endsWith("/rep:members")) {
-                // group member list structure is an implementation detail and it is safer to distribute the entire group.
+            } else if (VltUtils.findParent(replicatingPath, "rep:membersList") != null
+                    || eventPath.endsWith("/rep:members")) {
+                // group member list structure is an implementation detail and it is safer to distribute the entire
+                // group.
 
                 String groupPath = VltUtils.findParent(replicatingPath, "rep:membersList");
                 if (groupPath != null) {
@@ -70,16 +78,18 @@ public class JcrEventDistributionTrigger extends AbstractJcrEventTrigger impleme
 
                 distributionRequest = new SimpleDistributionRequest(DistributionRequestType.ADD, true, replicatingPath);
             } else {
-                distributionRequest = new SimpleDistributionRequest(Event.NODE_REMOVED == event.getType() ?
-                        DistributionRequestType.DELETE : DistributionRequestType.ADD, deep, replicatingPath);
+                distributionRequest = new SimpleDistributionRequest(
+                        Event.NODE_REMOVED == event.getType()
+                                ? DistributionRequestType.DELETE
+                                : DistributionRequestType.ADD,
+                        deep,
+                        replicatingPath);
             }
 
             log.info("distributing {}", distributionRequest);
-
         }
         return distributionRequest;
     }
-
 
     private boolean isIgnoredPath(String path) {
         if (path == null) {

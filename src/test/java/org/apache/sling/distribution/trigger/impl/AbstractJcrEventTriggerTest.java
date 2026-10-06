@@ -20,6 +20,7 @@ package org.apache.sling.distribution.trigger.impl;
 
 import javax.jcr.RepositoryException;
 import javax.jcr.observation.Event;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -48,12 +49,21 @@ public class AbstractJcrEventTriggerTest {
     public void setUp() throws Exception {
         rrf = new MockResourceResolverFactory();
         ResourceResolver resourceResolver = rrf.getResourceResolver(null);
-        MockHelper helper = MockHelper.create(resourceResolver).resource("/a").resource("b").resource("c").resource("d")
-                .resource("e").resource("f").resource("g").p("foo", true).resource(".h").p("foo", false);
+        MockHelper helper = MockHelper.create(resourceResolver)
+                .resource("/a")
+                .resource("b")
+                .resource("c")
+                .resource("d")
+                .resource("e")
+                .resource("f")
+                .resource("g")
+                .p("foo", true)
+                .resource(".h")
+                .p("foo", false);
         helper.commit();
     }
 
-    @Test//"SLING-6054"
+    @Test // "SLING-6054"
     public void addToListTest() throws Exception {
         SlingRepository repository = mock(SlingRepository.class);
         Scheduler scheduler = mock(Scheduler.class);
@@ -94,5 +104,4 @@ public class AbstractJcrEventTriggerTest {
         assertEquals("/a/b/c/d/e/f/g", paths[1]); // the missing path is added
         assertEquals(descendant, paths[2]);
     }
-
 }

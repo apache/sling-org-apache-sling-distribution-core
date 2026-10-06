@@ -16,12 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.distribution.resources.impl;
 
-import java.util.Iterator;
-
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.Iterator;
 
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceProvider;
@@ -44,21 +43,23 @@ import org.slf4j.LoggerFactory;
  */
 @Component(
         configurationPolicy = ConfigurationPolicy.REQUIRE,
-        service=ResourceProvider.class,
+        service = ResourceProvider.class,
         enabled = true,
         property = {
-                "webconsole.configurationFactory.nameHint=Resource kind: {kind}",
-                ResourceProvider.OWNS_ROOTS + ":Boolean=true",
-                "service.vendor=The Apache Software Foundation"
+            "webconsole.configurationFactory.nameHint=Resource kind: {kind}",
+            ResourceProvider.OWNS_ROOTS + ":Boolean=true",
+            "service.vendor=The Apache Software Foundation"
         })
-@Designate(ocd=DistributionServiceResourceProviderFactory.Config.class, factory=true)
+@Designate(ocd = DistributionServiceResourceProviderFactory.Config.class, factory = true)
 public class DistributionServiceResourceProviderFactory implements ResourceProvider {
-    
-    @ObjectClassDefinition(name="Apache Sling Distribution Resources - Service Resource Provider Factory",
+
+    @ObjectClassDefinition(
+            name = "Apache Sling Distribution Resources - Service Resource Provider Factory",
             description = "Distribution Service Resource Provider Factory")
     public @interface Config {
         @AttributeDefinition()
         String provider_roots();
+
         @AttributeDefinition()
         String kind();
     }
@@ -66,8 +67,7 @@ public class DistributionServiceResourceProviderFactory implements ResourceProvi
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Reference
-    private
-    DistributionComponentProvider componentProvider;
+    private DistributionComponentProvider componentProvider;
 
     private ResourceProvider resourceProvider;
 
@@ -79,9 +79,7 @@ public class DistributionServiceResourceProviderFactory implements ResourceProvi
         String kind = conf.kind();
         String resourceRoot = conf.provider_roots();
 
-        resourceProvider = new ExtendedDistributionServiceResourceProvider(kind,
-                componentProvider,
-                resourceRoot);
+        resourceProvider = new ExtendedDistributionServiceResourceProvider(kind, componentProvider, resourceRoot);
 
         log.debug("created resource provider {}", resourceProvider);
     }
@@ -90,7 +88,6 @@ public class DistributionServiceResourceProviderFactory implements ResourceProvi
     public void deactivate(BundleContext context) {
         resourceProvider = null;
     }
-
 
     public Resource getResource(ResourceResolver resourceResolver, HttpServletRequest request, String path) {
         return getResource(resourceResolver, path);

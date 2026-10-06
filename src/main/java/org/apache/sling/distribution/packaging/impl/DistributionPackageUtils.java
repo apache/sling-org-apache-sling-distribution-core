@@ -18,28 +18,11 @@
  */
 package org.apache.sling.distribution.packaging.impl;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.jackrabbit.JcrConstants;
-import org.apache.jackrabbit.commons.JcrUtils;
-import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceUtil;
-import org.apache.sling.distribution.DistributionRequest;
-import org.apache.sling.distribution.DistributionRequestType;
-import org.apache.sling.distribution.queue.DistributionQueueEntry;
-import org.apache.sling.distribution.packaging.DistributionPackage;
-import org.apache.sling.distribution.packaging.DistributionPackageInfo;
-import org.apache.sling.distribution.queue.DistributionQueueItem;
-import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.jcr.Binary;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.nodetype.NodeType;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -60,6 +43,24 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.jackrabbit.JcrConstants;
+import org.apache.jackrabbit.commons.JcrUtils;
+import org.apache.sling.api.resource.PersistenceException;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceUtil;
+import org.apache.sling.distribution.DistributionRequest;
+import org.apache.sling.distribution.DistributionRequestType;
+import org.apache.sling.distribution.packaging.DistributionPackage;
+import org.apache.sling.distribution.packaging.DistributionPackageInfo;
+import org.apache.sling.distribution.queue.DistributionQueueEntry;
+import org.apache.sling.distribution.queue.DistributionQueueItem;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Package related utility methods
  */
@@ -67,12 +68,12 @@ public class DistributionPackageUtils {
 
     private static final Logger log = LoggerFactory.getLogger(DistributionPackageUtils.class);
 
-    private final static String META_START = "DSTRPACKMETA";
+    private static final String META_START = "DSTRPACKMETA";
 
     private static final Object repolock = new Object();
     private static final Object filelock = new Object();
 
-    public final static String PROPERTY_REMOTE_PACKAGE_ID = "remote.package.id";
+    public static final String PROPERTY_REMOTE_PACKAGE_ID = "remote.package.id";
 
     /**
      * distribution package origin queue
@@ -166,7 +167,8 @@ public class DistributionPackageUtils {
      * @return a distribution queue item
      */
     public static DistributionQueueItem toQueueItem(DistributionPackage distributionPackage) {
-        return new DistributionQueueItem(distributionPackage.getId(), distributionPackage.getSize(), distributionPackage.getInfo());
+        return new DistributionQueueItem(
+                distributionPackage.getId(), distributionPackage.getSize(), distributionPackage.getInfo());
     }
 
     /**
@@ -187,7 +189,6 @@ public class DistributionPackageUtils {
         packageInfo.putAll(entry.getItem());
         packageInfo.put(PACKAGE_INFO_PROPERTY_ORIGIN_QUEUE, entry.getStatus().getQueueName());
     }
-
 
     public static void fillInfo(DistributionPackageInfo info, DistributionRequest request) {
         info.put(DistributionPackageInfo.PROPERTY_REQUEST_TYPE, request.getRequestType());
@@ -248,13 +249,11 @@ public class DistributionPackageUtils {
         } catch (ClassNotFoundException e) {
             log.error("Cannot read stream info", e);
         }
-
     }
 
     public static void writeInfo(OutputStream outputStream, Map<String, Object> info) {
 
         HashMap<String, Object> map = new HashMap<String, Object>(info);
-
 
         try {
             outputStream.write(META_START.getBytes("UTF-8"));
@@ -268,7 +267,8 @@ public class DistributionPackageUtils {
         }
     }
 
-    public static Resource getPackagesRoot(ResourceResolver resourceResolver, String packagesRootPath) throws PersistenceException {
+    public static Resource getPackagesRoot(ResourceResolver resourceResolver, String packagesRootPath)
+            throws PersistenceException {
         Resource packagesRoot = resourceResolver.getResource(packagesRootPath);
 
         if (packagesRoot != null) {
@@ -279,7 +279,8 @@ public class DistributionPackageUtils {
             if (resourceResolver.hasChanges()) {
                 resourceResolver.refresh();
             }
-            packagesRoot = ResourceUtil.getOrCreateResource(resourceResolver, packagesRootPath, "sling:Folder", "sling:Folder", true);
+            packagesRoot = ResourceUtil.getOrCreateResource(
+                    resourceResolver, packagesRootPath, "sling:Folder", "sling:Folder", true);
         }
 
         return packagesRoot;
@@ -287,8 +288,9 @@ public class DistributionPackageUtils {
 
     public static InputStream getStream(Resource resource) throws RepositoryException {
         Node parent = resource.adaptTo(Node.class);
-        return parent.getProperty("bin/" + JcrConstants.JCR_CONTENT
-                + "/" + JcrConstants.JCR_DATA).getBinary().getStream();
+        return parent.getProperty("bin/" + JcrConstants.JCR_CONTENT + "/" + JcrConstants.JCR_DATA)
+                .getBinary()
+                .getStream();
     }
 
     public static void uploadStream(Resource resource, InputStream stream) throws RepositoryException {
@@ -299,7 +301,6 @@ public class DistributionPackageUtils {
         content.setProperty(JcrConstants.JCR_DATA, binary);
         JcrUtils.getOrAddNode(parent, "refs", NodeType.NT_UNSTRUCTURED);
     }
-
 
     public static void acquire(Resource resource, @NotNull String[] holderNames) throws RepositoryException {
         if (holderNames.length == 0) {
@@ -328,7 +329,6 @@ public class DistributionPackageUtils {
             log.warn("Package {} has no refs resource. Consider removing it explicitly.", resource.getPath());
             return false;
         }
-
     }
 
     public static void release(Resource resource, @NotNull String[] holderNames) throws RepositoryException {
@@ -385,8 +385,6 @@ public class DistributionPackageUtils {
                 IOUtils.closeQuietly(outputStream);
             }
         }
-
-
     }
 
     public static boolean release(File file, @NotNull String[] holderNames) throws IOException {
@@ -403,7 +401,7 @@ public class DistributionPackageUtils {
 
                 if (file.exists()) {
                     inputStream = getSafeObjectInputStream(new FileInputStream(file));
-                    @SuppressWarnings("unchecked") //type is known by design
+                    @SuppressWarnings("unchecked") // type is known by design
                     HashSet<String> fromStreamSet = (HashSet<String>) inputStream.readObject();
                     set = fromStreamSet;
                 } else {
@@ -419,8 +417,7 @@ public class DistributionPackageUtils {
 
                 outputStream = new ObjectOutputStream(new FileOutputStream(file));
                 outputStream.writeObject(set);
-            }
-            catch (ClassNotFoundException e) {
+            } catch (ClassNotFoundException e) {
                 log.error("Cannot release file", e);
             } finally {
                 IOUtils.closeQuietly(inputStream);
@@ -433,13 +430,15 @@ public class DistributionPackageUtils {
     private static ObjectInputStream getSafeObjectInputStream(InputStream inputStream) throws IOException {
 
         final Class<?>[] acceptedClasses = new Class<?>[] {
-                HashMap.class, HashSet.class,
-                String.class, String[].class,
-                Long.class,
-                Number.class,
-                Boolean.class,
-                Enum.class,
-                DistributionRequestType.class
+            HashMap.class,
+            HashSet.class,
+            String.class,
+            String[].class,
+            Long.class,
+            Number.class,
+            Boolean.class,
+            Enum.class,
+            DistributionRequestType.class
         };
 
         return new ObjectInputStream(inputStream) {

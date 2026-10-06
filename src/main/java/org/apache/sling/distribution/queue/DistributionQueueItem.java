@@ -63,10 +63,7 @@ public final class DistributionQueueItem extends ValueMapDecorator implements Va
 
     @Override
     public String toString() {
-        return "DistributionQueueItem{" +
-                "id='" + packageId + '\'' +
-                ", info={" + getQueueInfo() + '}' +
-                '}';
+        return "DistributionQueueItem{" + "id='" + packageId + '\'' + ", info={" + getQueueInfo() + '}' + '}';
     }
 
     /*
@@ -74,11 +71,11 @@ public final class DistributionQueueItem extends ValueMapDecorator implements Va
      */
     private String getQueueInfo() {
         String queueItemStr = "";
-        for(String key : super.keySet()) {
+        for (String key : super.keySet()) {
             Object value = super.get(key);
             String valueString = "";
             if (value.getClass().isArray()) {
-                valueString = key + "=" + Arrays.toString((Object[])value);
+                valueString = key + "=" + Arrays.toString((Object[]) value);
             } else {
                 valueString = key + "=" + value.toString();
             }
