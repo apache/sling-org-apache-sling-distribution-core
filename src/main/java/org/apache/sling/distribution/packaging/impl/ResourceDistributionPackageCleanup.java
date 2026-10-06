@@ -31,7 +31,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This runnable removes unreferenced {@link ResourceDistributionPackage} packages.
- * It is meant to be run periodically. See SLING-6503.
+ * It is meant to be run periodically on a dedicated thread pool.
+ * See SLING-6503 and SLING-11026.
  * Deletions are committed in batches (see SLING-13356) rather than in a single commit for
  * the whole run, to avoid an unbounded transaction when a large number of packages have
  * accumulated.
