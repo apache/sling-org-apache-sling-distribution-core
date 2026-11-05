@@ -322,19 +322,41 @@ public class ResourceQueueUtils {
      * Callers that need the exact size should use getResourceCount() instead.
      */
     public static int getResourceCountCapped(Resource root) {
+        return getResourceCountCappedResult(root).getCount();
+    }
+
+    static ResourceCountResult getResourceCountCappedResult(Resource root) {
         Iterator<Resource> it = new ResourceIterator(root, RESOURCE_FOLDER, false, true);
 
         int count = 0;
-        while (it.hasNext()) {
+        while (it.hasNext() && count <= STATUS_ITEMS_COUNT_CAP) {
             it.next();
             count++;
 
             if (count > STATUS_ITEMS_COUNT_CAP) {
-                return STATUS_ITEMS_COUNT_CAP;
+                return new ResourceCountResult(STATUS_ITEMS_COUNT_CAP, true);
             }
         }
 
-        return count;
+        return new ResourceCountResult(count, false);
+    }
+
+    static final class ResourceCountResult {
+        private final int count;
+        private final boolean capped;
+
+        ResourceCountResult(int count, boolean capped) {
+            this.count = count;
+            this.capped = capped;
+        }
+
+        int getCount() {
+            return count;
+        }
+
+        boolean isCapped() {
+            return capped;
+        }
     }
 
     private static String getUniqueEntryPath(Resource parent) {

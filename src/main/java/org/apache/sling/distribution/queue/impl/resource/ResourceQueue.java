@@ -233,11 +233,12 @@ public class ResourceQueue implements DistributionQueue {
             resourceResolver = DistributionUtils.loginService(resolverFactory, serviceName);
             Resource queueRoot = ResourceQueueUtils.getRootResource(resourceResolver, queueRootPath);
 
-            int count = useExactQueueLength
-                    ? ResourceQueueUtils.getResourceCount(queueRoot)
-                    : ResourceQueueUtils.getResourceCountCapped(queueRoot);
+            ResourceQueueUtils.ResourceCountResult countResult = useExactQueueLength
+                    ? new ResourceQueueUtils.ResourceCountResult(ResourceQueueUtils.getResourceCount(queueRoot), false)
+                    : ResourceQueueUtils.getResourceCountCappedResult(queueRoot);
 
-            return new DistributionQueueStatus(count, DistributionQueueState.PASSIVE);
+            return new DistributionQueueStatus(
+                    countResult.getCount(), DistributionQueueState.PASSIVE, countResult.isCapped());
         } catch (LoginException e) {
             throw new RuntimeException(e);
         } catch (PersistenceException e) {

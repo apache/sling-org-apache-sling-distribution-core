@@ -23,6 +23,8 @@ import java.util.GregorianCalendar;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.queue.DistributionQueueItem;
+import org.apache.sling.distribution.queue.DistributionQueueStatus;
+import org.apache.sling.distribution.queue.impl.SimpleAgentDistributionQueue;
 import org.apache.sling.distribution.queue.spi.DistributionQueue;
 import org.apache.sling.testing.resourceresolver.MockResourceResolverFactory;
 import org.junit.Before;
@@ -103,8 +105,12 @@ public class ResourceQueueUtilsTest {
             queue.add(new DistributionQueueItem(randomUUID().toString(), emptyMap()));
         }
 
-        assertEquals(
-                ResourceQueueUtils.STATUS_ITEMS_COUNT_CAP, queue.getStatus().getItemsCount());
+        DistributionQueueStatus status = queue.getStatus();
+        assertEquals(ResourceQueueUtils.STATUS_ITEMS_COUNT_CAP, status.getItemsCount());
+        assertTrue(status.isItemsCountCapped());
+
+        DistributionQueueStatus pausedStatus = new SimpleAgentDistributionQueue(queue, true, "test-agent").getStatus();
+        assertTrue(pausedStatus.isItemsCountCapped());
     }
 
     @Test
@@ -116,8 +122,23 @@ public class ResourceQueueUtilsTest {
             queue.add(new DistributionQueueItem(randomUUID().toString(), emptyMap()));
         }
 
+        DistributionQueueStatus status = queue.getStatus();
+        assertEquals(ResourceQueueUtils.STATUS_ITEMS_COUNT_CAP + 5, status.getItemsCount());
+        assertFalse(status.isItemsCountCapped());
+    }
+
+    @Test
+    public void testGetStatusAtCapIsNotCapped() throws Exception {
+        String agentPath = QUEUES_ROOT + QUEUE_NAME;
+        DistributionQueue queue = new ResourceQueue(rrf, "test", QUEUE_NAME, agentPath);
+
+        for (int i = 0; i < ResourceQueueUtils.STATUS_ITEMS_COUNT_CAP; i++) {
+            queue.add(new DistributionQueueItem(randomUUID().toString(), emptyMap()));
+        }
+
         assertEquals(
-                ResourceQueueUtils.STATUS_ITEMS_COUNT_CAP + 5, queue.getStatus().getItemsCount());
+                ResourceQueueUtils.STATUS_ITEMS_COUNT_CAP, queue.getStatus().getItemsCount());
+        assertFalse(queue.getStatus().isItemsCountCapped());
     }
 
     @Test

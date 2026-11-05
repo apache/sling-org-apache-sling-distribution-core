@@ -54,7 +54,8 @@ public class SimpleAgentDistributionQueue extends DistributionQueueWrapper {
     private DistributionQueueStatus calculateStatus() {
         DistributionQueueStatus status = super.getStatus();
         if (isPaused) {
-            return new DistributionQueueStatus(status.getItemsCount(), DistributionQueueState.PAUSED);
+            return new DistributionQueueStatus(
+                    status.getItemsCount(), DistributionQueueState.PAUSED, status.isItemsCountCapped());
         } else {
             return status;
         }
