@@ -27,11 +27,19 @@ import org.jetbrains.annotations.NotNull;
 public final class DistributionQueueStatus {
     private final int itemsCount;
 
+    private final boolean itemsCountCapped;
+
     private final DistributionQueueState queueState;
 
     public DistributionQueueStatus(int itemsCount, @NotNull DistributionQueueState queueState) {
+        this(itemsCount, queueState, false);
+    }
+
+    public DistributionQueueStatus(
+            int itemsCount, @NotNull DistributionQueueState queueState, boolean itemsCountCapped) {
         this.itemsCount = itemsCount;
         this.queueState = queueState;
+        this.itemsCountCapped = itemsCountCapped;
     }
 
     /**
@@ -40,6 +48,14 @@ public final class DistributionQueueStatus {
      */
     public int getItemsCount() {
         return itemsCount;
+    }
+
+    /**
+     * Indicates whether the reported item count is capped rather than exact.
+     * @return {@code true} if the reported item count is capped
+     */
+    public boolean isItemsCountCapped() {
+        return itemsCountCapped;
     }
 
     /**

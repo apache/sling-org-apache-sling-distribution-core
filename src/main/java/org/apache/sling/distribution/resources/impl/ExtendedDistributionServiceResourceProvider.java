@@ -141,6 +141,7 @@ public class ExtendedDistributionServiceResourceProvider extends DistributionSer
                 result.put("state", queueStatus.getState().name());
                 result.put("empty", queueStatus.isEmpty());
                 result.put("itemsCount", queueStatus.getItemsCount());
+                result.put("itemsCountCapped", queueStatus.isItemsCountCapped());
                 result.put("capabilities", queueCapabilities(queue));
 
                 if (queueName.startsWith(ErrorQueueDispatchingStrategy.ERROR_PREFIX)) {

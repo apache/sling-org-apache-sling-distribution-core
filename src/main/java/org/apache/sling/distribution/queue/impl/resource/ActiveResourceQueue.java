@@ -45,7 +45,16 @@ public class ActiveResourceQueue extends ResourceQueue {
 
     public ActiveResourceQueue(
             ResourceResolverFactory resolverFactory, String serviceName, String queueName, String rootPath) {
-        super(resolverFactory, serviceName, queueName, rootPath);
+        this(resolverFactory, serviceName, queueName, rootPath, false);
+    }
+
+    public ActiveResourceQueue(
+            ResourceResolverFactory resolverFactory,
+            String serviceName,
+            String queueName,
+            String rootPath,
+            boolean useExactQueueLength) {
+        super(resolverFactory, serviceName, queueName, rootPath, useExactQueueLength);
     }
 
     @NotNull
@@ -56,14 +65,21 @@ public class ActiveResourceQueue extends ResourceQueue {
             resourceResolver = DistributionUtils.loginService(resolverFactory, serviceName);
             Resource queueRoot = ResourceQueueUtils.getRootResource(resourceResolver, queueRootPath);
 
-            int count = ResourceQueueUtils.getResourceCount(queueRoot);
+            ResourceQueueUtils.ResourceCountResult countResult = useExactQueueLength
+                    ? new ResourceQueueUtils.ResourceCountResult(ResourceQueueUtils.getResourceCount(queueRoot), false)
+                    : ResourceQueueUtils.getResourceCountCappedResult(queueRoot);
 
             DistributionQueueEntry head = ResourceQueueUtils.getHead(queueRoot);
             DistributionQueueItem firstItem = (null != head) ? head.getItem() : null;
             DistributionQueueItemStatus firstItemStatus = (null != head) ? head.getStatus() : null;
-            log.debug("Queue has {} items, with following status for the head: {}", count, firstItemStatus);
+            log.debug(
+                    "Queue has {} items, with following status for the head: {}",
+                    countResult.getCount(),
+                    firstItemStatus);
             return new DistributionQueueStatus(
-                    count, DistributionQueueUtils.calculateState(firstItem, firstItemStatus));
+                    countResult.getCount(),
+                    DistributionQueueUtils.calculateState(firstItem, firstItemStatus),
+                    countResult.isCapped());
         } catch (LoginException | PersistenceException e) {
             throw new RuntimeException(e);
         } finally {

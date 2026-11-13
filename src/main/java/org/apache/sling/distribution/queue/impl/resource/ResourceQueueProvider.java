@@ -53,6 +53,7 @@ public class ResourceQueueProvider implements DistributionQueueProvider {
     private Scheduler scheduler;
     private String agentName;
     private boolean isActive;
+    private boolean useExactQueueLength;
 
     private final Map<String, ResourceQueue> queueMap = new ConcurrentHashMap<>();
 
@@ -65,6 +66,17 @@ public class ResourceQueueProvider implements DistributionQueueProvider {
             String agentName,
             Scheduler scheduler,
             boolean isActive) {
+        this(context, resolverFactory, serviceName, agentName, scheduler, isActive, false);
+    }
+
+    public ResourceQueueProvider(
+            BundleContext context,
+            ResourceResolverFactory resolverFactory,
+            String serviceName,
+            String agentName,
+            Scheduler scheduler,
+            boolean isActive,
+            boolean useExactQueueLength) {
         if (serviceName == null
                 || (scheduler == null && isActive)
                 || context == null
@@ -78,6 +90,7 @@ public class ResourceQueueProvider implements DistributionQueueProvider {
         this.agentRootPath = QUEUES_ROOT + agentName;
         this.scheduler = scheduler;
         this.isActive = isActive;
+        this.useExactQueueLength = useExactQueueLength;
 
         register(context);
     }
@@ -87,9 +100,9 @@ public class ResourceQueueProvider implements DistributionQueueProvider {
     public DistributionQueue getQueue(@NotNull String queueName) throws DistributionException {
         return queueMap.computeIfAbsent(queueName, name -> {
             if (isActive) {
-                return new ActiveResourceQueue(resolverFactory, serviceName, name, agentRootPath);
+                return new ActiveResourceQueue(resolverFactory, serviceName, name, agentRootPath, useExactQueueLength);
             } else {
-                return new ResourceQueue(resolverFactory, serviceName, name, agentRootPath);
+                return new ResourceQueue(resolverFactory, serviceName, name, agentRootPath, useExactQueueLength);
             }
         });
     }
