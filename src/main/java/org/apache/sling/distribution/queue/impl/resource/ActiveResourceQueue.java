@@ -45,7 +45,7 @@ public class ActiveResourceQueue extends ResourceQueue {
 
     public ActiveResourceQueue(
             ResourceResolverFactory resolverFactory, String serviceName, String queueName, String rootPath) {
-        super(resolverFactory, serviceName, queueName, rootPath);
+        this(resolverFactory, serviceName, queueName, rootPath, false);
     }
 
     public ActiveResourceQueue(

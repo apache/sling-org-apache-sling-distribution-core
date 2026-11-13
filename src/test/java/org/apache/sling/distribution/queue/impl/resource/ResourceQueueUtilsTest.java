@@ -109,6 +109,14 @@ public class ResourceQueueUtilsTest {
         assertEquals(ResourceQueueUtils.STATUS_ITEMS_COUNT_CAP, status.getItemsCount());
         assertTrue(status.isItemsCountCapped());
 
+        DistributionQueueStatus activeDefault = new ActiveResourceQueue(rrf, "test", QUEUE_NAME, agentPath).getStatus();
+        DistributionQueueStatus activeExplicit =
+                new ActiveResourceQueue(rrf, "test", QUEUE_NAME, agentPath, false).getStatus();
+        assertEquals(status.getItemsCount(), activeDefault.getItemsCount());
+        assertTrue(activeDefault.isItemsCountCapped());
+        assertEquals(activeDefault.getItemsCount(), activeExplicit.getItemsCount());
+        assertTrue(activeExplicit.isItemsCountCapped());
+
         DistributionQueueStatus pausedStatus = new SimpleAgentDistributionQueue(queue, true, "test-agent").getStatus();
         assertTrue(pausedStatus.isItemsCountCapped());
     }
@@ -125,6 +133,11 @@ public class ResourceQueueUtilsTest {
         DistributionQueueStatus status = queue.getStatus();
         assertEquals(ResourceQueueUtils.STATUS_ITEMS_COUNT_CAP + 5, status.getItemsCount());
         assertFalse(status.isItemsCountCapped());
+
+        DistributionQueueStatus activeExact =
+                new ActiveResourceQueue(rrf, "test", QUEUE_NAME, agentPath, true).getStatus();
+        assertEquals(status.getItemsCount(), activeExact.getItemsCount());
+        assertFalse(activeExact.isItemsCountCapped());
     }
 
     @Test
