@@ -117,7 +117,7 @@ public class DistributionPackageBuilderFactory implements DistributionPackageBui
                 name = "The digest algorithm to calculate the package checksum",
                 description = "The digest algorithm to calculate the package checksum, Megabytes by default",
                 options = {
-                    @Option(label = "NONE", value = "Do not send digest"),
+                    @Option(label = "NONE", value = "NONE"),
                     @Option(label = "MD2", value = "md2"),
                     @Option(label = "MD5", value = "md5"),
                     @Option(label = "SHA-1", value = "sha1"),
